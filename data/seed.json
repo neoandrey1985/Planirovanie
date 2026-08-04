@@ -124,7 +124,7 @@
    "est": 5,
    "status": "Готово",
    "sprint": 1,
-   "dep": "=IF($A5=\"\",\"\",Бэклог!E5)",
+   "dep": "",
    "started": "2026-08-03",
    "done": "2026-08-06",
    "added": false
@@ -138,7 +138,7 @@
    "est": 8,
    "status": "Готово",
    "sprint": 1,
-   "dep": "=IF($A6=\"\",\"\",Бэклог!E6)",
+   "dep": "T-01",
    "started": "2026-08-04",
    "done": "2026-08-12",
    "added": false
@@ -152,7 +152,7 @@
    "est": 4,
    "status": "Готово",
    "sprint": 1,
-   "dep": "=IF($A7=\"\",\"\",Бэклог!E7)",
+   "dep": "",
    "started": "2026-08-03",
    "done": "2026-08-05",
    "added": false
@@ -166,7 +166,7 @@
    "est": 5,
    "status": "В работе",
    "sprint": 1,
-   "dep": "=IF($A8=\"\",\"\",Бэклог!E8)",
+   "dep": "",
    "started": "2026-08-05",
    "done": null,
    "added": false
@@ -180,7 +180,7 @@
    "est": 8,
    "status": "Готово",
    "sprint": 2,
-   "dep": "=IF($A9=\"\",\"\",Бэклог!E9)",
+   "dep": "T-01",
    "started": "2026-08-17",
    "done": "2026-08-24",
    "added": false
@@ -194,7 +194,7 @@
    "est": 4,
    "status": "Готово",
    "sprint": 2,
-   "dep": "=IF($A10=\"\",\"\",Бэклог!E10)",
+   "dep": "",
    "started": "2026-08-18",
    "done": "2026-08-20",
    "added": false
@@ -208,7 +208,7 @@
    "est": 4,
    "status": "Готово",
    "sprint": 2,
-   "dep": "=IF($A11=\"\",\"\",Бэклог!E11)",
+   "dep": "",
    "started": "2026-08-19",
    "done": "2026-08-26",
    "added": false
@@ -222,7 +222,7 @@
    "est": 5,
    "status": "Готово",
    "sprint": 2,
-   "dep": "=IF($A12=\"\",\"\",Бэклог!E12)",
+   "dep": "",
    "started": "2026-08-17",
    "done": "2026-08-25",
    "added": false
@@ -236,7 +236,7 @@
    "est": 3,
    "status": "To Do",
    "sprint": 2,
-   "dep": "=IF($A13=\"\",\"\",Бэклог!E13)",
+   "dep": "",
    "started": null,
    "done": null,
    "added": false
@@ -250,7 +250,7 @@
    "est": 3,
    "status": "В работе",
    "sprint": 3,
-   "dep": "=IF($A14=\"\",\"\",Бэклог!E14)",
+   "dep": "",
    "started": "2026-09-02",
    "done": null,
    "added": false
@@ -264,7 +264,7 @@
    "est": 3,
    "status": "To Do",
    "sprint": 3,
-   "dep": "=IF($A15=\"\",\"\",Бэклог!E15)",
+   "dep": "",
    "started": null,
    "done": null,
    "added": true
@@ -278,7 +278,7 @@
    "est": 5,
    "status": "To Do",
    "sprint": 3,
-   "dep": "=IF($A16=\"\",\"\",Бэклог!E16)",
+   "dep": "T-04",
    "started": null,
    "done": null,
    "added": false
@@ -292,7 +292,7 @@
    "est": 8,
    "status": "В работе",
    "sprint": 3,
-   "dep": "=IF($A17=\"\",\"\",Бэклог!E17)",
+   "dep": "T-03",
    "started": "2026-09-01",
    "done": null,
    "added": false
@@ -306,7 +306,7 @@
    "est": 5,
    "status": "To Do",
    "sprint": 3,
-   "dep": "=IF($A18=\"\",\"\",Бэклог!E18)",
+   "dep": "T-13",
    "started": null,
    "done": null,
    "added": true
@@ -320,7 +320,7 @@
    "est": 5,
    "status": "To Do",
    "sprint": 3,
-   "dep": "=IF($A19=\"\",\"\",Бэклог!E19)",
+   "dep": "",
    "started": null,
    "done": null,
    "added": false
@@ -334,7 +334,7 @@
    "est": 8,
    "status": "To Do",
    "sprint": 4,
-   "dep": "=IF($A20=\"\",\"\",Бэклог!E20)",
+   "dep": "T-15",
    "started": null,
    "done": null,
    "added": false
@@ -348,7 +348,7 @@
    "est": 6,
    "status": "To Do",
    "sprint": 4,
-   "dep": "=IF($A21=\"\",\"\",Бэклог!E21)",
+   "dep": "T-16",
    "started": null,
    "done": null,
    "added": false
@@ -362,7 +362,7 @@
    "est": 5,
    "status": "To Do",
    "sprint": 4,
-   "dep": "=IF($A22=\"\",\"\",Бэклог!E22)",
+   "dep": "",
    "started": null,
    "done": null,
    "added": false
@@ -376,7 +376,7 @@
    "est": 8,
    "status": "To Do",
    "sprint": 5,
-   "dep": "=IF($A23=\"\",\"\",Бэклог!E23)",
+   "dep": "",
    "started": null,
    "done": null,
    "added": false
@@ -390,7 +390,7 @@
    "est": 5,
    "status": "To Do",
    "sprint": 5,
-   "dep": "=IF($A24=\"\",\"\",Бэклог!E24)",
+   "dep": "",
    "started": null,
    "done": null,
    "added": false
