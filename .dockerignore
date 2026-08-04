@@ -1,0 +1,9 @@
+.git
+node_modules
+server/data.db
+server/*.db
+*.db
+scratchpad
+Описание_Планирование_спринта_PRO.docx
+Иллюстрированное_описание_Планирование_спринта_PRO.docx
+Планирование_спринта_PRO.xlsx

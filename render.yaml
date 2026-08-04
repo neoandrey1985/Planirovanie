@@ -1,0 +1,25 @@
+# Деплой на Render (https://render.com). New → Blueprint → выберите этот репозиторий.
+# Зависимостей нет — сборка не требуется. Node 22 нужен для встроенного node:sqlite.
+services:
+  - type: web
+    name: planirovanie
+    runtime: node
+    plan: free
+    buildCommand: "echo no build needed"
+    startCommand: node server/server.js
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      # Общий ключ команды. Задайте своё значение в панели Render (Environment).
+      # Если оставить пустым — доступ к API открытый.
+      - key: TEAM_TOKEN
+        sync: false
+      - key: DB_PATH
+        value: /var/data/data.db
+    # Диск нужен, чтобы общая БД сохранялась между перезапусками (на плане free диски недоступны —
+    # тогда уберите блок disk и данные будут сбрасываться при перезапуске; для сохранности возьмите
+    # платный instance или используйте Railway/Fly.io с томом).
+    disk:
+      name: data
+      mountPath: /var/data
+      sizeGB: 1

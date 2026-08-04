@@ -81,6 +81,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,.tabs button:focus
   <button class="btn" id="exp">JSON</button>
   <button class="btn" id="imp">Импорт</button>
   <button class="btn danger" id="rst">Сброс</button>
+  <span id="syncst" class="pill p-neut" style="align-self:center;white-space:nowrap">⚪ локально</span>
   <button class="btn" id="themebtn" aria-label="Тема">◐</button>
  </div>
 </div></header>
@@ -850,7 +851,7 @@ function cpm(tasks){const dur={},pred={},ids=tasks.map(t=>t.id),idset=new Set(id
  const LF={},LS={};ids.forEach(i=>{LF[i]=proj;LS[i]=proj-dur[i];});
  for(let k=0;k<ids.length+2;k++)ids.forEach(i=>{const ss=succ[i];LF[i]=ss.length?Math.min.apply(null,ss.map(s=>LS[s])):proj;LS[i]=LF[i]-dur[i];});
  const crit=new Set();ids.forEach(i=>{if(Math.abs(LS[i]-ES[i])<1e-9&&dur[i]>0)crit.add(i);});return crit;}
-function save(){localStorage.setItem('sprintapp',JSON.stringify(ST));}
+function save(){localStorage.setItem('sprintapp',JSON.stringify(ST));if(typeof syncSchedule==='function')syncSchedule();}
 function toast(t){const e=document.getElementById('toast');e.textContent=t;e.classList.add('show');setTimeout(()=>e.classList.remove('show'),1600);}
 function col(n){return getComputedStyle(document.documentElement).getPropertyValue(n).trim();}
 function el(t,a){const e=document.createElementNS(NS,t);for(const k in(a||{}))e.setAttribute(k,a[k]);return e;}
@@ -1195,4 +1196,39 @@ document.getElementById('file').onchange=e=>{const f=e.target.files[0];if(!f)ret
 document.getElementById('rst').onclick=()=>{if(confirm('Сбросить все данные к исходным?')){ST=JSON.parse(JSON.stringify(SEED));save();views();activate(CURV);toast('Сброшено');}};
 document.getElementById('themebtn').onclick=()=>{const cur=document.documentElement.getAttribute('data-theme');const sys=matchMedia('(prefers-color-scheme:dark)').matches;const nx=(cur||(sys?'dark':'light'))==='dark'?'light':'dark';document.documentElement.setAttribute('data-theme',nx);views();activate(CURV);};
 views();activate('dash');
+
+/* ---------- multi-user sync (shared backend) ---------- */
+const API='api/state';
+let SYNC={on:false,ver:0,editAt:0,tk:localStorage.getItem('team_tk')||''};
+function hdrs(json){const h={};if(json)h['Content-Type']='application/json';if(SYNC.tk)h['x-team-token']=SYNC.tk;return h;}
+function setSt(txt,cls){const e=document.getElementById('syncst');if(e){e.textContent=txt;e.className='pill '+cls;}}
+function askToken(){const t=prompt('Введите ключ команды для доступа к общей базе:');if(t){SYNC.tk=t.trim();localStorage.setItem('team_tk',SYNC.tk);syncPull(true);}else{setSt('🔒 нужен ключ','p-warn');}}
+async function syncPull(initial){
+ try{const r=await fetch(API,{headers:hdrs(false),cache:'no-store'});
+  if(r.status===401){SYNC.on=false;askToken();return;}
+  if(!r.ok)throw 0;const d=await r.json();SYNC.on=true;
+  const busy=(!initial)&&(Date.now()-SYNC.editAt<4000);
+  if((initial||d.version>SYNC.ver)&&!busy){
+    ST=migrate(d.state||JSON.parse(JSON.stringify(SEED)));SYNC.ver=d.version;
+    localStorage.setItem('sprintapp',JSON.stringify(ST));views();activate(CURV);
+    if(!initial)toast('Обновлено (другой пользователь)');
+  } else if(d.version>SYNC.ver){SYNC.ver=SYNC.ver;/* keep, will resync after edits settle */}
+  setSt('🟢 онлайн','p-good');
+ }catch(e){SYNC.on=false;setSt('⚪ офлайн','p-neut');}
+}
+let pushT=null;
+function syncSchedule(){SYNC.editAt=Date.now();if(!SYNC.on)return;clearTimeout(pushT);pushT=setTimeout(syncPush,700);}
+async function syncPush(){
+ try{const r=await fetch(API,{method:'PUT',headers:hdrs(true),body:JSON.stringify({state:ST})});
+  if(r.status===401){SYNC.on=false;askToken();return;}
+  if(!r.ok)throw 0;const d=await r.json();SYNC.ver=d.version;SYNC.on=true;setSt('🟢 сохранено','p-good');
+ }catch(e){SYNC.on=false;setSt('⚪ офлайн','p-neut');}
+}
+function startSync(){
+ fetch(API,{method:'HEAD'}).then(r=>{ // probe: backend present?
+  if(!r.ok&&r.status!==401&&r.status!==405){setSt('⚪ локально','p-neut');return;}
+  syncPull(true);setInterval(()=>syncPull(false),5000);
+ }).catch(()=>{setSt('⚪ локально','p-neut');});
+}
+startSync();
 </script>
