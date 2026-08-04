@@ -75,15 +75,16 @@ button:focus-visible,input:focus-visible,select:focus-visible,.tabs button:focus
 </style>
 <header class="top"><div class="inner">
  <div class="brand"><span class="dot"></span>Планирование&nbsp;спринтов</div>
- <div class="tabs" id="tabs"><button data-v="dash">Дашборд</button><button data-v="backlog">Бэклог</button><button data-v="team">Команда</button><button data-v="sprints">Спринты</button><button data-v="releases">Релизы</button><button data-v="milestones">Вехи</button><button data-v="debt">Техдолг</button><button data-v="risks">Риски</button><button data-v="bugs">Баги</button><button data-v="params">Параметры</button></div>
+ <div class="tabs" id="tabs"><button data-v="dash">Дашборд</button><button data-v="backlog">Бэклог</button><button data-v="team">Команда</button><button data-v="roadmap">Дорожная карта</button><button data-v="gantt">Гант</button><button data-v="releases">Релизы</button><button data-v="milestones">Вехи</button><button data-v="debt">Техдолг</button><button data-v="okr">OKR</button><button data-v="budget">Бюджет</button><button data-v="risks">Риски</button><button data-v="bugs">Баги</button><button data-v="params">Параметры</button></div>
  <div class="tools">
-  <button class="btn" id="exp">Экспорт</button>
+  <button class="btn primary" id="xls">Excel</button>
+  <button class="btn" id="exp">JSON</button>
   <button class="btn" id="imp">Импорт</button>
   <button class="btn danger" id="rst">Сброс</button>
   <button class="btn" id="themebtn" aria-label="Тема">◐</button>
  </div>
 </div></header>
-<main><section class="view" id="v_dash"></section><section class="view" id="v_backlog"></section><section class="view" id="v_team"></section><section class="view" id="v_sprints"></section><section class="view" id="v_releases"></section><section class="view" id="v_milestones"></section><section class="view" id="v_debt"></section><section class="view" id="v_risks"></section><section class="view" id="v_bugs"></section><section class="view" id="v_params"></section></main>
+<main><section class="view" id="v_dash"></section><section class="view" id="v_backlog"></section><section class="view" id="v_team"></section><section class="view" id="v_roadmap"></section><section class="view" id="v_gantt"></section><section class="view" id="v_releases"></section><section class="view" id="v_milestones"></section><section class="view" id="v_debt"></section><section class="view" id="v_okr"></section><section class="view" id="v_budget"></section><section class="view" id="v_risks"></section><section class="view" id="v_bugs"></section><section class="view" id="v_params"></section></main>
 <div class="toast" id="toast"></div>
 <input type="file" id="file" accept=".json" style="display:none">
 <script>
@@ -832,7 +833,23 @@ const SEED={
 const NS="http://www.w3.org/2000/svg";
 let ST=load();
 
-function load(){try{const s=localStorage.getItem('sprintapp');if(s)return JSON.parse(s);}catch(e){}return JSON.parse(JSON.stringify(SEED));}
+function load(){let d;try{const s=localStorage.getItem('sprintapp');d=s?JSON.parse(s):JSON.parse(JSON.stringify(SEED));}catch(e){d=JSON.parse(JSON.stringify(SEED));}return migrate(d);}
+function migrate(d){
+ if(!d.okr)d.okr=[{q:'Q3 2026',obj:'Запустить подписочную модель',kr:'Готовность MVP чекаута, %',target:100,cur:70},
+  {q:'Q3 2026',obj:'Запустить подписочную модель',kr:'Интеграция оплаты, %',target:100,cur:60},
+  {q:'Q3 2026',obj:'Обеспечить качество релиза',kr:'Покрытие автотестами, %',target:80,cur:45},
+  {q:'Q4 2026',obj:'Масштабировать на площадки',kr:'Подключено площадок, шт',target:20,cur:6}];
+ if(!d.epics)d.epics={};
+ if(!d.budget)d.budget={rate:8000,total:8000000};
+ return d;}
+function cpm(tasks){const dur={},pred={},ids=tasks.map(t=>t.id),idset=new Set(ids);
+ tasks.forEach(t=>{dur[t.id]=num(t.est);const dp=(t.dep&&String(t.dep).trim());pred[t.id]=dp&&idset.has(dp)?[dp]:[];});
+ const EF={},ES={};ids.forEach(i=>{EF[i]=0;ES[i]=0;});
+ for(let k=0;k<ids.length+2;k++)ids.forEach(i=>{const ps=pred[i];ES[i]=ps.length?Math.max.apply(null,ps.map(p=>EF[p])):0;EF[i]=ES[i]+dur[i];});
+ const proj=ids.length?Math.max.apply(null,ids.map(i=>EF[i])):0;const succ={};ids.forEach(i=>succ[i]=[]);ids.forEach(i=>pred[i].forEach(p=>succ[p].push(i)));
+ const LF={},LS={};ids.forEach(i=>{LF[i]=proj;LS[i]=proj-dur[i];});
+ for(let k=0;k<ids.length+2;k++)ids.forEach(i=>{const ss=succ[i];LF[i]=ss.length?Math.min.apply(null,ss.map(s=>LS[s])):proj;LS[i]=LF[i]-dur[i];});
+ const crit=new Set();ids.forEach(i=>{if(Math.abs(LS[i]-ES[i])<1e-9&&dur[i]>0)crit.add(i);});return crit;}
 function save(){localStorage.setItem('sprintapp',JSON.stringify(ST));}
 function toast(t){const e=document.getElementById('toast');e.textContent=t;e.classList.add('show');setTimeout(()=>e.classList.remove('show'),1600);}
 function col(n){return getComputedStyle(document.documentElement).getPropertyValue(n).trim();}
@@ -881,7 +898,12 @@ function compute(){
  const avgPct=closed.length?closed.map(x=>x.pct||0).reduce((a,b)=>a+b,0)/closed.length:0;
  const health=(Math.min(1,avgPct)+dodPct+qualNorm)/3;
  const remain=sp.filter(x=>x.status!=='Закрыт').reduce((a,b)=>a+b.plan,0);
- return {sp,cur,curSp,avgVel,closed:closed.length,dodPct,ttm,ttmAvg,bugsBy,bugsFound,bugsClosed,bugsOpen,dre,avgPct,health,remain,relDate,started};
+ // budget
+ const rate=num((ST.budget||{}).rate)||8000;let cum=0;
+ sp.forEach(x=>{x.cost=Math.round(x.cap*rate);cum+=x.cost;x.cum=cum;});
+ const spent=cum,budget=num((ST.budget||{}).total)||0,remBudget=budget-spent;
+ const crit=cpm(ST.tasks||[]);
+ return {sp,cur,curSp,avgVel,closed:closed.length,dodPct,ttm,ttmAvg,bugsBy,bugsFound,bugsClosed,bugsOpen,dre,avgPct,health,remain,relDate,started,rate,spent,budget,remBudget,crit};
 }
 
 /* ---------- charts (SVG) ---------- */
@@ -955,8 +977,14 @@ function views(){
  setView('team','Команда','Состав команды и доступность — из этого считается ёмкость спринтов.',
    editable('team',[{k:'name',label:'Участник',wide:true},{k:'role',label:'Роль',type:'select',opts:ROLES},
     {k:'avail',label:'Доступность',type:'num',def:1},{k:'absent',label:'Отсутствия (дн)',type:'num',def:0}]));
- // Sprints (derived)
- setView('sprints','Спринты','Рассчитывается автоматически из «Параметров», «Команды» и «Бэклога».',sprintsTable(C));
+ // Roadmap (Дорожная карта): computed roadmap + editable эпики per sprint + chart
+ renderRoadmap(C);
+ // Gantt
+ renderGantt(C);
+ // OKR
+ renderOKR(C);
+ // Budget
+ renderBudget(C);
  // Releases
  setView('releases','Релизы','Версии по диапазону спринтов. Содержимое считается из «Бэклога» и «Багов».',releasesView(C));
  // Milestones
@@ -1058,6 +1086,101 @@ function renderParams(){const P=ST.params;const v=document.getElementById('v_par
  ['sprints','focus'].forEach(k=>{const e=document.getElementById('p_'+k);e.addEventListener('input',()=>{P[k]=num(e.value);save();recomputeSoft();});});
 }
 
+/* ---------- Дорожная карта ---------- */
+function renderRoadmap(C){const v=document.getElementById('v_roadmap');
+ v.innerHTML=`<h1>Дорожная карта</h1><p class="lede">Спринты рассчитаны из «Параметров», «Команды» и «Бэклога». Впишите ключевые вехи/эпики.</p>
+  <div class="card"><p class="ctitle">% выполнения по спринтам</p><div id="rc1"></div></div>
+  <div class="twrap" style="margin-top:14px"><table id="rt"></table></div>`;
+ bars(document.getElementById('rc1'),C.sp.map(x=>'С'+x.s),[{color:col('--accent'),data:C.sp.map(x=>x.pct||0)}],{pct:true});
+ let h='<tr><th>Спринт</th><th>Даты</th><th class="num">Ёмкость</th><th class="num">План</th><th class="num">Velocity</th><th class="num">% вып.</th><th>Статус</th><th>Вехи / эпики</th></tr>';
+ C.sp.forEach(x=>{h+=`<tr><td>С${x.s}</td><td>${fmtd(x.a)}–${fmtd(x.b)}</td><td class="num">${fmt(x.cap,1)}</td><td class="num">${fmt(x.plan,1)}</td><td class="num">${x.vel==null?'—':fmt(x.vel,1)}</td><td class="num">${x.pct==null?'—':pctf(x.pct)}</td><td>${statusPill(x.status)}</td><td class="wide"><input data-s="${x.s}" value="${((ST.epics||{})[x.s]||'').replace(/"/g,'&quot;')}"></td></tr>`;});
+ const tw=document.getElementById('rt');tw.innerHTML=h;tw.addEventListener('input',e=>{if(e.target.dataset.s){ST.epics[e.target.dataset.s]=e.target.value;save();}});}
+/* ---------- Гант ---------- */
+function renderGantt(C){const v=document.getElementById('v_gantt');const tasks=(ST.tasks||[]).slice();
+ v.innerHTML=`<h1>Гант</h1><p class="lede">Задачи на шкале дат по спринтам; красная рамка — критический путь. Меняйте спринт и зависимости.</p>
+  <div class="card"><div id="gc"></div><div class="legend"><span><i style="border:2px solid var(--crit);background:transparent"></i>Критический путь</span></div></div>
+  <div class="twrap" style="margin-top:14px"><table id="gt"></table></div>`;
+ drawGantt(document.getElementById('gc'),tasks,C);
+ let h='<tr><th>ID</th><th>Задача</th><th class="num">Спринт</th><th>Зависит от</th><th>Критич.</th></tr>';
+ tasks.forEach((t,ri)=>{h+=`<tr><td>${t.id}</td><td>${(t.title||'')}</td><td class="num"><input type="number" data-i="${ri}" data-k="sprint" value="${num(t.sprint)}"></td><td><input data-i="${ri}" data-k="dep" value="${(t.dep||'').replace(/"/g,'&quot;')}"></td><td>${C.crit.has(t.id)?'<span class="pill p-crit">Да</span>':''}</td></tr>`;});
+ const tb=document.getElementById('gt');tb.innerHTML=h;
+ tb.addEventListener('input',e=>{const i=+e.target.dataset.i,k=e.target.dataset.k;if(k!=null){ST.tasks[i][k]=k==='sprint'?num(e.target.value):e.target.value;save();const CC=compute();drawGantt(document.getElementById('gc'),ST.tasks,CC);renderDash(CC);}});}
+function drawGantt(box,tasks,C){const P=ST.params,start=pd(P.start)||pd('2026-08-03');
+ const used=tasks.map(t=>num(t.sprint)).filter(s=>s>0);const maxS=used.length?Math.max.apply(null,used):1;
+ const t0=addD(start,0),t1=addD(start,(maxS-1)*14+11),span=Math.max(1,(t1-t0)/MS);
+ const W=760,rowH=20,mt=24,ml=150,mr=14,H=mt+tasks.length*rowH+22;
+ const svg=el('svg',{viewBox:`0 0 ${W} ${H}`});const pal=['#4472C4','#ED7D31','#70AD47','#FFC000','#7030A0','#255E91','#9E480E','#43682B','#7C6000','#4A2673','#636363'];
+ for(let s=1;s<=maxS;s++){const x=ml+(W-ml-mr)*((addD(start,(s-1)*14)-t0)/MS)/span;svg.appendChild(el('line',{x1:x,y1:mt-4,x2:x,y2:H-14,stroke:col('--line')}));
+   const tx=el('text',{x:x+2,y:mt-7,'font-size':9,fill:col('--muted')});tx.textContent=fmtd(addD(start,(s-1)*14)).slice(0,5);svg.appendChild(tx);}
+ tasks.forEach((t,i)=>{const s=num(t.sprint)||1,a=addD(start,(s-1)*14),b=addD(start,(s-1)*14+11);
+   const x=ml+(W-ml-mr)*((a-t0)/MS)/span,x2=ml+(W-ml-mr)*((b-t0)/MS)/span,y=mt+i*rowH+3;
+   const lbl=el('text',{x:6,y:y+11,'font-size':10,fill:col('--ink')});lbl.textContent=((t.id||'')+' '+(t.title||'')).slice(0,20);svg.appendChild(lbl);
+   const r=el('rect',{x,y,width:Math.max(3,x2-x),height:rowH-8,rx:3,fill:pal[(s-1)%pal.length]});
+   if(C.crit.has(t.id)){r.setAttribute('stroke',col('--crit'));r.setAttribute('stroke-width',2);}
+   const tt=el('title');tt.textContent=`${t.id}: С${s} ${fmtd(a)}–${fmtd(b)}`;r.appendChild(tt);svg.appendChild(r);});
+ box.innerHTML='';box.appendChild(svg);}
+/* ---------- OKR ---------- */
+function renderOKR(C){const v=document.getElementById('v_okr');
+ v.innerHTML=`<h1>OKR — цели квартала</h1><p class="lede">Objective + Key Results. Прогресс = Текущее / Цель.</p>`;
+ v.appendChild(editable('okr',[{k:'q',label:'Квартал'},{k:'obj',label:'Objective',wide:true},{k:'kr',label:'Key Result',wide:true},{k:'target',label:'Цель',type:'num'},{k:'cur',label:'Текущее',type:'num'}]));
+ const card=document.createElement('div');card.className='card';card.style.marginTop='14px';card.innerHTML='<p class="ctitle">Прогресс Key Results</p><div id="okc"></div>';v.appendChild(card);
+ const okr=ST.okr||[];bars(document.getElementById('okc'),okr.map(o=>String(o.kr||'').slice(0,14)),[{color:col('--good'),data:okr.map(o=>num(o.target)?num(o.cur)/num(o.target):0)}],{pct:true});}
+/* ---------- Бюджет ---------- */
+function renderBudget(C){const v=document.getElementById('v_budget');const B=ST.budget;
+ v.innerHTML=`<h1>Бюджет</h1><p class="lede">Стоимость = ёмкость спринта × ставка. Накопленный расход и остаток бюджета.</p>
+  <div class="card"><div class="param-grid" style="max-width:520px">
+   <label>Ставка (₽/чел-день)</label><input id="b_rate" type="number" value="${num(B.rate)}">
+   <label>Бюджет проекта (₽)</label><input id="b_total" type="number" value="${num(B.total)}"></div></div>
+  <div class="grid kpis" style="margin-top:14px" id="bk"></div>
+  <div class="card" style="margin-top:14px"><p class="ctitle">Накопленный расход по спринтам</p><div id="bc"></div></div>
+  <div class="twrap" style="margin-top:14px"><table id="bt"></table></div>`;
+ const velSum=C.sp.filter(x=>x.vel).reduce((a,b)=>a+b.vel,0)||1;
+ document.getElementById('bk').innerHTML=[kpiCard('Потрачено',fmt(C.spent,0)+' <small>₽</small>','по ёмкости','neut'),kpiCard('Бюджет',fmt(C.budget,0)+' <small>₽</small>','','neut'),kpiCard('Остаток',fmt(C.remBudget,0)+' <small>₽</small>','',C.remBudget<0?'crit':'good'),kpiCard('Цена velocity-дня',fmt(C.spent/velSum,0)+' <small>₽</small>','','neut')].join('');
+ lines(document.getElementById('bc'),C.sp.map(x=>'С'+x.s),[{color:col('--crit'),data:C.sp.map(x=>x.cum),w:3}]);
+ let h='<tr><th>Спринт</th><th class="num">Ёмкость</th><th class="num">Стоимость ₽</th><th class="num">Накопл. ₽</th><th class="num">Velocity</th></tr>';
+ C.sp.forEach(x=>{h+=`<tr><td>С${x.s}</td><td class="num">${fmt(x.cap,1)}</td><td class="num">${fmt(x.cost,0)}</td><td class="num">${fmt(x.cum,0)}</td><td class="num">${x.vel==null?'—':fmt(x.vel,1)}</td></tr>`;});
+ document.getElementById('bt').innerHTML=h;
+ ['rate','total'].forEach(k=>{const e=document.getElementById('b_'+k);e.addEventListener('input',()=>{B[k]=num(e.value);save();renderBudget(compute());renderDash(compute());});});}
+/* ---------- Excel export (pure JS zip + OOXML) ---------- */
+const _crc=(()=>{let t=[];for(let n=0;n<256;n++){let c=n;for(let k=0;k<8;k++)c=c&1?0xEDB88320^(c>>>1):c>>>1;t[n]=c>>>0;}return t;})();
+function crc32(u8){let c=0xFFFFFFFF;for(let i=0;i<u8.length;i++)c=_crc[(c^u8[i])&0xFF]^(c>>>8);return(c^0xFFFFFFFF)>>>0;}
+function te(s){return new TextEncoder().encode(s);}
+function zipStore(files){let parts=[],cd=[],off=0;const u16=n=>[n&255,(n>>8)&255],u32=n=>[n&255,(n>>8)&255,(n>>16)&255,(n>>24)&255];
+ files.forEach(f=>{const nb=te(f.name),crc=crc32(f.data),sz=f.data.length;
+  const lh=[].concat(u32(0x04034b50),u16(20),u16(0),u16(0),u16(0),u16(0),u32(crc),u32(sz),u32(sz),u16(nb.length),u16(0));
+  parts.push(new Uint8Array(lh),nb,f.data);cd.push({name:nb,crc,sz,off});off+=lh.length+nb.length+sz;});
+ const cdStart=off;let cdArr=[];cd.forEach(e=>{const hh=[].concat(u32(0x02014b50),u16(20),u16(20),u16(0),u16(0),u16(0),u16(0),u32(e.crc),u32(e.sz),u32(e.sz),u16(e.name.length),u16(0),u16(0),u16(0),u16(0),u32(0),u32(e.off));cdArr.push(new Uint8Array(hh),e.name);off+=hh.length+e.name.length;});
+ const cdSize=off-cdStart;const eocd=new Uint8Array([].concat(u32(0x06054b50),u16(0),u16(0),u16(cd.length),u16(cd.length),u32(cdSize),u32(cdStart),u16(0)));
+ const all=parts.concat(cdArr,[eocd]);let total=all.reduce((a,b)=>a+b.length,0),out=new Uint8Array(total),p=0;all.forEach(a=>{out.set(a,p);p+=a.length;});return out;}
+function xesc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function colL(i){let s='';i++;while(i>0){const m=(i-1)%26;s=String.fromCharCode(65+m)+s;i=Math.floor((i-1)/26);}return s;}
+function sheetXml(aoa){let rows='';aoa.forEach((row,ri)=>{let cells='';row.forEach((val,ci)=>{const ref=colL(ci)+(ri+1);
+  if(typeof val==='number'&&isFinite(val))cells+=`<c r="${ref}"><v>${val}</v></c>`;
+  else cells+=`<c r="${ref}" t="inlineStr"><is><t xml:space="preserve">${xesc(val)}</t></is></c>`;});rows+=`<row r="${ri+1}">${cells}</row>`;});
+ return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetData>'+rows+'</sheetData></worksheet>';}
+function sname(n){return String(n).replace(/[\[\]\*\/\\\?:]/g,' ').slice(0,31);}
+function buildXlsx(sheets){const files=[];
+ files.push({name:'[Content_Types].xml',data:te('<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>'+sheets.map((s,i)=>`<Override PartName="/xl/worksheets/sheet${i+1}.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>`).join('')+'</Types>')});
+ files.push({name:'_rels/.rels',data:te('<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>')});
+ files.push({name:'xl/workbook.xml',data:te('<?xml version="1.0" encoding="UTF-8" standalone="yes"?><workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets>'+sheets.map((s,i)=>`<sheet name="${xesc(sname(s.name))}" sheetId="${i+1}" r:id="rId${i+1}"/>`).join('')+'</sheets></workbook>')});
+ files.push({name:'xl/_rels/workbook.xml.rels',data:te('<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'+sheets.map((s,i)=>`<Relationship Id="rId${i+1}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet${i+1}.xml"/>`).join('')+'</Relationships>')});
+ sheets.forEach((s,i)=>files.push({name:`xl/worksheets/sheet${i+1}.xml`,data:te(sheetXml(s.aoa))}));
+ return zipStore(files);}
+function exportXlsx(){const C=compute();const s=[];
+ s.push({name:'Дашборд',aoa:[['Показатель','Значение'],['Цель',ST.params.goal||''],['Текущий спринт',C.cur],['Ср. velocity',C.avgVel],['Health-index',C.health],['TTM средний',C.ttmAvg],['Открыто багов',C.bugsOpen],['DRE',C.dre]]});
+ s.push({name:'Дорожная карта',aoa:[['Спринт','Начало','Конец','Раб.дни','Ёмкость','План','Velocity','% вып','Статус']].concat(C.sp.map(x=>['С'+x.s,fmtd(x.a),fmtd(x.b),x.wd,x.cap,x.plan,x.vel==null?'':x.vel,x.pct==null?'':x.pct,x.status]))});
+ s.push({name:'Бэклог',aoa:[['ID','Задача','Исполнитель','Роль','Тип','Оценка','Статус','Спринт','Зависит','В работу','Готово']].concat((ST.tasks||[]).map(t=>[t.id,t.title,t.assignee,t.role,t.type,num(t.est),t.status,num(t.sprint),t.dep,t.started,t.done]))});
+ s.push({name:'Команда',aoa:[['Участник','Роль','Доступность','Отсутствия']].concat((ST.team||[]).map(m=>[m.name,m.role,num(m.avail),num(m.absent)]))});
+ s.push({name:'Релизы',aoa:[['ID','Релиз','Спр.от','Спр.до','Статус']].concat((ST.releases||[]).map(r=>[r.id,r.name,num(r.sfrom),num(r.sto),r.status]))});
+ s.push({name:'Вехи',aoa:[['ID','Веха','Спринт','Статус','Релиз']].concat((ST.milestones||[]).map(v=>[v.id,v.name,num(v.sprint),v.status,v.rel]))});
+ s.push({name:'Техдолг',aoa:[['ID','Описание','Область','Тип','Влияние','Оценка','Статус','Создан','Погашен']].concat((ST.techDebt||[]).map(t=>[t.id,t.desc,t.area,t.type,t.impact,num(t.est),t.status,num(t.created),t.paid==null?'':num(t.paid)]))});
+ s.push({name:'OKR',aoa:[['Квартал','Objective','Key Result','Цель','Текущее','Прогресс']].concat((ST.okr||[]).map(o=>[o.q,o.obj,o.kr,num(o.target),num(o.cur),num(o.target)?num(o.cur)/num(o.target):0]))});
+ s.push({name:'Бюджет',aoa:[['Спринт','Ёмкость','Стоимость','Накопл.']].concat(C.sp.map(x=>['С'+x.s,x.cap,x.cost,x.cum]))});
+ s.push({name:'Риски',aoa:[['Риск','Вероятн','Влияние','Балл','Митигация','Владелец','Статус']].concat((ST.risks||[]).map(r=>[r.name,num(r.p),num(r.i),num(r.p)*num(r.i),r.mit,r.owner,r.status]))});
+ s.push({name:'Баги',aoa:[['ID','Описание','Задача','Спринт','Серьёзность','Статус','Причина']].concat((ST.bugs||[]).map(b=>[b.id,b.desc,b.task,num(b.sprint),b.sev,b.status,b.cause]))});
+ const bin=buildXlsx(s);const blob=new Blob([bin],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='Планирование_спринта.xlsx';document.body.appendChild(a);a.click();a.remove();toast('Excel экспортирован');}
+
 /* ---------- app plumbing ---------- */
 let CURV='dash';
 function commit(){save();views();activate(CURV);toast('Сохранено');}
@@ -1065,6 +1188,7 @@ function recomputeSoft(){/* light: refresh dashboard only, keep edit focus */ re
 function activate(id){CURV=id;document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('active',b.dataset.v===id));
  document.querySelectorAll('.view').forEach(s=>s.classList.toggle('active',s.id==='v_'+id));window.scrollTo(0,0);}
 document.getElementById('tabs').addEventListener('click',e=>{if(e.target.dataset.v){activate(e.target.dataset.v);}});
+document.getElementById('xls').onclick=exportXlsx;
 document.getElementById('exp').onclick=()=>{const b=new Blob([JSON.stringify(ST,null,1)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='planirovanie_data.json';a.click();toast('Экспортировано');};
 document.getElementById('imp').onclick=()=>document.getElementById('file').click();
 document.getElementById('file').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{ST=JSON.parse(r.result);save();views();activate(CURV);toast('Импортировано');}catch(err){toast('Ошибка файла');}};r.readAsText(f);};
