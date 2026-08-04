@@ -1,0 +1,1074 @@
+<title>Планирование спринтов — приложение</title>
+<style>
+:root{--bg:#EEF2F7;--panel:#FFF;--panel2:#F7F9FC;--ink:#16202E;--muted:#5A6B82;--line:#DCE3EC;
+--accent:#2D5BE3;--accent-soft:#E4EBFB;--good:#1F9D6B;--warn:#C98A00;--crit:#D24545;
+--good-bg:#E4F5EC;--warn-bg:#FBF1DA;--crit-bg:#FBE4E4;--shadow:0 1px 2px rgba(20,32,48,.06),0 8px 24px rgba(20,32,48,.06)}
+@media(prefers-color-scheme:dark){:root{--bg:#0E141C;--panel:#172231;--panel2:#141E2B;--ink:#E6ECF5;--muted:#93A2B8;--line:#263547;
+--accent:#5B84F0;--accent-soft:#1E2C44;--good:#35BB86;--warn:#E0A93B;--crit:#E9635F;--good-bg:#123024;--warn-bg:#332811;--crit-bg:#331C1C;--shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px rgba(0,0,0,.35)}}
+:root[data-theme="light"]{--bg:#EEF2F7;--panel:#FFF;--panel2:#F7F9FC;--ink:#16202E;--muted:#5A6B82;--line:#DCE3EC;--accent:#2D5BE3;--accent-soft:#E4EBFB;--good:#1F9D6B;--warn:#C98A00;--crit:#D24545;--good-bg:#E4F5EC;--warn-bg:#FBF1DA;--crit-bg:#FBE4E4}
+:root[data-theme="dark"]{--bg:#0E141C;--panel:#172231;--panel2:#141E2B;--ink:#E6ECF5;--muted:#93A2B8;--line:#263547;--accent:#5B84F0;--accent-soft:#1E2C44;--good:#35BB86;--warn:#E0A93B;--crit:#E9635F;--good-bg:#123024;--warn-bg:#332811;--crit-bg:#331C1C}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;font-size:14.5px;line-height:1.5}
+.tnum{font-variant-numeric:tabular-nums}
+header.top{position:sticky;top:0;z-index:30;background:color-mix(in srgb,var(--bg) 90%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.top .inner{display:flex;align-items:center;gap:14px;height:56px;padding:0 18px}
+.brand{font-weight:700;font-size:16px;display:flex;align-items:center;gap:9px;white-space:nowrap}
+.brand .dot{width:11px;height:11px;border-radius:3px;background:var(--accent);box-shadow:0 0 0 4px var(--accent-soft)}
+.tabs{display:flex;gap:2px;overflow-x:auto;flex:1}
+.tabs button{background:none;border:none;color:var(--muted);padding:8px 11px;border-radius:8px;font-size:13.5px;cursor:pointer;white-space:nowrap;font-family:inherit}
+.tabs button:hover{color:var(--ink);background:var(--panel)}
+.tabs button.active{color:var(--accent);background:var(--accent-soft);font-weight:600}
+.tools{display:flex;gap:6px}
+.btn{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:8px;padding:7px 11px;cursor:pointer;font-size:13px;font-family:inherit}
+.btn:hover{border-color:var(--accent);color:var(--accent)}
+.btn.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+.btn.primary:hover{opacity:.92;color:#fff}
+.btn.danger:hover{border-color:var(--crit);color:var(--crit)}
+main{max-width:1240px;margin:0 auto;padding:20px 18px 60px}
+.view{display:none}.view.active{display:block}
+h1{font-size:23px;margin:4px 0 4px;letter-spacing:-.01em}
+.lede{color:var(--muted);margin:0 0 18px;font-size:13.5px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;box-shadow:var(--shadow)}
+.grid{display:grid;gap:14px}
+.kpis{grid-template-columns:repeat(auto-fit,minmax(172px,1fr))}
+.kpi{position:relative;overflow:hidden}
+.kpi .stripe{position:absolute;left:0;top:0;bottom:0;width:4px}
+.s-good{background:var(--good)}.s-warn{background:var(--warn)}.s-crit{background:var(--crit)}.s-neut{background:var(--accent)}
+.kpi .k-label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.kpi .k-val{font-size:27px;font-weight:700;margin-top:5px;letter-spacing:-.02em}
+.kpi .k-val small{font-size:14px;font-weight:600;color:var(--muted)}
+.kpi .k-note{font-size:12px;color:var(--muted);margin-top:3px}
+.cols{display:grid;gap:14px;grid-template-columns:1fr}
+@media(min-width:880px){.cols.two{grid-template-columns:1fr 1fr}}
+.ctitle{font-size:13px;font-weight:600;color:var(--muted);margin:0 0 10px;text-transform:uppercase;letter-spacing:.04em}
+.legend{display:flex;gap:14px;flex-wrap:wrap;margin-top:8px;font-size:12px;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:6px}.legend i{width:11px;height:11px;border-radius:3px}
+svg{width:100%;height:auto;display:block}
+.tbar{display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap}
+.tbar .sp{flex:1}
+.twrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--panel)}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--line);white-space:nowrap}
+th{font-size:11.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);font-weight:600;background:var(--panel2);position:sticky;top:0}
+tr:last-child td{border-bottom:none}
+td input,td select{width:100%;min-width:70px;border:1px solid transparent;background:transparent;color:var(--ink);border-radius:6px;padding:4px 6px;font-family:inherit;font-size:13.5px}
+td input:hover,td select:hover{border-color:var(--line)}
+td input:focus,td select:focus{border-color:var(--accent);outline:none;background:var(--panel2)}
+td.num input{text-align:right;font-variant-numeric:tabular-nums}
+td.wide input{min-width:220px}
+.rowdel{border:none;background:none;color:var(--muted);cursor:pointer;font-size:15px;padding:2px 6px;border-radius:6px}
+.rowdel:hover{color:var(--crit);background:var(--crit-bg)}
+.pill{display:inline-block;font-size:11px;font-weight:600;padding:2px 8px;border-radius:999px}
+.p-good{color:var(--good);background:var(--good-bg)}.p-warn{color:var(--warn);background:var(--warn-bg)}.p-crit{color:var(--crit);background:var(--crit-bg)}.p-neut{color:var(--accent);background:var(--accent-soft)}
+.matrix{border-collapse:separate;border-spacing:3px;width:auto}
+.matrix td{border:none;border-radius:6px;text-align:center;font-weight:700;width:42px;height:34px;color:#20130f}
+.matrix th{text-align:center;color:var(--muted);background:none;position:static}
+.mx-g{background:#C6EFCE}.mx-y{background:#FFEB9C}.mx-r{background:#FFC7CE}
+.param-grid{display:grid;grid-template-columns:200px 1fr;gap:10px 16px;align-items:center;max-width:640px}
+.param-grid label{color:var(--muted);font-size:13.5px}
+.param-grid input,.param-grid select,.param-grid textarea{border:1px solid var(--line);background:var(--panel2);color:var(--ink);border-radius:8px;padding:8px 10px;font-family:inherit;font-size:14px;width:100%}
+.dodlist{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+.dodlist label{display:flex;gap:9px;align-items:center;color:var(--ink);font-size:14px}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:9px 16px;border-radius:10px;font-size:13px;opacity:0;transition:opacity .25s;pointer-events:none;z-index:50}
+.toast.show{opacity:.95}
+button:focus-visible,input:focus-visible,select:focus-visible,.tabs button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+</style>
+<header class="top"><div class="inner">
+ <div class="brand"><span class="dot"></span>Планирование&nbsp;спринтов</div>
+ <div class="tabs" id="tabs"><button data-v="dash">Дашборд</button><button data-v="backlog">Бэклог</button><button data-v="team">Команда</button><button data-v="sprints">Спринты</button><button data-v="releases">Релизы</button><button data-v="milestones">Вехи</button><button data-v="debt">Техдолг</button><button data-v="risks">Риски</button><button data-v="bugs">Баги</button><button data-v="params">Параметры</button></div>
+ <div class="tools">
+  <button class="btn" id="exp">Экспорт</button>
+  <button class="btn" id="imp">Импорт</button>
+  <button class="btn danger" id="rst">Сброс</button>
+  <button class="btn" id="themebtn" aria-label="Тема">◐</button>
+ </div>
+</div></header>
+<main><section class="view" id="v_dash"></section><section class="view" id="v_backlog"></section><section class="view" id="v_team"></section><section class="view" id="v_sprints"></section><section class="view" id="v_releases"></section><section class="view" id="v_milestones"></section><section class="view" id="v_debt"></section><section class="view" id="v_risks"></section><section class="view" id="v_bugs"></section><section class="view" id="v_params"></section></main>
+<div class="toast" id="toast"></div>
+<input type="file" id="file" accept=".json" style="display:none">
+<script>
+const SEED={
+ "params": {
+  "name": "Sprint 24",
+  "start": "2026-08-03",
+  "sprintDays": 10,
+  "focus": 0.8,
+  "today": "2026-09-10",
+  "goal": "Запустить оформление заказа с онлайн-оплатой",
+  "sprints": 11
+ },
+ "dod": [
+  {
+   "crit": "Код прошёл ревью",
+   "done": false
+  },
+  {
+   "crit": "Юнит/интеграционные тесты зелёные",
+   "done": false
+  },
+  {
+   "crit": "Документация обновлена",
+   "done": false
+  },
+  {
+   "crit": "Развёрнуто на stage",
+   "done": false
+  },
+  {
+   "crit": "Принято владельцем продукта",
+   "done": false
+  },
+  {
+   "crit": "Нет открытых блокеров",
+   "done": false
+  }
+ ],
+ "team": [
+  {
+   "name": "Иванов А.",
+   "role": "Backend",
+   "avail": 1,
+   "absent": 0
+  },
+  {
+   "name": "Петрова М.",
+   "role": "Frontend",
+   "avail": 1,
+   "absent": 0
+  },
+  {
+   "name": "Сидоров К.",
+   "role": "QA",
+   "avail": 0.8,
+   "absent": 0
+  },
+  {
+   "name": "Кузнецов Д.",
+   "role": "Backend",
+   "avail": 1,
+   "absent": 0
+  },
+  {
+   "name": "Орлова Е.",
+   "role": "Analyst",
+   "avail": 0.5,
+   "absent": 0
+  },
+  {
+   "name": "Смирнов П.",
+   "role": "Backend",
+   "avail": 1,
+   "absent": 0
+  },
+  {
+   "name": "Волкова Н.",
+   "role": "Frontend",
+   "avail": 1,
+   "absent": 0
+  },
+  {
+   "name": "Морозов И.",
+   "role": "QA",
+   "avail": 1,
+   "absent": 0
+  },
+  {
+   "name": "Новиков А.",
+   "role": "DevOps",
+   "avail": 0.8,
+   "absent": 0
+  },
+  {
+   "name": "Фёдорова О.",
+   "role": "Analyst",
+   "avail": 1,
+   "absent": 0
+  },
+  {
+   "name": "Козлов В.",
+   "role": "Backend",
+   "avail": 1,
+   "absent": 0
+  },
+  {
+   "name": "Лебедева Т.",
+   "role": "Designer",
+   "avail": 0.8,
+   "absent": 0
+  },
+  {
+   "name": "Соколов Р.",
+   "role": "Frontend",
+   "avail": 1,
+   "absent": 0
+  }
+ ],
+ "tasks": [
+  {
+   "id": "T-01",
+   "title": "Проектирование API заказов",
+   "assignee": "Иванов А.",
+   "role": "=IFERROR(INDEX(Капасити!$C$5:$C$147,MATCH($C5,Капасити!$B$5:$B$147,0)),\"\")",
+   "type": "История",
+   "est": 5,
+   "status": "Готово",
+   "sprint": 1,
+   "dep": "=IF($A5=\"\",\"\",Бэклог!E5)",
+   "started": "2026-08-03",
+   "done": "2026-08-06",
+   "added": false
+  },
+  {
+   "id": "T-02",
+   "title": "Экран корзины (вёрстка)",
+   "assignee": "Петрова М.",
+   "role": "=IFERROR(INDEX(Капасити!$C$5:$C$147,MATCH($C6,Капасити!$B$5:$B$147,0)),\"\")",
+   "type": "Задача",
+   "est": 8,
+   "status": "Готово",
+   "sprint": 1,
+   "dep": "=IF($A6=\"\",\"\",Бэклог!E6)",
+   "started": "2026-08-04",
+   "done": "2026-08-12",
+   "added": false
+  },
+  {
+   "id": "T-09",
+   "title": "Настройка CI/CD",
+   "assignee": "Новиков А.",
+   "role": "=IFERROR(INDEX(Капасити!$C$5:$C$147,MATCH($C7,Капасити!$B$5:$B$147,0)),\"\")",
+   "type": "Задача",
+   "est": 4,
+   "status": "Готово",
+   "sprint": 1,
+   "dep": "=IF($A7=\"\",\"\",Бэклог!E7)",
+   "started": "2026-08-03",
+   "done": "2026-08-05",
+   "added": false
+  },
+  {
+   "id": "T-10",
+   "title": "Модель данных заказа",
+   "assignee": "Кузнецов Д.",
+   "role": "=IFERROR(INDEX(Капасити!$C$5:$C$147,MATCH($C8,Капасити!$B$5:$B$147,0)),\"\")",
+   "type": "История",
+   "est": 5,
+   "status": "В работе",
+   "sprint": 1,
+   "dep": "=IF($A8=\"\",\"\",Бэклог!E8)",
+   "started": "2026-08-05",
+   "done": null,
+   "added": false
+  },
+  {
+   "id": "T-03",
+   "title": "Интеграция платежей",
+   "assignee": "Иванов А.",
+   "role": "=IFERROR(INDEX(Капасити!$C$5:$C$147,MATCH($C9,Капасити!$B$5:$B$147,0)),\"\")",
+   "type": "Задача",
+   "est": 8,
+   "status": "Готово",
+   "sprint": 2,
+   "dep": "=IF($A9=\"\",\"\",Бэклог!E9)",
+   "started": "2026-08-17",
+   "done": "2026-08-24",
+   "added": false
+  },
+  {
+   "id": "T-04",
+   "title": "Тест-кейсы оформления",
+   "assignee": "Сидоров К.",
+   "role": "=IFERROR(INDEX(Капасити!$C$5:$C$147,MATCH($C10,Капасити!$B$5:$B$147,0)),\"\")",
+   "type": "Тех.долг",
+   "est": 4,
+   "status": "Готово",
+   "sprint": 2,
+   "dep": "=IF($A10=\"\",\"\",Бэклог!E10)",
+   "started": "2026-08-18",
+   "done": "2026-08-20",
+   "added": false
+  },
+  {
+   "id": "T-08",
+   "title": "Уведомления по e-mail",
+   "assignee": "Смирнов П.",
+   "role": "=IFERROR(INDEX(Капасити!$C$5:$C$147,MATCH($C11,Капасити!$B$5:$B$147,0)),\"\")",
+   "type": "Задача",
+   "est": 4,
+   "status": "Готово",
+   "sprint": 2,
+   "dep": "=IF($A11=\"\",\"\",Бэклог!E11)",
+   "started": "2026-08-19",
+   "done": "2026-08-26",
+   "added": false
+  },
+  {
+   "id": "T-11",
+   "title": "API промокодов",
+   "assignee": "Козлов В.",
+   "role": "=IFERROR(INDEX(Капасити!$C$5:$C$147,MATCH($C12,Капасити!$B$5:$B$147,0)),\"\")",
+   "type": "История",
+   "est": 5,
+   "status": "Готово",
+   "sprint": 2,
+   "dep": "=IF($A12=\"\",\"\",Бэклог!E12)",
+   "started": "2026-08-17",
+   "done": "2026-08-25",
+   "added": false
+  },
+  {
+   "id": "T-12",
+   "title": "Логирование и метрики",
+   "assignee": "Новиков А.",
+   "role": "=IFERROR(INDEX(Капасити!$C$5:$C$147,MATCH($C13,Капасити!$B$5:$B$147,0)),\"\")",
+   "type": "Задача",
+   "est": 3,
+   "status": "To Do",
+   "sprint": 2,
+   "dep": "=IF($A13=\"\",\"\",Бэклог!E13)",
+   "started": null,
+   "done": null,
+   "added": false
+  },
+  {
+   "id": "T-05",
+   "title": "Рефакторинг авторизации",
+   "assignee": "Кузнецов Д.",
+   "role": "=IFERROR(INDEX(Капасити!$C$5:$C$147,MATCH($C14,Капасити!$B$5:$B$147,0)),\"\")",
+   "type": "Задача",
+   "est": 3,
+   "status": "В работе",
+   "sprint": 3,
+   "dep": "=IF($A14=\"\",\"\",Бэклог!E14)",
+   "started": "2026-09-02",
+   "done": null,
+   "added": false
+  },
+  {
+   "id": "T-06",
+   "title": "Аналитика воронки",
+   "assignee": "Орлова Е.",
+   "role": "=IFERROR(INDEX(Капасити!$C$5:$C$147,MATCH($C15,Капасити!$B$5:$B$147,0)),\"\")",
+   "type": "История",
+   "est": 3,
+   "status": "To Do",
+   "sprint": 3,
+   "dep": "=IF($A15=\"\",\"\",Бэклог!E15)",
+   "started": null,
+   "done": null,
+   "added": true
+  },
+  {
+   "id": "T-07",
+   "title": "Регресс-тестирование релиза",
+   "assignee": "Сидоров К.",
+   "role": "=IFERROR(INDEX(Капасити!$C$5:$C$147,MATCH($C16,Капасити!$B$5:$B$147,0)),\"\")",
+   "type": "Задача",
+   "est": 5,
+   "status": "To Do",
+   "sprint": 3,
+   "dep": "=IF($A16=\"\",\"\",Бэклог!E16)",
+   "started": null,
+   "done": null,
+   "added": false
+  },
+  {
+   "id": "T-13",
+   "title": "Экран оплаты",
+   "assignee": "Волкова Н.",
+   "role": "=IFERROR(INDEX(Капасити!$C$5:$C$147,MATCH($C17,Капасити!$B$5:$B$147,0)),\"\")",
+   "type": "Задача",
+   "est": 8,
+   "status": "В работе",
+   "sprint": 3,
+   "dep": "=IF($A17=\"\",\"\",Бэклог!E17)",
+   "started": "2026-09-01",
+   "done": null,
+   "added": false
+  },
+  {
+   "id": "T-14",
+   "title": "Вебхуки платежей",
+   "assignee": "Иванов А.",
+   "role": "=IFERROR(INDEX(Капасити!$C$5:$C$147,MATCH($C18,Капасити!$B$5:$B$147,0)),\"\")",
+   "type": "История",
+   "est": 5,
+   "status": "To Do",
+   "sprint": 3,
+   "dep": "=IF($A18=\"\",\"\",Бэклог!E18)",
+   "started": null,
+   "done": null,
+   "added": true
+  },
+  {
+   "id": "T-15",
+   "title": "История заказов",
+   "assignee": "Соколов Р.",
+   "role": "=IFERROR(INDEX(Капасити!$C$5:$C$147,MATCH($C19,Капасити!$B$5:$B$147,0)),\"\")",
+   "type": "Задача",
+   "est": 5,
+   "status": "To Do",
+   "sprint": 3,
+   "dep": "=IF($A19=\"\",\"\",Бэклог!E19)",
+   "started": null,
+   "done": null,
+   "added": false
+  },
+  {
+   "id": "T-16",
+   "title": "Личный кабинет",
+   "assignee": "Волкова Н.",
+   "role": "=IFERROR(INDEX(Капасити!$C$5:$C$147,MATCH($C20,Капасити!$B$5:$B$147,0)),\"\")",
+   "type": "Задача",
+   "est": 8,
+   "status": "To Do",
+   "sprint": 4,
+   "dep": "=IF($A20=\"\",\"\",Бэклог!E20)",
+   "started": null,
+   "done": null,
+   "added": false
+  },
+  {
+   "id": "T-17",
+   "title": "Фильтры каталога",
+   "assignee": "Морозов И.",
+   "role": "=IFERROR(INDEX(Капасити!$C$5:$C$147,MATCH($C21,Капасити!$B$5:$B$147,0)),\"\")",
+   "type": "История",
+   "est": 6,
+   "status": "To Do",
+   "sprint": 4,
+   "dep": "=IF($A21=\"\",\"\",Бэклог!E21)",
+   "started": null,
+   "done": null,
+   "added": false
+  },
+  {
+   "id": "T-18",
+   "title": "Отзывы и рейтинги",
+   "assignee": "Лебедева Т.",
+   "role": "=IFERROR(INDEX(Капасити!$C$5:$C$147,MATCH($C22,Капасити!$B$5:$B$147,0)),\"\")",
+   "type": "Тех.долг",
+   "est": 5,
+   "status": "To Do",
+   "sprint": 4,
+   "dep": "=IF($A22=\"\",\"\",Бэклог!E22)",
+   "started": null,
+   "done": null,
+   "added": false
+  },
+  {
+   "id": "T-19",
+   "title": "Рекомендации",
+   "assignee": "Фёдорова О.",
+   "role": "=IFERROR(INDEX(Капасити!$C$5:$C$147,MATCH($C23,Капасити!$B$5:$B$147,0)),\"\")",
+   "type": "История",
+   "est": 8,
+   "status": "To Do",
+   "sprint": 5,
+   "dep": "=IF($A23=\"\",\"\",Бэклог!E23)",
+   "started": null,
+   "done": null,
+   "added": false
+  },
+  {
+   "id": "T-20",
+   "title": "A/B тесты чекаута",
+   "assignee": "Морозов И.",
+   "role": "=IFERROR(INDEX(Капасити!$C$5:$C$147,MATCH($C24,Капасити!$B$5:$B$147,0)),\"\")",
+   "type": "Задача",
+   "est": 5,
+   "status": "To Do",
+   "sprint": 5,
+   "dep": "=IF($A24=\"\",\"\",Бэклог!E24)",
+   "started": null,
+   "done": null,
+   "added": false
+  }
+ ],
+ "releases": [
+  {
+   "id": "R-1",
+   "name": "Внутренний релиз (MVP)",
+   "sfrom": 1,
+   "sto": 2,
+   "status": "Готово"
+  },
+  {
+   "id": "R-2",
+   "name": "Бета для площадок",
+   "sfrom": 3,
+   "sto": 4,
+   "status": "В работе"
+  },
+  {
+   "id": "R-3",
+   "name": "Публичный релиз 1.0",
+   "sfrom": 5,
+   "sto": 6,
+   "status": "Планируется"
+  },
+  {
+   "id": "R-4",
+   "name": "Релиз 1.1 — уведомления",
+   "sfrom": 7,
+   "sto": 8,
+   "status": "Планируется"
+  },
+  {
+   "id": "R-5",
+   "name": "GA / Стабилизация",
+   "sfrom": 9,
+   "sto": 10,
+   "status": "Планируется"
+  }
+ ],
+ "milestones": [
+  {
+   "id": "V-1",
+   "name": "Старт проекта",
+   "sprint": 1,
+   "status": "Готово",
+   "rel": "R-1"
+  },
+  {
+   "id": "V-2",
+   "name": "Дизайн утверждён",
+   "sprint": 2,
+   "status": "Готово",
+   "rel": "R-1"
+  },
+  {
+   "id": "V-3",
+   "name": "Feature freeze",
+   "sprint": 5,
+   "status": "Планируется",
+   "rel": "R-3"
+  },
+  {
+   "id": "V-4",
+   "name": "Code freeze",
+   "sprint": 6,
+   "status": "Планируется",
+   "rel": "R-3"
+  },
+  {
+   "id": "V-5",
+   "name": "Go-live / запуск",
+   "sprint": 7,
+   "status": "Планируется",
+   "rel": "R-4"
+  }
+ ],
+ "techDebt": [
+  {
+   "id": "TD-1",
+   "desc": "Рефакторинг модуля авторизации",
+   "area": "Auth",
+   "type": "Код",
+   "impact": "High",
+   "est": 3,
+   "prio": "High",
+   "sprint": 4,
+   "status": "Закрыт",
+   "created": 1,
+   "paid": 3
+  },
+  {
+   "id": "TD-2",
+   "desc": "Автотесты оформления заказа",
+   "area": "Checkout",
+   "type": "Тесты",
+   "impact": "High",
+   "est": 2,
+   "prio": "High",
+   "sprint": 3,
+   "status": "Закрыт",
+   "created": 2,
+   "paid": 4
+  },
+  {
+   "id": "TD-3",
+   "desc": "Убрать дубли в API заказов",
+   "area": "API",
+   "type": "Архитектура",
+   "impact": "Medium",
+   "est": 2,
+   "prio": "Medium",
+   "sprint": 5,
+   "status": "Открыт",
+   "created": 3,
+   "paid": null
+  },
+  {
+   "id": "TD-4",
+   "desc": "Обновить документацию API",
+   "area": "Docs",
+   "type": "Документация",
+   "impact": "Low",
+   "est": 1,
+   "prio": "Low",
+   "sprint": 6,
+   "status": "Открыт",
+   "created": 4,
+   "paid": null
+  },
+  {
+   "id": "TD-5",
+   "desc": "Мониторинг и алерты платежей",
+   "area": "Payments",
+   "type": "Инфраструктура",
+   "impact": "Medium",
+   "est": 2,
+   "prio": "Medium",
+   "sprint": 5,
+   "status": "В работе",
+   "created": 3,
+   "paid": null
+  },
+  {
+   "id": "TD-6",
+   "desc": "Оптимизация запросов БД",
+   "area": "DB",
+   "type": "Код",
+   "impact": "Medium",
+   "est": 3,
+   "prio": "Medium",
+   "sprint": 7,
+   "status": "Открыт",
+   "created": 5,
+   "paid": null
+  }
+ ],
+ "risks": [
+  {
+   "name": "Зависимость от внешнего API оплаты",
+   "p": 4,
+   "i": 5,
+   "mit": "Мок-сервис + ранняя интеграция",
+   "owner": "Иванов А.",
+   "status": "Открыт"
+  },
+  {
+   "name": "Отпуска в декабре (Спринт 11)",
+   "p": 5,
+   "i": 3,
+   "mit": "Сокращённый объём, буфер",
+   "owner": "Орлова Е.",
+   "status": "Открыт"
+  },
+  {
+   "name": "Недооценка интеграции",
+   "p": 3,
+   "i": 4,
+   "mit": "Спайк на оценку",
+   "owner": "Кузнецов Д.",
+   "status": "Открыт"
+  },
+  {
+   "name": "Текучесть в QA",
+   "p": 2,
+   "i": 4,
+   "mit": "Кросс-ревью, документация",
+   "owner": "Сидоров К.",
+   "status": "Наблюдение"
+  }
+ ],
+ "bugs": [
+  {
+   "id": "B-01",
+   "desc": "Ошибка валидации email",
+   "task": "T-01",
+   "sprint": 1,
+   "sev": "Major",
+   "status": "Закрыт",
+   "time": 0.5,
+   "reopened": false,
+   "cause": "Интеграция"
+  },
+  {
+   "id": "B-02",
+   "desc": "Падение при пустой корзине",
+   "task": "T-02",
+   "sprint": 1,
+   "sev": "Critical",
+   "status": "Закрыт",
+   "time": 0.5,
+   "reopened": false,
+   "cause": "Код"
+  },
+  {
+   "id": "B-03",
+   "desc": "Неверный расчёт скидки",
+   "task": "T-01",
+   "sprint": 1,
+   "sev": "Major",
+   "status": "Закрыт",
+   "time": 0.5,
+   "reopened": false,
+   "cause": "Требования"
+  },
+  {
+   "id": "B-04",
+   "desc": "Съезжает вёрстка на мобильном",
+   "task": "T-02",
+   "sprint": 1,
+   "sev": "Minor",
+   "status": "Закрыт",
+   "time": 0.3,
+   "reopened": false,
+   "cause": "Тестирование"
+  },
+  {
+   "id": "B-05",
+   "desc": "Таймаут платежа",
+   "task": "T-03",
+   "sprint": 1,
+   "sev": "Major",
+   "status": "Открыт",
+   "time": 0.2,
+   "reopened": false,
+   "cause": "Интеграция"
+  },
+  {
+   "id": "B-06",
+   "desc": "Дубли заказов",
+   "task": "T-03",
+   "sprint": 2,
+   "sev": "Critical",
+   "status": "Закрыт",
+   "time": 0.4,
+   "reopened": true,
+   "cause": "Код"
+  },
+  {
+   "id": "B-07",
+   "desc": "Не приходит письмо-подтверждение",
+   "task": "T-08",
+   "sprint": 2,
+   "sev": "Major",
+   "status": "Закрыт",
+   "time": 0.3,
+   "reopened": false,
+   "cause": "Требования"
+  },
+  {
+   "id": "B-08",
+   "desc": "Ошибка 500 при оплате",
+   "task": "T-03",
+   "sprint": 2,
+   "sev": "Critical",
+   "status": "Закрыт",
+   "time": 0.3,
+   "reopened": false,
+   "cause": "Интеграция"
+  },
+  {
+   "id": "B-09",
+   "desc": "Неверный НДС в чеке",
+   "task": "T-06",
+   "sprint": 2,
+   "sev": "Major",
+   "status": "Закрыт",
+   "time": 0.2,
+   "reopened": false,
+   "cause": "Данные"
+  },
+  {
+   "id": "B-10",
+   "desc": "Кнопка оформления неактивна",
+   "task": "T-02",
+   "sprint": 2,
+   "sev": "Minor",
+   "status": "Закрыт",
+   "time": 0.1,
+   "reopened": false,
+   "cause": "Код"
+  },
+  {
+   "id": "B-11",
+   "desc": "Переполнение логов",
+   "task": "T-05",
+   "sprint": 2,
+   "sev": "Minor",
+   "status": "Закрыт",
+   "time": 0.2,
+   "reopened": false,
+   "cause": "Требования"
+  },
+  {
+   "id": "B-12",
+   "desc": "Медленный поиск заказов",
+   "task": "T-04",
+   "sprint": 3,
+   "sev": "Major",
+   "status": "Открыт",
+   "time": 0,
+   "reopened": false,
+   "cause": "Тестирование"
+  },
+  {
+   "id": "B-13",
+   "desc": "Падает экспорт отчёта",
+   "task": "T-07",
+   "sprint": 3,
+   "sev": "Minor",
+   "status": "Открыт",
+   "time": 0,
+   "reopened": false,
+   "cause": "Интеграция"
+  }
+ ],
+ "calendar": [
+  "2026-11-04",
+  "2027-01-01",
+  "2027-01-02"
+ ],
+ "budget": {
+  "rate": 8000,
+  "total": 8000000
+ },
+ "ttmTarget": 15
+};
+const NS="http://www.w3.org/2000/svg";
+let ST=load();
+
+function load(){try{const s=localStorage.getItem('sprintapp');if(s)return JSON.parse(s);}catch(e){}return JSON.parse(JSON.stringify(SEED));}
+function save(){localStorage.setItem('sprintapp',JSON.stringify(ST));}
+function toast(t){const e=document.getElementById('toast');e.textContent=t;e.classList.add('show');setTimeout(()=>e.classList.remove('show'),1600);}
+function col(n){return getComputedStyle(document.documentElement).getPropertyValue(n).trim();}
+function el(t,a){const e=document.createElementNS(NS,t);for(const k in(a||{}))e.setAttribute(k,a[k]);return e;}
+function fmt(n,dp){if(n==null||n===""||isNaN(n))return"";const f=10**(dp||0);return(Math.round(n*f)/f).toLocaleString('ru-RU');}
+function pctf(n){return n==null?"—":Math.round(n*100)+"%";}
+
+/* ---------- date + compute engine ---------- */
+const MS=86400000;
+function pd(s){return s?new Date(s+'T00:00:00Z'):null;}
+function iso(d){return d.toISOString().slice(0,10);}
+function addD(d,n){const x=new Date(d);x.setUTCDate(x.getUTCDate()+n);return x;}
+function fmtd(d){return d?('0'+d.getUTCDate()).slice(-2)+'.'+('0'+(d.getUTCMonth()+1)).slice(-2)+'.'+d.getUTCFullYear():'';}
+function netdays(a,b,hol){const set=new Set(hol||[]);let c=0,d=new Date(a);while(d<=b){const g=d.getUTCDay();if(g!==0&&g!==6&&!set.has(iso(d)))c++;d=addD(d,1);}return c;}
+function num(v){const n=parseFloat(v);return isNaN(n)?0:n;}
+
+function compute(){
+ const P=ST.params, start=pd(P.start)||pd('2026-08-03'), today=pd(P.today)||new Date(), N=P.sprints||11;
+ const focus=num(P.focus)||0.8, holidays=ST.calendar||[];
+ const sp=[];
+ for(let s=1;s<=N;s++){const a=addD(start,(s-1)*14),b=addD(start,(s-1)*14+11);
+  const wd=netdays(a,b,holidays);
+  const cap=(ST.team||[]).reduce((t,m)=>t+(wd-(num(m.absent)))*num(m.avail)*focus,0);
+  const plan=(ST.tasks||[]).filter(t=>+t.sprint===s).reduce((x,t)=>x+num(t.est),0);
+  let status= today>b?'Закрыт': today>=a?'Активный':'Планируется';
+  const vel= status==='Закрыт'? (ST.tasks||[]).filter(t=>+t.sprint===s&&t.status==='Готово').reduce((x,t)=>x+num(t.est),0):null;
+  sp.push({s,a,b,wd,cap:Math.round(cap*10)/10,plan,vel,status,pct:(plan&&vel!=null)?vel/plan:null});
+ }
+ const started=sp.filter(x=>today>=x.a).length; const cur=Math.max(1,Math.min(N,started));
+ const closed=sp.filter(x=>x.status==='Закрыт');
+ const vels=closed.map(x=>x.vel).filter(v=>v!=null&&v>0);
+ const avgVel=vels.length?vels.reduce((a,b)=>a+b,0)/vels.length:0;
+ const curSp=sp[cur-1]||sp[0];
+ const dod=ST.dod||[]; const dodPct=dod.length?dod.filter(d=>d.done).length/dod.length:0;
+ // releases content + date
+ function relDate(r){const e=sp[(+r.sto)-1];return e?e.b:null;}
+ // TTM
+ const ttm=[];(ST.tasks||[]).forEach(t=>{const r=(ST.releases||[]).find(r=>+r.sfrom<=+t.sprint&&+r.sto>=+t.sprint);
+   if(r&&t.started){const rd=relDate(r);if(rd){ttm.push({task:t.id,ttm:Math.round((rd-pd(t.started))/MS)});}else ttm.push({task:t.id,ttm:null});}else ttm.push({task:t.id,ttm:null});});
+ const ttmv=ttm.map(x=>x.ttm).filter(v=>v!=null); const ttmAvg=ttmv.length?ttmv.reduce((a,b)=>a+b,0)/ttmv.length:0;
+ // bugs per sprint
+ const bugsBy=[];for(let s=1;s<=N;s++){const bb=(ST.bugs||[]).filter(b=>+b.sprint===s);bugsBy.push({s,total:bb.length,closed:bb.filter(b=>b.status==='Закрыт').length});}
+ const bugsFound=(ST.bugs||[]).length, bugsClosed=(ST.bugs||[]).filter(b=>b.status==='Закрыт').length, bugsOpen=bugsFound-bugsClosed;
+ const dre=bugsFound?bugsClosed/bugsFound:0;
+ const qualNorm=1-Math.min(1,bugsOpen/5);
+ const avgPct=closed.length?closed.map(x=>x.pct||0).reduce((a,b)=>a+b,0)/closed.length:0;
+ const health=(Math.min(1,avgPct)+dodPct+qualNorm)/3;
+ const remain=sp.filter(x=>x.status!=='Закрыт').reduce((a,b)=>a+b.plan,0);
+ return {sp,cur,curSp,avgVel,closed:closed.length,dodPct,ttm,ttmAvg,bugsBy,bugsFound,bugsClosed,bugsOpen,dre,avgPct,health,remain,relDate,started};
+}
+
+/* ---------- charts (SVG) ---------- */
+function bars(box,cats,series,opt){opt=opt||{};const W=640,H=290,ml=42,mr=10,mt=10,mb=42;
+ const svg=el("svg",{viewBox:`0 0 ${W} ${H}`});let mx=0;series.forEach(s=>s.data.forEach(v=>{if(v>mx)mx=v}));const top=niceMax(mx||1),tk=4;
+ for(let i=0;i<=tk;i++){const y=mt+(H-mt-mb)*(1-i/tk),v=top*i/tk;svg.appendChild(el("line",{x1:ml,y1:y,x2:W-mr,y2:y,stroke:col("--line")}));
+  const tx=el("text",{x:ml-5,y:y+4,"text-anchor":"end","font-size":10.5,fill:col("--muted")});tx.textContent=opt.pct?Math.round(v*100)+"%":fmt(v,top<10?1:0);svg.appendChild(tx);}
+ const n=cats.length,gw=(W-ml-mr)/n,bwAll=gw*.64,bw=bwAll/series.length;
+ cats.forEach((c,i)=>{const gx=ml+gw*i;series.forEach((s,j)=>{const v=s.data[i]||0,h=(H-mt-mb)*(v/top),x=gx+(gw-bwAll)/2+bw*j,y=H-mb-h;
+   const r=el("rect",{x,y,width:Math.max(1,bw-2),height:Math.max(0,h),rx:3,fill:s.color});const t=el("title");t.textContent=c+": "+(opt.pct?pctf(v):fmt(v,1));r.appendChild(t);svg.appendChild(r);});
+  const tx=el("text",{x:gx+gw/2,y:H-mb+15,"text-anchor":"middle","font-size":10,fill:col("--muted")});tx.textContent=c;svg.appendChild(tx);});
+ box.innerHTML="";box.appendChild(svg);}
+function niceMax(m){const p=Math.pow(10,Math.floor(Math.log10(m)));const n=m/p;return (n<=1?1:n<=2?2:n<=5?5:10)*p;}
+function lines(box,cats,series,opt){opt=opt||{};const W=640,H=290,ml=42,mr=10,mt=10,mb=42;
+ const svg=el("svg",{viewBox:`0 0 ${W} ${H}`});let mx=0;series.forEach(s=>s.data.forEach(v=>{if(v!=null&&v>mx)mx=v}));if(opt.target>mx)mx=opt.target;const top=niceMax(mx||1),tk=4;
+ for(let i=0;i<=tk;i++){const y=mt+(H-mt-mb)*(1-i/tk),v=top*i/tk;svg.appendChild(el("line",{x1:ml,y1:y,x2:W-mr,y2:y,stroke:col("--line")}));
+  const tx=el("text",{x:ml-5,y:y+4,"text-anchor":"end","font-size":10.5,fill:col("--muted")});tx.textContent=fmt(v,top<10?1:0);svg.appendChild(tx);}
+ const n=cats.length,step=(W-ml-mr)/(n>1?n-1:1),X=i=>ml+step*i,Y=v=>H-mb-(H-mt-mb)*(v/top);
+ if(opt.target!=null){const y=Y(opt.target);svg.appendChild(el("line",{x1:ml,y1:y,x2:W-mr,y2:y,stroke:col("--crit"),"stroke-width":2,"stroke-dasharray":"6 5"}));}
+ series.forEach(s=>{let dp="",st=false;const pts=[];s.data.forEach((v,i)=>{if(v==null){st=false;return;}const x=X(i),y=Y(v);dp+=(st?" L":" M")+x+" "+y;st=true;pts.push([x,y,v,cats[i]]);});
+  const pa=el("path",{d:dp,fill:"none",stroke:s.color,"stroke-width":s.w||2.5,"stroke-linejoin":"round"});if(s.dash)pa.setAttribute("stroke-dasharray","6 5");svg.appendChild(pa);
+  if(!s.noPts)pts.forEach(p=>{const c=el("circle",{cx:p[0],cy:p[1],r:3.4,fill:s.color});const t=el("title");t.textContent=p[3]+": "+fmt(p[2],1);c.appendChild(t);svg.appendChild(c);});
+  if(s.trend){const xs=[],ys=[];s.data.forEach((v,i)=>{if(v!=null){xs.push(i);ys.push(v);}});if(xs.length>1){const nn=xs.length,sx=xs.reduce((a,b)=>a+b,0),sy=ys.reduce((a,b)=>a+b,0),sxy=xs.reduce((a,b,i)=>a+b*ys[i],0),sxx=xs.reduce((a,b)=>a+b*b,0),sl=(nn*sxy-sx*sy)/(nn*sxx-sx*sx),ic=(sy-sl*sx)/nn;svg.appendChild(el("line",{x1:X(xs[0]),y1:Y(ic+sl*xs[0]),x2:X(xs[nn-1]),y2:Y(ic+sl*xs[nn-1]),stroke:col("--muted"),"stroke-width":1.5,"stroke-dasharray":"3 3"}));}}});
+ cats.forEach((c,i)=>{if(n>14&&i%2)return;const tx=el("text",{x:X(i),y:H-mb+15,"text-anchor":"middle","font-size":10,fill:col("--muted")});tx.textContent=c;svg.appendChild(tx);});
+ box.innerHTML="";box.appendChild(svg);}
+
+/* ---------- editable table ---------- */
+function statusPill(s){const m={'Готово':'p-good','Закрыт':'p-good','Сделано':'p-good','В работе':'p-warn','To Do':'p-neut','Не начали':'p-neut','Открыт':'p-warn','Планируется':'p-neut','Задержка':'p-crit'};return `<span class="pill ${m[s]||'p-neut'}">${s||''}</span>`;}
+function editable(coll,cols,opts){opts=opts||{};const rows=ST[coll]||(ST[coll]=[]);
+ const wrap=document.createElement('div');
+ const bar=document.createElement('div');bar.className='tbar';
+ const add=document.createElement('button');add.className='btn primary';add.textContent='+ Добавить';
+ add.onclick=()=>{const nr={};cols.forEach(c=>nr[c.k]=c.def!==undefined?c.def:(c.type==='num'?0:''));if(opts.newId)nr[opts.newId]=genId(rows,cols[0].k,opts.prefix);rows.push(nr);commit();};
+ bar.appendChild(add);const sp=document.createElement('div');sp.className='sp';bar.appendChild(sp);
+ const cnt=document.createElement('span');cnt.style.color='var(--muted)';cnt.style.fontSize='13px';cnt.textContent=rows.length+' записей';bar.appendChild(cnt);
+ wrap.appendChild(bar);
+ const tw=document.createElement('div');tw.className='twrap';const tb=document.createElement('table');
+ let th='<tr>';cols.forEach(c=>th+=`<th class="${c.type==='num'?'num':''}">${c.label}</th>`);th+='<th></th></tr>';
+ let body='';rows.forEach((r,ri)=>{body+='<tr>';cols.forEach(c=>{body+=cell(coll,ri,c,r[c.k]);});
+  body+=`<td><button class="rowdel" data-c="${coll}" data-i="${ri}" title="Удалить">✕</button></td></tr>`;});
+ tb.innerHTML=th+body;tw.appendChild(tb);wrap.appendChild(tw);
+ tw.addEventListener('input',e=>{const t=e.target;if(t.dataset.k!=null){const ri=+t.dataset.i;const key=t.dataset.k;
+   rows[ri][key]=t.type==='number'?(t.value===''?'':num(t.value)):(t.tagName==='SELECT'?t.value:t.value);save();recomputeSoft();}});
+ tw.addEventListener('change',e=>{if(e.target.tagName==='SELECT')commit();});
+ tw.addEventListener('click',e=>{if(e.target.classList.contains('rowdel')){rows.splice(+e.target.dataset.i,1);commit();}});
+ return wrap;}
+function cell(coll,ri,c,v){const cls=c.type==='num'?'num':(c.wide?'wide':'');
+ if(c.type==='select'){let o='';(c.opts||[]).forEach(op=>o+=`<option ${op==v?'selected':''}>${op}</option>`);return `<td class="${cls}"><select data-c="${coll}" data-i="${ri}" data-k="${c.k}">${o}</select></td>`;}
+ const tp=c.type==='num'?'number':c.type==='date'?'date':'text';
+ return `<td class="${cls}"><input type="${tp}" data-c="${coll}" data-i="${ri}" data-k="${c.k}" value="${v==null?'':String(v).replace(/"/g,'&quot;')}"></td>`;}
+function genId(rows,k,pref){let mx=0;rows.forEach(r=>{const m=String(r[k]||'').match(/(\d+)/);if(m)mx=Math.max(mx,+m[1]);});return (pref||'')+String(mx+1).padStart(2,'0');}
+
+/* ---------- views ---------- */
+const ROLES=['Backend','Frontend','QA','DevOps','Analyst','Designer'];
+const STAT_TASK=['To Do','В работе','Готово'];
+const STAT_MS=['Планируется','В работе','Готово','Задержка'];
+function sprintOpts(){return Array.from({length:ST.params.sprints||11},(_,i)=>i+1);}
+function views(){
+ const C=compute();
+ // Dashboard
+ renderDash(C);
+ // Backlog
+ setView('backlog','Бэклог','Задачи проекта — источник данных для плана, velocity, релизов и метрик.',
+   editable('tasks',[
+    {k:'id',label:'ID'},{k:'title',label:'Задача',wide:true},{k:'assignee',label:'Исполнитель'},
+    {k:'role',label:'Роль',type:'select',opts:ROLES},{k:'type',label:'Тип',type:'select',opts:['История','Задача','Тех.долг']},
+    {k:'est',label:'Оценка',type:'num'},{k:'status',label:'Статус',type:'select',opts:STAT_TASK},
+    {k:'sprint',label:'Спринт',type:'num'},{k:'dep',label:'Зависит'},{k:'started',label:'В работу',type:'date'},{k:'done',label:'Готово',type:'date'}
+   ],{newId:'id',prefix:'T-'}));
+ // Team
+ setView('team','Команда','Состав команды и доступность — из этого считается ёмкость спринтов.',
+   editable('team',[{k:'name',label:'Участник',wide:true},{k:'role',label:'Роль',type:'select',opts:ROLES},
+    {k:'avail',label:'Доступность',type:'num',def:1},{k:'absent',label:'Отсутствия (дн)',type:'num',def:0}]));
+ // Sprints (derived)
+ setView('sprints','Спринты','Рассчитывается автоматически из «Параметров», «Команды» и «Бэклога».',sprintsTable(C));
+ // Releases
+ setView('releases','Релизы','Версии по диапазону спринтов. Содержимое считается из «Бэклога» и «Багов».',releasesView(C));
+ // Milestones
+ setView('milestones','Вехи','Контрольные точки; дата — конец спринта.',
+   editable('milestones',[{k:'id',label:'ID'},{k:'name',label:'Веха',wide:true},{k:'sprint',label:'Спринт',type:'num'},
+    {k:'status',label:'Статус',type:'select',opts:STAT_MS},{k:'rel',label:'Релиз'}],{newId:'id',prefix:'V-'}));
+ // Tech debt
+ setView('debt','Технический долг','Реестр техдолга; тренд создано/погашено считается по спринтам.',debtView(C));
+ // Risks
+ setView('risks','Риски','Балл = Вероятность × Влияние. Матрица и уровень — авто.',risksView());
+ // Bugs
+ setView('bugs','Баги','Дефекты с привязкой к задаче и спринту.',
+   editable('bugs',[{k:'id',label:'ID'},{k:'desc',label:'Описание',wide:true},{k:'task',label:'Задача'},
+    {k:'sprint',label:'Спринт',type:'num'},{k:'sev',label:'Серьёзность',type:'select',opts:['Critical','Major','Minor']},
+    {k:'status',label:'Статус',type:'select',opts:['Открыт','Закрыт']},{k:'cause',label:'Причина',type:'select',opts:['Требования','Код','Тестирование','Интеграция','Данные','Инфраструктура']}],{newId:'id',prefix:'B-'}));
+ // Params
+ renderParams();
+}
+function setView(id,title,lede,node){const v=document.getElementById('v_'+id);v.innerHTML=`<h1>${title}</h1><p class="lede">${lede}</p>`;if(node)v.appendChild(node);}
+
+function kpiCard(label,val,note,rag){return `<div class="card kpi"><div class="stripe s-${rag}"></div><div class="k-label">${label}</div><div class="k-val">${val}</div><div class="k-note">${note||''}</div></div>`;}
+function renderDash(C){const v=document.getElementById('v_dash');
+ const cards=[
+  kpiCard('Health-index',pctf(C.health),'сводный статус',C.health>=.8?'good':C.health>=.6?'warn':'crit'),
+  kpiCard('Текущий спринт','#'+C.cur,C.curSp?fmtd(C.curSp.a)+'–'+fmtd(C.curSp.b):'','neut'),
+  kpiCard('Загрузка',pctf(C.curSp?(C.curSp.plan/C.curSp.cap):0),`ёмкость ${fmt(C.curSp?C.curSp.cap:0,1)} · план ${fmt(C.curSp?C.curSp.plan:0,1)}`,(C.curSp&&C.curSp.plan/C.curSp.cap>1)?'crit':'good'),
+  kpiCard('Ср. velocity',fmt(C.avgVel,1)+' <small>дн</small>','закрытых: '+C.closed,'neut'),
+  kpiCard('Time to Market',fmt(C.ttmAvg,1)+' <small>дн</small>','цель ≤ 15',C.ttmAvg<=15?'good':'crit'),
+  kpiCard('DoD',pctf(C.dodPct),'готовность',C.dodPct>=1?'good':C.dodPct>=.8?'warn':'crit'),
+  kpiCard('Открыто багов',C.bugsOpen,'DRE '+pctf(C.dre),C.bugsOpen===0?'good':C.bugsOpen<=3?'warn':'crit'),
+  kpiCard('Остаток',fmt(C.remain,1)+' <small>дн</small>','незакрытые спринты','neut'),
+ ];
+ v.innerHTML=`<h1>Дашборд</h1><p class="lede">Цель: <b>${(ST.params.goal||'—')}</b>. Всё пересчитывается при изменении данных.</p>
+ <div class="grid kpis" id="dk"></div>
+ <div class="cols two" style="margin-top:14px">
+  <div class="card"><p class="ctitle">Ёмкость / План / Velocity по спринтам</p><div id="dc1"></div>
+   <div class="legend"><span><i style="background:var(--accent)"></i>Ёмкость</span><span><i style="background:var(--warn)"></i>План</span><span><i style="background:var(--good)"></i>Velocity</span></div></div>
+  <div class="card"><p class="ctitle">% выполнения</p><div id="dc2"></div></div>
+ </div>
+ <div class="cols two" style="margin-top:14px">
+  <div class="card"><p class="ctitle">Баги: всего vs закрыто</p><div id="dc3"></div>
+   <div class="legend"><span><i style="background:var(--accent)"></i>Всего</span><span><i style="background:var(--good)"></i>Закрыто</span></div></div>
+  <div class="card"><p class="ctitle">Time to Market (цель 15)</p><div id="dc4"></div></div>
+ </div>`;
+ document.getElementById('dk').innerHTML=cards.join('');
+ const cat=C.sp.map(x=>'С'+x.s);
+ bars(document.getElementById('dc1'),cat,[{color:col('--accent'),data:C.sp.map(x=>x.cap)},{color:col('--warn'),data:C.sp.map(x=>x.plan)},{color:col('--good'),data:C.sp.map(x=>x.vel||0)}]);
+ bars(document.getElementById('dc2'),cat,[{color:col('--accent'),data:C.sp.map(x=>x.pct||0)}],{pct:true});
+ bars(document.getElementById('dc3'),C.bugsBy.map(x=>'С'+x.s),[{color:col('--accent'),data:C.bugsBy.map(x=>x.total)},{color:col('--good'),data:C.bugsBy.map(x=>x.closed)}]);
+ lines(document.getElementById('dc4'),C.ttm.map(x=>x.task),[{color:col('--accent'),data:C.ttm.map(x=>x.ttm),trend:true}],{target:15});
+}
+function sprintsTable(C){const w=document.createElement('div');w.className='twrap';const t=document.createElement('table');
+ let h='<tr><th>Спринт</th><th>Начало</th><th>Конец</th><th class="num">Раб.дни</th><th class="num">Ёмкость</th><th class="num">План</th><th class="num">Velocity</th><th class="num">% вып.</th><th>Статус</th></tr>';
+ C.sp.forEach(x=>{h+=`<tr><td>С${x.s}</td><td>${fmtd(x.a)}</td><td>${fmtd(x.b)}</td><td class="num">${x.wd}</td><td class="num">${fmt(x.cap,1)}</td><td class="num">${fmt(x.plan,1)}</td><td class="num">${x.vel==null?'—':fmt(x.vel,1)}</td><td class="num">${x.pct==null?'—':pctf(x.pct)}</td><td>${statusPill(x.status)}</td></tr>`;});
+ t.innerHTML=h;w.appendChild(t);return w;}
+function releasesView(C){const w=document.createElement('div');
+ w.appendChild(editable('releases',[{k:'id',label:'ID'},{k:'name',label:'Релиз',wide:true},{k:'sfrom',label:'Спр. от',type:'num'},{k:'sto',label:'Спр. до',type:'num'},{k:'status',label:'Статус',type:'select',opts:STAT_MS}],{newId:'id',prefix:'R-'}));
+ const card=document.createElement('div');card.className='card';card.style.marginTop='14px';card.innerHTML='<p class="ctitle">Содержимое релизов (авто)</p>';
+ const tw=document.createElement('div');tw.className='twrap';const t=document.createElement('table');
+ let h='<tr><th>ID</th><th>Релиз</th><th>Дата</th><th class="num">Стори</th><th class="num">Задач</th><th class="num">Дефектов</th><th class="num">Объём</th></tr>';
+ (ST.releases||[]).forEach(r=>{const inR=t2=>+r.sfrom<=+t2.sprint&&+r.sto>=+t2.sprint;
+   const st=(ST.tasks||[]).filter(t2=>inR(t2)&&t2.type==='История').length;const ta=(ST.tasks||[]).filter(t2=>inR(t2)&&t2.type==='Задача').length;
+   const df=(ST.bugs||[]).filter(b=>+b.sprint>=+r.sfrom&&+b.sprint<=+r.sto).length;const vol=(ST.tasks||[]).filter(inR).reduce((a,b)=>a+num(b.est),0);
+   const rd=C.relDate(r);h+=`<tr><td>${r.id}</td><td>${r.name}</td><td>${rd?fmtd(rd):''}</td><td class="num">${st}</td><td class="num">${ta}</td><td class="num">${df}</td><td class="num">${fmt(vol,1)}</td></tr>`;});
+ t.innerHTML=h;tw.appendChild(t);card.appendChild(tw);w.appendChild(card);return w;}
+function debtView(C){const w=document.createElement('div');
+ w.appendChild(editable('techDebt',[{k:'id',label:'ID'},{k:'desc',label:'Описание',wide:true},{k:'area',label:'Область'},
+   {k:'type',label:'Тип',type:'select',opts:['Архитектура','Код','Тесты','Инфраструктура','Документация']},{k:'impact',label:'Влияние',type:'select',opts:['High','Medium','Low']},
+   {k:'est',label:'Оценка',type:'num'},{k:'status',label:'Статус',type:'select',opts:['Открыт','В работе','Закрыт']},
+   {k:'created',label:'Создан (спр)',type:'num'},{k:'paid',label:'Погашен (спр)',type:'num'}],{newId:'id',prefix:'TD-'}));
+ const N=ST.params.sprints||11;const tr=[];let open=0;for(let s=1;s<=N;s++){const cr=(ST.techDebt||[]).filter(t=>+t.created===s).length;const pd=(ST.techDebt||[]).filter(t=>+t.paid===s).length;open+=cr-pd;tr.push({s,cr,pd,open});}
+ const card=document.createElement('div');card.className='card';card.style.marginTop='14px';card.innerHTML='<p class="ctitle">Тренд: создано / погашено / открыто</p><div id="dbt"></div><div class="legend"><span><i style="background:var(--crit)"></i>Создано</span><span><i style="background:var(--good)"></i>Погашено</span><span><i style="background:var(--accent)"></i>Открыто</span></div>';
+ w.appendChild(card);setTimeout(()=>{bars(document.getElementById('dbt'),tr.map(x=>'С'+x.s),[{color:col('--crit'),data:tr.map(x=>x.cr)},{color:col('--good'),data:tr.map(x=>x.pd)}]);
+   const svg=document.querySelector('#dbt svg');if(svg){const W=640,H=290,ml=42,mr=10,mb=42,mt=10;let mx=Math.max.apply(null,tr.map(x=>x.open))||1;const top=niceMax(mx);const n=tr.length,gw=(W-ml-mr)/n,X=i=>ml+gw*i+gw/2,Y=v=>H-mb-(H-mt-mb)*(v/top);let dp='';tr.forEach((x,i)=>dp+=(i?' L':'M')+X(i)+' '+Y(x.open));svg.appendChild(el('path',{d:dp,fill:'none',stroke:col('--accent'),'stroke-width':3}));tr.forEach((x,i)=>svg.appendChild(el('circle',{cx:X(i),cy:Y(x.open),r:3.4,fill:col('--accent')})));}},0);
+ return w;}
+function risksView(){const w=document.createElement('div');
+ w.appendChild(editable('risks',[{k:'name',label:'Риск',wide:true},{k:'p',label:'Вероятн.',type:'num'},{k:'i',label:'Влияние',type:'num'},{k:'mit',label:'Митигация',wide:true},{k:'owner',label:'Владелец'},{k:'status',label:'Статус',type:'select',opts:['Открыт','Наблюдение','Закрыт']}]));
+ const ranked=(ST.risks||[]).map(r=>({...r,score:num(r.p)*num(r.i)})).sort((a,b)=>b.score-a.score).map((r,i)=>({...r,rank:i+1}));
+ const pos={};ranked.forEach(r=>{const k=num(r.p)+'-'+num(r.i);(pos[k]=pos[k]||[]).push(r.rank);});
+ const card=document.createElement('div');card.className='card';card.style.marginTop='14px';
+ let mh='<p class="ctitle">Матрица рисков</p><div class="twrap" style="border:none"><table class="matrix"><tr><th>Вл ↓ / Вер →</th>';for(let p=1;p<=5;p++)mh+=`<th>${p}</th>`;mh+='</tr>';
+ [5,4,3,2,1].forEach(imp=>{mh+=`<tr><th>${imp}</th>`;for(let p=1;p<=5;p++){const s=p*imp,cl=s>=15?'mx-r':s>=8?'mx-y':'mx-g';mh+=`<td class="${cl}">${(pos[p+'-'+imp]||[]).join(',')}</td>`;}mh+='</tr>';});
+ mh+='</table></div>';card.innerHTML=mh;w.appendChild(card);return w;}
+function renderParams(){const P=ST.params;const v=document.getElementById('v_params');
+ v.innerHTML=`<h1>Параметры</h1><p class="lede">Базовые настройки. Даты спринтов и все расчёты зависят от них.</p>
+ <div class="card"><div class="param-grid">
+  <label>Название</label><input id="p_name" value="${P.name||''}">
+  <label>Дата старта</label><input id="p_start" type="date" value="${P.start||''}">
+  <label>Дата отсчёта (сегодня)</label><input id="p_today" type="date" value="${P.today||''}">
+  <label>Спринтов</label><input id="p_sprints" type="number" value="${P.sprints||11}">
+  <label>Focus factor</label><input id="p_focus" type="number" step="0.05" value="${P.focus||0.8}">
+  <label>Цель спринта</label><input id="p_goal" value="${(P.goal||'').replace(/"/g,'&quot;')}">
+ </div>
+ <p class="ctitle" style="margin-top:18px">Definition of Done</p><div class="dodlist" id="doddiv"></div></div>`;
+ const dd=ST.dod||[];const dv=document.getElementById('doddiv');
+ dv.innerHTML=dd.map((d,i)=>`<label><input type="checkbox" data-i="${i}" ${d.done?'checked':''}> ${d.crit}</label>`).join('');
+ dv.addEventListener('change',e=>{if(e.target.dataset.i!=null){dd[+e.target.dataset.i].done=e.target.checked;commit();}});
+ ['name','start','today','goal'].forEach(k=>{const e=document.getElementById('p_'+k);e.addEventListener('input',()=>{P[k]=e.value;save();recomputeSoft();});});
+ ['sprints','focus'].forEach(k=>{const e=document.getElementById('p_'+k);e.addEventListener('input',()=>{P[k]=num(e.value);save();recomputeSoft();});});
+}
+
+/* ---------- app plumbing ---------- */
+let CURV='dash';
+function commit(){save();views();activate(CURV);toast('Сохранено');}
+function recomputeSoft(){/* light: refresh dashboard only, keep edit focus */ renderDash(compute());}
+function activate(id){CURV=id;document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('active',b.dataset.v===id));
+ document.querySelectorAll('.view').forEach(s=>s.classList.toggle('active',s.id==='v_'+id));window.scrollTo(0,0);}
+document.getElementById('tabs').addEventListener('click',e=>{if(e.target.dataset.v){activate(e.target.dataset.v);}});
+document.getElementById('exp').onclick=()=>{const b=new Blob([JSON.stringify(ST,null,1)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='planirovanie_data.json';a.click();toast('Экспортировано');};
+document.getElementById('imp').onclick=()=>document.getElementById('file').click();
+document.getElementById('file').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{ST=JSON.parse(r.result);save();views();activate(CURV);toast('Импортировано');}catch(err){toast('Ошибка файла');}};r.readAsText(f);};
+document.getElementById('rst').onclick=()=>{if(confirm('Сбросить все данные к исходным?')){ST=JSON.parse(JSON.stringify(SEED));save();views();activate(CURV);toast('Сброшено');}};
+document.getElementById('themebtn').onclick=()=>{const cur=document.documentElement.getAttribute('data-theme');const sys=matchMedia('(prefers-color-scheme:dark)').matches;const nx=(cur||(sys?'dark':'light'))==='dark'?'light':'dark';document.documentElement.setAttribute('data-theme',nx);views();activate(CURV);};
+views();activate('dash');
+</script>
