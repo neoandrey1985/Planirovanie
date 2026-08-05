@@ -30,6 +30,7 @@ h1{font-size:23px;margin:4px 0 4px;letter-spacing:-.01em}
 .lede{color:var(--muted);margin:0 0 18px;font-size:13.5px}
 .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;box-shadow:var(--shadow)}
 .grid{display:grid;gap:14px}
+.grid2{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));margin-top:14px}
 .kpis{grid-template-columns:repeat(auto-fit,minmax(172px,1fr))}
 .kpi{position:relative;overflow:hidden}
 .kpi .stripe{position:absolute;left:0;top:0;bottom:0;width:4px}
@@ -75,7 +76,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,.tabs button:focus
 </style>
 <header class="top"><div class="inner">
  <div class="brand"><span class="dot"></span>Планирование&nbsp;спринтов</div>
- <div class="tabs" id="tabs"><button data-v="dash">Дашборд</button><button data-v="backlog">Бэклог</button><button data-v="team">Команда</button><button data-v="roadmap">Дорожная карта</button><button data-v="gantt">Гант</button><button data-v="releases">Релизы</button><button data-v="milestones">Вехи</button><button data-v="debt">Техдолг</button><button data-v="okr">OKR</button><button data-v="budget">Бюджет</button><button data-v="risks">Риски</button><button data-v="bugs">Баги</button><button data-v="params">Параметры</button></div>
+ <div class="tabs" id="tabs"><button data-v="dash">Дашборд</button><button data-v="backlog">Бэклог</button><button data-v="team">Команда</button><button data-v="roadmap">Дорожная карта</button><button data-v="quarters">Кварталы</button><button data-v="gantt">Гант</button><button data-v="releases">Релизы</button><button data-v="milestones">Вехи</button><button data-v="debt">Техдолг</button><button data-v="okr">OKR</button><button data-v="budget">Бюджет</button><button data-v="analytics">Аналитика</button><button data-v="risks">Риски</button><button data-v="bugs">Баги</button><button data-v="retro">Ретроспективы</button><button data-v="calendar">Календарь</button><button data-v="params">Параметры</button></div>
  <div class="tools">
   <button class="btn primary" id="xls">Excel</button>
   <button class="btn" id="exp">JSON</button>
@@ -85,7 +86,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,.tabs button:focus
   <button class="btn" id="themebtn" aria-label="Тема">◐</button>
  </div>
 </div></header>
-<main><section class="view" id="v_dash"></section><section class="view" id="v_backlog"></section><section class="view" id="v_team"></section><section class="view" id="v_roadmap"></section><section class="view" id="v_gantt"></section><section class="view" id="v_releases"></section><section class="view" id="v_milestones"></section><section class="view" id="v_debt"></section><section class="view" id="v_okr"></section><section class="view" id="v_budget"></section><section class="view" id="v_risks"></section><section class="view" id="v_bugs"></section><section class="view" id="v_params"></section></main>
+<main><section class="view" id="v_dash"></section><section class="view" id="v_backlog"></section><section class="view" id="v_team"></section><section class="view" id="v_roadmap"></section><section class="view" id="v_quarters"></section><section class="view" id="v_gantt"></section><section class="view" id="v_releases"></section><section class="view" id="v_milestones"></section><section class="view" id="v_debt"></section><section class="view" id="v_okr"></section><section class="view" id="v_budget"></section><section class="view" id="v_analytics"></section><section class="view" id="v_risks"></section><section class="view" id="v_bugs"></section><section class="view" id="v_retro"></section><section class="view" id="v_calendar"></section><section class="view" id="v_params"></section></main>
 <div class="toast" id="toast"></div>
 <input type="file" id="file" accept=".json" style="display:none">
 <script>
@@ -821,9 +822,56 @@ const SEED={
   }
  ],
  "calendar": [
-  "2026-11-04",
-  "2027-01-01",
-  "2027-01-02"
+  {
+   "date": "2026-11-04",
+   "name": "День народного единства"
+  },
+  {
+   "date": "2027-01-01",
+   "name": "Новый год"
+  },
+  {
+   "date": "2027-01-02",
+   "name": "Новогодние каникулы"
+  }
+ ],
+ "retro": [
+  {
+   "sprint": 1,
+   "well": "Быстрый старт, реалистичная оценка",
+   "improve": "Мало тестовых данных",
+   "action": "Подготовить набор тест-данных",
+   "owner": "Сидоров К.",
+   "due": "Спринт 2",
+   "status": "Сделано"
+  },
+  {
+   "sprint": 1,
+   "well": "Хорошее демо",
+   "improve": "Долгий код-ревью",
+   "action": "SLA на ревью — 1 день",
+   "owner": "Иванов А.",
+   "due": "Спринт 2",
+   "status": "Сделано"
+  },
+  {
+   "sprint": 2,
+   "well": "Стабильные демо",
+   "improve": "Скоуп рос по ходу",
+   "action": "Фиксировать скоуп на планировании",
+   "owner": "Кузнецов Д.",
+   "due": "Спринт 3",
+   "status": "В работе"
+  },
+  {
+   "sprint": 2,
+   "well": "Слаженная работа QA",
+   "improve": "Блокеры по внешнему API",
+   "action": "Ранняя интеграция / моки",
+   "owner": "Иванов А.",
+   "due": "Спринт 3",
+   "status": "Открыт"
+  }
  ],
  "budget": {
   "rate": 8000,
@@ -842,6 +890,14 @@ function migrate(d){
   {q:'Q4 2026',obj:'Масштабировать на площадки',kr:'Подключено площадок, шт',target:20,cur:6}];
  if(!d.epics)d.epics={};
  if(!d.budget)d.budget={rate:8000,total:8000000};
+ // calendar: migrate array of date-strings -> [{date,name}]
+ if(Array.isArray(d.calendar))d.calendar=d.calendar.map(h=>typeof h==='string'?{date:h,name:''}:h);
+ else d.calendar=[];
+ if(!Array.isArray(d.retro))d.retro=[
+  {sprint:1,well:'Быстрый старт, реалистичный план',improve:'Мало тестовых данных',action:'Подготовить набор тестовых данных',owner:'Сидоров К.',due:'Спринт 2',status:'Сделано'},
+  {sprint:1,well:'Хорошее демо',improve:'Долгий код-ревью',action:'SLA на ревью — 1 день',owner:'Иванов А.',due:'Спринт 2',status:'Сделано'},
+  {sprint:2,well:'Стабильные демо',improve:'Скоуп рос по ходу',action:'Фиксировать скоуп на планировании',owner:'Кузнецов Д.',due:'Спринт 3',status:'В работе'},
+  {sprint:2,well:'Слаженная работа QA',improve:'Блокеры по внешнему API',action:'Ранняя интеграция / моки',owner:'Иванов А.',due:'Спринт 3',status:'Открыт'}];
  // sanitize task dependencies: drop leftover formulas / unknown IDs / self-references
  if(Array.isArray(d.tasks)){const ids=new Set(d.tasks.map(t=>t.id));
   d.tasks.forEach(t=>{let dp=t.dep==null?'':String(t.dep).trim();
@@ -873,7 +929,7 @@ function num(v){const n=parseFloat(v);return isNaN(n)?0:n;}
 
 function compute(){
  const P=ST.params, start=pd(P.start)||pd('2026-08-03'), today=pd(P.today)||new Date(), N=P.sprints||11;
- const focus=num(P.focus)||0.8, holidays=ST.calendar||[];
+ const focus=num(P.focus)||0.8, holidays=(ST.calendar||[]).map(h=>typeof h==='string'?h:h.date);
  const sp=[];
  for(let s=1;s<=N;s++){const a=addD(start,(s-1)*14),b=addD(start,(s-1)*14+11);
   const wd=netdays(a,b,holidays);
@@ -908,7 +964,13 @@ function compute(){
  sp.forEach(x=>{x.cost=Math.round(x.cap*rate);cum+=x.cost;x.cum=cum;});
  const spent=cum,budget=num((ST.budget||{}).total)||0,remBudget=budget-spent;
  const crit=cpm(ST.tasks||[]);
- return {sp,cur,curSp,avgVel,closed:closed.length,dodPct,ttm,ttmAvg,bugsBy,bugsFound,bugsClosed,bugsOpen,dre,avgPct,health,remain,relDate,started,rate,spent,budget,remBudget,crit};
+ // quarters: aggregate sprints by the calendar quarter of their start date
+ const qOf=d=>'Q'+(Math.floor(d.getUTCMonth()/3)+1)+' '+d.getUTCFullYear();
+ const qmap={},qord=[];sp.forEach(x=>{const q=qOf(x.a);if(!qmap[q]){qmap[q]={q,n:0,cap:0,plan:0,vel:0,hasVel:false};qord.push(q);}
+  const o=qmap[q];o.n++;o.cap+=x.cap;o.plan+=x.plan;if(x.vel!=null){o.vel+=x.vel;o.hasVel=true;}});
+ const quarters=qord.map(k=>{const o=qmap[k];o.load=o.cap?o.plan/o.cap:0;o.pct=(o.hasVel&&o.plan)?o.vel/o.plan:null;o.cap=Math.round(o.cap*10)/10;
+  o.epics=(ST.milestones||[]).filter(m=>{const e=sp[(+m.sprint)-1];return e&&qOf(e.a)===k;}).map(m=>m.name).join(', ');return o;});
+ return {sp,cur,curSp,avgVel,closed:closed.length,dodPct,ttm,ttmAvg,bugsBy,bugsFound,bugsClosed,bugsOpen,dre,avgPct,health,remain,relDate,started,rate,spent,budget,remBudget,crit,quarters,qOf,vels};
 }
 
 /* ---------- charts (SVG) ---------- */
@@ -989,12 +1051,16 @@ function views(){
     {k:'avail',label:'Доступность',type:'num',def:1},{k:'absent',label:'Отсутствия (дн)',type:'num',def:0}]));
  // Roadmap (Дорожная карта): computed roadmap + editable эпики per sprint + chart
  renderRoadmap(C);
+ // Quarters (Кварталы) + quarterly roadmap
+ renderQuarters(C);
  // Gantt
  renderGantt(C);
  // OKR
  renderOKR(C);
  // Budget
  renderBudget(C);
+ // Analytics (сводные графики: сгорание, CFD, cycle time, распределение, загрузка, прогноз, качество)
+ renderAnalytics(C);
  // Releases
  setView('releases','Релизы','Версии по диапазону спринтов. Содержимое считается из «Бэклога» и «Багов».',releasesView(C));
  // Milestones
@@ -1010,6 +1076,11 @@ function views(){
    editable('bugs',[{k:'id',label:'ID'},{k:'desc',label:'Описание',wide:true},{k:'task',label:'Задача'},
     {k:'sprint',label:'Спринт',type:'num'},{k:'sev',label:'Серьёзность',type:'select',opts:['Critical','Major','Minor']},
     {k:'status',label:'Статус',type:'select',opts:['Открыт','Закрыт']},{k:'cause',label:'Причина',type:'select',opts:['Требования','Код','Тестирование','Интеграция','Данные','Инфраструктура']}],{newId:'id',prefix:'B-'}));
+ // Retrospectives (Ретроспективы)
+ setView('retro','Ретроспективы','Итоги спринтов и action items. Ниже — доля закрытых action items.',retroView());
+ // Calendar (Календарь) — праздники/выходные, влияют на рабочие дни спринтов
+ setView('calendar','Календарь','Праздники и нерабочие дни. Учитываются при расчёте рабочих дней и ёмкости спринтов.',
+   editable('calendar',[{k:'date',label:'Дата',type:'date'},{k:'name',label:'Праздник / выходной',wide:true}]));
  // Params
  renderParams();
 }
@@ -1078,6 +1149,14 @@ function risksView(){const w=document.createElement('div');
  let mh='<p class="ctitle">Матрица рисков</p><div class="twrap" style="border:none"><table class="matrix"><tr><th>Вл ↓ / Вер →</th>';for(let p=1;p<=5;p++)mh+=`<th>${p}</th>`;mh+='</tr>';
  [5,4,3,2,1].forEach(imp=>{mh+=`<tr><th>${imp}</th>`;for(let p=1;p<=5;p++){const s=p*imp,cl=s>=15?'mx-r':s>=8?'mx-y':'mx-g';mh+=`<td class="${cl}">${(pos[p+'-'+imp]||[]).join(',')}</td>`;}mh+='</tr>';});
  mh+='</table></div>';card.innerHTML=mh;w.appendChild(card);return w;}
+function retroView(){const w=document.createElement('div');
+ w.appendChild(editable('retro',[{k:'sprint',label:'Спринт',type:'num'},{k:'well',label:'Что прошло хорошо',wide:true},
+  {k:'improve',label:'Что улучшить',wide:true},{k:'action',label:'Action item',wide:true},
+  {k:'owner',label:'Ответственный'},{k:'due',label:'Срок'},{k:'status',label:'Статус',type:'select',opts:['Открыт','В работе','Сделано']}]));
+ const r=ST.retro||[],done=r.filter(x=>x.status==='Сделано').length,pct=r.length?done/r.length:0;
+ const card=document.createElement('div');card.className='grid kpis';card.style.marginTop='14px';
+ card.innerHTML=kpiCard('Action items',r.length,'всего','neut')+kpiCard('Закрыто',done,'сделано','neut')+kpiCard('% закрытых',pctf(pct),'выполнение',pct>=.8?'good':pct>=.5?'warn':'crit');
+ w.appendChild(card);return w;}
 function renderParams(){const P=ST.params;const v=document.getElementById('v_params');
  v.innerHTML=`<h1>Параметры</h1><p class="lede">Базовые настройки. Даты спринтов и все расчёты зависят от них.</p>
  <div class="card"><div class="param-grid">
@@ -1151,6 +1230,95 @@ function renderBudget(C){const v=document.getElementById('v_budget');const B=ST.
  C.sp.forEach(x=>{h+=`<tr><td>С${x.s}</td><td class="num">${fmt(x.cap,1)}</td><td class="num">${fmt(x.cost,0)}</td><td class="num">${fmt(x.cum,0)}</td><td class="num">${x.vel==null?'—':fmt(x.vel,1)}</td></tr>`;});
  document.getElementById('bt').innerHTML=h;
  ['rate','total'].forEach(k=>{const e=document.getElementById('b_'+k);e.addEventListener('input',()=>{B[k]=num(e.value);save();renderBudget(compute());renderDash(compute());});});}
+/* ---------- Кварталы ---------- */
+function renderQuarters(C){const v=document.getElementById('v_quarters');
+ v.innerHTML=`<h1>Кварталы</h1><p class="lede">Агрегация спринтов по календарным кварталам (квартал — по дате старта спринта). Ниже — квартальный roadmap.</p>
+  <div class="card"><p class="ctitle">Квартальный roadmap — спринты на шкале</p><div id="qrm"></div></div>
+  <div class="twrap" style="margin-top:14px"><table id="qt"></table></div>`;
+ drawQRoadmap(document.getElementById('qrm'),C);
+ let h='<tr><th>Квартал</th><th class="num">Спринтов</th><th class="num">Ёмкость</th><th class="num">План</th><th class="num">Velocity</th><th class="num">Загрузка</th><th class="num">% вып.</th><th>Ключевые вехи / эпики</th></tr>';
+ let tn=0,tc=0,tp=0,tv=0;
+ C.quarters.forEach(q=>{tn+=q.n;tc+=q.cap;tp+=q.plan;tv+=q.vel;
+  h+=`<tr><td><b>${q.q}</b></td><td class="num">${q.n}</td><td class="num">${fmt(q.cap,1)}</td><td class="num">${fmt(q.plan,1)}</td><td class="num">${q.hasVel?fmt(q.vel,1):'—'}</td><td class="num">${pctf(q.load)}</td><td class="num">${q.pct==null?'—':pctf(q.pct)}</td><td>${esc(q.epics||'')}</td></tr>`;});
+ h+=`<tr style="font-weight:700"><td>ИТОГО / год</td><td class="num">${tn}</td><td class="num">${fmt(tc,1)}</td><td class="num">${fmt(tp,1)}</td><td class="num">${fmt(tv,1)}</td><td class="num">${pctf(tc?tp/tc:0)}</td><td class="num">${tp?pctf(tv/tp):'—'}</td><td></td></tr>`;
+ document.getElementById('qt').innerHTML=h;}
+function drawQRoadmap(box,C){const sp=C.sp;if(!sp.length){box.textContent='';return;}
+ const t0=sp[0].a,t1=sp[sp.length-1].b,span=Math.max(1,(t1-t0)/MS);
+ const W=760,rowH=20,mt=28,ml=90,mr=14,H=mt+sp.length*rowH+16;
+ const svg=el('svg',{viewBox:`0 0 ${W} ${H}`});const pal=['#4472C4','#ED7D31','#70AD47','#FFC000','#7030A0','#255E91'];
+ const qcol={};let qi=0;sp.forEach(x=>{const q=C.qOf(x.a);if(!(q in qcol)){qcol[q]=pal[qi%pal.length];qi++;}});
+ const seen={};
+ sp.forEach((x,i)=>{const q=C.qOf(x.a);
+   const xa=ml+(W-ml-mr)*((x.a-t0)/MS)/span,xb=ml+(W-ml-mr)*((x.b-t0)/MS)/span,y=mt+i*rowH+3;
+   const lbl=el('text',{x:6,y:y+11,'font-size':10,fill:col('--ink')});lbl.textContent='Спринт '+x.s;svg.appendChild(lbl);
+   const r=el('rect',{x:xa,y,width:Math.max(3,xb-xa),height:rowH-8,rx:3,fill:qcol[q]});
+   const tt=el('title');tt.textContent=`Спринт ${x.s} · ${q} · ${fmtd(x.a)}–${fmtd(x.b)}`;r.appendChild(tt);svg.appendChild(r);
+   if(!seen[q]){seen[q]=1;const qx=el('text',{x:xa,y:mt-10,'font-size':10,'font-weight':600,fill:qcol[q]});qx.textContent=q;svg.appendChild(qx);
+     svg.appendChild(el('line',{x1:xa,y1:mt-7,x2:xa,y2:H-10,stroke:qcol[q],'stroke-dasharray':'3 3','stroke-opacity':.5}));}});
+ box.innerHTML='';box.appendChild(svg);}
+/* ---------- Аналитика (сводные графики) ---------- */
+function renderAnalytics(C){const v=document.getElementById('v_analytics');const sp=C.sp,tasks=ST.tasks||[];
+ v.innerHTML=`<h1>Аналитика</h1><p class="lede">Сводные графики и метрики из «Бэклога», «Команды» и «Багов»: сгорание, поток, cycle time, распределение, загрузка, прогноз, качество.</p>
+  <div class="grid kpis" id="an_kpi"></div>
+  <div class="grid2">
+   <div class="card"><p class="ctitle">Сгорание (burndown)</p><div id="an_bd"></div><div class="legend"><span><i style="background:var(--crit)"></i>Осталось</span><span><i style="background:var(--muted)"></i>Идеал</span></div></div>
+   <div class="card"><p class="ctitle">Burn-up — сделано vs scope</p><div id="an_bu"></div><div class="legend"><span><i style="background:var(--good)"></i>Сделано</span><span><i style="background:var(--accent)"></i>Scope</span></div></div>
+   <div class="card"><p class="ctitle">Поток задач по спринтам (CFD)</p><div id="an_cfd"></div><div class="legend"><span><i style="background:var(--accent)"></i>To Do</span><span><i style="background:var(--warn)"></i>В работе</span><span><i style="background:var(--good)"></i>Готово</span></div></div>
+   <div class="card"><p class="ctitle">Cycle time по задачам (дн)</p><div id="an_ct"></div><div class="legend"><span><i style="background:var(--accent)"></i>Cycle time</span><span><i style="background:var(--crit)"></i>среднее</span></div></div>
+   <div class="card"><p class="ctitle">Распределение объёма по типам (дн)</p><div id="an_dt"></div></div>
+   <div class="card"><p class="ctitle">Распределение объёма по ролям (дн)</p><div id="an_dr"></div></div>
+   <div class="card"><p class="ctitle">Загрузка по ролям · спринт С${C.cur}</p><div id="an_rl"></div><div class="legend"><span><i style="background:var(--accent)"></i>Ёмкость</span><span><i style="background:var(--warn)"></i>Спрос</span></div></div>
+   <div class="card"><p class="ctitle">Ёмкость vs спрос по кварталам (дн)</p><div id="an_cap"></div><div class="legend"><span><i style="background:var(--accent)"></i>Ёмкость</span><span><i style="background:var(--warn)"></i>Спрос</span></div></div>
+   <div class="card"><p class="ctitle">Дефекты по серьёзности</p><div id="an_sev"></div></div>
+  </div>`;
+ // predictability / throughput / forecast
+ const vels=C.vels||[];const mean=vels.length?vels.reduce((a,b)=>a+b,0)/vels.length:0;
+ const sd=vels.length>1?Math.sqrt(vels.reduce((a,b)=>a+(b-mean)*(b-mean),0)/(vels.length-1)):0;const cv=mean?sd/mean:0;
+ const doneTasks=tasks.filter(t=>t.status==='Готово').length;const thr=C.closed?doneTasks/C.closed:0;
+ const fc=C.avgVel?C.remain/C.avgVel:null;
+ const vmin=vels.length?Math.min.apply(null,vels):0,vmax=vels.length?Math.max.apply(null,vels):0;
+ const fcOpt=vmax?C.remain/vmax:null,fcPes=vmin?C.remain/vmin:null;
+ document.getElementById('an_kpi').innerHTML=[
+  kpiCard('Предсказуемость',pctf(1-Math.min(1,cv)),'CV velocity '+pctf(cv),cv<=.2?'good':cv<=.35?'warn':'crit'),
+  kpiCard('Throughput',fmt(thr,1)+' <small>зад/спр</small>','закрыто спринтов '+C.closed,'neut'),
+  kpiCard('Прогноз (Монте-Карло)',fc==null?'—':fmt(fc,1)+' <small>спр</small>','остаток '+fmt(C.remain,0)+' дн','neut'),
+  kpiCard('Диапазон прогноза',(fcOpt==null?'—':fmt(fcOpt,1))+'–'+(fcPes==null?'—':fmt(fcPes,1))+' <small>спр</small>','оптим.–пессим.','neut'),
+  kpiCard('DRE',pctf(C.dre),'выявление дефектов',C.dre>=.8?'good':C.dre>=.6?'warn':'crit')
+ ].join('');
+ // burndown / burn-up
+ const scope=tasks.reduce((a,t)=>a+num(t.est),0);
+ const cats=['С0'].concat(sp.map(x=>'С'+x.s));
+ let cum=0;const doneCum=[0],rem=[scope];let stop=false;
+ sp.forEach(x=>{if(x.vel==null||stop){stop=true;doneCum.push(null);rem.push(null);}else{cum+=x.vel;doneCum.push(cum);rem.push(Math.max(0,scope-cum));}});
+ const ideal=cats.map((c,i)=>scope*(1-i/(cats.length-1)));
+ lines(document.getElementById('an_bd'),cats,[{color:col('--crit'),data:rem,w:3},{color:col('--muted'),data:ideal,dash:true,noPts:true}]);
+ lines(document.getElementById('an_bu'),cats,[{color:col('--good'),data:doneCum,w:3},{color:col('--accent'),data:cats.map(()=>scope),dash:true,noPts:true}]);
+ // CFD grouped bars per sprint by status
+ const N=sp.length,todo=[],prog=[],done=[];
+ for(let s=1;s<=N;s++){const ts=tasks.filter(t=>+t.sprint===s);todo.push(ts.filter(t=>t.status==='To Do').length);prog.push(ts.filter(t=>t.status==='В работе').length);done.push(ts.filter(t=>t.status==='Готово').length);}
+ bars(document.getElementById('an_cfd'),sp.map(x=>'С'+x.s),[{color:col('--accent'),data:todo},{color:col('--warn'),data:prog},{color:col('--good'),data:done}]);
+ // cycle time
+ const ctv=tasks.filter(t=>t.started&&t.done).map(t=>({id:t.id,d:Math.max(0,Math.round((pd(t.done)-pd(t.started))/MS))}));
+ const ctAvg=ctv.length?ctv.reduce((a,b)=>a+b.d,0)/ctv.length:0;
+ if(ctv.length)lines(document.getElementById('an_ct'),ctv.map(x=>x.id),[{color:col('--accent'),data:ctv.map(x=>x.d),w:2}],{target:ctAvg});
+ else document.getElementById('an_ct').innerHTML='<p style="color:var(--muted);font-size:13px">Нет задач с датами «в работу» и «готово».</p>';
+ // distribution by type / role
+ const byType={};tasks.forEach(t=>{const k=t.type||'Задача';byType[k]=(byType[k]||0)+num(t.est);});
+ bars(document.getElementById('an_dt'),Object.keys(byType),[{color:col('--accent'),data:Object.values(byType)}]);
+ const byRole={};tasks.forEach(t=>{const k=t.role||'—';byRole[k]=(byRole[k]||0)+num(t.est);});
+ bars(document.getElementById('an_dr'),Object.keys(byRole),[{color:col('--good'),data:Object.values(byRole)}]);
+ // role load current sprint: capacity vs demand
+ const cs=sp[C.cur-1]||sp[0],focus=num(ST.params.focus)||0.8;
+ const capRole={},demRole={};ROLES.forEach(r=>{capRole[r]=0;demRole[r]=0;});
+ (ST.team||[]).forEach(m=>{if(capRole[m.role]!=null)capRole[m.role]+=Math.max(0,(cs.wd-num(m.absent)))*num(m.avail)*focus;});
+ tasks.filter(t=>+t.sprint===C.cur).forEach(t=>{if(demRole[t.role]!=null)demRole[t.role]+=num(t.est);});
+ bars(document.getElementById('an_rl'),ROLES,[{color:col('--accent'),data:ROLES.map(r=>Math.round(capRole[r]*10)/10)},{color:col('--warn'),data:ROLES.map(r=>demRole[r])}]);
+ // capacity vs demand by quarter
+ bars(document.getElementById('an_cap'),C.quarters.map(q=>q.q),[{color:col('--accent'),data:C.quarters.map(q=>q.cap)},{color:col('--warn'),data:C.quarters.map(q=>q.plan)}]);
+ // bugs by severity
+ const sev={Critical:0,Major:0,Minor:0};(ST.bugs||[]).forEach(b=>{if(sev[b.sev]!=null)sev[b.sev]++;});
+ bars(document.getElementById('an_sev'),Object.keys(sev),[{color:col('--crit'),data:Object.values(sev)}]);
+}
 /* ---------- Excel export (pure JS zip + OOXML) ---------- */
 const _crc=(()=>{let t=[];for(let n=0;n<256;n++){let c=n;for(let k=0;k<8;k++)c=c&1?0xEDB88320^(c>>>1):c>>>1;t[n]=c>>>0;}return t;})();
 function crc32(u8){let c=0xFFFFFFFF;for(let i=0;i<u8.length;i++)c=_crc[(c^u8[i])&0xFF]^(c>>>8);return(c^0xFFFFFFFF)>>>0;}
@@ -1188,6 +1356,9 @@ function exportXlsx(){const C=compute();const s=[];
  s.push({name:'Бюджет',aoa:[['Спринт','Ёмкость','Стоимость','Накопл.']].concat(C.sp.map(x=>['С'+x.s,x.cap,x.cost,x.cum]))});
  s.push({name:'Риски',aoa:[['Риск','Вероятн','Влияние','Балл','Митигация','Владелец','Статус']].concat((ST.risks||[]).map(r=>[r.name,num(r.p),num(r.i),num(r.p)*num(r.i),r.mit,r.owner,r.status]))});
  s.push({name:'Баги',aoa:[['ID','Описание','Задача','Спринт','Серьёзность','Статус','Причина']].concat((ST.bugs||[]).map(b=>[b.id,b.desc,b.task,num(b.sprint),b.sev,b.status,b.cause]))});
+ s.push({name:'Кварталы',aoa:[['Квартал','Спринтов','Ёмкость','План','Velocity','Загрузка','% вып','Вехи/эпики']].concat((C.quarters||[]).map(q=>[q.q,q.n,q.cap,q.plan,q.hasVel?q.vel:'',q.load,q.pct==null?'':q.pct,q.epics]))});
+ s.push({name:'Ретроспективы',aoa:[['Спринт','Что хорошо','Что улучшить','Action item','Ответственный','Срок','Статус']].concat((ST.retro||[]).map(r=>[num(r.sprint),r.well,r.improve,r.action,r.owner,r.due,r.status]))});
+ s.push({name:'Календарь',aoa:[['Дата','Праздник / выходной']].concat((ST.calendar||[]).map(h=>[typeof h==='string'?h:h.date,typeof h==='string'?'':h.name]))});
  const bin=buildXlsx(s);const blob=new Blob([bin],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='Планирование_спринта.xlsx';document.body.appendChild(a);a.click();a.remove();toast('Excel экспортирован');}
 
