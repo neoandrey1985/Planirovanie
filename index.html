@@ -1148,7 +1148,33 @@ function risksView(){const w=document.createElement('div');
  const card=document.createElement('div');card.className='card';card.style.marginTop='14px';
  let mh='<p class="ctitle">Матрица рисков</p><div class="twrap" style="border:none"><table class="matrix"><tr><th>Вл ↓ / Вер →</th>';for(let p=1;p<=5;p++)mh+=`<th>${p}</th>`;mh+='</tr>';
  [5,4,3,2,1].forEach(imp=>{mh+=`<tr><th>${imp}</th>`;for(let p=1;p<=5;p++){const s=p*imp,cl=s>=15?'mx-r':s>=8?'mx-y':'mx-g';mh+=`<td class="${cl}">${(pos[p+'-'+imp]||[]).join(',')}</td>`;}mh+='</tr>';});
- mh+='</table></div>';card.innerHTML=mh;w.appendChild(card);return w;}
+ mh+='</table></div>';card.innerHTML=mh;w.appendChild(card);
+ const ic=document.createElement('div');ic.className='card';ic.style.marginTop='14px';
+ ic.innerHTML='<p class="ctitle">Диаграмма Исикавы — причины срыва сроков спринта</p><div id="ishk"></div>';
+ w.appendChild(ic);drawIshikawa(ic.querySelector('#ishk'));
+ return w;
+ }
+function drawIshikawa(box){const W=1012,H=560,cy=280,x0=60,xHead=770;const svg=el('svg',{viewBox:`0 0 ${W} ${H}`});const ink=col('--ink');
+ svg.appendChild(el('line',{x1:x0,y1:cy,x2:xHead,y2:cy,stroke:ink,'stroke-width':3}));
+ svg.appendChild(el('path',{d:`M${xHead} ${cy-10} L${xHead+24} ${cy} L${xHead} ${cy+10} Z`,fill:ink}));
+ svg.appendChild(el('rect',{x:xHead+24,y:cy-48,width:206,height:96,rx:6,fill:col('--accent-soft'),stroke:col('--accent'),'stroke-width':1.5}));
+ ['Срыв сроков /','рост рисков','спринта'].forEach((t,i)=>{const tx=el('text',{x:xHead+40,y:cy-12+i*22,'font-size':15,'font-weight':700,fill:col('--accent')});tx.textContent=t;svg.appendChild(tx);});
+ const cats=[
+  {name:'Люди',color:'#8FAADC',side:-1,ax:250,causes:['Текучесть QA','Недооценка задач']},
+  {name:'Процессы',color:'#ED7D31',side:-1,ax:450,causes:['Слабая оценка (спайки)','Нет буфера времени']},
+  {name:'Внешние зависимости',color:'#70AD47',side:-1,ax:650,causes:['Внешний API оплаты','Внешние команды/поставки']},
+  {name:'Инструменты / инфра',color:'#FFC000',side:1,ax:250,causes:['Сложные интеграции','Недоступность сервера']},
+  {name:'Сроки / календарь',color:'#4472C4',side:1,ax:450,causes:['Праздники','Отпуска (декабрь)']},
+  {name:'Требования / объём',color:'#C0392B',side:1,ax:650,causes:['Неясные требования','Рост объёма (scope)']}];
+ cats.forEach(c=>{const bx=c.ax-160,by=cy+c.side*160;
+   svg.appendChild(el('line',{x1:c.ax,y1:cy,x2:bx,y2:by,stroke:c.color,'stroke-width':2.5}));
+   const lw=c.name.length*7.4+16,lh=22,lx=bx-lw/2,ly=c.side<0?by-lh-2:by+2;
+   svg.appendChild(el('rect',{x:lx,y:ly,width:lw,height:lh,rx:3,fill:c.color}));
+   const lt=el('text',{x:bx,y:ly+15,'text-anchor':'middle','font-size':12.5,'font-weight':700,fill:'#fff'});lt.textContent=c.name;svg.appendChild(lt);
+   [0.42,0.72].forEach((t,i)=>{const px=c.ax+(bx-c.ax)*t,py=cy+(by-cy)*t;
+     svg.appendChild(el('line',{x1:px-9,y1:py,x2:px+9,y2:py,stroke:c.color,'stroke-width':1.5}));
+     const ct=el('text',{x:px+13,y:py+4,'font-size':12,fill:ink});ct.textContent=c.causes[i];svg.appendChild(ct);});});
+ box.innerHTML='';box.appendChild(svg);}
 function retroView(){const w=document.createElement('div');
  w.appendChild(editable('retro',[{k:'sprint',label:'Спринт',type:'num'},{k:'well',label:'Что прошло хорошо',wide:true},
   {k:'improve',label:'Что улучшить',wide:true},{k:'action',label:'Action item',wide:true},
