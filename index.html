@@ -69,6 +69,7 @@ tr.rel-row{cursor:pointer}tr.rel-row:hover td{background:var(--panel2)}
 .rel-none{color:var(--muted);font-size:12px}
 .itemlnk{display:inline-block;font-size:12px;background:var(--accent-soft);color:var(--accent);border-radius:6px;padding:2px 8px;cursor:pointer;text-decoration:none;border:0}
 .itemlnk.def{background:var(--crit-bg);color:var(--crit)}
+.itemlnk.story{background:var(--good-bg);color:var(--good)}
 .itemlnk:hover{text-decoration:underline}
 .matrix{border-collapse:separate;border-spacing:3px;width:auto}
 .matrix td{border:none;border-radius:6px;text-align:center;font-weight:700;width:42px;height:34px;color:#20130f}
@@ -1135,7 +1136,7 @@ function releasesView(C){const w=document.createElement('div');
  const card=document.createElement('div');card.className='card';card.style.marginTop='14px';card.innerHTML='<p class="ctitle">Содержимое релизов (авто) — нажмите строку, чтобы раскрыть список</p>';
  const tw=document.createElement('div');tw.className='twrap';const t=document.createElement('table');
  let h='<tr><th></th><th>ID</th><th>Релиз</th><th>Дата</th><th class="num">Стори</th><th class="num">Задач</th><th class="num">Дефектов</th><th class="num">Объём</th></tr>';
- const chip=(id,title,goto,def)=>`<a class="itemlnk${def?' def':''}" data-goto="${goto}" title="${esc(title||'')}">${esc(id)}${title?' · '+esc(String(title).slice(0,40)):''}</a>`;
+ const chip=(id,title,goto,cls)=>`<a class="itemlnk${cls?' '+cls:''}" data-goto="${goto}" title="${esc(title||'')}">${esc(id)}${title?' · '+esc(String(title).slice(0,40)):''}</a>`;
  (ST.releases||[]).forEach((r,ri)=>{const inR=t2=>+r.sfrom<=+t2.sprint&&+r.sto>=+t2.sprint;
    const stories=(ST.tasks||[]).filter(t2=>inR(t2)&&t2.type==='История');
    const tasksA=(ST.tasks||[]).filter(t2=>inR(t2)&&t2.type==='Задача');
@@ -1144,7 +1145,7 @@ function releasesView(C){const w=document.createElement('div');
    const rd=C.relDate(r);
    h+=`<tr class="rel-row" data-ri="${ri}"><td class="exp" data-ri="${ri}">▸</td><td>${r.id}</td><td>${esc(r.name)}</td><td>${rd?fmtd(rd):''}</td><td class="num">${stories.length}</td><td class="num">${tasksA.length}</td><td class="num">${bugs.length}</td><td class="num">${fmt(vol,1)}</td></tr>`;
    const grp=(lbl,arr)=>`<div class="rel-grp"><span class="rel-lbl">${lbl} (${arr.length})</span>${arr.length?arr.join(''):'<span class="rel-none">—</span>'}</div>`;
-   const det=grp('Стори',stories.map(x=>chip(x.id,x.title,'backlog')))+grp('Задачи',tasksA.map(x=>chip(x.id,x.title,'backlog')))+grp('Дефекты',bugs.map(x=>chip(x.id,x.desc,'bugs',true)));
+   const det=grp('Стори',stories.map(x=>chip(x.id,x.title,'backlog','story')))+grp('Задачи',tasksA.map(x=>chip(x.id,x.title,'backlog')))+grp('Дефекты',bugs.map(x=>chip(x.id,x.desc,'bugs','def')));
    h+=`<tr class="rel-det" data-ri="${ri}" style="display:none"><td></td><td colspan="7">${det}</td></tr>`;});
  t.innerHTML=h;tw.appendChild(t);card.appendChild(tw);w.appendChild(card);
  t.addEventListener('click',e=>{const lnk=e.target.closest('.itemlnk');if(lnk){activate(lnk.dataset.goto);return;}
