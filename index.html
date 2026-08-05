@@ -61,6 +61,15 @@ td.wide input{min-width:220px}
 .rowdel:hover{color:var(--crit);background:var(--crit-bg)}
 .pill{display:inline-block;font-size:11px;font-weight:600;padding:2px 8px;border-radius:999px}
 .p-good{color:var(--good);background:var(--good-bg)}.p-warn{color:var(--warn);background:var(--warn-bg)}.p-crit{color:var(--crit);background:var(--crit-bg)}.p-neut{color:var(--accent);background:var(--accent-soft)}
+.exp{cursor:pointer;user-select:none;color:var(--muted);width:22px;text-align:center}
+tr.rel-row{cursor:pointer}tr.rel-row:hover td{background:var(--panel2)}
+.rel-det td{background:var(--panel2)}
+.rel-grp{display:flex;flex-wrap:wrap;gap:6px;align-items:baseline;padding:5px 0}
+.rel-lbl{font-size:12px;color:var(--muted);font-weight:600;min-width:104px}
+.rel-none{color:var(--muted);font-size:12px}
+.itemlnk{display:inline-block;font-size:12px;background:var(--accent-soft);color:var(--accent);border-radius:6px;padding:2px 8px;cursor:pointer;text-decoration:none;border:0}
+.itemlnk.def{background:var(--crit-bg);color:var(--crit)}
+.itemlnk:hover{text-decoration:underline}
 .matrix{border-collapse:separate;border-spacing:3px;width:auto}
 .matrix td{border:none;border-radius:6px;text-align:center;font-weight:700;width:42px;height:34px;color:#20130f}
 .matrix th{text-align:center;color:var(--muted);background:none;position:static}
@@ -1123,14 +1132,25 @@ function sprintsTable(C){const w=document.createElement('div');w.className='twra
  t.innerHTML=h;w.appendChild(t);return w;}
 function releasesView(C){const w=document.createElement('div');
  w.appendChild(editable('releases',[{k:'id',label:'ID'},{k:'name',label:'Релиз',wide:true},{k:'sfrom',label:'Спр. от',type:'num'},{k:'sto',label:'Спр. до',type:'num'},{k:'status',label:'Статус',type:'select',opts:STAT_MS}],{newId:'id',prefix:'R-'}));
- const card=document.createElement('div');card.className='card';card.style.marginTop='14px';card.innerHTML='<p class="ctitle">Содержимое релизов (авто)</p>';
+ const card=document.createElement('div');card.className='card';card.style.marginTop='14px';card.innerHTML='<p class="ctitle">Содержимое релизов (авто) — нажмите строку, чтобы раскрыть список</p>';
  const tw=document.createElement('div');tw.className='twrap';const t=document.createElement('table');
- let h='<tr><th>ID</th><th>Релиз</th><th>Дата</th><th class="num">Стори</th><th class="num">Задач</th><th class="num">Дефектов</th><th class="num">Объём</th></tr>';
- (ST.releases||[]).forEach(r=>{const inR=t2=>+r.sfrom<=+t2.sprint&&+r.sto>=+t2.sprint;
-   const st=(ST.tasks||[]).filter(t2=>inR(t2)&&t2.type==='История').length;const ta=(ST.tasks||[]).filter(t2=>inR(t2)&&t2.type==='Задача').length;
-   const df=(ST.bugs||[]).filter(b=>+b.sprint>=+r.sfrom&&+b.sprint<=+r.sto).length;const vol=(ST.tasks||[]).filter(inR).reduce((a,b)=>a+num(b.est),0);
-   const rd=C.relDate(r);h+=`<tr><td>${r.id}</td><td>${r.name}</td><td>${rd?fmtd(rd):''}</td><td class="num">${st}</td><td class="num">${ta}</td><td class="num">${df}</td><td class="num">${fmt(vol,1)}</td></tr>`;});
- t.innerHTML=h;tw.appendChild(t);card.appendChild(tw);w.appendChild(card);return w;}
+ let h='<tr><th></th><th>ID</th><th>Релиз</th><th>Дата</th><th class="num">Стори</th><th class="num">Задач</th><th class="num">Дефектов</th><th class="num">Объём</th></tr>';
+ const chip=(id,title,goto,def)=>`<a class="itemlnk${def?' def':''}" data-goto="${goto}" title="${esc(title||'')}">${esc(id)}${title?' · '+esc(String(title).slice(0,40)):''}</a>`;
+ (ST.releases||[]).forEach((r,ri)=>{const inR=t2=>+r.sfrom<=+t2.sprint&&+r.sto>=+t2.sprint;
+   const stories=(ST.tasks||[]).filter(t2=>inR(t2)&&t2.type==='История');
+   const tasksA=(ST.tasks||[]).filter(t2=>inR(t2)&&t2.type==='Задача');
+   const bugs=(ST.bugs||[]).filter(b=>+b.sprint>=+r.sfrom&&+b.sprint<=+r.sto);
+   const vol=(ST.tasks||[]).filter(inR).reduce((a,b)=>a+num(b.est),0);
+   const rd=C.relDate(r);
+   h+=`<tr class="rel-row" data-ri="${ri}"><td class="exp" data-ri="${ri}">▸</td><td>${r.id}</td><td>${esc(r.name)}</td><td>${rd?fmtd(rd):''}</td><td class="num">${stories.length}</td><td class="num">${tasksA.length}</td><td class="num">${bugs.length}</td><td class="num">${fmt(vol,1)}</td></tr>`;
+   const grp=(lbl,arr)=>`<div class="rel-grp"><span class="rel-lbl">${lbl} (${arr.length})</span>${arr.length?arr.join(''):'<span class="rel-none">—</span>'}</div>`;
+   const det=grp('Стори',stories.map(x=>chip(x.id,x.title,'backlog')))+grp('Задачи',tasksA.map(x=>chip(x.id,x.title,'backlog')))+grp('Дефекты',bugs.map(x=>chip(x.id,x.desc,'bugs',true)));
+   h+=`<tr class="rel-det" data-ri="${ri}" style="display:none"><td></td><td colspan="7">${det}</td></tr>`;});
+ t.innerHTML=h;tw.appendChild(t);card.appendChild(tw);w.appendChild(card);
+ t.addEventListener('click',e=>{const lnk=e.target.closest('.itemlnk');if(lnk){activate(lnk.dataset.goto);return;}
+   const row=e.target.closest('.rel-row');if(!row)return;const ri=row.dataset.ri;const det=t.querySelector('.rel-det[data-ri="'+ri+'"]');
+   const open=det.style.display!=='none';det.style.display=open?'none':'';row.querySelector('.exp').textContent=open?'▸':'▾';});
+ return w;}
 function debtView(C){const w=document.createElement('div');
  w.appendChild(editable('techDebt',[{k:'id',label:'ID'},{k:'desc',label:'Описание',wide:true},{k:'area',label:'Область'},
    {k:'type',label:'Тип',type:'select',opts:['Архитектура','Код','Тесты','Инфраструктура','Документация']},{k:'impact',label:'Влияние',type:'select',opts:['High','Medium','Low']},
