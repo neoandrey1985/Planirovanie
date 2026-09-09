@@ -86,7 +86,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,.tabs button:focus
 </style>
 <header class="top"><div class="inner">
  <div class="brand"><span class="dot"></span>Планирование&nbsp;спринтов</div>
- <div class="tabs" id="tabs"><button data-v="dash">Дашборд</button><button data-v="backlog">Бэклог</button><button data-v="team">Команда</button><button data-v="roadmap">Дорожная карта</button><button data-v="quarters">Кварталы</button><button data-v="rice">RICE</button><button data-v="gantt">Гант</button><button data-v="releases">Релизы</button><button data-v="milestones">Вехи</button><button data-v="debt">Техдолг</button><button data-v="okr">OKR</button><button data-v="budget">Бюджет</button><button data-v="analytics">Аналитика</button><button data-v="risks">Риски</button><button data-v="bugs">Баги</button><button data-v="retro">Ретроспективы</button><button data-v="calendar">Календарь</button><button data-v="params">Параметры</button></div>
+ <div class="tabs" id="tabs"><button data-v="dash">Дашборд</button><button data-v="backlog">Бэклог</button><button data-v="team">Команда</button><button data-v="roadmap">Дорожная карта</button><button data-v="quarters">Кварталы</button><button data-v="rice">RICE</button><button data-v="gantt">Гант</button><button data-v="deps">Зависимости</button><button data-v="releases">Релизы</button><button data-v="milestones">Вехи</button><button data-v="debt">Техдолг</button><button data-v="okr">OKR</button><button data-v="budget">Бюджет</button><button data-v="analytics">Аналитика</button><button data-v="risks">Риски</button><button data-v="bugs">Баги</button><button data-v="retro">Ретроспективы</button><button data-v="calendar">Календарь</button><button data-v="params">Параметры</button></div>
  <div class="tools">
   <button class="btn primary" id="xls">Excel</button>
   <button class="btn" id="exp">JSON</button>
@@ -96,7 +96,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,.tabs button:focus
   <button class="btn" id="themebtn" aria-label="Тема">◐</button>
  </div>
 </div></header>
-<main><section class="view" id="v_dash"></section><section class="view" id="v_backlog"></section><section class="view" id="v_team"></section><section class="view" id="v_roadmap"></section><section class="view" id="v_quarters"></section><section class="view" id="v_rice"></section><section class="view" id="v_gantt"></section><section class="view" id="v_releases"></section><section class="view" id="v_milestones"></section><section class="view" id="v_debt"></section><section class="view" id="v_okr"></section><section class="view" id="v_budget"></section><section class="view" id="v_analytics"></section><section class="view" id="v_risks"></section><section class="view" id="v_bugs"></section><section class="view" id="v_retro"></section><section class="view" id="v_calendar"></section><section class="view" id="v_params"></section></main>
+<main><section class="view" id="v_dash"></section><section class="view" id="v_backlog"></section><section class="view" id="v_team"></section><section class="view" id="v_roadmap"></section><section class="view" id="v_quarters"></section><section class="view" id="v_rice"></section><section class="view" id="v_gantt"></section><section class="view" id="v_deps"></section><section class="view" id="v_releases"></section><section class="view" id="v_milestones"></section><section class="view" id="v_debt"></section><section class="view" id="v_okr"></section><section class="view" id="v_budget"></section><section class="view" id="v_analytics"></section><section class="view" id="v_risks"></section><section class="view" id="v_bugs"></section><section class="view" id="v_retro"></section><section class="view" id="v_calendar"></section><section class="view" id="v_params"></section></main>
 <div class="toast" id="toast"></div>
 <input type="file" id="file" accept=".json" style="display:none">
 <script>
@@ -900,6 +900,15 @@ function migrate(d){
   {q:'Q4 2026',obj:'Масштабировать на площадки',kr:'Подключено площадок, шт',target:20,cur:6}];
  if(!d.epics)d.epics={};
  if(!d.budget)d.budget={rate:8000,total:8000000};
+ if(!Array.isArray(d.deps))d.deps=[
+  {id:'D-01',item:'Интеграция платежей',type:'Задача',task:'T-03',stream:'Платёжный шлюз',dir:'Мы зависим',desc:'API оплаты v2 (токенизация карт)',sprint:3,status:'Заблокировано',owner:'Команда Payments',risk:'High'},
+  {id:'D-02',item:'Оплата картой',type:'Фича',task:'',stream:'Платёжный шлюз',dir:'Мы зависим',desc:'Сертификация PCI DSS',sprint:4,status:'Ожидается',owner:'Security / Payments',risk:'High'},
+  {id:'D-03',item:'Уведомления (e-mail/push)',type:'Задача',task:'T-08',stream:'Инфраструктура / DevOps',dir:'Мы зависим',desc:'Сервис рассылок (SMTP + Push)',sprint:4,status:'Подтверждено',owner:'Platform Team',risk:'Medium'},
+  {id:'D-04',item:'API промокодов',type:'Задача',task:'T-11',stream:'Каталог / Контент',dir:'Мы зависим',desc:'Каталог товаров и цен',sprint:2,status:'Получено',owner:'Catalog Team',risk:'Low'},
+  {id:'D-05',item:'Личный кабинет',type:'История',task:'',stream:'Идентификация (SSO)',dir:'Мы зависим',desc:'Единый вход (OAuth2/OIDC)',sprint:5,status:'Ожидается',owner:'IAM Team',risk:'Medium'},
+  {id:'D-06',item:'Экран корзины',type:'Фича',task:'T-02',stream:'Мобильное приложение',dir:'Зависят от нас',desc:'REST API заказов для мобильного клиента',sprint:6,status:'Подтверждено',owner:'Mobile Team',risk:'Medium'},
+  {id:'D-07',item:'Логирование и метрики',type:'Задача',task:'T-12',stream:'Data Platform / Аналитика',dir:'Мы зависим',desc:'Шина событий (Kafka topics)',sprint:4,status:'Заблокировано',owner:'Data Platform',risk:'High'},
+  {id:'D-08',item:'Экспорт отчётов',type:'Фича',task:'',stream:'Data Platform / Аналитика',dir:'Зависят от нас',desc:'Витрина заказов для BI',sprint:7,status:'Ожидается',owner:'Analytics',risk:'Low'}];
  if(!Array.isArray(d.rice))d.rice=[
   {id:'F-01',name:'MVP оформления заказа',reach:5000,impact:3,conf:'100%',effort:40},
   {id:'F-02',name:'Оплата картой',reach:5000,impact:3,conf:'80%',effort:25},
@@ -1077,6 +1086,7 @@ function views(){
  setView('rice','RICE','Приоритизация фич по методологии RICE = (Reach × Impact × Confidence) / Effort.',riceView());
  // Gantt
  renderGantt(C);
+ setView('deps','Зависимости от других стримов','Межстримовые зависимости задач, историй и фич. Маркеры ◆ отражены на диаграмме Ганта.',depsView());
  // OKR
  renderOKR(C);
  // Budget
@@ -1271,9 +1281,40 @@ function renderRoadmap(C){const v=document.getElementById('v_roadmap');
  C.sp.forEach(x=>{h+=`<tr><td>С${x.s}</td><td>${fmtd(x.a)}–${fmtd(x.b)}</td><td class="num">${fmt(x.cap,1)}</td><td class="num">${fmt(x.plan,1)}</td><td class="num">${x.vel==null?'—':fmt(x.vel,1)}</td><td class="num">${x.pct==null?'—':pctf(x.pct)}</td><td>${statusPill(x.status)}</td><td class="wide"><input data-s="${x.s}" value="${((ST.epics||{})[x.s]||'').replace(/"/g,'&quot;')}"></td></tr>`;});
  const tw=document.getElementById('rt');tw.innerHTML=h;tw.addEventListener('input',e=>{if(e.target.dataset.s){ST.epics[e.target.dataset.s]=e.target.value;save();}});}
 /* ---------- Гант ---------- */
+function depColor(st){return (st==='Заблокировано'||st==='Просрочено')?col('--crit'):(st==='Получено'||st==='Подтверждено')?col('--good'):col('--warn');}
+function depsView(){const w=document.createElement('div');
+ w.appendChild(editable('deps',[{k:'id',label:'ID'},{k:'item',label:'Элемент',wide:true},
+   {k:'type',label:'Тип',type:'select',opts:['История','Задача','Фича','Эпик']},
+   {k:'task',label:'Задача (Гант)',type:'dep'},{k:'stream',label:'Внешний стрим'},
+   {k:'dir',label:'Направление',type:'select',opts:['Мы зависим','Зависят от нас']},
+   {k:'desc',label:'Что именно',wide:true},{k:'sprint',label:'Спринт',type:'num'},
+   {k:'status',label:'Статус',type:'select',opts:['Ожидается','Подтверждено','Получено','Заблокировано','Просрочено']},
+   {k:'owner',label:'Владелец'},{k:'risk',label:'Риск',type:'select',opts:['High','Medium','Low']}],{newId:'id',prefix:'D-'}));
+ const dp=ST.deps||[];const blocked=dp.filter(d=>d.status==='Заблокировано'||d.status==='Просрочено').length;
+ const inb=dp.filter(d=>d.dir==='Мы зависим').length,outb=dp.length-inb;
+ const kp=document.createElement('div');kp.className='grid kpis';kp.style.marginTop='14px';
+ kp.innerHTML=kpiCard('Всего зависимостей',dp.length,'межстримовых','neut')
+  +kpiCard('Заблокировано',blocked,'требуют эскалации',blocked?'crit':'good')
+  +kpiCard('Мы зависим',inb,'входящие','neut')
+  +kpiCard('Зависят от нас',outb,'исходящие','neut');
+ w.appendChild(kp);
+ const g2=document.createElement('div');g2.className='grid2';
+ const c1=document.createElement('div');c1.className='card';c1.innerHTML='<p class="ctitle">По статусам</p>';const b1=document.createElement('div');c1.appendChild(b1);
+ const c2=document.createElement('div');c2.className='card';c2.innerHTML='<p class="ctitle">По стримам</p>';const b2=document.createElement('div');c2.appendChild(b2);
+ g2.appendChild(c1);g2.appendChild(c2);w.appendChild(g2);
+ const stats=['Ожидается','Подтверждено','Получено','Заблокировано','Просрочено'];
+ bars(b1,stats.map(s=>s.slice(0,10)),[{color:col('--accent'),data:stats.map(s=>dp.filter(d=>d.status===s).length)}]);
+ const streams=[...new Set(dp.map(d=>d.stream).filter(Boolean))];
+ bars(b2,streams.map(s=>String(s).slice(0,12)),[{color:col('--warn'),data:streams.map(s=>dp.filter(d=>d.stream===s).length)}]);
+ const crit=dp.filter(d=>d.status==='Заблокировано'||d.status==='Просрочено');
+ if(crit.length){const cc=document.createElement('div');cc.className='card';cc.style.marginTop='14px';
+   let h='<p class="ctitle">Критичные зависимости — эскалация</p><div class="twrap" style="border:none"><table><tr><th>ID</th><th>Элемент</th><th>Стрим</th><th>Что именно</th><th class="num">Спринт</th><th>Статус</th></tr>';
+   crit.forEach(d=>{h+=`<tr><td>${esc(d.id)}</td><td>${esc(d.item)}</td><td>${esc(d.stream)}</td><td>${esc(d.desc)}</td><td class="num">${num(d.sprint)}</td><td><span class="pill p-crit">${esc(d.status)}</span></td></tr>`;});
+   h+='</table></div>';cc.innerHTML=h;w.appendChild(cc);}
+ return w;}
 function renderGantt(C){const v=document.getElementById('v_gantt');const tasks=(ST.tasks||[]).slice();
  v.innerHTML=`<h1>Гант</h1><p class="lede">Задачи на шкале дат по спринтам; красная рамка — критический путь. Меняйте спринт и зависимости.</p>
-  <div class="card"><div id="gc"></div><div class="legend"><span><i style="border:2px solid var(--crit);background:transparent"></i>Критический путь</span></div></div>
+  <div class="card"><div id="gc"></div><div class="legend"><span><i style="border:2px solid var(--crit);background:transparent"></i>Критический путь</span><span><b style="color:var(--warn);font-size:13px">◆</b> Внешняя зависимость от другого стрима (цвет — статус)</span></div></div>
   <div class="twrap" style="margin-top:14px"><table id="gt"></table></div>`;
  drawGantt(document.getElementById('gc'),tasks,C);
  let h='<tr><th>ID</th><th>Задача</th><th class="num">Спринт</th><th>Зависит от</th><th>Критич.</th></tr>';
@@ -1285,6 +1326,7 @@ function drawGantt(box,tasks,C){const P=ST.params,start=pd(P.start)||pd('2026-08
  const t0=addD(start,0),t1=addD(start,(maxS-1)*14+11),span=Math.max(1,(t1-t0)/MS);
  const W=760,rowH=20,mt=24,ml=150,mr=14,H=mt+tasks.length*rowH+22;
  const svg=el('svg',{viewBox:`0 0 ${W} ${H}`});const pal=['#4472C4','#ED7D31','#70AD47','#FFC000','#7030A0','#255E91','#9E480E','#43682B','#7C6000','#4A2673','#636363'];
+ const depByTask={};(ST.deps||[]).forEach(d=>{if(d.task){(depByTask[d.task]=depByTask[d.task]||[]).push(d);}});
  for(let s=1;s<=maxS;s++){const x=ml+(W-ml-mr)*((addD(start,(s-1)*14)-t0)/MS)/span;svg.appendChild(el('line',{x1:x,y1:mt-4,x2:x,y2:H-14,stroke:col('--line')}));
    const tx=el('text',{x:x+2,y:mt-7,'font-size':9,fill:col('--muted')});tx.textContent=fmtd(addD(start,(s-1)*14)).slice(0,5);svg.appendChild(tx);}
  tasks.forEach((t,i)=>{const s=num(t.sprint)||1,a=addD(start,(s-1)*14),b=addD(start,(s-1)*14+11);
@@ -1292,7 +1334,10 @@ function drawGantt(box,tasks,C){const P=ST.params,start=pd(P.start)||pd('2026-08
    const lbl=el('text',{x:6,y:y+11,'font-size':10,fill:col('--ink')});lbl.textContent=((t.id||'')+' '+(t.title||'')).slice(0,20);svg.appendChild(lbl);
    const r=el('rect',{x,y,width:Math.max(3,x2-x),height:rowH-8,rx:3,fill:pal[(s-1)%pal.length]});
    if(C.crit.has(t.id)){r.setAttribute('stroke',col('--crit'));r.setAttribute('stroke-width',2);}
-   const tt=el('title');tt.textContent=`${t.id}: С${s} ${fmtd(a)}–${fmtd(b)}`;r.appendChild(tt);svg.appendChild(r);});
+   const tt=el('title');tt.textContent=`${t.id}: С${s} ${fmtd(a)}–${fmtd(b)}`;r.appendChild(tt);svg.appendChild(r);
+   const dl=depByTask[t.id];if(dl&&dl.length){const worst=dl.some(d=>d.status==='Заблокировано'||d.status==='Просрочено')?'Заблокировано':dl.some(d=>d.status==='Ожидается')?'Ожидается':'Получено';
+     const mx=x2+7,my=y+(rowH-8)/2;const dm=el('path',{d:`M${mx} ${my-5} L${mx+5} ${my} L${mx} ${my+5} L${mx-5} ${my} Z`,fill:depColor(worst),stroke:col('--panel'),'stroke-width':1});
+     const dtt=el('title');dtt.textContent='Внешняя зависимость: '+dl.map(d=>d.stream+' — '+(d.desc||'')+' ['+d.status+']').join('; ');dm.appendChild(dtt);svg.appendChild(dm);}});
  box.innerHTML='';box.appendChild(svg);}
 /* ---------- OKR ---------- */
 function renderOKR(C){const v=document.getElementById('v_okr');
@@ -1447,6 +1492,7 @@ function exportXlsx(){const C=compute();const s=[];
  s.push({name:'Календарь',aoa:[['Дата','Праздник / выходной']].concat((ST.calendar||[]).map(h=>[typeof h==='string'?h:h.date,typeof h==='string'?'':h.name]))});
  {const im=(ST.rice||[]).map(r=>riceScore(r));const rmx=im.reduce((a,b)=>Math.max(a,b),0)||1;
   s.push({name:'RICE',aoa:[['ID','Фича','Reach','Impact','Confidence','Effort','RICE score','Приоритет']].concat((ST.rice||[]).map(r=>{const sc=riceScore(r);return [r.id,r.name,num(r.reach),num(r.impact),riceConf(r.conf),num(r.effort),Math.round(sc*10)/10,sc>=0.6*rmx?'Высокий':sc>=0.3*rmx?'Средний':'Низкий'];}))});}
+ s.push({name:'Зависимости',aoa:[['ID','Элемент','Тип','Задача','Внешний стрим','Направление','Что именно','Спринт','Статус','Владелец','Риск']].concat((ST.deps||[]).map(d=>[d.id,d.item,d.type,d.task,d.stream,d.dir,d.desc,num(d.sprint),d.status,d.owner,d.risk]))});
  const bin=buildXlsx(s);const blob=new Blob([bin],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='Планирование_спринта.xlsx';document.body.appendChild(a);a.click();a.remove();toast('Excel экспортирован');}
 

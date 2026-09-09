@@ -867,5 +867,111 @@
    "conf": "50%",
    "effort": 30
   }
+ ],
+ "deps": [
+  {
+   "id": "D-01",
+   "item": "Интеграция платежей",
+   "type": "Задача",
+   "task": "T-03",
+   "stream": "Платёжный шлюз",
+   "dir": "Мы зависим",
+   "desc": "API оплаты v2 (токенизация карт)",
+   "sprint": 3,
+   "status": "Заблокировано",
+   "owner": "Команда Payments",
+   "risk": "High"
+  },
+  {
+   "id": "D-02",
+   "item": "Оплата картой",
+   "type": "Фича",
+   "task": "",
+   "stream": "Платёжный шлюз",
+   "dir": "Мы зависим",
+   "desc": "Сертификация PCI DSS",
+   "sprint": 4,
+   "status": "Ожидается",
+   "owner": "Security / Payments",
+   "risk": "High"
+  },
+  {
+   "id": "D-03",
+   "item": "Уведомления (e-mail/push)",
+   "type": "Задача",
+   "task": "T-08",
+   "stream": "Инфраструктура / DevOps",
+   "dir": "Мы зависим",
+   "desc": "Сервис рассылок (SMTP + Push)",
+   "sprint": 4,
+   "status": "Подтверждено",
+   "owner": "Platform Team",
+   "risk": "Medium"
+  },
+  {
+   "id": "D-04",
+   "item": "API промокодов",
+   "type": "Задача",
+   "task": "T-11",
+   "stream": "Каталог / Контент",
+   "dir": "Мы зависим",
+   "desc": "Каталог товаров и цен",
+   "sprint": 2,
+   "status": "Получено",
+   "owner": "Catalog Team",
+   "risk": "Low"
+  },
+  {
+   "id": "D-05",
+   "item": "Личный кабинет",
+   "type": "История",
+   "task": "",
+   "stream": "Идентификация (SSO)",
+   "dir": "Мы зависим",
+   "desc": "Единый вход (OAuth2/OIDC)",
+   "sprint": 5,
+   "status": "Ожидается",
+   "owner": "IAM Team",
+   "risk": "Medium"
+  },
+  {
+   "id": "D-06",
+   "item": "Экран корзины",
+   "type": "Фича",
+   "task": "T-02",
+   "stream": "Мобильное приложение",
+   "dir": "Зависят от нас",
+   "desc": "REST API заказов для мобильного клиента",
+   "sprint": 6,
+   "status": "Подтверждено",
+   "owner": "Mobile Team",
+   "risk": "Medium"
+  },
+  {
+   "id": "D-07",
+   "item": "Логирование и метрики",
+   "type": "Задача",
+   "task": "T-12",
+   "stream": "Data Platform / Аналитика",
+   "dir": "Мы зависим",
+   "desc": "Шина событий (Kafka topics)",
+   "sprint": 4,
+   "status": "Заблокировано",
+   "owner": "Data Platform",
+   "risk": "High"
+  },
+  {
+   "id": "D-08",
+   "item": "Экспорт отчётов",
+   "type": "Фича",
+   "task": "",
+   "stream": "Data Platform / Аналитика",
+   "dir": "Зависят от нас",
+   "desc": "Витрина заказов для BI",
+   "sprint": 7,
+   "status": "Ожидается",
+   "owner": "Analytics",
+   "risk": "Low"
+  }
  ]
 }
