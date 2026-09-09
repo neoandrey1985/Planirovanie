@@ -86,7 +86,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,.tabs button:focus
 </style>
 <header class="top"><div class="inner">
  <div class="brand"><span class="dot"></span>Планирование&nbsp;спринтов</div>
- <div class="tabs" id="tabs"><button data-v="dash">Дашборд</button><button data-v="backlog">Бэклог</button><button data-v="team">Команда</button><button data-v="roadmap">Дорожная карта</button><button data-v="quarters">Кварталы</button><button data-v="gantt">Гант</button><button data-v="releases">Релизы</button><button data-v="milestones">Вехи</button><button data-v="debt">Техдолг</button><button data-v="okr">OKR</button><button data-v="budget">Бюджет</button><button data-v="analytics">Аналитика</button><button data-v="risks">Риски</button><button data-v="bugs">Баги</button><button data-v="retro">Ретроспективы</button><button data-v="calendar">Календарь</button><button data-v="params">Параметры</button></div>
+ <div class="tabs" id="tabs"><button data-v="dash">Дашборд</button><button data-v="backlog">Бэклог</button><button data-v="team">Команда</button><button data-v="roadmap">Дорожная карта</button><button data-v="quarters">Кварталы</button><button data-v="rice">RICE</button><button data-v="gantt">Гант</button><button data-v="releases">Релизы</button><button data-v="milestones">Вехи</button><button data-v="debt">Техдолг</button><button data-v="okr">OKR</button><button data-v="budget">Бюджет</button><button data-v="analytics">Аналитика</button><button data-v="risks">Риски</button><button data-v="bugs">Баги</button><button data-v="retro">Ретроспективы</button><button data-v="calendar">Календарь</button><button data-v="params">Параметры</button></div>
  <div class="tools">
   <button class="btn primary" id="xls">Excel</button>
   <button class="btn" id="exp">JSON</button>
@@ -96,7 +96,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,.tabs button:focus
   <button class="btn" id="themebtn" aria-label="Тема">◐</button>
  </div>
 </div></header>
-<main><section class="view" id="v_dash"></section><section class="view" id="v_backlog"></section><section class="view" id="v_team"></section><section class="view" id="v_roadmap"></section><section class="view" id="v_quarters"></section><section class="view" id="v_gantt"></section><section class="view" id="v_releases"></section><section class="view" id="v_milestones"></section><section class="view" id="v_debt"></section><section class="view" id="v_okr"></section><section class="view" id="v_budget"></section><section class="view" id="v_analytics"></section><section class="view" id="v_risks"></section><section class="view" id="v_bugs"></section><section class="view" id="v_retro"></section><section class="view" id="v_calendar"></section><section class="view" id="v_params"></section></main>
+<main><section class="view" id="v_dash"></section><section class="view" id="v_backlog"></section><section class="view" id="v_team"></section><section class="view" id="v_roadmap"></section><section class="view" id="v_quarters"></section><section class="view" id="v_rice"></section><section class="view" id="v_gantt"></section><section class="view" id="v_releases"></section><section class="view" id="v_milestones"></section><section class="view" id="v_debt"></section><section class="view" id="v_okr"></section><section class="view" id="v_budget"></section><section class="view" id="v_analytics"></section><section class="view" id="v_risks"></section><section class="view" id="v_bugs"></section><section class="view" id="v_retro"></section><section class="view" id="v_calendar"></section><section class="view" id="v_params"></section></main>
 <div class="toast" id="toast"></div>
 <input type="file" id="file" accept=".json" style="display:none">
 <script>
@@ -900,6 +900,17 @@ function migrate(d){
   {q:'Q4 2026',obj:'Масштабировать на площадки',kr:'Подключено площадок, шт',target:20,cur:6}];
  if(!d.epics)d.epics={};
  if(!d.budget)d.budget={rate:8000,total:8000000};
+ if(!Array.isArray(d.rice))d.rice=[
+  {id:'F-01',name:'MVP оформления заказа',reach:5000,impact:3,conf:'100%',effort:40},
+  {id:'F-02',name:'Оплата картой',reach:5000,impact:3,conf:'80%',effort:25},
+  {id:'F-03',name:'Промокоды и скидки',reach:3000,impact:1,conf:'80%',effort:12},
+  {id:'F-04',name:'Уведомления (e-mail/push)',reach:4000,impact:1,conf:'80%',effort:15},
+  {id:'F-05',name:'История заказов',reach:3500,impact:0.5,conf:'100%',effort:10},
+  {id:'F-06',name:'Мобильная вёрстка',reach:4500,impact:2,conf:'80%',effort:20},
+  {id:'F-07',name:'Личный кабинет',reach:3000,impact:1,conf:'50%',effort:18},
+  {id:'F-08',name:'Рекомендации товаров',reach:2000,impact:2,conf:'50%',effort:22},
+  {id:'F-09',name:'Экспорт отчётов',reach:800,impact:0.5,conf:'80%',effort:8},
+  {id:'F-10',name:'Мультиязычность',reach:1500,impact:1,conf:'50%',effort:30}];
  // calendar: migrate array of date-strings -> [{date,name}]
  if(Array.isArray(d.calendar))d.calendar=d.calendar.map(h=>typeof h==='string'?{date:h,name:''}:h);
  else d.calendar=[];
@@ -1063,6 +1074,7 @@ function views(){
  renderRoadmap(C);
  // Quarters (Кварталы) + quarterly roadmap
  renderQuarters(C);
+ setView('rice','RICE','Приоритизация фич по методологии RICE = (Reach × Impact × Confidence) / Effort.',riceView());
  // Gantt
  renderGantt(C);
  // OKR
@@ -1196,6 +1208,33 @@ function drawIshikawa(box){const W=1012,H=560,cy=280,x0=60,xHead=770;const svg=e
      svg.appendChild(el('line',{x1:px-9,y1:py,x2:px+9,y2:py,stroke:c.color,'stroke-width':1.5}));
      const ct=el('text',{x:px+13,y:py+4,'font-size':12,fill:ink});ct.textContent=c.causes[i];svg.appendChild(ct);});});
  box.innerHTML='';box.appendChild(svg);}
+function riceConf(v){const s=String(v);return s.indexOf('%')>=0?num(s)/100:num(v);}
+function riceScore(r){const eff=num(r.effort);return eff?num(r.reach)*num(r.impact)*riceConf(r.conf)/eff:0;}
+function riceView(){const w=document.createElement('div');
+ w.appendChild(editable('rice',[{k:'id',label:'ID'},{k:'name',label:'Фича / инициатива',wide:true},
+   {k:'reach',label:'Reach (польз./кв)',type:'num'},{k:'impact',label:'Impact',type:'select',opts:['3','2','1','0.5','0.25']},
+   {k:'conf',label:'Confidence',type:'select',opts:['100%','80%','50%']},{k:'effort',label:'Effort (чел-дни)',type:'num'}],{newId:'id',prefix:'F-'}));
+ const items=(ST.rice||[]).map(r=>({r,score:riceScore(r)}));
+ const mx=items.reduce((a,b)=>Math.max(a,b.score),0)||1;
+ const ranked=items.slice().sort((a,b)=>b.score-a.score);
+ const prio=s=>s>=0.6*mx?['Высокий','p-good']:s>=0.3*mx?['Средний','p-warn']:['Низкий','p-crit'];
+ const card=document.createElement('div');card.className='card';card.style.marginTop='14px';
+ let h='<p class="ctitle">Ранжирование по RICE (авто)</p><div class="twrap" style="border:none"><table><tr><th class="num">Ранг</th><th>ID</th><th>Фича</th><th class="num">Reach</th><th class="num">Impact</th><th class="num">Conf</th><th class="num">Effort</th><th class="num">RICE</th><th>Приоритет</th></tr>';
+ ranked.forEach((x,i)=>{const r=x.r,p=prio(x.score),conf=String(r.conf).indexOf("%")>=0?r.conf:pctf(riceConf(r.conf));
+   h+=`<tr><td class="num">${i+1}</td><td>${esc(r.id)}</td><td>${esc(r.name)}</td><td class="num">${fmt(num(r.reach),0)}</td><td class="num">${num(r.impact)}</td><td class="num">${conf}</td><td class="num">${fmt(num(r.effort),0)}</td><td class="num"><b>${fmt(x.score,1)}</b></td><td><span class="pill ${p[1]}">${p[0]}</span></td></tr>`;});
+ h+='</table></div>';card.innerHTML=h;w.appendChild(card);
+ const cbox=document.createElement('div');const cc=document.createElement('div');cc.className='card';cc.style.marginTop='14px';
+ cc.innerHTML='<p class="ctitle">RICE score по фичам</p>';cc.appendChild(cbox);w.appendChild(cc);
+ bars(cbox,ranked.map(x=>x.r.id),[{color:col('--accent'),data:ranked.map(x=>Math.round(x.score*10)/10)}]);
+ const lg=document.createElement('div');lg.className='card';lg.style.marginTop='14px';
+ lg.innerHTML='<p class="ctitle">Методология RICE</p><p style="font-size:13px;color:var(--muted);line-height:1.7;margin:0">'
+  +'<b>RICE = (Reach × Impact × Confidence) / Effort.</b><br>'
+  +'<b>Reach</b> — сколько пользователей затронет фича за квартал.<br>'
+  +'<b>Impact</b> — влияние на пользователя: 3 массивное · 2 высокое · 1 среднее · 0.5 низкое · 0.25 минимальное.<br>'
+  +'<b>Confidence</b> — уверенность в оценке: 100% высокая · 80% средняя · 50% низкая.<br>'
+  +'<b>Effort</b> — трудозатраты команды, человеко-дни.<br>'
+  +'Приоритет: <b>Высокий</b> ≥ 60% макс. балла · <b>Средний</b> ≥ 30% · иначе <b>Низкий</b>.</p>';
+ w.appendChild(lg);return w;}
 function retroView(){const w=document.createElement('div');
  w.appendChild(editable('retro',[{k:'sprint',label:'Спринт',type:'num'},{k:'well',label:'Что прошло хорошо',wide:true},
   {k:'improve',label:'Что улучшить',wide:true},{k:'action',label:'Action item',wide:true},
@@ -1406,6 +1445,8 @@ function exportXlsx(){const C=compute();const s=[];
  s.push({name:'Кварталы',aoa:[['Квартал','Спринтов','Ёмкость','План','Velocity','Загрузка','% вып','Вехи/эпики']].concat((C.quarters||[]).map(q=>[q.q,q.n,q.cap,q.plan,q.hasVel?q.vel:'',q.load,q.pct==null?'':q.pct,q.epics]))});
  s.push({name:'Ретроспективы',aoa:[['Спринт','Что хорошо','Что улучшить','Action item','Ответственный','Срок','Статус']].concat((ST.retro||[]).map(r=>[num(r.sprint),r.well,r.improve,r.action,r.owner,r.due,r.status]))});
  s.push({name:'Календарь',aoa:[['Дата','Праздник / выходной']].concat((ST.calendar||[]).map(h=>[typeof h==='string'?h:h.date,typeof h==='string'?'':h.name]))});
+ {const im=(ST.rice||[]).map(r=>riceScore(r));const rmx=im.reduce((a,b)=>Math.max(a,b),0)||1;
+  s.push({name:'RICE',aoa:[['ID','Фича','Reach','Impact','Confidence','Effort','RICE score','Приоритет']].concat((ST.rice||[]).map(r=>{const sc=riceScore(r);return [r.id,r.name,num(r.reach),num(r.impact),riceConf(r.conf),num(r.effort),Math.round(sc*10)/10,sc>=0.6*rmx?'Высокий':sc>=0.3*rmx?'Средний':'Низкий'];}))});}
  const bin=buildXlsx(s);const blob=new Blob([bin],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='Планирование_спринта.xlsx';document.body.appendChild(a);a.click();a.remove();toast('Excel экспортирован');}
 
@@ -1420,7 +1461,7 @@ document.getElementById('xls').onclick=exportXlsx;
 document.getElementById('exp').onclick=()=>{const b=new Blob([JSON.stringify(ST,null,1)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='planirovanie_data.json';a.click();toast('Экспортировано');};
 document.getElementById('imp').onclick=()=>document.getElementById('file').click();
 document.getElementById('file').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{ST=JSON.parse(r.result);save();views();activate(CURV);toast('Импортировано');}catch(err){toast('Ошибка файла');}};r.readAsText(f);};
-document.getElementById('rst').onclick=()=>{if(confirm('Сбросить все данные к исходным?')){ST=JSON.parse(JSON.stringify(SEED));save();views();activate(CURV);toast('Сброшено');}};
+document.getElementById('rst').onclick=()=>{if(confirm('Сбросить все данные к исходным?')){ST=migrate(JSON.parse(JSON.stringify(SEED)));save();views();activate(CURV);toast('Сброшено');}};
 document.getElementById('themebtn').onclick=()=>{const cur=document.documentElement.getAttribute('data-theme');const sys=matchMedia('(prefers-color-scheme:dark)').matches;const nx=(cur||(sys?'dark':'light'))==='dark'?'light':'dark';document.documentElement.setAttribute('data-theme',nx);views();activate(CURV);};
 views();activate('dash');
 

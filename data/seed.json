@@ -785,5 +785,87 @@
   "rate": 8000,
   "total": 8000000
  },
- "ttmTarget": 15
+ "ttmTarget": 15,
+ "rice": [
+  {
+   "id": "F-01",
+   "name": "MVP оформления заказа",
+   "reach": 5000,
+   "impact": 3,
+   "conf": "100%",
+   "effort": 40
+  },
+  {
+   "id": "F-02",
+   "name": "Оплата картой",
+   "reach": 5000,
+   "impact": 3,
+   "conf": "80%",
+   "effort": 25
+  },
+  {
+   "id": "F-03",
+   "name": "Промокоды и скидки",
+   "reach": 3000,
+   "impact": 1,
+   "conf": "80%",
+   "effort": 12
+  },
+  {
+   "id": "F-04",
+   "name": "Уведомления (e-mail/push)",
+   "reach": 4000,
+   "impact": 1,
+   "conf": "80%",
+   "effort": 15
+  },
+  {
+   "id": "F-05",
+   "name": "История заказов",
+   "reach": 3500,
+   "impact": 0.5,
+   "conf": "100%",
+   "effort": 10
+  },
+  {
+   "id": "F-06",
+   "name": "Мобильная вёрстка",
+   "reach": 4500,
+   "impact": 2,
+   "conf": "80%",
+   "effort": 20
+  },
+  {
+   "id": "F-07",
+   "name": "Личный кабинет",
+   "reach": 3000,
+   "impact": 1,
+   "conf": "50%",
+   "effort": 18
+  },
+  {
+   "id": "F-08",
+   "name": "Рекомендации товаров",
+   "reach": 2000,
+   "impact": 2,
+   "conf": "50%",
+   "effort": 22
+  },
+  {
+   "id": "F-09",
+   "name": "Экспорт отчётов",
+   "reach": 800,
+   "impact": 0.5,
+   "conf": "80%",
+   "effort": 8
+  },
+  {
+   "id": "F-10",
+   "name": "Мультиязычность",
+   "reach": 1500,
+   "impact": 1,
+   "conf": "50%",
+   "effort": 30
+  }
+ ]
 }
