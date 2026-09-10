@@ -46,10 +46,11 @@ public final class Dtos {
         public Integer ttmTarget;
     }
 
-    /** PUT body is {"state": {...}} to stay compatible with the existing sync client. */
+    /** PUT body is {"state": {...}, "baseVersion": N} — baseVersion enables optimistic concurrency. */
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class StateEnvelope {
         public StateDto state;
+        public Long baseVersion;
     }
 
     public static class StateResponse {

@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""Generate db/init.sql (schema + seed) from data/seed.json. Run: python scripts/gen_initsql.py"""
+"""Generate the Flyway migration (schema + seed) from data/seed.json.
+Output: backend-java/src/main/resources/db/migration/V1__initial_schema_and_seed.sql
+Run: python scripts/gen_initsql.py"""
 import json
 import pathlib
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
+OUT = ROOT / "backend-java" / "src" / "main" / "resources" / "db" / "migration" / "V1__initial_schema_and_seed.sql"
 SEED = json.load(open(ROOT / "data" / "seed.json", encoding="utf-8"))
 
 
@@ -19,8 +22,8 @@ def q(v):
 
 
 out = []
-out.append("-- Auto-generated schema + seed for Планирование спринтов (PostgreSQL).")
-out.append("-- Regenerate with: python scripts/gen_initsql.py")
+out.append("-- Flyway V1: schema + seed for Планирование спринтов (PostgreSQL).")
+out.append("-- Auto-generated — regenerate with: python scripts/gen_initsql.py")
 out.append("-- Source of truth for the Java (JPA) and Python (SQLAlchemy) services.\n")
 
 DDL = """
@@ -100,6 +103,6 @@ rows("okr", ["q", "obj", "kr", "target", "cur", "ord"], OKR,
 out.append("\n-- meta")
 out.append("INSERT INTO app_meta (id, version) VALUES (1, 1);")
 
-(ROOT / "db").mkdir(exist_ok=True)
-open(ROOT / "db" / "init.sql", "w", encoding="utf-8").write("\n".join(out) + "\n")
-print("init.sql written:", sum(1 for line in out if line.startswith("INSERT")), "INSERTs")
+OUT.parent.mkdir(parents=True, exist_ok=True)
+open(OUT, "w", encoding="utf-8").write("\n".join(out) + "\n")
+print(OUT.name, "written:", sum(1 for line in out if line.startswith("INSERT")), "INSERTs")

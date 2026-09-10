@@ -34,16 +34,18 @@ jobs:
         with:
           python-version: '3.12'
       - name: Install dependencies
-        run: pip install -r analytics-python/requirements.txt
+        run: pip install -r analytics-python/requirements-dev.txt
       - name: Compile check
-        run: python -m py_compile analytics-python/app/*.py
-      - name: Functional tests
+        run: python -m py_compile analytics-python/app/*.py analytics-python/tests/*.py
+      - name: Functional tests (no DB)
         run: python analytics-python/tests/test_compute.py
-      - name: init.sql is up to date
+      - name: DB integration test (testcontainers + PostgreSQL)
+        run: python analytics-python/tests/test_db_integration.py
+      - name: Migration is up to date with seed.json
         run: |
           python scripts/gen_initsql.py
-          git diff --exit-code db/init.sql \
-            || (echo "::error::db/init.sql устарел — запустите: python scripts/gen_initsql.py" && exit 1)
+          git diff --exit-code backend-java/src/main/resources/db/migration/V1__initial_schema_and_seed.sql \
+            || (echo "::error::V1 migration устарела — запустите: python scripts/gen_initsql.py" && exit 1)
 
   e2e:
     name: Полный стек (docker compose)

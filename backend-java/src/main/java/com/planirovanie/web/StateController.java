@@ -2,6 +2,7 @@ package com.planirovanie.web;
 
 import com.planirovanie.dto.Dtos.*;
 import com.planirovanie.service.StateService;
+import com.planirovanie.service.VersionConflictException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -42,7 +43,15 @@ public class StateController {
     public ResponseEntity<?> put(@RequestHeader(value = "X-Team-Token", required = false) String t,
                                  @RequestBody StateEnvelope env) {
         if (!authorized(t)) return ResponseEntity.status(401).body(Map.of("error", "unauthorized"));
-        long v = service.replace(env == null ? null : env.state);
-        return ResponseEntity.ok(new PutResponse(v, Instant.now().toString()));
+        try {
+            long v = service.replace(env == null ? null : env.state, env == null ? null : env.baseVersion);
+            return ResponseEntity.ok(new PutResponse(v, Instant.now().toString()));
+        } catch (VersionConflictException ex) {
+            // Someone else saved first: return current version and fresh state so the client can reconcile.
+            return ResponseEntity.status(409).body(Map.of(
+                    "error", "version_conflict",
+                    "version", ex.currentVersion,
+                    "state", service.get()));
+        }
     }
 }

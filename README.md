@@ -23,7 +23,14 @@
                                  └──────────────────────┘        └────────────┘
 ```
 
-Единый источник схемы и стартовых данных — `db/init.sql` (применяется при первом старте PostgreSQL).
+Единый источник схемы и стартовых данных — Flyway-миграция
+`backend-java/src/main/resources/db/migration/V1__initial_schema_and_seed.sql`, которую Java-сервис
+применяет при старте (версионные миграции, а не разовый init). Файл генерируется из `data/seed.json`
+(`make seed`).
+
+Записи через `PUT /api/state` защищены **оптимистичной блокировкой**: клиент присылает `baseVersion`,
+и при расхождении с текущей версией сервер возвращает `409` со свежими данными — так правки одного
+пользователя не затирают правки другого молча.
 
 ## Быстрый старт
 
@@ -48,7 +55,7 @@ docker compose up --build
 | `make up-d` | то же в фоне |
 | `make down` / `make clean` | остановить / остановить со сбросом БД (тома) |
 | `make test` | Java-тесты (Spring Boot + H2) и Python-тесты |
-| `make seed` | перегенерировать `db/init.sql` из `data/seed.json` |
+| `make seed` | перегенерировать Flyway-миграцию из `data/seed.json` |
 
 `make` — для Linux/macOS/git-bash; на Windows используйте `scripts/dev.ps1`.
 
@@ -58,7 +65,7 @@ docker compose up --build
 
 1. **backend-java** — `mvn test` (интеграционный тест Spring Boot + H2) и сборка jar.
 2. **analytics-python** — установка зависимостей, `py_compile`, функциональные тесты аналитики,
-   проверка, что `db/init.sql` соответствует `data/seed.json`.
+   тест `db.py` на реальном PostgreSQL (testcontainers), проверка соответствия миграции `data/seed.json`.
 3. **e2e** — `docker compose up --build`, ожидание готовности и smoke-тесты всего стека
    (`/api/health`, `/api/state`, `/analytics/health`, `/analytics/metrics`, отдача UI) через nginx.
 
@@ -86,18 +93,18 @@ docker compose up --build
 
 | Путь | Назначение |
 |---|---|
-| `db/init.sql` | Схема PostgreSQL + стартовые данные (источник правды) |
+| `backend-java/.../db/migration/` | Flyway-миграции: схема PostgreSQL + стартовые данные (источник правды) |
 | `backend-java/` | Spring Boot API (Maven, JPA, PostgreSQL) |
 | `analytics-python/` | FastAPI-сервис аналитики (SQLAlchemy) |
 | `frontend/` | UI (`index.html`) + nginx reverse-proxy |
 | `docker-compose.yml` | Оркестрация: db + api + analytics + web |
-| `data/seed.json` | Исходные данные (справочно; из них сгенерирован `init.sql`) |
+| `data/seed.json` | Исходные данные (из них генерируется Flyway-миграция) |
 | `Планирование_спринта_PRO.xlsx` | Книга-первоисточник (30 листов) |
 | `*_описание_*.docx` | Описание листов/метрик |
 
 ## Локальная разработка (без Docker)
 
-1. Поднять PostgreSQL и применить `db/init.sql`.
+1. Поднять PostgreSQL (схему применит Flyway при старте Java-сервиса).
 2. Java: `cd backend-java && mvn spring-boot:run` (env `DB_URL/DB_USER/DB_PASSWORD`).
 3. Python: `cd analytics-python && pip install -r requirements.txt && uvicorn app.main:app --port 8000`
    (env `DB_URL_PY`).

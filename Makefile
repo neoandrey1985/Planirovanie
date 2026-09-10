@@ -14,7 +14,7 @@ help:
 	@echo "  make test        - тесты Java (Spring Boot + H2) и Python"
 	@echo "  make test-java   - только Java-тесты"
 	@echo "  make test-python - только Python-тесты"
-	@echo "  make seed        - перегенерировать db/init.sql из data/seed.json"
+	@echo "  make seed        - перегенерировать Flyway-миграцию из data/seed.json"
 
 up:
 	$(COMPOSE) up --build

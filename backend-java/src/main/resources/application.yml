@@ -6,9 +6,13 @@ spring:
     url: ${DB_URL:jdbc:postgresql://localhost:5432/planirovanie}
     username: ${DB_USER:planirovanie}
     password: ${DB_PASSWORD:planirovanie}
+  flyway:
+    # Flyway owns the schema (src/main/resources/db/migration). Runs on startup before JPA.
+    enabled: true
+    locations: classpath:db/migration
   jpa:
     hibernate:
-      # Schema is owned by db/init.sql; validate that entities match it.
+      # Schema is managed by Flyway migrations, not Hibernate.
       ddl-auto: ${JPA_DDL_AUTO:none}
     properties:
       hibernate:

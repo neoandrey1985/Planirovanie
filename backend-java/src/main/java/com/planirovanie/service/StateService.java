@@ -77,8 +77,15 @@ public class StateService {
     }
 
     @Transactional
-    public long replace(StateDto s) {
+    public long replace(StateDto s, Long expectedVersion) {
         if (s == null) s = new StateDto();
+
+        // Optimistic concurrency: lock the version row, reject stale writes before touching data.
+        AppMeta m = meta.findForUpdate().orElseGet(() -> { AppMeta nm = new AppMeta(); nm.id = 1; nm.version = 0L; return nm; });
+        long current = (m.version == null ? 0L : m.version);
+        if (expectedVersion != null && expectedVersion.longValue() != current) {
+            throw new VersionConflictException(current);
+        }
 
         // params + budget + ttmTarget (single row, id = 1)
         Param p = params.findById(1).orElseGet(() -> { Param np = new Param(); np.id = 1; return np; });
@@ -118,8 +125,7 @@ public class StateService {
         deps.deleteAllInBatch();       if (s.deps != null)       deps.saveAll(s.deps);
         okr.deleteAllInBatch();        if (s.okr != null)        okr.saveAll(s.okr);
 
-        AppMeta m = meta.findById(1).orElseGet(() -> { AppMeta nm = new AppMeta(); nm.id = 1; nm.version = 0L; return nm; });
-        m.version = (m.version == null ? 0L : m.version) + 1;
+        m.version = current + 1;
         meta.save(m);
         return m.version;
     }

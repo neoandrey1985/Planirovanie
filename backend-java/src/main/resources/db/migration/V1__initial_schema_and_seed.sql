@@ -1,5 +1,5 @@
--- Auto-generated schema + seed for Планирование спринтов (PostgreSQL).
--- Regenerate with: python scripts/gen_initsql.py
+-- Flyway V1: schema + seed for Планирование спринтов (PostgreSQL).
+-- Auto-generated — regenerate with: python scripts/gen_initsql.py
 -- Source of truth for the Java (JPA) and Python (SQLAlchemy) services.
 
 CREATE TABLE IF NOT EXISTS params (

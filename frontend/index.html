@@ -1534,8 +1534,12 @@ async function syncPull(initial){
 let pushT=null;
 function syncSchedule(){SYNC.editAt=Date.now();if(!SYNC.on)return;clearTimeout(pushT);pushT=setTimeout(syncPush,700);}
 async function syncPush(){
- try{const r=await fetch(API,{method:'PUT',headers:hdrs(true),body:JSON.stringify({state:ST})});
+ try{const r=await fetch(API,{method:'PUT',headers:hdrs(true),body:JSON.stringify({state:ST,baseVersion:SYNC.ver})});
   if(r.status===401){SYNC.on=false;askToken();return;}
+  if(r.status===409){ // another user saved first — adopt their version, never silently overwrite
+    const d=await r.json();ST=migrate(d.state||JSON.parse(JSON.stringify(SEED)));SYNC.ver=d.version;
+    localStorage.setItem('sprintapp',JSON.stringify(ST));views();activate(CURV);
+    setSt('🟢 онлайн','p-good');toast('Изменено другим пользователем — загружена свежая версия');return;}
   if(!r.ok)throw 0;const d=await r.json();SYNC.ver=d.version;SYNC.on=true;setSt('🟢 сохранено','p-good');
  }catch(e){SYNC.on=false;setSt('⚪ офлайн','p-neut');}
 }
