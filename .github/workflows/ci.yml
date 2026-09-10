@@ -1,0 +1,83 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  backend-java:
+    name: Java API — сборка и тесты
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven
+      - name: Maven test (Spring Boot + H2)
+        working-directory: backend-java
+        run: mvn -B -ntp test
+      - name: Package jar
+        working-directory: backend-java
+        run: mvn -B -ntp -DskipTests package
+
+  analytics-python:
+    name: Python — проверка аналитики
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install dependencies
+        run: pip install -r analytics-python/requirements.txt
+      - name: Compile check
+        run: python -m py_compile analytics-python/app/*.py
+      - name: Functional tests
+        run: python analytics-python/tests/test_compute.py
+      - name: init.sql is up to date
+        run: |
+          python scripts/gen_initsql.py
+          git diff --exit-code db/init.sql \
+            || (echo "::error::db/init.sql устарел — запустите: python scripts/gen_initsql.py" && exit 1)
+
+  e2e:
+    name: Полный стек (docker compose)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build & start stack
+        run: docker compose up -d --build
+      - name: Wait for services
+        run: |
+          set -e
+          ok=0
+          for i in $(seq 1 60); do
+            if curl -fs http://localhost:8080/api/health >/dev/null \
+               && curl -fs http://localhost:8080/analytics/health >/dev/null; then
+              ok=1; echo "services ready"; break
+            fi
+            echo "waiting ($i)…"; sleep 3
+          done
+          [ "$ok" = "1" ] || (echo "::error::services did not become ready" && exit 1)
+      - name: Smoke test the whole stack via nginx
+        run: |
+          set -e
+          echo "== /api/health =="; curl -fs http://localhost:8080/api/health; echo
+          echo "== /analytics/health =="; curl -fs http://localhost:8080/analytics/health; echo
+          echo "== /api/state =="; curl -fs http://localhost:8080/api/state | head -c 300; echo
+          echo "== /analytics/metrics =="; curl -fs http://localhost:8080/analytics/metrics | head -c 300; echo
+          curl -fs http://localhost:8080/api/state | grep -q '"version"'
+          curl -fs http://localhost:8080/analytics/metrics | grep -q 'avgVelocity'
+          curl -fs http://localhost:8080/analytics/rice | grep -q 'F-02'
+          curl -fs http://localhost:8080/ | grep -qi 'Планирование'
+      - name: Dump logs on failure
+        if: failure()
+        run: docker compose logs
+      - name: Tear down
+        if: always()
+        run: docker compose down -v

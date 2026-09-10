@@ -1,4 +1,5 @@
 -- Auto-generated schema + seed for Планирование спринтов (PostgreSQL).
+-- Regenerate with: python scripts/gen_initsql.py
 -- Source of truth for the Java (JPA) and Python (SQLAlchemy) services.
 
 CREATE TABLE IF NOT EXISTS params (

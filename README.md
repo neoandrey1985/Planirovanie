@@ -40,6 +40,28 @@ docker compose up --build
 Общий ключ команды (защита API): задать переменную окружения `TEAM_TOKEN` перед запуском —
 тогда UI при первом входе спросит ключ.
 
+## Команды (Makefile / скрипты)
+
+| Команда | Действие |
+|---|---|
+| `make up` / `./scripts/dev.ps1 up` / `./scripts/dev.sh up` | собрать и запустить весь стек на :8080 |
+| `make up-d` | то же в фоне |
+| `make down` / `make clean` | остановить / остановить со сбросом БД (тома) |
+| `make test` | Java-тесты (Spring Boot + H2) и Python-тесты |
+| `make seed` | перегенерировать `db/init.sql` из `data/seed.json` |
+
+`make` — для Linux/macOS/git-bash; на Windows используйте `scripts/dev.ps1`.
+
+## CI (GitHub Actions)
+
+`.github/workflows/ci.yml` на каждый push/PR в `main` запускает три задачи:
+
+1. **backend-java** — `mvn test` (интеграционный тест Spring Boot + H2) и сборка jar.
+2. **analytics-python** — установка зависимостей, `py_compile`, функциональные тесты аналитики,
+   проверка, что `db/init.sql` соответствует `data/seed.json`.
+3. **e2e** — `docker compose up --build`, ожидание готовности и smoke-тесты всего стека
+   (`/api/health`, `/api/state`, `/analytics/health`, `/analytics/metrics`, отдача UI) через nginx.
+
 ## Сервисы и эндпоинты
 
 **Java API (`/api`)**
