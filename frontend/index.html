@@ -93,6 +93,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,.tabs button:focus
   <button class="btn" id="imp">Импорт</button>
   <button class="btn danger" id="rst">Сброс</button>
   <span id="syncst" class="pill p-neut" style="align-self:center;white-space:nowrap">⚪ локально</span>
+  <span id="anst" class="pill p-neut" style="align-self:center;white-space:nowrap" title="Сервис аналитики (Python)">🐍 аналитика</span>
   <button class="btn" id="themebtn" aria-label="Тема">◐</button>
  </div>
 </div></header>
@@ -1545,4 +1546,18 @@ function startSync(){
  }).catch(()=>{setSt('⚪ локально','p-neut');});
 }
 startSync();
+/* ---------- Python analytics service integration ---------- */
+async function startAnalytics(){
+ const set=(t,c)=>{const e=document.getElementById('anst');if(e){e.textContent=t;e.className='pill '+c;}};
+ try{
+  const h=await fetch('analytics/health',{cache:'no-store'});
+  if(!h.ok)throw 0;const hd=await h.json();
+  if(hd.status!=='ok'){set('🐍 аналитика: БД','p-warn');return;}
+  const m=await (await fetch('analytics/metrics',{cache:'no-store'})).json();
+  set('🐍 аналитика ✓','p-good');
+  const e=document.getElementById('anst');
+  if(e)e.title=`Сервис аналитики (Python): velocity ${m.avgVelocity}, health ${Math.round(m.health*100)}%, прогноз ${m.forecastSprints} спр., предсказуемость ${Math.round(m.predictability*100)}%`;
+ }catch(e){set('🐍 аналитика: офлайн','p-neut');}
+}
+startAnalytics();setInterval(startAnalytics,30000);
 </script>

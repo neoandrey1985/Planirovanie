@@ -1,0 +1,20 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/planirovanie}
+    username: ${DB_USER:planirovanie}
+    password: ${DB_PASSWORD:planirovanie}
+  jpa:
+    hibernate:
+      # Schema is owned by db/init.sql; validate that entities match it.
+      ddl-auto: ${JPA_DDL_AUTO:none}
+    properties:
+      hibernate:
+        format_sql: false
+    open-in-view: false
+
+# Optional shared team token; if set, /api/state requires header X-Team-Token.
+app:
+  team-token: ${TEAM_TOKEN:}
