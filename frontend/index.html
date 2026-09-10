@@ -955,7 +955,17 @@ const NS="http://www.w3.org/2000/svg";
 let ST=load();
 
 function load(){let d;try{const s=localStorage.getItem('sprintapp');d=s?JSON.parse(s):JSON.parse(JSON.stringify(SEED));}catch(e){d=JSON.parse(JSON.stringify(SEED));}return migrate(d);}
+/* Recover text that was corrupted by decoding UTF-8 bytes as latin1 (mojibake like "Ð¿Ñ€Ð¾..."). */
+function fixMojibake(s){if(typeof s!=='string'||!/[\u00C0-\u00FF][\u0080-\u00BF]/.test(s))return s;
+ try{const b=Uint8Array.from(s,c=>c.charCodeAt(0)&255);const dec=new TextDecoder('utf-8',{fatal:false}).decode(b);
+  if(/[\u0400-\u04FF]/.test(dec)&&dec.indexOf('\uFFFD')<0)return dec;}catch(e){}
+ return s;}
+function deepFix(o){if(typeof o==='string')return fixMojibake(o);
+ if(Array.isArray(o)){for(let i=0;i<o.length;i++)o[i]=deepFix(o[i]);return o;}
+ if(o&&typeof o==='object'){for(const k in o)o[k]=deepFix(o[k]);return o;}
+ return o;}
 function migrate(d){
+ deepFix(d);
  if(!d.okr)d.okr=[{q:'Q3 2026',obj:'Запустить подписочную модель',kr:'Готовность MVP чекаута, %',target:100,cur:70},
   {q:'Q3 2026',obj:'Запустить подписочную модель',kr:'Интеграция оплаты, %',target:100,cur:60},
   {q:'Q3 2026',obj:'Обеспечить качество релиза',kr:'Покрытие автотестами, %',target:80,cur:45},
