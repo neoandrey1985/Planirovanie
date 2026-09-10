@@ -1,3 +1,5 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Планирование спринтов — приложение</title>
 <style>
 :root{--bg:#EEF2F7;--panel:#FFF;--panel2:#F7F9FC;--ink:#16202E;--muted:#5A6B82;--line:#DCE3EC;
@@ -50,7 +52,7 @@ svg{width:100%;height:auto;display:block}
 .twrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--panel)}
 table{width:100%;border-collapse:collapse;font-size:13.5px}
 th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--line);white-space:nowrap}
-th{font-size:11.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);font-weight:600;background:var(--panel2);position:sticky;top:0}
+th{font-size:11.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);font-weight:600;background:var(--panel2);position:sticky;top:56px;z-index:5}
 tr:last-child td{border-bottom:none}
 td input,td select{width:100%;min-width:70px;border:1px solid transparent;background:transparent;color:var(--ink);border-radius:6px;padding:4px 6px;font-family:inherit;font-size:13.5px}
 td input:hover,td select:hover{border-color:var(--line)}
@@ -82,11 +84,68 @@ tr.rel-row{cursor:pointer}tr.rel-row:hover td{background:var(--panel2)}
 .dodlist label{display:flex;gap:9px;align-items:center;color:var(--ink);font-size:14px}
 .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:9px 16px;border-radius:10px;font-size:13px;opacity:0;transition:opacity .25s;pointer-events:none;z-index:50}
 .toast.show{opacity:.95}
-button:focus-visible,input:focus-visible,select:focus-visible,.tabs button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+button:focus-visible,input:focus-visible,select:focus-visible,.nav-item:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+/* layout: sidebar + main */
+.shell{display:flex;align-items:flex-start}
+.side{width:224px;flex:none;position:sticky;top:56px;height:calc(100vh - 56px);overflow:auto;padding:12px 10px;border-right:1px solid var(--line);background:var(--panel)}
+main{flex:1;min-width:0;max-width:1240px;margin:0;padding:20px 22px 60px}
+.nav-group{margin-bottom:9px}
+.nav-h{font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700;padding:9px 10px 4px}
+.nav-item{display:flex;align-items:center;gap:9px;width:100%;background:none;border:none;color:var(--muted);padding:7px 10px;border-radius:8px;font-size:13.5px;cursor:pointer;font-family:inherit;text-align:left}
+.nav-item:hover{color:var(--ink);background:var(--panel2)}
+.nav-item.active{color:var(--accent);background:var(--accent-soft);font-weight:600}
+.nav-ic{width:18px;text-align:center;font-size:14px;flex:none}
+.iconbtn{padding:7px 10px;font-size:15px;line-height:1}
+#menubtn{display:none}
+.scrim{display:none}
+@media(max-width:900px){
+ .side{position:fixed;left:0;top:56px;bottom:0;height:auto;transform:translateX(-100%);transition:transform .2s;z-index:44;box-shadow:var(--shadow)}
+ .side.open{transform:none}
+ .scrim.show{display:block;position:fixed;inset:56px 0 0 0;background:rgba(10,16,24,.4);z-index:42}
+ #menubtn{display:inline-flex}
+ main{padding:16px 14px 60px}
+ .top .inner{gap:8px;padding:0 12px}
+}
+/* command palette */
+.palette{position:fixed;inset:0;z-index:60;display:none;background:rgba(10,16,24,.25)}
+.palette.open{display:block}
+.palette .pbox{max-width:560px;margin:9vh auto 0;background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);overflow:hidden}
+.palette .pin{width:100%;border:none;border-bottom:1px solid var(--line);background:var(--panel);color:var(--ink);padding:14px 16px;font-size:15px;font-family:inherit;outline:none}
+.palette .plist{max-height:52vh;overflow:auto;padding:6px}
+.popt{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;cursor:pointer;font-size:14px}
+.popt small{color:var(--muted);margin-left:auto;font-size:11.5px}
+.popt.sel,.popt:hover{background:var(--accent-soft);color:var(--accent)}
+/* table upgrades */
+.tsearch{border:1px solid var(--line);background:var(--panel2);color:var(--ink);border-radius:8px;padding:6px 10px;font-family:inherit;font-size:13px;min-width:170px}
+th.sortable{cursor:pointer;user-select:none}
+th.sortable:hover{color:var(--ink)}
+th .arw{font-size:10px}
+tfoot td{font-weight:700;background:var(--panel2);color:var(--ink);border-top:2px solid var(--line)}
+.attn{display:flex;flex-wrap:wrap;gap:8px;margin:2px 0 16px}
+.attn a{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;font-weight:600;padding:6px 11px;border-radius:999px;cursor:pointer;text-decoration:none;border:1px solid transparent}
+.attn a.a-crit{color:var(--crit);background:var(--crit-bg)}
+.attn a.a-warn{color:var(--warn);background:var(--warn-bg)}
+.attn a.a-good{color:var(--good);background:var(--good-bg)}
+.attn a:hover{filter:brightness(1.03);text-decoration:underline}
+.kpi.clk{cursor:pointer}.kpi.clk:hover{border-color:var(--accent)}
+.spark{height:30px;margin-top:8px}
+.toast a{color:#8FB4FF;cursor:pointer;margin-left:12px;font-weight:600;text-decoration:underline;pointer-events:auto}
+/* mobile card tables */
+@media(max-width:640px){
+ table.cardt thead{display:none}
+ table.cardt tr{display:block;border:1px solid var(--line);border-radius:10px;margin:0 0 8px;padding:4px 8px;background:var(--panel)}
+ table.cardt tbody td{display:flex;justify-content:space-between;align-items:center;gap:12px;border:none;white-space:normal;padding:5px 2px}
+ table.cardt tbody td::before{content:attr(data-label);color:var(--muted);font-size:11px;font-weight:600;flex:none}
+ table.cardt td input,table.cardt td select{max-width:62%}
+ table.cardt tfoot{display:none}
+ .twrap{border:none;background:none;overflow:visible}
+}
 </style>
 <header class="top"><div class="inner">
+ <button class="btn iconbtn" id="menubtn" aria-label="Меню">☰</button>
  <div class="brand"><span class="dot"></span>Планирование&nbsp;спринтов</div>
- <div class="tabs" id="tabs"><button data-v="dash">Дашборд</button><button data-v="backlog">Бэклог</button><button data-v="team">Команда</button><button data-v="roadmap">Дорожная карта</button><button data-v="quarters">Кварталы</button><button data-v="rice">RICE</button><button data-v="gantt">Гант</button><button data-v="deps">Зависимости</button><button data-v="releases">Релизы</button><button data-v="milestones">Вехи</button><button data-v="debt">Техдолг</button><button data-v="okr">OKR</button><button data-v="budget">Бюджет</button><button data-v="analytics">Аналитика</button><button data-v="risks">Риски</button><button data-v="bugs">Баги</button><button data-v="retro">Ретроспективы</button><button data-v="calendar">Календарь</button><button data-v="params">Параметры</button></div>
+ <button class="btn iconbtn" id="palettebtn" title="Поиск и переход (Ctrl+K)">🔎</button>
+ <div class="tabs" id="tabs" hidden><button data-v="dash">Дашборд</button><button data-v="backlog">Бэклог</button><button data-v="team">Команда</button><button data-v="roadmap">Дорожная карта</button><button data-v="quarters">Кварталы</button><button data-v="rice">RICE</button><button data-v="gantt">Гант</button><button data-v="deps">Зависимости</button><button data-v="releases">Релизы</button><button data-v="milestones">Вехи</button><button data-v="debt">Техдолг</button><button data-v="okr">OKR</button><button data-v="budget">Бюджет</button><button data-v="analytics">Аналитика</button><button data-v="risks">Риски</button><button data-v="bugs">Баги</button><button data-v="retro">Ретроспективы</button><button data-v="calendar">Календарь</button><button data-v="params">Параметры</button></div>
  <div class="tools">
   <button class="btn primary" id="xls">Excel</button>
   <button class="btn" id="exp">JSON</button>
@@ -97,7 +156,9 @@ button:focus-visible,input:focus-visible,select:focus-visible,.tabs button:focus
   <button class="btn" id="themebtn" aria-label="Тема">◐</button>
  </div>
 </div></header>
-<main><section class="view" id="v_dash"></section><section class="view" id="v_backlog"></section><section class="view" id="v_team"></section><section class="view" id="v_roadmap"></section><section class="view" id="v_quarters"></section><section class="view" id="v_rice"></section><section class="view" id="v_gantt"></section><section class="view" id="v_deps"></section><section class="view" id="v_releases"></section><section class="view" id="v_milestones"></section><section class="view" id="v_debt"></section><section class="view" id="v_okr"></section><section class="view" id="v_budget"></section><section class="view" id="v_analytics"></section><section class="view" id="v_risks"></section><section class="view" id="v_bugs"></section><section class="view" id="v_retro"></section><section class="view" id="v_calendar"></section><section class="view" id="v_params"></section></main>
+<div class="shell"><aside class="side" id="side"><nav id="nav"></nav></aside><div class="scrim" id="scrim"></div>
+<main id="main"><section class="view" id="v_dash"></section><section class="view" id="v_backlog"></section><section class="view" id="v_team"></section><section class="view" id="v_roadmap"></section><section class="view" id="v_quarters"></section><section class="view" id="v_rice"></section><section class="view" id="v_gantt"></section><section class="view" id="v_deps"></section><section class="view" id="v_releases"></section><section class="view" id="v_milestones"></section><section class="view" id="v_debt"></section><section class="view" id="v_okr"></section><section class="view" id="v_budget"></section><section class="view" id="v_analytics"></section><section class="view" id="v_risks"></section><section class="view" id="v_bugs"></section><section class="view" id="v_retro"></section><section class="view" id="v_calendar"></section><section class="view" id="v_params"></section></main></div>
+<div class="palette" id="palette"><div class="pbox"><input class="pin" id="pin" placeholder="Поиск раздела или действия…" autocomplete="off"><div class="plist" id="plist"></div></div></div>
 <div class="toast" id="toast"></div>
 <input type="file" id="file" accept=".json" style="display:none">
 <script>
@@ -944,6 +1005,10 @@ function cpm(tasks){const dur={},pred={},ids=tasks.map(t=>t.id),idset=new Set(id
  const crit=new Set();ids.forEach(i=>{if(Math.abs(LS[i]-ES[i])<1e-9&&dur[i]>0)crit.add(i);});return crit;}
 function save(){localStorage.setItem('sprintapp',JSON.stringify(ST));if(typeof syncSchedule==='function')syncSchedule();}
 function toast(t){const e=document.getElementById('toast');e.textContent=t;e.classList.add('show');setTimeout(()=>e.classList.remove('show'),1600);}
+let toastT=null;
+function toastAction(text,label,cb){const e=document.getElementById('toast');e.innerHTML=esc(text)+' <a id="toastact">'+esc(label)+'</a>';e.classList.add('show');
+ const a=document.getElementById('toastact');a.onclick=()=>{e.classList.remove('show');if(cb)cb();};
+ clearTimeout(toastT);toastT=setTimeout(()=>e.classList.remove('show'),5000);}
 function col(n){return getComputedStyle(document.documentElement).getPropertyValue(n).trim();}
 function el(t,a){const e=document.createElementNS(NS,t);for(const k in(a||{}))e.setAttribute(k,a[k]);return e;}
 function fmt(n,dp){if(n==null||n===""||isNaN(n))return"";const f=10**(dp||0);return(Math.round(n*f)/f).toLocaleString('ru-RU');}
@@ -1030,33 +1095,53 @@ function lines(box,cats,series,opt){opt=opt||{};const W=640,H=290,ml=42,mr=10,mt
 
 /* ---------- editable table ---------- */
 function statusPill(s){const m={'Готово':'p-good','Закрыт':'p-good','Сделано':'p-good','В работе':'p-warn','To Do':'p-neut','Не начали':'p-neut','Открыт':'p-warn','Планируется':'p-neut','Задержка':'p-crit'};return `<span class="pill ${m[s]||'p-neut'}">${s||''}</span>`;}
+const UI={search:{},sort:{}};
 function editable(coll,cols,opts){opts=opts||{};const rows=ST[coll]||(ST[coll]=[]);
  const wrap=document.createElement('div');
  const bar=document.createElement('div');bar.className='tbar';
  const add=document.createElement('button');add.className='btn primary';add.textContent='+ Добавить';
- add.onclick=()=>{const nr={};cols.forEach(c=>nr[c.k]=c.def!==undefined?c.def:(c.type==='num'?0:''));if(opts.newId)nr[opts.newId]=genId(rows,cols[0].k,opts.prefix);rows.push(nr);commit();};
- bar.appendChild(add);const sp=document.createElement('div');sp.className='sp';bar.appendChild(sp);
- const cnt=document.createElement('span');cnt.style.color='var(--muted)';cnt.style.fontSize='13px';cnt.textContent=rows.length+' записей';bar.appendChild(cnt);
+ const search=document.createElement('input');search.className='tsearch';search.type='search';search.placeholder='Поиск…';search.value=UI.search[coll]||'';
+ const sp=document.createElement('div');sp.className='sp';
+ const cnt=document.createElement('span');cnt.style.color='var(--muted)';cnt.style.fontSize='13px';
+ bar.appendChild(add);bar.appendChild(search);bar.appendChild(sp);bar.appendChild(cnt);
  wrap.appendChild(bar);
- const tw=document.createElement('div');tw.className='twrap';const tb=document.createElement('table');
- let th='<tr>';cols.forEach(c=>th+=`<th class="${c.type==='num'?'num':''}">${c.label}</th>`);th+='<th></th></tr>';
- let body='';rows.forEach((r,ri)=>{body+='<tr>';cols.forEach(c=>{body+=cell(coll,ri,c,r[c.k]);});
-  body+=`<td><button class="rowdel" data-c="${coll}" data-i="${ri}" title="Удалить">✕</button></td></tr>`;});
- tb.innerHTML=th+body;tw.appendChild(tb);wrap.appendChild(tw);
- tw.addEventListener('input',e=>{const t=e.target;if(t.dataset.k!=null){const ri=+t.dataset.i;const key=t.dataset.k;
-   rows[ri][key]=t.type==='number'?(t.value===''?'':num(t.value)):(t.tagName==='SELECT'?t.value:t.value);save();recomputeSoft();}});
- tw.addEventListener('change',e=>{if(e.target.tagName==='SELECT')commit();});
- tw.addEventListener('click',e=>{if(e.target.classList.contains('rowdel')){rows.splice(+e.target.dataset.i,1);commit();}});
+ const tw=document.createElement('div');tw.className='twrap';const tb=document.createElement('table');tb.className='cardt';tw.appendChild(tb);wrap.appendChild(tw);
+ const numCols=cols.filter(c=>c.type==='num');
+ function totals(){return numCols.reduce((o,c)=>{o[c.k]=rows.reduce((s,r)=>s+num(r[c.k]),0);return o;},{});}
+ function applyFilter(){const q=(UI.search[coll]||'').toLowerCase();let vis=0;const trs=tb.querySelectorAll('tbody tr');
+   trs.forEach((tr,i)=>{const r=rows[i]||{};const hay=cols.map(c=>r[c.k]==null?'':r[c.k]).join(' ').toLowerCase();const show=!q||hay.includes(q);tr.style.display=show?'':'none';if(show)vis++;});
+   cnt.textContent=q?vis+' из '+rows.length:rows.length+' записей';}
+ function render(){const s=UI.sort[coll];
+   let th='<thead><tr>';cols.forEach(c=>{const arw=s&&s.k===c.k?` <span class="arw">${s.d>0?'▲':'▼'}</span>`:'';th+=`<th class="${c.type==='num'?'num ':''}sortable" data-sort="${c.k}">${esc(c.label)}${arw}</th>`;});th+='<th></th></tr></thead>';
+   let body='<tbody>';rows.forEach((r,ri)=>{body+='<tr>';cols.forEach(c=>{body+=cell(coll,ri,c,r[c.k]);});
+     body+=`<td class="delcell" data-label=""><button class="rowdel" data-i="${ri}" title="Удалить">✕</button></td></tr>`;});body+='</tbody>';
+   let foot='';if(numCols.length){const t=totals();foot='<tfoot><tr>';cols.forEach((c,ci)=>foot+=`<td class="${c.type==='num'?'num':''} tfoot-${c.k}" data-label="${esc(c.label)}">${ci===0?'Итого':(c.type==='num'?fmt(t[c.k],1):'')}</td>`);foot+='<td></td></tr></tfoot>';}
+   tb.innerHTML=th+body+foot;applyFilter();}
+ function updateTotals(){if(!numCols.length)return;const t=totals();numCols.forEach(c=>{const e=tb.querySelector('.tfoot-'+c.k);if(e)e.textContent=fmt(t[c.k],1);});}
+ render();
+ add.onclick=()=>{const nr={};cols.forEach(c=>nr[c.k]=c.def!==undefined?c.def:(c.type==='num'?0:''));if(opts.newId)nr[opts.newId]=genId(rows,cols[0].k,opts.prefix);rows.push(nr);
+   UI.search[coll]='';search.value='';save();render();recomputeSoft();
+   const trs=tb.querySelectorAll('tbody tr');const last=trs[trs.length-1];if(last){last.scrollIntoView({block:'center'});const inp=last.querySelector('input,select');if(inp)inp.focus();}};
+ search.addEventListener('input',()=>{UI.search[coll]=search.value;applyFilter();});
+ tb.addEventListener('click',e=>{
+   const thh=e.target.closest('th.sortable');if(thh){const k=thh.dataset.sort,s=UI.sort[coll],d=(s&&s.k===k)?-s.d:1;UI.sort[coll]={k,d};
+     rows.sort((a,b)=>{const nx=parseFloat(a[k]),ny=parseFloat(b[k]);let c=(!isNaN(nx)&&!isNaN(ny))?nx-ny:String(a[k]==null?'':a[k]).localeCompare(String(b[k]==null?'':b[k]),'ru');return c*d;});
+     save();render();return;}
+   const del=e.target.closest('.rowdel');if(del){const i=+del.dataset.i,removed=rows.splice(i,1)[0];save();render();recomputeSoft();
+     toastAction('Удалено','Отменить',()=>{rows.splice(Math.min(i,rows.length),0,removed);save();render();recomputeSoft();});}});
+ tb.addEventListener('input',e=>{const t=e.target;if(t.dataset.k!=null){const ri=+t.dataset.i,key=t.dataset.k;
+   rows[ri][key]=t.type==='number'?(t.value===''?'':num(t.value)):t.value;save();updateTotals();recomputeSoft();}});
+ tb.addEventListener('change',e=>{if(e.target.tagName==='SELECT')commit();});
  return wrap;}
 function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));}
 function depOptions(selfId,v){let o='<option value="">—</option>';
  (ST.tasks||[]).forEach(t=>{if(!t.id||t.id===selfId)return;o+=`<option value="${esc(t.id)}"${t.id==v?' selected':''}>${esc(t.id+(t.title?' · '+t.title:''))}</option>`;});
  return o;}
-function cell(coll,ri,c,v){const cls=c.type==='num'?'num':(c.wide?'wide':'');
- if(c.type==='dep'){return `<td class="${cls}"><select data-c="${coll}" data-i="${ri}" data-k="${c.k}">${depOptions((ST[coll][ri]||{}).id,v)}</select></td>`;}
- if(c.type==='select'){let o='';(c.opts||[]).forEach(op=>o+=`<option ${op==v?'selected':''}>${op}</option>`);return `<td class="${cls}"><select data-c="${coll}" data-i="${ri}" data-k="${c.k}">${o}</select></td>`;}
+function cell(coll,ri,c,v){const cls=c.type==='num'?'num':(c.wide?'wide':'');const dl=` data-label="${esc(c.label)}"`;
+ if(c.type==='dep'){return `<td class="${cls}"${dl}><select data-c="${coll}" data-i="${ri}" data-k="${c.k}">${depOptions((ST[coll][ri]||{}).id,v)}</select></td>`;}
+ if(c.type==='select'){let o='';(c.opts||[]).forEach(op=>o+=`<option ${op==v?'selected':''}>${op}</option>`);return `<td class="${cls}"${dl}><select data-c="${coll}" data-i="${ri}" data-k="${c.k}">${o}</select></td>`;}
  const tp=c.type==='num'?'number':c.type==='date'?'date':'text';
- return `<td class="${cls}"><input type="${tp}" data-c="${coll}" data-i="${ri}" data-k="${c.k}" value="${v==null?'':String(v).replace(/"/g,'&quot;')}"></td>`;}
+ return `<td class="${cls}"${dl}><input type="${tp}" data-c="${coll}" data-i="${ri}" data-k="${c.k}" value="${v==null?'':String(v).replace(/"/g,'&quot;')}"></td>`;}
 function genId(rows,k,pref){let mx=0;rows.forEach(r=>{const m=String(r[k]||'').match(/(\d+)/);if(m)mx=Math.max(mx,+m[1]);});return (pref||'')+String(mx+1).padStart(2,'0');}
 
 /* ---------- views ---------- */
@@ -1119,19 +1204,37 @@ function views(){
 }
 function setView(id,title,lede,node){const v=document.getElementById('v_'+id);v.innerHTML=`<h1>${title}</h1><p class="lede">${lede}</p>`;if(node)v.appendChild(node);}
 
-function kpiCard(label,val,note,rag){return `<div class="card kpi"><div class="stripe s-${rag}"></div><div class="k-label">${label}</div><div class="k-val">${val}</div><div class="k-note">${note||''}</div></div>`;}
-function renderDash(C){const v=document.getElementById('v_dash');
+function kpiCard(label,val,note,rag,opt){opt=opt||{};return `<div class="card kpi${opt.goto?' clk':''}"${opt.goto?` data-goto="${opt.goto}"`:''}><div class="stripe s-${rag}"></div><div class="k-label">${label}</div><div class="k-val">${val}</div><div class="k-note">${note||''}</div>${opt.spark?`<div class="spark" id="${opt.spark}"></div>`:''}</div>`;}
+function spark(box,data){if(!box)return;const W=180,H=30,n=data.length;const vals=data.map(v=>v==null?0:v);const mx=Math.max.apply(null,vals)||1;
+ const svg=el('svg',{viewBox:`0 0 ${W} ${H}`});const step=W/(n>1?n-1:1);let d='',st=false,li=-1;
+ data.forEach((v,i)=>{if(v==null){st=false;return;}const x=i*step,y=H-2-(H-4)*(v/mx);d+=(st?' L':'M')+x.toFixed(1)+' '+y.toFixed(1);st=true;li=i;});
+ if(d)svg.appendChild(el('path',{d,fill:'none',stroke:col('--accent'),'stroke-width':2,'stroke-linejoin':'round'}));
+ if(li>=0){const x=li*step,y=H-2-(H-4)*(data[li]/mx);svg.appendChild(el('circle',{cx:x,cy:y,r:2.5,fill:col('--accent')}));}
+ box.innerHTML='';box.appendChild(svg);}
+function attnBand(C){const it=[],T=ST.ttmTarget||15;
+ const blk=(ST.deps||[]).filter(d=>d.status==='Заблокировано'||d.status==='Просрочено').length;
+ if(blk)it.push(['crit','deps','⛔ Заблокировано зависимостей: '+blk]);
+ const critB=(ST.bugs||[]).filter(b=>b.sev==='Critical'&&b.status!=='Закрыт').length;
+ if(critB)it.push(['crit','bugs','🔴 Critical-баги открыты: '+critB]);
+ if(C.curSp&&C.curSp.cap&&C.curSp.plan/C.curSp.cap>1)it.push(['warn','gantt','⚠ Перегрузка спринта #'+C.cur+': '+pctf(C.curSp.plan/C.curSp.cap)]);
+ if(C.ttmAvg>T)it.push(['warn','analytics','⏱ TTM '+fmt(C.ttmAvg,1)+' дн > цель '+T]);
+ if(C.bugsOpen>3)it.push(['warn','bugs','🐞 Открытых багов: '+C.bugsOpen]);
+ if(C.dodPct<0.8)it.push(['warn','params','✔ Готовность DoD: '+pctf(C.dodPct)]);
+ if(!it.length)it.push(['good','analytics','✓ Критичных сигналов нет']);
+ return '<div class="attn">'+it.map(x=>`<a class="a-${x[0]}" data-goto="${x[1]}">${esc(x[2])}</a>`).join('')+'</div>';}
+function renderDash(C){const v=document.getElementById('v_dash');const T=ST.ttmTarget||15;
  const cards=[
-  kpiCard('Health-index',pctf(C.health),'сводный статус',C.health>=.8?'good':C.health>=.6?'warn':'crit'),
-  kpiCard('Текущий спринт','#'+C.cur,C.curSp?fmtd(C.curSp.a)+'–'+fmtd(C.curSp.b):'','neut'),
-  kpiCard('Загрузка',pctf(C.curSp?(C.curSp.plan/C.curSp.cap):0),`ёмкость ${fmt(C.curSp?C.curSp.cap:0,1)} · план ${fmt(C.curSp?C.curSp.plan:0,1)}`,(C.curSp&&C.curSp.plan/C.curSp.cap>1)?'crit':'good'),
-  kpiCard('Ср. velocity',fmt(C.avgVel,1)+' <small>дн</small>','закрытых: '+C.closed,'neut'),
-  kpiCard('Time to Market',fmt(C.ttmAvg,1)+' <small>дн</small>','цель ≤ 15',C.ttmAvg<=15?'good':'crit'),
-  kpiCard('DoD',pctf(C.dodPct),'готовность',C.dodPct>=1?'good':C.dodPct>=.8?'warn':'crit'),
-  kpiCard('Открыто багов',C.bugsOpen,'DRE '+pctf(C.dre),C.bugsOpen===0?'good':C.bugsOpen<=3?'warn':'crit'),
-  kpiCard('Остаток',fmt(C.remain,1)+' <small>дн</small>','незакрытые спринты','neut'),
+  kpiCard('Health-index',pctf(C.health),'сводный статус',C.health>=.8?'good':C.health>=.6?'warn':'crit',{goto:'analytics'}),
+  kpiCard('Текущий спринт','#'+C.cur,C.curSp?fmtd(C.curSp.a)+'–'+fmtd(C.curSp.b):'','neut',{goto:'roadmap'}),
+  kpiCard('Загрузка',pctf(C.curSp?(C.curSp.plan/C.curSp.cap):0),`ёмкость ${fmt(C.curSp?C.curSp.cap:0,1)} · план ${fmt(C.curSp?C.curSp.plan:0,1)}`,(C.curSp&&C.curSp.plan/C.curSp.cap>1)?'crit':'good',{goto:'gantt',spark:'sp_load'}),
+  kpiCard('Ср. velocity',fmt(C.avgVel,1)+' <small>дн</small>','закрытых: '+C.closed,'neut',{goto:'analytics',spark:'sp_vel'}),
+  kpiCard('Time to Market',fmt(C.ttmAvg,1)+' <small>дн</small>','цель ≤ '+T,C.ttmAvg<=T?'good':'crit',{goto:'analytics'}),
+  kpiCard('DoD',pctf(C.dodPct),'готовность',C.dodPct>=1?'good':C.dodPct>=.8?'warn':'crit',{goto:'params'}),
+  kpiCard('Открыто багов',C.bugsOpen,'DRE '+pctf(C.dre),C.bugsOpen===0?'good':C.bugsOpen<=3?'warn':'crit',{goto:'bugs'}),
+  kpiCard('Остаток',fmt(C.remain,1)+' <small>дн</small>','незакрытые спринты','neut',{goto:'roadmap'}),
  ];
- v.innerHTML=`<h1>Дашборд</h1><p class="lede">Цель: <b>${(ST.params.goal||'—')}</b>. Всё пересчитывается при изменении данных.</p>
+ v.innerHTML=`<h1>Дашборд</h1><p class="lede">Цель: <b>${esc(ST.params.goal||'—')}</b>. Всё пересчитывается при изменении данных.</p>
+ ${attnBand(C)}
  <div class="grid kpis" id="dk"></div>
  <div class="cols two" style="margin-top:14px">
   <div class="card"><p class="ctitle">Ёмкость / План / Velocity по спринтам</p><div id="dc1"></div>
@@ -1141,14 +1244,18 @@ function renderDash(C){const v=document.getElementById('v_dash');
  <div class="cols two" style="margin-top:14px">
   <div class="card"><p class="ctitle">Баги: всего vs закрыто</p><div id="dc3"></div>
    <div class="legend"><span><i style="background:var(--accent)"></i>Всего</span><span><i style="background:var(--good)"></i>Закрыто</span></div></div>
-  <div class="card"><p class="ctitle">Time to Market (цель 15)</p><div id="dc4"></div></div>
+  <div class="card"><p class="ctitle">Time to Market (цель ${T})</p><div id="dc4"></div></div>
  </div>`;
  document.getElementById('dk').innerHTML=cards.join('');
+ document.getElementById('dk').onclick=e=>{const c=e.target.closest('.kpi.clk');if(c)activate(c.dataset.goto);};
+ const ab=v.querySelector('.attn');if(ab)ab.onclick=e=>{const a=e.target.closest('a[data-goto]');if(a)activate(a.dataset.goto);};
  const cat=C.sp.map(x=>'С'+x.s);
  bars(document.getElementById('dc1'),cat,[{color:col('--accent'),data:C.sp.map(x=>x.cap)},{color:col('--warn'),data:C.sp.map(x=>x.plan)},{color:col('--good'),data:C.sp.map(x=>x.vel||0)}]);
  bars(document.getElementById('dc2'),cat,[{color:col('--accent'),data:C.sp.map(x=>x.pct||0)}],{pct:true});
  bars(document.getElementById('dc3'),C.bugsBy.map(x=>'С'+x.s),[{color:col('--accent'),data:C.bugsBy.map(x=>x.total)},{color:col('--good'),data:C.bugsBy.map(x=>x.closed)}]);
- lines(document.getElementById('dc4'),C.ttm.map(x=>x.task),[{color:col('--accent'),data:C.ttm.map(x=>x.ttm),trend:true}],{target:15});
+ lines(document.getElementById('dc4'),C.ttm.map(x=>x.task),[{color:col('--accent'),data:C.ttm.map(x=>x.ttm),trend:true}],{target:T});
+ spark(document.getElementById('sp_vel'),C.sp.map(x=>x.vel==null?null:x.vel));
+ spark(document.getElementById('sp_load'),C.sp.map(x=>x.cap?x.plan/x.cap:0));
 }
 function sprintsTable(C){const w=document.createElement('div');w.className='twrap';const t=document.createElement('table');
  let h='<tr><th>Спринт</th><th>Начало</th><th>Конец</th><th class="num">Раб.дни</th><th class="num">Ёмкость</th><th class="num">План</th><th class="num">Velocity</th><th class="num">% вып.</th><th>Статус</th></tr>';
@@ -1501,9 +1608,52 @@ function exportXlsx(){const C=compute();const s=[];
 let CURV='dash';
 function commit(){save();views();activate(CURV);toast('Сохранено');}
 function recomputeSoft(){/* light: refresh dashboard only, keep edit focus */ renderDash(compute());}
-function activate(id){CURV=id;document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('active',b.dataset.v===id));
- document.querySelectorAll('.view').forEach(s=>s.classList.toggle('active',s.id==='v_'+id));window.scrollTo(0,0);}
-document.getElementById('tabs').addEventListener('click',e=>{if(e.target.dataset.v){activate(e.target.dataset.v);}});
+/* ---------- sidebar navigation ---------- */
+const NAV=[
+ {g:'Планирование',items:[['dash','Дашборд','📋'],['roadmap','Дорожная карта','🗺️'],['quarters','Кварталы','🗓️'],['rice','RICE','🎯']]},
+ {g:'Работа',items:[['backlog','Бэклог','🗂️'],['gantt','Гант','📊'],['deps','Зависимости','🔗'],['team','Команда','👥']]},
+ {g:'Выпуск',items:[['releases','Релизы','🚀'],['milestones','Вехи','🏁'],['debt','Техдолг','🧱']]},
+ {g:'Аналитика',items:[['analytics','Аналитика','📈'],['risks','Риски','⚠️'],['bugs','Баги','🐞'],['retro','Ретроспективы','🔄']]},
+ {g:'Настройки',items:[['okr','OKR','🧭'],['budget','Бюджет','💰'],['calendar','Календарь','📅'],['params','Параметры','⚙️']]},
+];
+function buildNav(){let h='';NAV.forEach(g=>{h+=`<div class="nav-group"><div class="nav-h">${g.g}</div>`;
+  g.items.forEach(it=>h+=`<button class="nav-item" data-v="${it[0]}"><span class="nav-ic">${it[2]}</span><span>${it[1]}</span></button>`);
+  h+='</div>';});document.getElementById('nav').innerHTML=h;}
+function closeDrawer(){document.getElementById('side').classList.remove('open');document.getElementById('scrim').classList.remove('show');}
+function activate(id){CURV=id;
+ document.querySelectorAll('.nav-item').forEach(b=>b.classList.toggle('active',b.dataset.v===id));
+ document.querySelectorAll('.view').forEach(s=>s.classList.toggle('active',s.id==='v_'+id));
+ closeDrawer();window.scrollTo(0,0);}
+buildNav();
+document.getElementById('nav').addEventListener('click',e=>{const b=e.target.closest('.nav-item');if(b)activate(b.dataset.v);});
+document.getElementById('menubtn').onclick=()=>{const s=document.getElementById('side');s.classList.toggle('open');document.getElementById('scrim').classList.toggle('show',s.classList.contains('open'));};
+document.getElementById('scrim').onclick=closeDrawer;
+/* ---------- command palette (Ctrl/⌘+K) ---------- */
+const PACTIONS=[
+ {t:'Экспорт в Excel',s:'действие',ic:'⬇️',run:()=>exportXlsx()},
+ {t:'Экспорт данных (JSON)',s:'действие',ic:'⬇️',run:()=>document.getElementById('exp').click()},
+ {t:'Импорт данных (JSON)',s:'действие',ic:'⬆️',run:()=>document.getElementById('imp').click()},
+ {t:'Сменить тему',s:'действие',ic:'◐',run:()=>document.getElementById('themebtn').click()},
+ {t:'Сбросить к исходным',s:'действие',ic:'↺',run:()=>document.getElementById('rst').click()},
+];
+let PAL={open:false,sel:0,list:[]};
+function palItems(){const a=[];NAV.forEach(g=>g.items.forEach(it=>a.push({t:it[1],s:g.g,ic:it[2],run:()=>activate(it[0])})));PACTIONS.forEach(x=>a.push(x));return a;}
+function renderPalette(q){q=(q||'').toLowerCase();PAL.list=palItems().filter(x=>x.t.toLowerCase().includes(q)||(x.s||'').toLowerCase().includes(q));PAL.sel=0;
+ document.getElementById('plist').innerHTML=PAL.list.map((x,i)=>`<div class="popt${i===0?' sel':''}" data-i="${i}"><span>${x.ic||'›'}</span><span>${esc(x.t)}</span><small>${esc(x.s||'')}</small></div>`).join('')||'<div class="popt">Ничего не найдено</div>';}
+function openPalette(){PAL.open=true;document.getElementById('palette').classList.add('open');const pin=document.getElementById('pin');pin.value='';renderPalette('');pin.focus();}
+function closePalette(){PAL.open=false;document.getElementById('palette').classList.remove('open');}
+function palRun(i){const x=PAL.list[i];if(x){closePalette();x.run();}}
+function syncSel(){document.querySelectorAll('#plist .popt').forEach((o,i)=>o.classList.toggle('sel',i===PAL.sel));const s=document.querySelector('#plist .popt.sel');if(s)s.scrollIntoView({block:'nearest'});}
+document.getElementById('palettebtn').onclick=openPalette;
+document.getElementById('pin').addEventListener('input',e=>renderPalette(e.target.value));
+document.getElementById('plist').addEventListener('click',e=>{const o=e.target.closest('.popt');if(o&&o.dataset.i!=null)palRun(+o.dataset.i);});
+document.getElementById('palette').addEventListener('click',e=>{if(e.target.id==='palette')closePalette();});
+document.getElementById('pin').addEventListener('keydown',e=>{
+ if(e.key==='ArrowDown'){e.preventDefault();PAL.sel=Math.min(PAL.list.length-1,PAL.sel+1);syncSel();}
+ else if(e.key==='ArrowUp'){e.preventDefault();PAL.sel=Math.max(0,PAL.sel-1);syncSel();}
+ else if(e.key==='Enter'){e.preventDefault();palRun(PAL.sel);}
+ else if(e.key==='Escape'){closePalette();}});
+document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&(e.key==='k'||e.key==='K')){e.preventDefault();PAL.open?closePalette():openPalette();}});
 document.getElementById('xls').onclick=exportXlsx;
 document.getElementById('exp').onclick=()=>{const b=new Blob([JSON.stringify(ST,null,1)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='planirovanie_data.json';a.click();toast('Экспортировано');};
 document.getElementById('imp').onclick=()=>document.getElementById('file').click();
