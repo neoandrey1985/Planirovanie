@@ -19,6 +19,7 @@ CREATE TABLE IF NOT EXISTS bugs       (pk SERIAL PRIMARY KEY, bug_id TEXT, descr
 CREATE TABLE IF NOT EXISTS calendar   (id SERIAL PRIMARY KEY, cdate TEXT, name TEXT, ord INT);
 CREATE TABLE IF NOT EXISTS retro      (id SERIAL PRIMARY KEY, sprint INT, well TEXT, improve TEXT, action TEXT, owner TEXT, due TEXT, status TEXT, ord INT);
 CREATE TABLE IF NOT EXISTS rice       (pk SERIAL PRIMARY KEY, rice_id TEXT, name TEXT, reach DOUBLE PRECISION, impact DOUBLE PRECISION, conf TEXT, effort DOUBLE PRECISION, ord INT);
+CREATE TABLE IF NOT EXISTS moscow     (pk SERIAL PRIMARY KEY, ms_id TEXT, name TEXT, category TEXT, note TEXT, ord INT);
 CREATE TABLE IF NOT EXISTS deps       (pk SERIAL PRIMARY KEY, dep_id TEXT, item TEXT, type TEXT, task TEXT, stream TEXT, dir TEXT, descr TEXT, sprint INT, status TEXT, owner TEXT, risk TEXT, ord INT);
 CREATE TABLE IF NOT EXISTS okr        (id SERIAL PRIMARY KEY, q TEXT, obj TEXT, kr TEXT, target DOUBLE PRECISION, cur DOUBLE PRECISION, ord INT);
 CREATE TABLE IF NOT EXISTS app_meta   (id INT PRIMARY KEY DEFAULT 1, version BIGINT DEFAULT 1);
@@ -137,6 +138,20 @@ INSERT INTO rice (rice_id, name, reach, impact, conf, effort, ord) VALUES ('F-07
 INSERT INTO rice (rice_id, name, reach, impact, conf, effort, ord) VALUES ('F-08', 'Рекомендации товаров', 2000, 2, '50%', 22, 7);
 INSERT INTO rice (rice_id, name, reach, impact, conf, effort, ord) VALUES ('F-09', 'Экспорт отчётов', 800, 0.5, '80%', 8, 8);
 INSERT INTO rice (rice_id, name, reach, impact, conf, effort, ord) VALUES ('F-10', 'Мультиязычность', 1500, 1, '50%', 30, 9);
+
+-- moscow
+INSERT INTO moscow (ms_id, name, category, note, ord) VALUES ('MS-01', 'Оформление заказа (MVP)', 'Must', 'Без этого запуск подписки невозможен', 0);
+INSERT INTO moscow (ms_id, name, category, note, ord) VALUES ('MS-02', 'Оплата картой', 'Must', 'Ключевой сценарий монетизации', 1);
+INSERT INTO moscow (ms_id, name, category, note, ord) VALUES ('MS-03', 'Каталог товаров и цены', 'Must', 'Данные для оформления заказа', 2);
+INSERT INTO moscow (ms_id, name, category, note, ord) VALUES ('MS-04', 'Личный кабинет (базовый)', 'Must', 'Управление подпиской', 3);
+INSERT INTO moscow (ms_id, name, category, note, ord) VALUES ('MS-05', 'Промокоды и скидки', 'Should', 'Повышает конверсию, но релиз возможен без них', 4);
+INSERT INTO moscow (ms_id, name, category, note, ord) VALUES ('MS-06', 'Уведомления (e-mail/push)', 'Should', 'Удержание пользователей', 5);
+INSERT INTO moscow (ms_id, name, category, note, ord) VALUES ('MS-07', 'История заказов', 'Should', 'Ожидаемо пользователями', 6);
+INSERT INTO moscow (ms_id, name, category, note, ord) VALUES ('MS-08', 'Рекомендации товаров', 'Could', 'Если останется время', 7);
+INSERT INTO moscow (ms_id, name, category, note, ord) VALUES ('MS-09', 'Мультиязычность', 'Could', 'Для будущих рынков', 8);
+INSERT INTO moscow (ms_id, name, category, note, ord) VALUES ('MS-10', 'Экспорт отчётов', 'Could', 'Удобно, но не критично', 9);
+INSERT INTO moscow (ms_id, name, category, note, ord) VALUES ('MS-11', 'Программа лояльности / бонусы', 'Won''t', 'Отдельная инициатива на следующий квартал', 10);
+INSERT INTO moscow (ms_id, name, category, note, ord) VALUES ('MS-12', 'Офлайн-режим приложения', 'Won''t', 'Вне scope текущего релиза', 11);
 
 -- deps
 INSERT INTO deps (dep_id, item, type, task, stream, dir, descr, sprint, status, owner, risk, ord) VALUES ('D-01', 'Интеграция платежей', 'Задача', 'T-03', 'Платёжный шлюз', 'Мы зависим', 'API оплаты v2 (токенизация карт)', 3, 'Заблокировано', 'Команда Payments', 'High', 0);

@@ -1,977 +1,1051 @@
 {
- "params": {
-  "name": "Sprint 24",
-  "start": "2026-08-03",
-  "sprintDays": 10,
-  "focus": 0.8,
-  "today": "2026-09-10",
-  "goal": "Запустить оформление заказа с онлайн-оплатой",
-  "sprints": 11
- },
- "dod": [
-  {
-   "crit": "Код прошёл ревью",
-   "done": false
-  },
-  {
-   "crit": "Юнит/интеграционные тесты зелёные",
-   "done": false
-  },
-  {
-   "crit": "Документация обновлена",
-   "done": false
-  },
-  {
-   "crit": "Развёрнуто на stage",
-   "done": false
-  },
-  {
-   "crit": "Принято владельцем продукта",
-   "done": false
-  },
-  {
-   "crit": "Нет открытых блокеров",
-   "done": false
-  }
- ],
- "team": [
-  {
-   "name": "Иванов А.",
-   "role": "Backend",
-   "avail": 1,
-   "absent": 0
-  },
-  {
-   "name": "Петрова М.",
-   "role": "Frontend",
-   "avail": 1,
-   "absent": 0
-  },
-  {
-   "name": "Сидоров К.",
-   "role": "QA",
-   "avail": 0.8,
-   "absent": 0
-  },
-  {
-   "name": "Кузнецов Д.",
-   "role": "Backend",
-   "avail": 1,
-   "absent": 0
-  },
-  {
-   "name": "Орлова Е.",
-   "role": "Analyst",
-   "avail": 0.5,
-   "absent": 0
-  },
-  {
-   "name": "Смирнов П.",
-   "role": "Backend",
-   "avail": 1,
-   "absent": 0
-  },
-  {
-   "name": "Волкова Н.",
-   "role": "Frontend",
-   "avail": 1,
-   "absent": 0
-  },
-  {
-   "name": "Морозов И.",
-   "role": "QA",
-   "avail": 1,
-   "absent": 0
-  },
-  {
-   "name": "Новиков А.",
-   "role": "DevOps",
-   "avail": 0.8,
-   "absent": 0
-  },
-  {
-   "name": "Фёдорова О.",
-   "role": "Analyst",
-   "avail": 1,
-   "absent": 0
-  },
-  {
-   "name": "Козлов В.",
-   "role": "Backend",
-   "avail": 1,
-   "absent": 0
-  },
-  {
-   "name": "Лебедева Т.",
-   "role": "Designer",
-   "avail": 0.8,
-   "absent": 0
-  },
-  {
-   "name": "Соколов Р.",
-   "role": "Frontend",
-   "avail": 1,
-   "absent": 0
-  }
- ],
- "tasks": [
-  {
-   "id": "T-01",
-   "title": "Проектирование API заказов",
-   "assignee": "Иванов А.",
-   "role": "=IFERROR(INDEX(Капасити!$C$5:$C$147,MATCH($C5,Капасити!$B$5:$B$147,0)),\"\")",
-   "type": "История",
-   "est": 5,
-   "status": "Готово",
-   "sprint": 1,
-   "dep": "",
-   "started": "2026-08-03",
-   "done": "2026-08-06",
-   "added": false
-  },
-  {
-   "id": "T-02",
-   "title": "Экран корзины (вёрстка)",
-   "assignee": "Петрова М.",
-   "role": "=IFERROR(INDEX(Капасити!$C$5:$C$147,MATCH($C6,Капасити!$B$5:$B$147,0)),\"\")",
-   "type": "Задача",
-   "est": 8,
-   "status": "Готово",
-   "sprint": 1,
-   "dep": "T-01",
-   "started": "2026-08-04",
-   "done": "2026-08-12",
-   "added": false
-  },
-  {
-   "id": "T-09",
-   "title": "Настройка CI/CD",
-   "assignee": "Новиков А.",
-   "role": "=IFERROR(INDEX(Капасити!$C$5:$C$147,MATCH($C7,Капасити!$B$5:$B$147,0)),\"\")",
-   "type": "Задача",
-   "est": 4,
-   "status": "Готово",
-   "sprint": 1,
-   "dep": "",
-   "started": "2026-08-03",
-   "done": "2026-08-05",
-   "added": false
-  },
-  {
-   "id": "T-10",
-   "title": "Модель данных заказа",
-   "assignee": "Кузнецов Д.",
-   "role": "=IFERROR(INDEX(Капасити!$C$5:$C$147,MATCH($C8,Капасити!$B$5:$B$147,0)),\"\")",
-   "type": "История",
-   "est": 5,
-   "status": "В работе",
-   "sprint": 1,
-   "dep": "",
-   "started": "2026-08-05",
-   "done": null,
-   "added": false
-  },
-  {
-   "id": "T-03",
-   "title": "Интеграция платежей",
-   "assignee": "Иванов А.",
-   "role": "=IFERROR(INDEX(Капасити!$C$5:$C$147,MATCH($C9,Капасити!$B$5:$B$147,0)),\"\")",
-   "type": "Задача",
-   "est": 8,
-   "status": "Готово",
-   "sprint": 2,
-   "dep": "T-01",
-   "started": "2026-08-17",
-   "done": "2026-08-24",
-   "added": false
-  },
-  {
-   "id": "T-04",
-   "title": "Тест-кейсы оформления",
-   "assignee": "Сидоров К.",
-   "role": "=IFERROR(INDEX(Капасити!$C$5:$C$147,MATCH($C10,Капасити!$B$5:$B$147,0)),\"\")",
-   "type": "Тех.долг",
-   "est": 4,
-   "status": "Готово",
-   "sprint": 2,
-   "dep": "",
-   "started": "2026-08-18",
-   "done": "2026-08-20",
-   "added": false
-  },
-  {
-   "id": "T-08",
-   "title": "Уведомления по e-mail",
-   "assignee": "Смирнов П.",
-   "role": "=IFERROR(INDEX(Капасити!$C$5:$C$147,MATCH($C11,Капасити!$B$5:$B$147,0)),\"\")",
-   "type": "Задача",
-   "est": 4,
-   "status": "Готово",
-   "sprint": 2,
-   "dep": "",
-   "started": "2026-08-19",
-   "done": "2026-08-26",
-   "added": false
-  },
-  {
-   "id": "T-11",
-   "title": "API промокодов",
-   "assignee": "Козлов В.",
-   "role": "=IFERROR(INDEX(Капасити!$C$5:$C$147,MATCH($C12,Капасити!$B$5:$B$147,0)),\"\")",
-   "type": "История",
-   "est": 5,
-   "status": "Готово",
-   "sprint": 2,
-   "dep": "",
-   "started": "2026-08-17",
-   "done": "2026-08-25",
-   "added": false
-  },
-  {
-   "id": "T-12",
-   "title": "Логирование и метрики",
-   "assignee": "Новиков А.",
-   "role": "=IFERROR(INDEX(Капасити!$C$5:$C$147,MATCH($C13,Капасити!$B$5:$B$147,0)),\"\")",
-   "type": "Задача",
-   "est": 3,
-   "status": "To Do",
-   "sprint": 2,
-   "dep": "",
-   "started": null,
-   "done": null,
-   "added": false
-  },
-  {
-   "id": "T-05",
-   "title": "Рефакторинг авторизации",
-   "assignee": "Кузнецов Д.",
-   "role": "=IFERROR(INDEX(Капасити!$C$5:$C$147,MATCH($C14,Капасити!$B$5:$B$147,0)),\"\")",
-   "type": "Задача",
-   "est": 3,
-   "status": "В работе",
-   "sprint": 3,
-   "dep": "",
-   "started": "2026-09-02",
-   "done": null,
-   "added": false
-  },
-  {
-   "id": "T-06",
-   "title": "Аналитика воронки",
-   "assignee": "Орлова Е.",
-   "role": "=IFERROR(INDEX(Капасити!$C$5:$C$147,MATCH($C15,Капасити!$B$5:$B$147,0)),\"\")",
-   "type": "История",
-   "est": 3,
-   "status": "To Do",
-   "sprint": 3,
-   "dep": "",
-   "started": null,
-   "done": null,
-   "added": true
-  },
-  {
-   "id": "T-07",
-   "title": "Регресс-тестирование релиза",
-   "assignee": "Сидоров К.",
-   "role": "=IFERROR(INDEX(Капасити!$C$5:$C$147,MATCH($C16,Капасити!$B$5:$B$147,0)),\"\")",
-   "type": "Задача",
-   "est": 5,
-   "status": "To Do",
-   "sprint": 3,
-   "dep": "T-04",
-   "started": null,
-   "done": null,
-   "added": false
-  },
-  {
-   "id": "T-13",
-   "title": "Экран оплаты",
-   "assignee": "Волкова Н.",
-   "role": "=IFERROR(INDEX(Капасити!$C$5:$C$147,MATCH($C17,Капасити!$B$5:$B$147,0)),\"\")",
-   "type": "Задача",
-   "est": 8,
-   "status": "В работе",
-   "sprint": 3,
-   "dep": "T-03",
-   "started": "2026-09-01",
-   "done": null,
-   "added": false
-  },
-  {
-   "id": "T-14",
-   "title": "Вебхуки платежей",
-   "assignee": "Иванов А.",
-   "role": "=IFERROR(INDEX(Капасити!$C$5:$C$147,MATCH($C18,Капасити!$B$5:$B$147,0)),\"\")",
-   "type": "История",
-   "est": 5,
-   "status": "To Do",
-   "sprint": 3,
-   "dep": "T-13",
-   "started": null,
-   "done": null,
-   "added": true
-  },
-  {
-   "id": "T-15",
-   "title": "История заказов",
-   "assignee": "Соколов Р.",
-   "role": "=IFERROR(INDEX(Капасити!$C$5:$C$147,MATCH($C19,Капасити!$B$5:$B$147,0)),\"\")",
-   "type": "Задача",
-   "est": 5,
-   "status": "To Do",
-   "sprint": 3,
-   "dep": "",
-   "started": null,
-   "done": null,
-   "added": false
-  },
-  {
-   "id": "T-16",
-   "title": "Личный кабинет",
-   "assignee": "Волкова Н.",
-   "role": "=IFERROR(INDEX(Капасити!$C$5:$C$147,MATCH($C20,Капасити!$B$5:$B$147,0)),\"\")",
-   "type": "Задача",
-   "est": 8,
-   "status": "To Do",
-   "sprint": 4,
-   "dep": "T-15",
-   "started": null,
-   "done": null,
-   "added": false
-  },
-  {
-   "id": "T-17",
-   "title": "Фильтры каталога",
-   "assignee": "Морозов И.",
-   "role": "=IFERROR(INDEX(Капасити!$C$5:$C$147,MATCH($C21,Капасити!$B$5:$B$147,0)),\"\")",
-   "type": "История",
-   "est": 6,
-   "status": "To Do",
-   "sprint": 4,
-   "dep": "T-16",
-   "started": null,
-   "done": null,
-   "added": false
-  },
-  {
-   "id": "T-18",
-   "title": "Отзывы и рейтинги",
-   "assignee": "Лебедева Т.",
-   "role": "=IFERROR(INDEX(Капасити!$C$5:$C$147,MATCH($C22,Капасити!$B$5:$B$147,0)),\"\")",
-   "type": "Тех.долг",
-   "est": 5,
-   "status": "To Do",
-   "sprint": 4,
-   "dep": "",
-   "started": null,
-   "done": null,
-   "added": false
-  },
-  {
-   "id": "T-19",
-   "title": "Рекомендации",
-   "assignee": "Фёдорова О.",
-   "role": "=IFERROR(INDEX(Капасити!$C$5:$C$147,MATCH($C23,Капасити!$B$5:$B$147,0)),\"\")",
-   "type": "История",
-   "est": 8,
-   "status": "To Do",
-   "sprint": 5,
-   "dep": "",
-   "started": null,
-   "done": null,
-   "added": false
-  },
-  {
-   "id": "T-20",
-   "title": "A/B тесты чекаута",
-   "assignee": "Морозов И.",
-   "role": "=IFERROR(INDEX(Капасити!$C$5:$C$147,MATCH($C24,Капасити!$B$5:$B$147,0)),\"\")",
-   "type": "Задача",
-   "est": 5,
-   "status": "To Do",
-   "sprint": 5,
-   "dep": "",
-   "started": null,
-   "done": null,
-   "added": false
-  }
- ],
- "releases": [
-  {
-   "id": "R-1",
-   "name": "Внутренний релиз (MVP)",
-   "sfrom": 1,
-   "sto": 2,
-   "status": "Готово"
-  },
-  {
-   "id": "R-2",
-   "name": "Бета для площадок",
-   "sfrom": 3,
-   "sto": 4,
-   "status": "В работе"
-  },
-  {
-   "id": "R-3",
-   "name": "Публичный релиз 1.0",
-   "sfrom": 5,
-   "sto": 6,
-   "status": "Планируется"
-  },
-  {
-   "id": "R-4",
-   "name": "Релиз 1.1 — уведомления",
-   "sfrom": 7,
-   "sto": 8,
-   "status": "Планируется"
-  },
-  {
-   "id": "R-5",
-   "name": "GA / Стабилизация",
-   "sfrom": 9,
-   "sto": 10,
-   "status": "Планируется"
-  }
- ],
- "milestones": [
-  {
-   "id": "V-1",
-   "name": "Старт проекта",
-   "sprint": 1,
-   "status": "Готово",
-   "rel": "R-1"
-  },
-  {
-   "id": "V-2",
-   "name": "Дизайн утверждён",
-   "sprint": 2,
-   "status": "Готово",
-   "rel": "R-1"
-  },
-  {
-   "id": "V-3",
-   "name": "Feature freeze",
-   "sprint": 5,
-   "status": "Планируется",
-   "rel": "R-3"
-  },
-  {
-   "id": "V-4",
-   "name": "Code freeze",
-   "sprint": 6,
-   "status": "Планируется",
-   "rel": "R-3"
-  },
-  {
-   "id": "V-5",
-   "name": "Go-live / запуск",
-   "sprint": 7,
-   "status": "Планируется",
-   "rel": "R-4"
-  }
- ],
- "techDebt": [
-  {
-   "id": "TD-1",
-   "desc": "Рефакторинг модуля авторизации",
-   "area": "Auth",
-   "type": "Код",
-   "impact": "High",
-   "est": 3,
-   "prio": "High",
-   "sprint": 4,
-   "status": "Закрыт",
-   "created": 1,
-   "paid": 3
-  },
-  {
-   "id": "TD-2",
-   "desc": "Автотесты оформления заказа",
-   "area": "Checkout",
-   "type": "Тесты",
-   "impact": "High",
-   "est": 2,
-   "prio": "High",
-   "sprint": 3,
-   "status": "Закрыт",
-   "created": 2,
-   "paid": 4
-  },
-  {
-   "id": "TD-3",
-   "desc": "Убрать дубли в API заказов",
-   "area": "API",
-   "type": "Архитектура",
-   "impact": "Medium",
-   "est": 2,
-   "prio": "Medium",
-   "sprint": 5,
-   "status": "Открыт",
-   "created": 3,
-   "paid": null
-  },
-  {
-   "id": "TD-4",
-   "desc": "Обновить документацию API",
-   "area": "Docs",
-   "type": "Документация",
-   "impact": "Low",
-   "est": 1,
-   "prio": "Low",
-   "sprint": 6,
-   "status": "Открыт",
-   "created": 4,
-   "paid": null
-  },
-  {
-   "id": "TD-5",
-   "desc": "Мониторинг и алерты платежей",
-   "area": "Payments",
-   "type": "Инфраструктура",
-   "impact": "Medium",
-   "est": 2,
-   "prio": "Medium",
-   "sprint": 5,
-   "status": "В работе",
-   "created": 3,
-   "paid": null
-  },
-  {
-   "id": "TD-6",
-   "desc": "Оптимизация запросов БД",
-   "area": "DB",
-   "type": "Код",
-   "impact": "Medium",
-   "est": 3,
-   "prio": "Medium",
-   "sprint": 7,
-   "status": "Открыт",
-   "created": 5,
-   "paid": null
-  }
- ],
- "risks": [
-  {
-   "name": "Зависимость от внешнего API оплаты",
-   "p": 4,
-   "i": 5,
-   "mit": "Мок-сервис + ранняя интеграция",
-   "owner": "Иванов А.",
-   "status": "Открыт"
-  },
-  {
-   "name": "Отпуска в декабре (Спринт 11)",
-   "p": 5,
-   "i": 3,
-   "mit": "Сокращённый объём, буфер",
-   "owner": "Орлова Е.",
-   "status": "Открыт"
-  },
-  {
-   "name": "Недооценка интеграции",
-   "p": 3,
-   "i": 4,
-   "mit": "Спайк на оценку",
-   "owner": "Кузнецов Д.",
-   "status": "Открыт"
-  },
-  {
-   "name": "Текучесть в QA",
-   "p": 2,
-   "i": 4,
-   "mit": "Кросс-ревью, документация",
-   "owner": "Сидоров К.",
-   "status": "Наблюдение"
-  }
- ],
- "bugs": [
-  {
-   "id": "B-01",
-   "desc": "Ошибка валидации email",
-   "task": "T-01",
-   "sprint": 1,
-   "sev": "Major",
-   "status": "Закрыт",
-   "time": 0.5,
-   "reopened": false,
-   "cause": "Интеграция"
-  },
-  {
-   "id": "B-02",
-   "desc": "Падение при пустой корзине",
-   "task": "T-02",
-   "sprint": 1,
-   "sev": "Critical",
-   "status": "Закрыт",
-   "time": 0.5,
-   "reopened": false,
-   "cause": "Код"
-  },
-  {
-   "id": "B-03",
-   "desc": "Неверный расчёт скидки",
-   "task": "T-01",
-   "sprint": 1,
-   "sev": "Major",
-   "status": "Закрыт",
-   "time": 0.5,
-   "reopened": false,
-   "cause": "Требования"
-  },
-  {
-   "id": "B-04",
-   "desc": "Съезжает вёрстка на мобильном",
-   "task": "T-02",
-   "sprint": 1,
-   "sev": "Minor",
-   "status": "Закрыт",
-   "time": 0.3,
-   "reopened": false,
-   "cause": "Тестирование"
-  },
-  {
-   "id": "B-05",
-   "desc": "Таймаут платежа",
-   "task": "T-03",
-   "sprint": 1,
-   "sev": "Major",
-   "status": "Открыт",
-   "time": 0.2,
-   "reopened": false,
-   "cause": "Интеграция"
-  },
-  {
-   "id": "B-06",
-   "desc": "Дубли заказов",
-   "task": "T-03",
-   "sprint": 2,
-   "sev": "Critical",
-   "status": "Закрыт",
-   "time": 0.4,
-   "reopened": true,
-   "cause": "Код"
-  },
-  {
-   "id": "B-07",
-   "desc": "Не приходит письмо-подтверждение",
-   "task": "T-08",
-   "sprint": 2,
-   "sev": "Major",
-   "status": "Закрыт",
-   "time": 0.3,
-   "reopened": false,
-   "cause": "Требования"
-  },
-  {
-   "id": "B-08",
-   "desc": "Ошибка 500 при оплате",
-   "task": "T-03",
-   "sprint": 2,
-   "sev": "Critical",
-   "status": "Закрыт",
-   "time": 0.3,
-   "reopened": false,
-   "cause": "Интеграция"
-  },
-  {
-   "id": "B-09",
-   "desc": "Неверный НДС в чеке",
-   "task": "T-06",
-   "sprint": 2,
-   "sev": "Major",
-   "status": "Закрыт",
-   "time": 0.2,
-   "reopened": false,
-   "cause": "Данные"
-  },
-  {
-   "id": "B-10",
-   "desc": "Кнопка оформления неактивна",
-   "task": "T-02",
-   "sprint": 2,
-   "sev": "Minor",
-   "status": "Закрыт",
-   "time": 0.1,
-   "reopened": false,
-   "cause": "Код"
-  },
-  {
-   "id": "B-11",
-   "desc": "Переполнение логов",
-   "task": "T-05",
-   "sprint": 2,
-   "sev": "Minor",
-   "status": "Закрыт",
-   "time": 0.2,
-   "reopened": false,
-   "cause": "Требования"
-  },
-  {
-   "id": "B-12",
-   "desc": "Медленный поиск заказов",
-   "task": "T-04",
-   "sprint": 3,
-   "sev": "Major",
-   "status": "Открыт",
-   "time": 0,
-   "reopened": false,
-   "cause": "Тестирование"
-  },
-  {
-   "id": "B-13",
-   "desc": "Падает экспорт отчёта",
-   "task": "T-07",
-   "sprint": 3,
-   "sev": "Minor",
-   "status": "Открыт",
-   "time": 0,
-   "reopened": false,
-   "cause": "Интеграция"
-  }
- ],
- "calendar": [
-  {
-   "date": "2026-11-04",
-   "name": "День народного единства"
-  },
-  {
-   "date": "2027-01-01",
-   "name": "Новый год"
-  },
-  {
-   "date": "2027-01-02",
-   "name": "Новогодние каникулы"
-  }
- ],
- "retro": [
-  {
-   "sprint": 1,
-   "well": "Быстрый старт, реалистичная оценка",
-   "improve": "Мало тестовых данных",
-   "action": "Подготовить набор тест-данных",
-   "owner": "Сидоров К.",
-   "due": "Спринт 2",
-   "status": "Сделано"
-  },
-  {
-   "sprint": 1,
-   "well": "Хорошее демо",
-   "improve": "Долгий код-ревью",
-   "action": "SLA на ревью — 1 день",
-   "owner": "Иванов А.",
-   "due": "Спринт 2",
-   "status": "Сделано"
-  },
-  {
-   "sprint": 2,
-   "well": "Стабильные демо",
-   "improve": "Скоуп рос по ходу",
-   "action": "Фиксировать скоуп на планировании",
-   "owner": "Кузнецов Д.",
-   "due": "Спринт 3",
-   "status": "В работе"
-  },
-  {
-   "sprint": 2,
-   "well": "Слаженная работа QA",
-   "improve": "Блокеры по внешнему API",
-   "action": "Ранняя интеграция / моки",
-   "owner": "Иванов А.",
-   "due": "Спринт 3",
-   "status": "Открыт"
-  }
- ],
- "budget": {
-  "rate": 8000,
-  "total": 8000000
- },
- "ttmTarget": 15,
- "rice": [
-  {
-   "id": "F-01",
-   "name": "MVP оформления заказа",
-   "reach": 5000,
-   "impact": 3,
-   "conf": "100%",
-   "effort": 40
-  },
-  {
-   "id": "F-02",
-   "name": "Оплата картой",
-   "reach": 5000,
-   "impact": 3,
-   "conf": "80%",
-   "effort": 25
-  },
-  {
-   "id": "F-03",
-   "name": "Промокоды и скидки",
-   "reach": 3000,
-   "impact": 1,
-   "conf": "80%",
-   "effort": 12
-  },
-  {
-   "id": "F-04",
-   "name": "Уведомления (e-mail/push)",
-   "reach": 4000,
-   "impact": 1,
-   "conf": "80%",
-   "effort": 15
-  },
-  {
-   "id": "F-05",
-   "name": "История заказов",
-   "reach": 3500,
-   "impact": 0.5,
-   "conf": "100%",
-   "effort": 10
-  },
-  {
-   "id": "F-06",
-   "name": "Мобильная вёрстка",
-   "reach": 4500,
-   "impact": 2,
-   "conf": "80%",
-   "effort": 20
-  },
-  {
-   "id": "F-07",
-   "name": "Личный кабинет",
-   "reach": 3000,
-   "impact": 1,
-   "conf": "50%",
-   "effort": 18
-  },
-  {
-   "id": "F-08",
-   "name": "Рекомендации товаров",
-   "reach": 2000,
-   "impact": 2,
-   "conf": "50%",
-   "effort": 22
-  },
-  {
-   "id": "F-09",
-   "name": "Экспорт отчётов",
-   "reach": 800,
-   "impact": 0.5,
-   "conf": "80%",
-   "effort": 8
-  },
-  {
-   "id": "F-10",
-   "name": "Мультиязычность",
-   "reach": 1500,
-   "impact": 1,
-   "conf": "50%",
-   "effort": 30
-  }
- ],
- "deps": [
-  {
-   "id": "D-01",
-   "item": "Интеграция платежей",
-   "type": "Задача",
-   "task": "T-03",
-   "stream": "Платёжный шлюз",
-   "dir": "Мы зависим",
-   "desc": "API оплаты v2 (токенизация карт)",
-   "sprint": 3,
-   "status": "Заблокировано",
-   "owner": "Команда Payments",
-   "risk": "High"
-  },
-  {
-   "id": "D-02",
-   "item": "Оплата картой",
-   "type": "Фича",
-   "task": "",
-   "stream": "Платёжный шлюз",
-   "dir": "Мы зависим",
-   "desc": "Сертификация PCI DSS",
-   "sprint": 4,
-   "status": "Ожидается",
-   "owner": "Security / Payments",
-   "risk": "High"
-  },
-  {
-   "id": "D-03",
-   "item": "Уведомления (e-mail/push)",
-   "type": "Задача",
-   "task": "T-08",
-   "stream": "Инфраструктура / DevOps",
-   "dir": "Мы зависим",
-   "desc": "Сервис рассылок (SMTP + Push)",
-   "sprint": 4,
-   "status": "Подтверждено",
-   "owner": "Platform Team",
-   "risk": "Medium"
-  },
-  {
-   "id": "D-04",
-   "item": "API промокодов",
-   "type": "Задача",
-   "task": "T-11",
-   "stream": "Каталог / Контент",
-   "dir": "Мы зависим",
-   "desc": "Каталог товаров и цен",
-   "sprint": 2,
-   "status": "Получено",
-   "owner": "Catalog Team",
-   "risk": "Low"
-  },
-  {
-   "id": "D-05",
-   "item": "Личный кабинет",
-   "type": "История",
-   "task": "",
-   "stream": "Идентификация (SSO)",
-   "dir": "Мы зависим",
-   "desc": "Единый вход (OAuth2/OIDC)",
-   "sprint": 5,
-   "status": "Ожидается",
-   "owner": "IAM Team",
-   "risk": "Medium"
-  },
-  {
-   "id": "D-06",
-   "item": "Экран корзины",
-   "type": "Фича",
-   "task": "T-02",
-   "stream": "Мобильное приложение",
-   "dir": "Зависят от нас",
-   "desc": "REST API заказов для мобильного клиента",
-   "sprint": 6,
-   "status": "Подтверждено",
-   "owner": "Mobile Team",
-   "risk": "Medium"
-  },
-  {
-   "id": "D-07",
-   "item": "Логирование и метрики",
-   "type": "Задача",
-   "task": "T-12",
-   "stream": "Data Platform / Аналитика",
-   "dir": "Мы зависим",
-   "desc": "Шина событий (Kafka topics)",
-   "sprint": 4,
-   "status": "Заблокировано",
-   "owner": "Data Platform",
-   "risk": "High"
-  },
-  {
-   "id": "D-08",
-   "item": "Экспорт отчётов",
-   "type": "Фича",
-   "task": "",
-   "stream": "Data Platform / Аналитика",
-   "dir": "Зависят от нас",
-   "desc": "Витрина заказов для BI",
-   "sprint": 7,
-   "status": "Ожидается",
-   "owner": "Analytics",
-   "risk": "Low"
-  }
- ]
+  "params": {
+    "name": "Sprint 24",
+    "start": "2026-08-03",
+    "sprintDays": 10,
+    "focus": 0.8,
+    "today": "2026-09-10",
+    "goal": "Запустить оформление заказа с онлайн-оплатой",
+    "sprints": 11
+  },
+  "dod": [
+    {
+      "crit": "Код прошёл ревью",
+      "done": false
+    },
+    {
+      "crit": "Юнит/интеграционные тесты зелёные",
+      "done": false
+    },
+    {
+      "crit": "Документация обновлена",
+      "done": false
+    },
+    {
+      "crit": "Развёрнуто на stage",
+      "done": false
+    },
+    {
+      "crit": "Принято владельцем продукта",
+      "done": false
+    },
+    {
+      "crit": "Нет открытых блокеров",
+      "done": false
+    }
+  ],
+  "team": [
+    {
+      "name": "Иванов А.",
+      "role": "Backend",
+      "avail": 1,
+      "absent": 0
+    },
+    {
+      "name": "Петрова М.",
+      "role": "Frontend",
+      "avail": 1,
+      "absent": 0
+    },
+    {
+      "name": "Сидоров К.",
+      "role": "QA",
+      "avail": 0.8,
+      "absent": 0
+    },
+    {
+      "name": "Кузнецов Д.",
+      "role": "Backend",
+      "avail": 1,
+      "absent": 0
+    },
+    {
+      "name": "Орлова Е.",
+      "role": "Analyst",
+      "avail": 0.5,
+      "absent": 0
+    },
+    {
+      "name": "Смирнов П.",
+      "role": "Backend",
+      "avail": 1,
+      "absent": 0
+    },
+    {
+      "name": "Волкова Н.",
+      "role": "Frontend",
+      "avail": 1,
+      "absent": 0
+    },
+    {
+      "name": "Морозов И.",
+      "role": "QA",
+      "avail": 1,
+      "absent": 0
+    },
+    {
+      "name": "Новиков А.",
+      "role": "DevOps",
+      "avail": 0.8,
+      "absent": 0
+    },
+    {
+      "name": "Фёдорова О.",
+      "role": "Analyst",
+      "avail": 1,
+      "absent": 0
+    },
+    {
+      "name": "Козлов В.",
+      "role": "Backend",
+      "avail": 1,
+      "absent": 0
+    },
+    {
+      "name": "Лебедева Т.",
+      "role": "Designer",
+      "avail": 0.8,
+      "absent": 0
+    },
+    {
+      "name": "Соколов Р.",
+      "role": "Frontend",
+      "avail": 1,
+      "absent": 0
+    }
+  ],
+  "tasks": [
+    {
+      "id": "T-01",
+      "title": "Проектирование API заказов",
+      "assignee": "Иванов А.",
+      "role": "=IFERROR(INDEX(Капасити!$C$5:$C$147,MATCH($C5,Капасити!$B$5:$B$147,0)),\"\")",
+      "type": "История",
+      "est": 5,
+      "status": "Готово",
+      "sprint": 1,
+      "dep": "",
+      "started": "2026-08-03",
+      "done": "2026-08-06",
+      "added": false
+    },
+    {
+      "id": "T-02",
+      "title": "Экран корзины (вёрстка)",
+      "assignee": "Петрова М.",
+      "role": "=IFERROR(INDEX(Капасити!$C$5:$C$147,MATCH($C6,Капасити!$B$5:$B$147,0)),\"\")",
+      "type": "Задача",
+      "est": 8,
+      "status": "Готово",
+      "sprint": 1,
+      "dep": "T-01",
+      "started": "2026-08-04",
+      "done": "2026-08-12",
+      "added": false
+    },
+    {
+      "id": "T-09",
+      "title": "Настройка CI/CD",
+      "assignee": "Новиков А.",
+      "role": "=IFERROR(INDEX(Капасити!$C$5:$C$147,MATCH($C7,Капасити!$B$5:$B$147,0)),\"\")",
+      "type": "Задача",
+      "est": 4,
+      "status": "Готово",
+      "sprint": 1,
+      "dep": "",
+      "started": "2026-08-03",
+      "done": "2026-08-05",
+      "added": false
+    },
+    {
+      "id": "T-10",
+      "title": "Модель данных заказа",
+      "assignee": "Кузнецов Д.",
+      "role": "=IFERROR(INDEX(Капасити!$C$5:$C$147,MATCH($C8,Капасити!$B$5:$B$147,0)),\"\")",
+      "type": "История",
+      "est": 5,
+      "status": "В работе",
+      "sprint": 1,
+      "dep": "",
+      "started": "2026-08-05",
+      "done": null,
+      "added": false
+    },
+    {
+      "id": "T-03",
+      "title": "Интеграция платежей",
+      "assignee": "Иванов А.",
+      "role": "=IFERROR(INDEX(Капасити!$C$5:$C$147,MATCH($C9,Капасити!$B$5:$B$147,0)),\"\")",
+      "type": "Задача",
+      "est": 8,
+      "status": "Готово",
+      "sprint": 2,
+      "dep": "T-01",
+      "started": "2026-08-17",
+      "done": "2026-08-24",
+      "added": false
+    },
+    {
+      "id": "T-04",
+      "title": "Тест-кейсы оформления",
+      "assignee": "Сидоров К.",
+      "role": "=IFERROR(INDEX(Капасити!$C$5:$C$147,MATCH($C10,Капасити!$B$5:$B$147,0)),\"\")",
+      "type": "Тех.долг",
+      "est": 4,
+      "status": "Готово",
+      "sprint": 2,
+      "dep": "",
+      "started": "2026-08-18",
+      "done": "2026-08-20",
+      "added": false
+    },
+    {
+      "id": "T-08",
+      "title": "Уведомления по e-mail",
+      "assignee": "Смирнов П.",
+      "role": "=IFERROR(INDEX(Капасити!$C$5:$C$147,MATCH($C11,Капасити!$B$5:$B$147,0)),\"\")",
+      "type": "Задача",
+      "est": 4,
+      "status": "Готово",
+      "sprint": 2,
+      "dep": "",
+      "started": "2026-08-19",
+      "done": "2026-08-26",
+      "added": false
+    },
+    {
+      "id": "T-11",
+      "title": "API промокодов",
+      "assignee": "Козлов В.",
+      "role": "=IFERROR(INDEX(Капасити!$C$5:$C$147,MATCH($C12,Капасити!$B$5:$B$147,0)),\"\")",
+      "type": "История",
+      "est": 5,
+      "status": "Готово",
+      "sprint": 2,
+      "dep": "",
+      "started": "2026-08-17",
+      "done": "2026-08-25",
+      "added": false
+    },
+    {
+      "id": "T-12",
+      "title": "Логирование и метрики",
+      "assignee": "Новиков А.",
+      "role": "=IFERROR(INDEX(Капасити!$C$5:$C$147,MATCH($C13,Капасити!$B$5:$B$147,0)),\"\")",
+      "type": "Задача",
+      "est": 3,
+      "status": "To Do",
+      "sprint": 2,
+      "dep": "",
+      "started": null,
+      "done": null,
+      "added": false
+    },
+    {
+      "id": "T-05",
+      "title": "Рефакторинг авторизации",
+      "assignee": "Кузнецов Д.",
+      "role": "=IFERROR(INDEX(Капасити!$C$5:$C$147,MATCH($C14,Капасити!$B$5:$B$147,0)),\"\")",
+      "type": "Задача",
+      "est": 3,
+      "status": "В работе",
+      "sprint": 3,
+      "dep": "",
+      "started": "2026-09-02",
+      "done": null,
+      "added": false
+    },
+    {
+      "id": "T-06",
+      "title": "Аналитика воронки",
+      "assignee": "Орлова Е.",
+      "role": "=IFERROR(INDEX(Капасити!$C$5:$C$147,MATCH($C15,Капасити!$B$5:$B$147,0)),\"\")",
+      "type": "История",
+      "est": 3,
+      "status": "To Do",
+      "sprint": 3,
+      "dep": "",
+      "started": null,
+      "done": null,
+      "added": true
+    },
+    {
+      "id": "T-07",
+      "title": "Регресс-тестирование релиза",
+      "assignee": "Сидоров К.",
+      "role": "=IFERROR(INDEX(Капасити!$C$5:$C$147,MATCH($C16,Капасити!$B$5:$B$147,0)),\"\")",
+      "type": "Задача",
+      "est": 5,
+      "status": "To Do",
+      "sprint": 3,
+      "dep": "T-04",
+      "started": null,
+      "done": null,
+      "added": false
+    },
+    {
+      "id": "T-13",
+      "title": "Экран оплаты",
+      "assignee": "Волкова Н.",
+      "role": "=IFERROR(INDEX(Капасити!$C$5:$C$147,MATCH($C17,Капасити!$B$5:$B$147,0)),\"\")",
+      "type": "Задача",
+      "est": 8,
+      "status": "В работе",
+      "sprint": 3,
+      "dep": "T-03",
+      "started": "2026-09-01",
+      "done": null,
+      "added": false
+    },
+    {
+      "id": "T-14",
+      "title": "Вебхуки платежей",
+      "assignee": "Иванов А.",
+      "role": "=IFERROR(INDEX(Капасити!$C$5:$C$147,MATCH($C18,Капасити!$B$5:$B$147,0)),\"\")",
+      "type": "История",
+      "est": 5,
+      "status": "To Do",
+      "sprint": 3,
+      "dep": "T-13",
+      "started": null,
+      "done": null,
+      "added": true
+    },
+    {
+      "id": "T-15",
+      "title": "История заказов",
+      "assignee": "Соколов Р.",
+      "role": "=IFERROR(INDEX(Капасити!$C$5:$C$147,MATCH($C19,Капасити!$B$5:$B$147,0)),\"\")",
+      "type": "Задача",
+      "est": 5,
+      "status": "To Do",
+      "sprint": 3,
+      "dep": "",
+      "started": null,
+      "done": null,
+      "added": false
+    },
+    {
+      "id": "T-16",
+      "title": "Личный кабинет",
+      "assignee": "Волкова Н.",
+      "role": "=IFERROR(INDEX(Капасити!$C$5:$C$147,MATCH($C20,Капасити!$B$5:$B$147,0)),\"\")",
+      "type": "Задача",
+      "est": 8,
+      "status": "To Do",
+      "sprint": 4,
+      "dep": "T-15",
+      "started": null,
+      "done": null,
+      "added": false
+    },
+    {
+      "id": "T-17",
+      "title": "Фильтры каталога",
+      "assignee": "Морозов И.",
+      "role": "=IFERROR(INDEX(Капасити!$C$5:$C$147,MATCH($C21,Капасити!$B$5:$B$147,0)),\"\")",
+      "type": "История",
+      "est": 6,
+      "status": "To Do",
+      "sprint": 4,
+      "dep": "T-16",
+      "started": null,
+      "done": null,
+      "added": false
+    },
+    {
+      "id": "T-18",
+      "title": "Отзывы и рейтинги",
+      "assignee": "Лебедева Т.",
+      "role": "=IFERROR(INDEX(Капасити!$C$5:$C$147,MATCH($C22,Капасити!$B$5:$B$147,0)),\"\")",
+      "type": "Тех.долг",
+      "est": 5,
+      "status": "To Do",
+      "sprint": 4,
+      "dep": "",
+      "started": null,
+      "done": null,
+      "added": false
+    },
+    {
+      "id": "T-19",
+      "title": "Рекомендации",
+      "assignee": "Фёдорова О.",
+      "role": "=IFERROR(INDEX(Капасити!$C$5:$C$147,MATCH($C23,Капасити!$B$5:$B$147,0)),\"\")",
+      "type": "История",
+      "est": 8,
+      "status": "To Do",
+      "sprint": 5,
+      "dep": "",
+      "started": null,
+      "done": null,
+      "added": false
+    },
+    {
+      "id": "T-20",
+      "title": "A/B тесты чекаута",
+      "assignee": "Морозов И.",
+      "role": "=IFERROR(INDEX(Капасити!$C$5:$C$147,MATCH($C24,Капасити!$B$5:$B$147,0)),\"\")",
+      "type": "Задача",
+      "est": 5,
+      "status": "To Do",
+      "sprint": 5,
+      "dep": "",
+      "started": null,
+      "done": null,
+      "added": false
+    }
+  ],
+  "releases": [
+    {
+      "id": "R-1",
+      "name": "Внутренний релиз (MVP)",
+      "sfrom": 1,
+      "sto": 2,
+      "status": "Готово"
+    },
+    {
+      "id": "R-2",
+      "name": "Бета для площадок",
+      "sfrom": 3,
+      "sto": 4,
+      "status": "В работе"
+    },
+    {
+      "id": "R-3",
+      "name": "Публичный релиз 1.0",
+      "sfrom": 5,
+      "sto": 6,
+      "status": "Планируется"
+    },
+    {
+      "id": "R-4",
+      "name": "Релиз 1.1 — уведомления",
+      "sfrom": 7,
+      "sto": 8,
+      "status": "Планируется"
+    },
+    {
+      "id": "R-5",
+      "name": "GA / Стабилизация",
+      "sfrom": 9,
+      "sto": 10,
+      "status": "Планируется"
+    }
+  ],
+  "milestones": [
+    {
+      "id": "V-1",
+      "name": "Старт проекта",
+      "sprint": 1,
+      "status": "Готово",
+      "rel": "R-1"
+    },
+    {
+      "id": "V-2",
+      "name": "Дизайн утверждён",
+      "sprint": 2,
+      "status": "Готово",
+      "rel": "R-1"
+    },
+    {
+      "id": "V-3",
+      "name": "Feature freeze",
+      "sprint": 5,
+      "status": "Планируется",
+      "rel": "R-3"
+    },
+    {
+      "id": "V-4",
+      "name": "Code freeze",
+      "sprint": 6,
+      "status": "Планируется",
+      "rel": "R-3"
+    },
+    {
+      "id": "V-5",
+      "name": "Go-live / запуск",
+      "sprint": 7,
+      "status": "Планируется",
+      "rel": "R-4"
+    }
+  ],
+  "techDebt": [
+    {
+      "id": "TD-1",
+      "desc": "Рефакторинг модуля авторизации",
+      "area": "Auth",
+      "type": "Код",
+      "impact": "High",
+      "est": 3,
+      "prio": "High",
+      "sprint": 4,
+      "status": "Закрыт",
+      "created": 1,
+      "paid": 3
+    },
+    {
+      "id": "TD-2",
+      "desc": "Автотесты оформления заказа",
+      "area": "Checkout",
+      "type": "Тесты",
+      "impact": "High",
+      "est": 2,
+      "prio": "High",
+      "sprint": 3,
+      "status": "Закрыт",
+      "created": 2,
+      "paid": 4
+    },
+    {
+      "id": "TD-3",
+      "desc": "Убрать дубли в API заказов",
+      "area": "API",
+      "type": "Архитектура",
+      "impact": "Medium",
+      "est": 2,
+      "prio": "Medium",
+      "sprint": 5,
+      "status": "Открыт",
+      "created": 3,
+      "paid": null
+    },
+    {
+      "id": "TD-4",
+      "desc": "Обновить документацию API",
+      "area": "Docs",
+      "type": "Документация",
+      "impact": "Low",
+      "est": 1,
+      "prio": "Low",
+      "sprint": 6,
+      "status": "Открыт",
+      "created": 4,
+      "paid": null
+    },
+    {
+      "id": "TD-5",
+      "desc": "Мониторинг и алерты платежей",
+      "area": "Payments",
+      "type": "Инфраструктура",
+      "impact": "Medium",
+      "est": 2,
+      "prio": "Medium",
+      "sprint": 5,
+      "status": "В работе",
+      "created": 3,
+      "paid": null
+    },
+    {
+      "id": "TD-6",
+      "desc": "Оптимизация запросов БД",
+      "area": "DB",
+      "type": "Код",
+      "impact": "Medium",
+      "est": 3,
+      "prio": "Medium",
+      "sprint": 7,
+      "status": "Открыт",
+      "created": 5,
+      "paid": null
+    }
+  ],
+  "risks": [
+    {
+      "name": "Зависимость от внешнего API оплаты",
+      "p": 4,
+      "i": 5,
+      "mit": "Мок-сервис + ранняя интеграция",
+      "owner": "Иванов А.",
+      "status": "Открыт"
+    },
+    {
+      "name": "Отпуска в декабре (Спринт 11)",
+      "p": 5,
+      "i": 3,
+      "mit": "Сокращённый объём, буфер",
+      "owner": "Орлова Е.",
+      "status": "Открыт"
+    },
+    {
+      "name": "Недооценка интеграции",
+      "p": 3,
+      "i": 4,
+      "mit": "Спайк на оценку",
+      "owner": "Кузнецов Д.",
+      "status": "Открыт"
+    },
+    {
+      "name": "Текучесть в QA",
+      "p": 2,
+      "i": 4,
+      "mit": "Кросс-ревью, документация",
+      "owner": "Сидоров К.",
+      "status": "Наблюдение"
+    }
+  ],
+  "bugs": [
+    {
+      "id": "B-01",
+      "desc": "Ошибка валидации email",
+      "task": "T-01",
+      "sprint": 1,
+      "sev": "Major",
+      "status": "Закрыт",
+      "time": 0.5,
+      "reopened": false,
+      "cause": "Интеграция"
+    },
+    {
+      "id": "B-02",
+      "desc": "Падение при пустой корзине",
+      "task": "T-02",
+      "sprint": 1,
+      "sev": "Critical",
+      "status": "Закрыт",
+      "time": 0.5,
+      "reopened": false,
+      "cause": "Код"
+    },
+    {
+      "id": "B-03",
+      "desc": "Неверный расчёт скидки",
+      "task": "T-01",
+      "sprint": 1,
+      "sev": "Major",
+      "status": "Закрыт",
+      "time": 0.5,
+      "reopened": false,
+      "cause": "Требования"
+    },
+    {
+      "id": "B-04",
+      "desc": "Съезжает вёрстка на мобильном",
+      "task": "T-02",
+      "sprint": 1,
+      "sev": "Minor",
+      "status": "Закрыт",
+      "time": 0.3,
+      "reopened": false,
+      "cause": "Тестирование"
+    },
+    {
+      "id": "B-05",
+      "desc": "Таймаут платежа",
+      "task": "T-03",
+      "sprint": 1,
+      "sev": "Major",
+      "status": "Открыт",
+      "time": 0.2,
+      "reopened": false,
+      "cause": "Интеграция"
+    },
+    {
+      "id": "B-06",
+      "desc": "Дубли заказов",
+      "task": "T-03",
+      "sprint": 2,
+      "sev": "Critical",
+      "status": "Закрыт",
+      "time": 0.4,
+      "reopened": true,
+      "cause": "Код"
+    },
+    {
+      "id": "B-07",
+      "desc": "Не приходит письмо-подтверждение",
+      "task": "T-08",
+      "sprint": 2,
+      "sev": "Major",
+      "status": "Закрыт",
+      "time": 0.3,
+      "reopened": false,
+      "cause": "Требования"
+    },
+    {
+      "id": "B-08",
+      "desc": "Ошибка 500 при оплате",
+      "task": "T-03",
+      "sprint": 2,
+      "sev": "Critical",
+      "status": "Закрыт",
+      "time": 0.3,
+      "reopened": false,
+      "cause": "Интеграция"
+    },
+    {
+      "id": "B-09",
+      "desc": "Неверный НДС в чеке",
+      "task": "T-06",
+      "sprint": 2,
+      "sev": "Major",
+      "status": "Закрыт",
+      "time": 0.2,
+      "reopened": false,
+      "cause": "Данные"
+    },
+    {
+      "id": "B-10",
+      "desc": "Кнопка оформления неактивна",
+      "task": "T-02",
+      "sprint": 2,
+      "sev": "Minor",
+      "status": "Закрыт",
+      "time": 0.1,
+      "reopened": false,
+      "cause": "Код"
+    },
+    {
+      "id": "B-11",
+      "desc": "Переполнение логов",
+      "task": "T-05",
+      "sprint": 2,
+      "sev": "Minor",
+      "status": "Закрыт",
+      "time": 0.2,
+      "reopened": false,
+      "cause": "Требования"
+    },
+    {
+      "id": "B-12",
+      "desc": "Медленный поиск заказов",
+      "task": "T-04",
+      "sprint": 3,
+      "sev": "Major",
+      "status": "Открыт",
+      "time": 0,
+      "reopened": false,
+      "cause": "Тестирование"
+    },
+    {
+      "id": "B-13",
+      "desc": "Падает экспорт отчёта",
+      "task": "T-07",
+      "sprint": 3,
+      "sev": "Minor",
+      "status": "Открыт",
+      "time": 0,
+      "reopened": false,
+      "cause": "Интеграция"
+    }
+  ],
+  "calendar": [
+    {
+      "date": "2026-11-04",
+      "name": "День народного единства"
+    },
+    {
+      "date": "2027-01-01",
+      "name": "Новый год"
+    },
+    {
+      "date": "2027-01-02",
+      "name": "Новогодние каникулы"
+    }
+  ],
+  "retro": [
+    {
+      "sprint": 1,
+      "well": "Быстрый старт, реалистичная оценка",
+      "improve": "Мало тестовых данных",
+      "action": "Подготовить набор тест-данных",
+      "owner": "Сидоров К.",
+      "due": "Спринт 2",
+      "status": "Сделано"
+    },
+    {
+      "sprint": 1,
+      "well": "Хорошее демо",
+      "improve": "Долгий код-ревью",
+      "action": "SLA на ревью — 1 день",
+      "owner": "Иванов А.",
+      "due": "Спринт 2",
+      "status": "Сделано"
+    },
+    {
+      "sprint": 2,
+      "well": "Стабильные демо",
+      "improve": "Скоуп рос по ходу",
+      "action": "Фиксировать скоуп на планировании",
+      "owner": "Кузнецов Д.",
+      "due": "Спринт 3",
+      "status": "В работе"
+    },
+    {
+      "sprint": 2,
+      "well": "Слаженная работа QA",
+      "improve": "Блокеры по внешнему API",
+      "action": "Ранняя интеграция / моки",
+      "owner": "Иванов А.",
+      "due": "Спринт 3",
+      "status": "Открыт"
+    }
+  ],
+  "budget": {
+    "rate": 8000,
+    "total": 8000000
+  },
+  "ttmTarget": 15,
+  "rice": [
+    {
+      "id": "F-01",
+      "name": "MVP оформления заказа",
+      "reach": 5000,
+      "impact": 3,
+      "conf": "100%",
+      "effort": 40
+    },
+    {
+      "id": "F-02",
+      "name": "Оплата картой",
+      "reach": 5000,
+      "impact": 3,
+      "conf": "80%",
+      "effort": 25
+    },
+    {
+      "id": "F-03",
+      "name": "Промокоды и скидки",
+      "reach": 3000,
+      "impact": 1,
+      "conf": "80%",
+      "effort": 12
+    },
+    {
+      "id": "F-04",
+      "name": "Уведомления (e-mail/push)",
+      "reach": 4000,
+      "impact": 1,
+      "conf": "80%",
+      "effort": 15
+    },
+    {
+      "id": "F-05",
+      "name": "История заказов",
+      "reach": 3500,
+      "impact": 0.5,
+      "conf": "100%",
+      "effort": 10
+    },
+    {
+      "id": "F-06",
+      "name": "Мобильная вёрстка",
+      "reach": 4500,
+      "impact": 2,
+      "conf": "80%",
+      "effort": 20
+    },
+    {
+      "id": "F-07",
+      "name": "Личный кабинет",
+      "reach": 3000,
+      "impact": 1,
+      "conf": "50%",
+      "effort": 18
+    },
+    {
+      "id": "F-08",
+      "name": "Рекомендации товаров",
+      "reach": 2000,
+      "impact": 2,
+      "conf": "50%",
+      "effort": 22
+    },
+    {
+      "id": "F-09",
+      "name": "Экспорт отчётов",
+      "reach": 800,
+      "impact": 0.5,
+      "conf": "80%",
+      "effort": 8
+    },
+    {
+      "id": "F-10",
+      "name": "Мультиязычность",
+      "reach": 1500,
+      "impact": 1,
+      "conf": "50%",
+      "effort": 30
+    }
+  ],
+  "moscow": [
+    {
+      "id": "MS-01",
+      "name": "Оформление заказа (MVP)",
+      "category": "Must",
+      "note": "Без этого запуск подписки невозможен"
+    },
+    {
+      "id": "MS-02",
+      "name": "Оплата картой",
+      "category": "Must",
+      "note": "Ключевой сценарий монетизации"
+    },
+    {
+      "id": "MS-03",
+      "name": "Каталог товаров и цены",
+      "category": "Must",
+      "note": "Данные для оформления заказа"
+    },
+    {
+      "id": "MS-04",
+      "name": "Личный кабинет (базовый)",
+      "category": "Must",
+      "note": "Управление подпиской"
+    },
+    {
+      "id": "MS-05",
+      "name": "Промокоды и скидки",
+      "category": "Should",
+      "note": "Повышает конверсию, но релиз возможен без них"
+    },
+    {
+      "id": "MS-06",
+      "name": "Уведомления (e-mail/push)",
+      "category": "Should",
+      "note": "Удержание пользователей"
+    },
+    {
+      "id": "MS-07",
+      "name": "История заказов",
+      "category": "Should",
+      "note": "Ожидаемо пользователями"
+    },
+    {
+      "id": "MS-08",
+      "name": "Рекомендации товаров",
+      "category": "Could",
+      "note": "Если останется время"
+    },
+    {
+      "id": "MS-09",
+      "name": "Мультиязычность",
+      "category": "Could",
+      "note": "Для будущих рынков"
+    },
+    {
+      "id": "MS-10",
+      "name": "Экспорт отчётов",
+      "category": "Could",
+      "note": "Удобно, но не критично"
+    },
+    {
+      "id": "MS-11",
+      "name": "Программа лояльности / бонусы",
+      "category": "Won't",
+      "note": "Отдельная инициатива на следующий квартал"
+    },
+    {
+      "id": "MS-12",
+      "name": "Офлайн-режим приложения",
+      "category": "Won't",
+      "note": "Вне scope текущего релиза"
+    }
+  ],
+  "deps": [
+    {
+      "id": "D-01",
+      "item": "Интеграция платежей",
+      "type": "Задача",
+      "task": "T-03",
+      "stream": "Платёжный шлюз",
+      "dir": "Мы зависим",
+      "desc": "API оплаты v2 (токенизация карт)",
+      "sprint": 3,
+      "status": "Заблокировано",
+      "owner": "Команда Payments",
+      "risk": "High"
+    },
+    {
+      "id": "D-02",
+      "item": "Оплата картой",
+      "type": "Фича",
+      "task": "",
+      "stream": "Платёжный шлюз",
+      "dir": "Мы зависим",
+      "desc": "Сертификация PCI DSS",
+      "sprint": 4,
+      "status": "Ожидается",
+      "owner": "Security / Payments",
+      "risk": "High"
+    },
+    {
+      "id": "D-03",
+      "item": "Уведомления (e-mail/push)",
+      "type": "Задача",
+      "task": "T-08",
+      "stream": "Инфраструктура / DevOps",
+      "dir": "Мы зависим",
+      "desc": "Сервис рассылок (SMTP + Push)",
+      "sprint": 4,
+      "status": "Подтверждено",
+      "owner": "Platform Team",
+      "risk": "Medium"
+    },
+    {
+      "id": "D-04",
+      "item": "API промокодов",
+      "type": "Задача",
+      "task": "T-11",
+      "stream": "Каталог / Контент",
+      "dir": "Мы зависим",
+      "desc": "Каталог товаров и цен",
+      "sprint": 2,
+      "status": "Получено",
+      "owner": "Catalog Team",
+      "risk": "Low"
+    },
+    {
+      "id": "D-05",
+      "item": "Личный кабинет",
+      "type": "История",
+      "task": "",
+      "stream": "Идентификация (SSO)",
+      "dir": "Мы зависим",
+      "desc": "Единый вход (OAuth2/OIDC)",
+      "sprint": 5,
+      "status": "Ожидается",
+      "owner": "IAM Team",
+      "risk": "Medium"
+    },
+    {
+      "id": "D-06",
+      "item": "Экран корзины",
+      "type": "Фича",
+      "task": "T-02",
+      "stream": "Мобильное приложение",
+      "dir": "Зависят от нас",
+      "desc": "REST API заказов для мобильного клиента",
+      "sprint": 6,
+      "status": "Подтверждено",
+      "owner": "Mobile Team",
+      "risk": "Medium"
+    },
+    {
+      "id": "D-07",
+      "item": "Логирование и метрики",
+      "type": "Задача",
+      "task": "T-12",
+      "stream": "Data Platform / Аналитика",
+      "dir": "Мы зависим",
+      "desc": "Шина событий (Kafka topics)",
+      "sprint": 4,
+      "status": "Заблокировано",
+      "owner": "Data Platform",
+      "risk": "High"
+    },
+    {
+      "id": "D-08",
+      "item": "Экспорт отчётов",
+      "type": "Фича",
+      "task": "",
+      "stream": "Data Platform / Аналитика",
+      "dir": "Зависят от нас",
+      "desc": "Витрина заказов для BI",
+      "sprint": 7,
+      "status": "Ожидается",
+      "owner": "Analytics",
+      "risk": "Low"
+    }
+  ]
 }

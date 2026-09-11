@@ -29,6 +29,21 @@ h1{font-size:23px;margin:4px 0 4px;letter-spacing:-.01em}
 .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;box-shadow:var(--shadow)}
 .grid{display:grid;gap:14px}
 .grid2{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));margin-top:14px}
+.moscow-board{display:grid;gap:14px;grid-template-columns:repeat(4,1fr);margin-top:14px}
+@media(max-width:1100px){.moscow-board{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.moscow-board{grid-template-columns:1fr}}
+.moscow-col{background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);display:flex;flex-direction:column;overflow:hidden}
+.moscow-col .mc-head{padding:12px 14px;border-top:3px solid var(--mc);display:flex;align-items:center;justify-content:space-between;gap:8px}
+.moscow-col .mc-title{font-weight:700;font-size:14px;display:flex;align-items:center;gap:7px}
+.moscow-col .mc-dot{width:10px;height:10px;border-radius:50%;background:var(--mc);flex:none}
+.moscow-col .mc-sub{font-size:11.5px;color:var(--muted);margin:-2px 14px 0}
+.moscow-col .mc-count{font-size:12px;font-weight:700;color:var(--mc);background:color-mix(in srgb,var(--mc) 14%,transparent);border-radius:20px;padding:2px 9px}
+.moscow-col .mc-body{padding:10px 12px 14px;display:flex;flex-direction:column;gap:9px;flex:1}
+.moscow-card{border:1px solid var(--line);border-left:3px solid var(--mc);border-radius:10px;padding:9px 11px;background:var(--bg)}
+.moscow-card .mm-id{font-size:11px;color:var(--muted);font-weight:600;letter-spacing:.03em}
+.moscow-card .mm-name{font-size:13px;font-weight:600;margin:2px 0 3px;line-height:1.35}
+.moscow-card .mm-note{font-size:11.5px;color:var(--muted);line-height:1.5}
+.moscow-col .mc-empty{font-size:12px;color:var(--muted);font-style:italic;padding:6px 2px}
 .kpis{grid-template-columns:repeat(auto-fit,minmax(172px,1fr))}
 .kpi{position:relative;overflow:hidden}
 .kpi .stripe{position:absolute;left:0;top:0;bottom:0;width:4px}
@@ -194,7 +209,7 @@ body.noadmin #rst,body.noadmin #imp{display:none}
  </div>
 </div></header>
 <div class="shell"><aside class="side" id="side"><nav id="nav"></nav></aside><div class="scrim" id="scrim"></div>
-<main id="main"><section class="view" id="v_dash"></section><section class="view" id="v_backlog"></section><section class="view" id="v_team"></section><section class="view" id="v_roadmap"></section><section class="view" id="v_quarters"></section><section class="view" id="v_rice"></section><section class="view" id="v_gantt"></section><section class="view" id="v_deps"></section><section class="view" id="v_releases"></section><section class="view" id="v_milestones"></section><section class="view" id="v_debt"></section><section class="view" id="v_okr"></section><section class="view" id="v_budget"></section><section class="view" id="v_analytics"></section><section class="view" id="v_risks"></section><section class="view" id="v_bugs"></section><section class="view" id="v_retro"></section><section class="view" id="v_calendar"></section><section class="view" id="v_params"></section></main></div>
+<main id="main"><section class="view" id="v_dash"></section><section class="view" id="v_backlog"></section><section class="view" id="v_team"></section><section class="view" id="v_roadmap"></section><section class="view" id="v_quarters"></section><section class="view" id="v_rice"></section><section class="view" id="v_moscow"></section><section class="view" id="v_gantt"></section><section class="view" id="v_deps"></section><section class="view" id="v_releases"></section><section class="view" id="v_milestones"></section><section class="view" id="v_debt"></section><section class="view" id="v_okr"></section><section class="view" id="v_budget"></section><section class="view" id="v_analytics"></section><section class="view" id="v_risks"></section><section class="view" id="v_bugs"></section><section class="view" id="v_retro"></section><section class="view" id="v_calendar"></section><section class="view" id="v_params"></section></main></div>
 <div class="palette" id="palette"><div class="pbox"><input class="pin" id="pin" placeholder="Поиск раздела или действия…" autocomplete="off"><div class="plist" id="plist"></div></div></div>
 <div class="role-pop" id="rolepop"></div>
 <div class="modal" id="accmodal"><div class="mbox">
@@ -1037,6 +1052,19 @@ function migrate(d){
   {id:'F-08',name:'Рекомендации товаров',reach:2000,impact:2,conf:'50%',effort:22},
   {id:'F-09',name:'Экспорт отчётов',reach:800,impact:0.5,conf:'80%',effort:8},
   {id:'F-10',name:'Мультиязычность',reach:1500,impact:1,conf:'50%',effort:30}];
+ if(!Array.isArray(d.moscow))d.moscow=[
+  {id:'MS-01',name:'Оформление заказа (MVP)',category:'Must',note:'Без этого запуск подписки невозможен'},
+  {id:'MS-02',name:'Оплата картой',category:'Must',note:'Ключевой сценарий монетизации'},
+  {id:'MS-03',name:'Каталог товаров и цены',category:'Must',note:'Данные для оформления заказа'},
+  {id:'MS-04',name:'Личный кабинет (базовый)',category:'Must',note:'Управление подпиской'},
+  {id:'MS-05',name:'Промокоды и скидки',category:'Should',note:'Повышает конверсию, но релиз возможен без них'},
+  {id:'MS-06',name:'Уведомления (e-mail/push)',category:'Should',note:'Удержание пользователей'},
+  {id:'MS-07',name:'История заказов',category:'Should',note:'Ожидаемо пользователями'},
+  {id:'MS-08',name:'Рекомендации товаров',category:'Could',note:'Если останется время'},
+  {id:'MS-09',name:'Мультиязычность',category:'Could',note:'Для будущих рынков'},
+  {id:'MS-10',name:'Экспорт отчётов',category:'Could',note:'Удобно, но не критично'},
+  {id:'MS-11',name:'Программа лояльности / бонусы',category:"Won't",note:'Отдельная инициатива на следующий квартал'},
+  {id:'MS-12',name:'Офлайн-режим приложения',category:"Won't",note:'Вне scope текущего релиза'}];
  // calendar: migrate array of date-strings -> [{date,name}]
  if(Array.isArray(d.calendar))d.calendar=d.calendar.map(h=>typeof h==='string'?{date:h,name:''}:h);
  else d.calendar=[];
@@ -1225,6 +1253,7 @@ function views(){
  // Quarters (Кварталы) + quarterly roadmap
  renderQuarters(C);
  setView('rice','RICE','Приоритизация фич по методологии RICE = (Reach × Impact × Confidence) / Effort.',riceView());
+ setView('moscow','MoSCoW — приоритизация','Метод MoSCoW: Must / Should / Could / Won\'t have — что обязательно, желательно, возможно и что сознательно откладываем.',moscowView());
  // Gantt
  renderGantt(C);
  setView('deps','Зависимости от других стримов','Межстримовые зависимости задач, историй и фич. Маркеры ◆ отражены на диаграмме Ганта.',depsView());
@@ -1383,6 +1412,40 @@ function drawIshikawa(box){const W=1012,H=560,cy=280,x0=60,xHead=770;const svg=e
  box.innerHTML='';box.appendChild(svg);}
 function riceConf(v){const s=String(v);return s.indexOf('%')>=0?num(s)/100:num(v);}
 function riceScore(r){const eff=num(r.effort);return eff?num(r.reach)*num(r.impact)*riceConf(r.conf)/eff:0;}
+var MOSCOW_CATS=['Must','Should','Could',"Won't"];
+var MOSCOW_META={
+ 'Must':{label:'Must have',ru:'Обязательно',color:'#D24545',sub:'Без этого релиз не состоится'},
+ 'Should':{label:'Should have',ru:'Желательно',color:'#C98A00',sub:'Важно, но релиз возможен без этого'},
+ 'Could':{label:'Could have',ru:'Возможно',color:'#2D5BE3',sub:'Сделаем, если останется время'},
+ "Won't":{label:"Won't have (this time)",ru:'Не в этот раз',color:'#7A8AA0',sub:'Сознательно вне scope релиза'}};
+function moscowView(){const w=document.createElement('div');
+ w.appendChild(editable('moscow',[{k:'id',label:'ID'},{k:'name',label:'Фича / требование',wide:true},
+   {k:'category',label:'Категория',type:'select',opts:MOSCOW_CATS.slice()},
+   {k:'note',label:'Обоснование',wide:true}],{newId:'id',prefix:'MS-'}));
+ const items=ST.moscow||[];
+ const cnt=c=>items.filter(x=>x.category===c).length;
+ const tone={'Must':'crit','Should':'warn','Could':'neut',"Won't":'muted'};
+ const kp=document.createElement('div');kp.className='grid kpis';kp.style.marginTop='14px';
+ kp.innerHTML=MOSCOW_CATS.map(c=>kpiCard(MOSCOW_META[c].label,cnt(c),MOSCOW_META[c].ru,tone[c]==='muted'?'neut':tone[c])).join('');
+ w.appendChild(kp);
+ const board=document.createElement('div');board.className='moscow-board';
+ MOSCOW_CATS.forEach(c=>{const m=MOSCOW_META[c];const list=items.filter(x=>x.category===c);
+   const col=document.createElement('div');col.className='moscow-col';col.style.setProperty('--mc',m.color);
+   let h='<div class="mc-head"><span class="mc-title"><span class="mc-dot"></span>'+esc(m.label)+'</span><span class="mc-count">'+list.length+'</span></div>';
+   h+='<div class="mc-sub">'+esc(m.sub)+'</div><div class="mc-body">';
+   if(list.length)list.forEach(r=>{h+='<div class="moscow-card"><div class="mm-id">'+esc(r.id)+'</div><div class="mm-name">'+esc(r.name)+'</div>'+(r.note?'<div class="mm-note">'+esc(r.note)+'</div>':'')+'</div>';});
+   else h+='<div class="mc-empty">Нет элементов</div>';
+   h+='</div>';col.innerHTML=h;board.appendChild(col);});
+ w.appendChild(board);
+ const lg=document.createElement('div');lg.className='card';lg.style.marginTop='14px';
+ lg.innerHTML='<p class="ctitle">Методология MoSCoW</p><p style="font-size:13px;color:var(--muted);line-height:1.7;margin:0">'
+  +'Приоритизация требований по четырём категориям — что делаем и в каком порядке.<br>'
+  +'<b style="color:'+MOSCOW_META['Must'].color+'">Must have</b> — критично для релиза: без этого продукт не запускается.<br>'
+  +'<b style="color:'+MOSCOW_META['Should'].color+'">Should have</b> — важно и болезненно без него, но релиз технически возможен.<br>'
+  +'<b style="color:'+MOSCOW_META['Could'].color+'">Could have</b> — желательно, реализуем при наличии времени и ресурсов.<br>'
+  +'<b style="color:'+MOSCOW_META["Won't"].color+'">Won\'t have</b> — сознательно отложено: вне scope текущего релиза.<br>'
+  +'Правило здорового плана: доля <b>Must</b> не должна превышать ~60% ёмкости спринта — иначе не остаётся буфера на риски.</p>';
+ w.appendChild(lg);return w;}
 function riceView(){const w=document.createElement('div');
  w.appendChild(editable('rice',[{k:'id',label:'ID'},{k:'name',label:'Фича / инициатива',wide:true},
    {k:'reach',label:'Reach (польз./кв)',type:'num'},{k:'impact',label:'Impact',type:'select',opts:['3','2','1','0.5','0.25']},
@@ -1655,6 +1718,7 @@ function exportXlsx(){const C=compute();const s=[];
  s.push({name:'Календарь',aoa:[['Дата','Праздник / выходной']].concat((ST.calendar||[]).map(h=>[typeof h==='string'?h:h.date,typeof h==='string'?'':h.name]))});
  {const im=(ST.rice||[]).map(r=>riceScore(r));const rmx=im.reduce((a,b)=>Math.max(a,b),0)||1;
   s.push({name:'RICE',aoa:[['ID','Фича','Reach','Impact','Confidence','Effort','RICE score','Приоритет']].concat((ST.rice||[]).map(r=>{const sc=riceScore(r);return [r.id,r.name,num(r.reach),num(r.impact),riceConf(r.conf),num(r.effort),Math.round(sc*10)/10,sc>=0.6*rmx?'Высокий':sc>=0.3*rmx?'Средний':'Низкий'];}))});}
+ s.push({name:'MoSCoW',aoa:[['ID','Фича / требование','Категория','Приоритет','Обоснование']].concat((ST.moscow||[]).map(m=>[m.id,m.name,m.category,(MOSCOW_META[m.category]||{}).ru||'',m.note]))});
  s.push({name:'Зависимости',aoa:[['ID','Элемент','Тип','Задача','Внешний стрим','Направление','Что именно','Спринт','Статус','Владелец','Риск']].concat((ST.deps||[]).map(d=>[d.id,d.item,d.type,d.task,d.stream,d.dir,d.desc,num(d.sprint),d.status,d.owner,d.risk]))});
  const bin=buildXlsx(s);const blob=new Blob([bin],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='Планирование_спринта.xlsx';document.body.appendChild(a);a.click();a.remove();toast('Excel экспортирован');}
@@ -1665,7 +1729,7 @@ function commit(){save();views();activate(CURV);toast('Сохранено');}
 function recomputeSoft(){/* light: refresh dashboard only, keep edit focus */ renderDash(compute());}
 /* ---------- sidebar navigation ---------- */
 const NAV=[
- {g:'Планирование',items:[['dash','Дашборд','📋'],['roadmap','Дорожная карта','🗺️'],['quarters','Кварталы','🗓️'],['rice','RICE','🎯']]},
+ {g:'Планирование',items:[['dash','Дашборд','📋'],['roadmap','Дорожная карта','🗺️'],['quarters','Кварталы','🗓️'],['rice','RICE','🎯'],['moscow','MoSCoW','📌']]},
  {g:'Работа',items:[['backlog','Бэклог','🗂️'],['gantt','Гант','📊'],['deps','Зависимости','🔗'],['team','Команда','👥']]},
  {g:'Выпуск',items:[['releases','Релизы','🚀'],['milestones','Вехи','🏁'],['debt','Техдолг','🧱']]},
  {g:'Аналитика',items:[['analytics','Аналитика','📈'],['risks','Риски','⚠️'],['bugs','Баги','🐞'],['retro','Ретроспективы','🔄']]},

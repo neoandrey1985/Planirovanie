@@ -25,16 +25,18 @@ public class StateService {
     private final HolidayRepo calendar;
     private final RetroRepo retro;
     private final RiceRepo rice;
+    private final MoscowRepo moscow;
     private final DependencyRepo deps;
     private final OkrRepo okr;
 
     public StateService(ParamRepo params, AppMetaRepo meta, DodRepo dod, TeamRepo team, TaskRepo tasks,
                         ReleaseRepo releases, MilestoneRepo milestones, TechDebtRepo techDebt, RiskRepo risks,
-                        BugRepo bugs, HolidayRepo calendar, RetroRepo retro, RiceRepo rice, DependencyRepo deps,
-                        OkrRepo okr) {
+                        BugRepo bugs, HolidayRepo calendar, RetroRepo retro, RiceRepo rice, MoscowRepo moscow,
+                        DependencyRepo deps, OkrRepo okr) {
         this.params = params; this.meta = meta; this.dod = dod; this.team = team; this.tasks = tasks;
         this.releases = releases; this.milestones = milestones; this.techDebt = techDebt; this.risks = risks;
-        this.bugs = bugs; this.calendar = calendar; this.retro = retro; this.rice = rice; this.deps = deps;
+        this.bugs = bugs; this.calendar = calendar; this.retro = retro; this.rice = rice; this.moscow = moscow;
+        this.deps = deps;
         this.okr = okr;
     }
 
@@ -61,6 +63,7 @@ public class StateService {
         s.calendar = calendar.findAllByOrderByOrdAsc();
         s.retro = retro.findAllByOrderByOrdAsc();
         s.rice = rice.findAllByOrderByOrdAsc();
+        s.moscow = moscow.findAllByOrderByOrdAsc();
         s.deps = deps.findAllByOrderByOrdAsc();
         s.okr = okr.findAllByOrderByOrdAsc();
         return s;
@@ -108,6 +111,7 @@ public class StateService {
         order(s.calendar, (e, i) -> { e.id = null; e.ord = i; });
         order(s.retro, (e, i) -> { e.id = null; e.ord = i; });
         order(s.rice, (e, i) -> { e.pk = null; e.ord = i; });
+        order(s.moscow, (e, i) -> { e.pk = null; e.ord = i; });
         order(s.deps, (e, i) -> { e.pk = null; e.ord = i; });
         order(s.okr, (e, i) -> { e.id = null; e.ord = i; });
 
@@ -122,6 +126,7 @@ public class StateService {
         calendar.deleteAllInBatch();   if (s.calendar != null)   calendar.saveAll(s.calendar);
         retro.deleteAllInBatch();      if (s.retro != null)      retro.saveAll(s.retro);
         rice.deleteAllInBatch();       if (s.rice != null)       rice.saveAll(s.rice);
+        moscow.deleteAllInBatch();     if (s.moscow != null)     moscow.saveAll(s.moscow);
         deps.deleteAllInBatch();       if (s.deps != null)       deps.saveAll(s.deps);
         okr.deleteAllInBatch();        if (s.okr != null)        okr.saveAll(s.okr);
 

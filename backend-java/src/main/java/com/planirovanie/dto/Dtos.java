@@ -40,6 +40,7 @@ public final class Dtos {
         public List<Holiday> calendar;
         public List<Retro> retro;
         public List<Rice> rice;
+        public List<MoscowItem> moscow;
         public List<Dependency> deps;
         public List<Okr> okr;
         public BudgetDto budget;

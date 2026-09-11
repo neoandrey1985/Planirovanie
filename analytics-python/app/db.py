@@ -41,6 +41,8 @@ def load_state():
         "calendar": [{"date": r["cdate"], "name": r["name"]} for r in _rows("SELECT * FROM calendar ORDER BY ord")],
         "rice": [{"id": r["rice_id"], "name": r["name"], "reach": r["reach"], "impact": r["impact"],
                   "conf": r["conf"], "effort": r["effort"]} for r in _rows("SELECT * FROM rice ORDER BY ord")],
+        "moscow": [{"id": r["ms_id"], "name": r["name"], "category": r["category"],
+                    "note": r["note"]} for r in _rows("SELECT * FROM moscow ORDER BY ord")],
         "deps": [{"id": r["dep_id"], "item": r["item"], "stream": r["stream"], "dir": r["dir"],
                   "status": r["status"], "task": r["task"]} for r in _rows("SELECT * FROM deps ORDER BY ord")],
         "dod": [{"crit": r["crit"], "done": r["done"]} for r in _rows("SELECT * FROM dod ORDER BY ord")],
