@@ -157,6 +157,25 @@ tfoot td{font-weight:700;background:var(--panel2);color:var(--ink);border-top:2p
 .tour-ctrl button:hover{background:rgba(140,160,190,.4)}
 .tour-ctrl .sp{flex:1}
 .tour-ctrl .step{font-size:12px;opacity:.85;font-variant-numeric:tabular-nums}
+/* ---------- roles / access ---------- */
+#rolebtn{cursor:pointer;white-space:nowrap}
+.role-pop{position:fixed;top:52px;right:14px;z-index:58;background:var(--panel);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);padding:6px;min-width:220px;display:none}
+.role-pop.open{display:block}
+.role-opt{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:8px;cursor:pointer;font-size:13.5px;color:var(--ink)}
+.role-opt:hover{background:var(--panel2)}
+.role-opt.cur{color:var(--accent);font-weight:600;background:var(--accent-soft)}
+.role-opt small{color:var(--muted);margin-left:auto;font-size:11px}
+.role-sep{height:1px;background:var(--line);margin:5px 4px}
+.modal{position:fixed;inset:0;z-index:62;display:none;background:rgba(10,16,24,.4)}
+.modal.open{display:flex;align-items:center;justify-content:center}
+.modal .mbox{background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);padding:20px;width:min(430px,92vw)}
+.modal h3{margin:0 0 4px;font-size:17px}
+.modal .mnote{color:var(--muted);font-size:12.5px;margin:0 0 8px}
+.modal label{display:block;font-size:12.5px;color:var(--muted);margin:12px 0 4px}
+.modal input{width:100%;border:1px solid var(--line);background:var(--panel2);color:var(--ink);border-radius:8px;padding:9px 10px;font-family:inherit;font-size:14px}
+.modal .mrow{display:flex;gap:8px;justify-content:flex-end;margin-top:18px;flex-wrap:wrap}
+body.ro #main .btn.primary,body.ro #main .rowdel{display:none}
+body.noadmin #rst,body.noadmin #imp{display:none}
 </style>
 <header class="top"><div class="inner">
  <button class="btn iconbtn" id="menubtn" aria-label="Меню" title="Свернуть / развернуть меню">☰</button>
@@ -170,12 +189,21 @@ tfoot td{font-weight:700;background:var(--panel2);color:var(--ink);border-top:2p
   <span id="syncst" class="pill p-neut" style="align-self:center;white-space:nowrap">⚪ локально</span>
   <span id="anst" class="pill p-neut" style="align-self:center;white-space:nowrap" title="Сервис аналитики (Python)">🐍 аналитика</span>
   <button class="btn" id="tourbtn" title="Видеообзор приложения">▶ Обзор</button>
+  <button class="btn" id="rolebtn" title="Режим доступа">👁 Просмотр</button>
   <button class="btn" id="themebtn" aria-label="Тема">◐</button>
  </div>
 </div></header>
 <div class="shell"><aside class="side" id="side"><nav id="nav"></nav></aside><div class="scrim" id="scrim"></div>
 <main id="main"><section class="view" id="v_dash"></section><section class="view" id="v_backlog"></section><section class="view" id="v_team"></section><section class="view" id="v_roadmap"></section><section class="view" id="v_quarters"></section><section class="view" id="v_rice"></section><section class="view" id="v_gantt"></section><section class="view" id="v_deps"></section><section class="view" id="v_releases"></section><section class="view" id="v_milestones"></section><section class="view" id="v_debt"></section><section class="view" id="v_okr"></section><section class="view" id="v_budget"></section><section class="view" id="v_analytics"></section><section class="view" id="v_risks"></section><section class="view" id="v_bugs"></section><section class="view" id="v_retro"></section><section class="view" id="v_calendar"></section><section class="view" id="v_params"></section></main></div>
 <div class="palette" id="palette"><div class="pbox"><input class="pin" id="pin" placeholder="Поиск раздела или действия…" autocomplete="off"><div class="plist" id="plist"></div></div></div>
+<div class="role-pop" id="rolepop"></div>
+<div class="modal" id="accmodal"><div class="mbox">
+ <h3>Коды доступа</h3>
+ <p class="mnote">Управление доступом к режимам (хранится локально в браузере).</p>
+ <label>Код администратора</label><input id="acc_admin" type="text" autocomplete="off">
+ <label>Код редактора (пусто — вход в «Редактор» без кода)</label><input id="acc_editor" type="text" autocomplete="off">
+ <div class="mrow"><button class="btn" id="acc_cancel">Отмена</button><button class="btn" id="acc_clear">Очистить коды</button><button class="btn primary" id="acc_save">Сохранить</button></div>
+</div></div>
 <div class="toast" id="toast"></div>
 <input type="file" id="file" accept=".json" style="display:none">
 <script>
@@ -1030,7 +1058,7 @@ function cpm(tasks){const dur={},pred={},ids=tasks.map(t=>t.id),idset=new Set(id
  const LF={},LS={};ids.forEach(i=>{LF[i]=proj;LS[i]=proj-dur[i];});
  for(let k=0;k<ids.length+2;k++)ids.forEach(i=>{const ss=succ[i];LF[i]=ss.length?Math.min.apply(null,ss.map(s=>LS[s])):proj;LS[i]=LF[i]-dur[i];});
  const crit=new Set();ids.forEach(i=>{if(Math.abs(LS[i]-ES[i])<1e-9&&dur[i]>0)crit.add(i);});return crit;}
-function save(){localStorage.setItem('sprintapp',JSON.stringify(ST));if(typeof syncSchedule==='function')syncSchedule();}
+function save(){if(typeof PERM!=='undefined'&&!PERM.canEdit)return;localStorage.setItem('sprintapp',JSON.stringify(ST));if(typeof syncSchedule==='function')syncSchedule();}
 function toast(t){const e=document.getElementById('toast');e.textContent=t;e.classList.add('show');setTimeout(()=>e.classList.remove('show'),1600);}
 let toastT=null;
 function toastAction(text,label,cb){const e=document.getElementById('toast');e.innerHTML=esc(text)+' <a id="toastact">'+esc(label)+'</a>';e.classList.add('show');
@@ -1146,7 +1174,7 @@ function editable(coll,cols,opts){opts=opts||{};const rows=ST[coll]||(ST[coll]=[
    tb.innerHTML=th+body+foot;applyFilter();}
  function updateTotals(){if(!numCols.length)return;const t=totals();numCols.forEach(c=>{const e=tb.querySelector('.tfoot-'+c.k);if(e)e.textContent=fmt(t[c.k],1);});}
  render();
- add.onclick=()=>{const nr={};cols.forEach(c=>nr[c.k]=c.def!==undefined?c.def:(c.type==='num'?0:''));if(opts.newId)nr[opts.newId]=genId(rows,cols[0].k,opts.prefix);rows.push(nr);
+ add.onclick=()=>{if(!PERM.canEdit)return;const nr={};cols.forEach(c=>nr[c.k]=c.def!==undefined?c.def:(c.type==='num'?0:''));if(opts.newId)nr[opts.newId]=genId(rows,cols[0].k,opts.prefix);rows.push(nr);
    UI.search[coll]='';search.value='';save();render();recomputeSoft();
    const trs=tb.querySelectorAll('tbody tr');const last=trs[trs.length-1];if(last){last.scrollIntoView({block:'center'});const inp=last.querySelector('input,select');if(inp)inp.focus();}};
  search.addEventListener('input',()=>{UI.search[coll]=search.value;applyFilter();});
@@ -1154,11 +1182,11 @@ function editable(coll,cols,opts){opts=opts||{};const rows=ST[coll]||(ST[coll]=[
    const thh=e.target.closest('th.sortable');if(thh){const k=thh.dataset.sort,s=UI.sort[coll],d=(s&&s.k===k)?-s.d:1;UI.sort[coll]={k,d};
      rows.sort((a,b)=>{const nx=parseFloat(a[k]),ny=parseFloat(b[k]);let c=(!isNaN(nx)&&!isNaN(ny))?nx-ny:String(a[k]==null?'':a[k]).localeCompare(String(b[k]==null?'':b[k]),'ru');return c*d;});
      save();render();return;}
-   const del=e.target.closest('.rowdel');if(del){const i=+del.dataset.i,removed=rows.splice(i,1)[0];save();render();recomputeSoft();
+   const del=e.target.closest('.rowdel');if(del){if(!PERM.canEdit)return;const i=+del.dataset.i,removed=rows.splice(i,1)[0];save();render();recomputeSoft();
      toastAction('Удалено','Отменить',()=>{rows.splice(Math.min(i,rows.length),0,removed);save();render();recomputeSoft();});}});
- tb.addEventListener('input',e=>{const t=e.target;if(t.dataset.k!=null){const ri=+t.dataset.i,key=t.dataset.k;
+ tb.addEventListener('input',e=>{if(!PERM.canEdit)return;const t=e.target;if(t.dataset.k!=null){const ri=+t.dataset.i,key=t.dataset.k;
    rows[ri][key]=t.type==='number'?(t.value===''?'':num(t.value)):t.value;save();updateTotals();recomputeSoft();}});
- tb.addEventListener('change',e=>{if(e.target.tagName==='SELECT')commit();});
+ tb.addEventListener('change',e=>{if(!PERM.canEdit)return;if(e.target.tagName==='SELECT')commit();});
  return wrap;}
 function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));}
 function depOptions(selfId,v){let o='<option value="">—</option>';
@@ -1455,7 +1483,7 @@ function renderGantt(C){const v=document.getElementById('v_gantt');const tasks=(
  let h='<tr><th>ID</th><th>Задача</th><th class="num">Спринт</th><th>Зависит от</th><th>Критич.</th></tr>';
  tasks.forEach((t,ri)=>{h+=`<tr><td>${t.id}</td><td>${(t.title||'')}</td><td class="num"><input type="number" data-i="${ri}" data-k="sprint" value="${num(t.sprint)}"></td><td><select data-i="${ri}" data-k="dep">${depOptions(t.id,t.dep)}</select></td><td>${C.crit.has(t.id)?'<span class="pill p-crit">Да</span>':''}</td></tr>`;});
  const tb=document.getElementById('gt');tb.innerHTML=h;
- tb.addEventListener('input',e=>{const i=+e.target.dataset.i,k=e.target.dataset.k;if(k!=null){ST.tasks[i][k]=k==='sprint'?num(e.target.value):e.target.value;save();const CC=compute();drawGantt(document.getElementById('gc'),ST.tasks,CC);renderDash(CC);}});}
+ tb.addEventListener('input',e=>{if(!PERM.canEdit)return;const i=+e.target.dataset.i,k=e.target.dataset.k;if(k!=null){ST.tasks[i][k]=k==='sprint'?num(e.target.value):e.target.value;save();const CC=compute();drawGantt(document.getElementById('gc'),ST.tasks,CC);renderDash(CC);}});}
 function drawGantt(box,tasks,C){const P=ST.params,start=pd(P.start)||pd('2026-08-03');
  const used=tasks.map(t=>num(t.sprint)).filter(s=>s>0);const maxS=used.length?Math.max.apply(null,used):1;
  const t0=addD(start,0),t1=addD(start,(maxS-1)*14+11),span=Math.max(1,(t1-t0)/MS);
@@ -1650,7 +1678,7 @@ function closeDrawer(){document.getElementById('side').classList.remove('open');
 function activate(id){CURV=id;
  document.querySelectorAll('.nav-item').forEach(b=>b.classList.toggle('active',b.dataset.v===id));
  document.querySelectorAll('.view').forEach(s=>s.classList.toggle('active',s.id==='v_'+id));
- closeDrawer();window.scrollTo(0,0);}
+ closeDrawer();window.scrollTo(0,0);if(typeof applyPerms==='function')applyPerms();}
 buildNav();
 document.getElementById('nav').addEventListener('click',e=>{const b=e.target.closest('.nav-item');if(b)activate(b.dataset.v);});
 document.getElementById('menubtn').onclick=()=>{const shell=document.querySelector('.shell'),side=document.getElementById('side');
@@ -1686,10 +1714,44 @@ document.getElementById('pin').addEventListener('keydown',e=>{
 document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&(e.key==='k'||e.key==='K')){e.preventDefault();PAL.open?closePalette():openPalette();}});
 document.getElementById('xls').onclick=exportXlsx;
 document.getElementById('exp').onclick=()=>{const b=new Blob([JSON.stringify(ST,null,1)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='planirovanie_data.json';a.click();toast('Экспортировано');};
-document.getElementById('imp').onclick=()=>document.getElementById('file').click();
+document.getElementById('imp').onclick=()=>{if(!PERM.canAdmin){toast('Только для администратора');return;}document.getElementById('file').click();};
 document.getElementById('file').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{ST=JSON.parse(r.result);save();views();activate(CURV);toast('Импортировано');}catch(err){toast('Ошибка файла');}};r.readAsText(f);};
-document.getElementById('rst').onclick=()=>{if(confirm('Сбросить все данные к исходным?')){ST=migrate(JSON.parse(JSON.stringify(SEED)));save();views();activate(CURV);toast('Сброшено');}};
+document.getElementById('rst').onclick=()=>{if(!PERM.canAdmin){toast('Только для администратора');return;}if(confirm('Сбросить все данные к исходным?')){ST=migrate(JSON.parse(JSON.stringify(SEED)));save();views();activate(CURV);toast('Сброшено');}};
 document.getElementById('themebtn').onclick=()=>{const cur=document.documentElement.getAttribute('data-theme');const sys=matchMedia('(prefers-color-scheme:dark)').matches;const nx=(cur||(sys?'dark':'light'))==='dark'?'light':'dark';document.documentElement.setAttribute('data-theme',nx);views();activate(CURV);};
+/* ---------- roles / access modes (UI) ---------- */
+var PERM={role:'viewer',canEdit:false,canAdmin:false};
+const ROLEMETA={viewer:['👁','Просмотр','только чтение'],editor:['✏️','Редактор','правка данных'],admin:['🛡️','Администратор','полный доступ']};
+function lsGet(k){try{return localStorage.getItem(k)||'';}catch(e){return '';}}
+function lsSet(k,v){try{localStorage.setItem(k,v);}catch(e){}}
+function setPerm(r){if(!ROLEMETA[r])r='viewer';PERM.role=r;PERM.canAdmin=(r==='admin');PERM.canEdit=(r!=='viewer');lsSet('app_role',r);}
+function updateRoleBtn(){const b=document.getElementById('rolebtn');if(!b)return;const m=ROLEMETA[PERM.role];b.textContent=m[0]+' '+m[1];b.className='btn'+(PERM.role==='admin'?' primary':'');}
+function applyPerms(){document.body.classList.toggle('ro',!PERM.canEdit);document.body.classList.toggle('noadmin',!PERM.canAdmin);
+ document.querySelectorAll('#main input:not(.tsearch), #main select, #main textarea').forEach(el=>{
+  const admF=!!el.closest('#v_params');const locked=!PERM.canEdit||(admF&&!PERM.canAdmin);
+  if(el.tagName==='SELECT'||el.type==='checkbox'||el.type==='radio')el.disabled=locked;else el.readOnly=locked;});}
+function applyRole(r){setPerm(r);updateRoleBtn();applyPerms();closeRolePop();toast('Режим: '+ROLEMETA[r][2]);}
+function switchRole(t){
+ if(t===PERM.role){closeRolePop();return;}
+ if(t==='viewer'){applyRole('viewer');return;}
+ if(t==='editor'){const c=lsGet('app_editor_code');if(c){const v=prompt('Код редактора:');if(v==null)return;if(v.trim()!==c){toast('Неверный код');return;}}applyRole('editor');return;}
+ if(t==='admin'){const c=lsGet('app_admin_code');
+  if(!c){const nv=prompt('Первый вход администратора — задайте код администратора:');if(!nv||!nv.trim())return;lsSet('app_admin_code',nv.trim());applyRole('admin');return;}
+  const v=prompt('Код администратора:');if(v==null)return;if(v.trim()!==c){toast('Неверный код');return;}applyRole('admin');return;}}
+function openRolePop(){const pop=document.getElementById('rolepop');let h='';
+ ['viewer','editor','admin'].forEach(r=>{const m=ROLEMETA[r];h+=`<div class="role-opt${r===PERM.role?' cur':''}" data-r="${r}"><span>${m[0]}</span><span>${m[1]}</span><small>${m[2]}</small></div>`;});
+ if(PERM.canAdmin)h+='<div class="role-sep"></div><div class="role-opt" data-act="codes"><span>⚙️</span><span>Коды доступа</span></div>';
+ pop.innerHTML=h;pop.classList.add('open');}
+function closeRolePop(){const p=document.getElementById('rolepop');if(p)p.classList.remove('open');}
+document.getElementById('rolebtn').onclick=e=>{e.stopPropagation();const p=document.getElementById('rolepop');p.classList.contains('open')?closeRolePop():openRolePop();};
+document.getElementById('rolepop').addEventListener('click',e=>{const o=e.target.closest('.role-opt');if(!o)return;if(o.dataset.act==='codes'){closeRolePop();openAccModal();}else if(o.dataset.r)switchRole(o.dataset.r);});
+document.addEventListener('click',e=>{if(!e.target.closest('#rolepop')&&!e.target.closest('#rolebtn'))closeRolePop();});
+function openAccModal(){document.getElementById('acc_admin').value=lsGet('app_admin_code');document.getElementById('acc_editor').value=lsGet('app_editor_code');document.getElementById('accmodal').classList.add('open');}
+function closeAccModal(){document.getElementById('accmodal').classList.remove('open');}
+document.getElementById('acc_cancel').onclick=closeAccModal;
+document.getElementById('acc_clear').onclick=()=>{if(!PERM.canAdmin)return;document.getElementById('acc_admin').value='';document.getElementById('acc_editor').value='';};
+document.getElementById('acc_save').onclick=()=>{if(!PERM.canAdmin){closeAccModal();return;}lsSet('app_admin_code',document.getElementById('acc_admin').value.trim());lsSet('app_editor_code',document.getElementById('acc_editor').value.trim());closeAccModal();toast('Коды сохранены');};
+document.getElementById('accmodal').addEventListener('click',e=>{if(e.target.id==='accmodal')closeAccModal();});
+setPerm(lsGet('app_role')||'viewer');updateRoleBtn();
 views();activate('dash');
 
 /* ---------- multi-user sync (shared backend) ---------- */
