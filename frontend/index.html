@@ -94,8 +94,12 @@ main{flex:1;min-width:0;max-width:1240px;margin:0;padding:20px 22px 60px}
 .nav-item.active{color:var(--accent);background:var(--accent-soft);font-weight:600}
 .nav-ic{width:18px;text-align:center;font-size:14px;flex:none}
 .iconbtn{padding:7px 10px;font-size:15px;line-height:1}
-#menubtn{display:none}
+#menubtn{display:inline-flex}
 .scrim{display:none}
+@media(min-width:901px){
+ .shell.nav-collapsed .side{display:none}
+ .shell.nav-collapsed main{margin:0 auto}
+}
 @media(max-width:900px){
  .side{position:fixed;left:0;top:56px;bottom:0;height:auto;transform:translateX(-100%);transition:transform .2s;z-index:44;box-shadow:var(--shadow)}
  .side.open{transform:none}
@@ -155,7 +159,7 @@ tfoot td{font-weight:700;background:var(--panel2);color:var(--ink);border-top:2p
 .tour-ctrl .step{font-size:12px;opacity:.85;font-variant-numeric:tabular-nums}
 </style>
 <header class="top"><div class="inner">
- <button class="btn iconbtn" id="menubtn" aria-label="Меню">☰</button>
+ <button class="btn iconbtn" id="menubtn" aria-label="Меню" title="Свернуть / развернуть меню">☰</button>
  <div class="brand"><span class="dot"></span>Планирование&nbsp;спринтов</div>
  <button class="btn iconbtn" id="palettebtn" title="Поиск и переход (Ctrl+K)">🔎</button>
  <div class="tools">
@@ -1649,7 +1653,10 @@ function activate(id){CURV=id;
  closeDrawer();window.scrollTo(0,0);}
 buildNav();
 document.getElementById('nav').addEventListener('click',e=>{const b=e.target.closest('.nav-item');if(b)activate(b.dataset.v);});
-document.getElementById('menubtn').onclick=()=>{const s=document.getElementById('side');s.classList.toggle('open');document.getElementById('scrim').classList.toggle('show',s.classList.contains('open'));};
+document.getElementById('menubtn').onclick=()=>{const shell=document.querySelector('.shell'),side=document.getElementById('side');
+ if(window.matchMedia('(max-width:900px)').matches){side.classList.toggle('open');document.getElementById('scrim').classList.toggle('show',side.classList.contains('open'));}
+ else{shell.classList.toggle('nav-collapsed');try{localStorage.setItem('nav_collapsed',shell.classList.contains('nav-collapsed')?'1':'0');}catch(e){}}};
+try{if(localStorage.getItem('nav_collapsed')==='1')document.querySelector('.shell').classList.add('nav-collapsed');}catch(e){}
 document.getElementById('scrim').onclick=closeDrawer;
 /* ---------- command palette (Ctrl/⌘+K) ---------- */
 const PACTIONS=[
