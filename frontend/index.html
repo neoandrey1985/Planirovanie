@@ -16,11 +16,7 @@ header.top{position:sticky;top:0;z-index:30;background:color-mix(in srgb,var(--b
 .top .inner{display:flex;align-items:center;gap:14px;height:56px;padding:0 18px}
 .brand{font-weight:700;font-size:16px;display:flex;align-items:center;gap:9px;white-space:nowrap}
 .brand .dot{width:11px;height:11px;border-radius:3px;background:var(--accent);box-shadow:0 0 0 4px var(--accent-soft)}
-.tabs{display:flex;gap:2px;overflow-x:auto;flex:1}
-.tabs button{background:none;border:none;color:var(--muted);padding:8px 11px;border-radius:8px;font-size:13.5px;cursor:pointer;white-space:nowrap;font-family:inherit}
-.tabs button:hover{color:var(--ink);background:var(--panel)}
-.tabs button.active{color:var(--accent);background:var(--accent-soft);font-weight:600}
-.tools{display:flex;gap:6px}
+.tools{display:flex;gap:6px;margin-left:auto;flex-wrap:wrap;justify-content:flex-end}
 .btn{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:8px;padding:7px 11px;cursor:pointer;font-size:13px;font-family:inherit}
 .btn:hover{border-color:var(--accent);color:var(--accent)}
 .btn.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
@@ -162,7 +158,6 @@ tfoot td{font-weight:700;background:var(--panel2);color:var(--ink);border-top:2p
  <button class="btn iconbtn" id="menubtn" aria-label="Меню">☰</button>
  <div class="brand"><span class="dot"></span>Планирование&nbsp;спринтов</div>
  <button class="btn iconbtn" id="palettebtn" title="Поиск и переход (Ctrl+K)">🔎</button>
- <div class="tabs" id="tabs" hidden><button data-v="dash">Дашборд</button><button data-v="backlog">Бэклог</button><button data-v="team">Команда</button><button data-v="roadmap">Дорожная карта</button><button data-v="quarters">Кварталы</button><button data-v="rice">RICE</button><button data-v="gantt">Гант</button><button data-v="deps">Зависимости</button><button data-v="releases">Релизы</button><button data-v="milestones">Вехи</button><button data-v="debt">Техдолг</button><button data-v="okr">OKR</button><button data-v="budget">Бюджет</button><button data-v="analytics">Аналитика</button><button data-v="risks">Риски</button><button data-v="bugs">Баги</button><button data-v="retro">Ретроспективы</button><button data-v="calendar">Календарь</button><button data-v="params">Параметры</button></div>
  <div class="tools">
   <button class="btn primary" id="xls">Excel</button>
   <button class="btn" id="exp">JSON</button>
