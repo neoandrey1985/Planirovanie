@@ -52,7 +52,9 @@ svg{width:100%;height:auto;display:block}
 .twrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--panel)}
 table{width:100%;border-collapse:collapse;font-size:13.5px}
 th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--line);white-space:nowrap}
-th{font-size:11.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);font-weight:600;background:var(--panel2);position:sticky;top:56px;z-index:5}
+th{font-size:11.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);font-weight:600;background:var(--panel2)}
+.twrap.scroll{max-height:min(68vh,600px);overflow:auto}
+.twrap.scroll thead th{position:sticky;top:0;z-index:5}
 tr:last-child td{border-bottom:none}
 td input,td select{width:100%;min-width:70px;border:1px solid transparent;background:transparent;color:var(--ink);border-radius:6px;padding:4px 6px;font-family:inherit;font-size:13.5px}
 td input:hover,td select:hover{border-color:var(--line)}
@@ -139,7 +141,22 @@ tfoot td{font-weight:700;background:var(--panel2);color:var(--ink);border-top:2p
  table.cardt td input,table.cardt td select{max-width:62%}
  table.cardt tfoot{display:none}
  .twrap{border:none;background:none;overflow:visible}
+ .twrap.scroll{max-height:none;overflow:visible}
 }
+/* ---------- guided tour (video-style walkthrough) ---------- */
+#tourwrap{position:fixed;inset:0;z-index:70;pointer-events:none;display:none}
+#tourwrap.on{display:block}
+.tour-badge{position:fixed;top:66px;right:16px;background:var(--accent);color:#fff;font-size:12px;font-weight:700;padding:5px 12px;border-radius:999px;box-shadow:var(--shadow);letter-spacing:.04em}
+.tour-cap{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);width:min(780px,92vw);background:color-mix(in srgb,var(--ink) 92%,transparent);color:var(--bg);border-radius:16px;padding:16px 20px 14px;box-shadow:0 14px 46px rgba(0,0,0,.4);pointer-events:auto}
+.tour-cap h4{margin:0 0 6px;font-size:16.5px;font-weight:700;color:var(--bg)}
+.tour-cap p{margin:0;font-size:14px;line-height:1.55;opacity:.93;color:var(--bg)}
+.tour-prog{height:4px;border-radius:4px;background:rgba(140,160,190,.35);margin:13px 0 10px;overflow:hidden}
+.tour-prog>i{display:block;height:100%;width:0;background:var(--accent);border-radius:4px}
+.tour-ctrl{display:flex;align-items:center;gap:8px}
+.tour-ctrl button{border:none;background:rgba(140,160,190,.22);color:var(--bg);border-radius:8px;padding:6px 12px;font-size:14px;font-family:inherit;cursor:pointer;line-height:1}
+.tour-ctrl button:hover{background:rgba(140,160,190,.4)}
+.tour-ctrl .sp{flex:1}
+.tour-ctrl .step{font-size:12px;opacity:.85;font-variant-numeric:tabular-nums}
 </style>
 <header class="top"><div class="inner">
  <button class="btn iconbtn" id="menubtn" aria-label="Меню">☰</button>
@@ -153,6 +170,7 @@ tfoot td{font-weight:700;background:var(--panel2);color:var(--ink);border-top:2p
   <button class="btn danger" id="rst">Сброс</button>
   <span id="syncst" class="pill p-neut" style="align-self:center;white-space:nowrap">⚪ локально</span>
   <span id="anst" class="pill p-neut" style="align-self:center;white-space:nowrap" title="Сервис аналитики (Python)">🐍 аналитика</span>
+  <button class="btn" id="tourbtn" title="Видеообзор приложения">▶ Обзор</button>
   <button class="btn" id="themebtn" aria-label="Тема">◐</button>
  </div>
 </div></header>
@@ -1115,7 +1133,7 @@ function editable(coll,cols,opts){opts=opts||{};const rows=ST[coll]||(ST[coll]=[
  const cnt=document.createElement('span');cnt.style.color='var(--muted)';cnt.style.fontSize='13px';
  bar.appendChild(add);bar.appendChild(search);bar.appendChild(sp);bar.appendChild(cnt);
  wrap.appendChild(bar);
- const tw=document.createElement('div');tw.className='twrap';const tb=document.createElement('table');tb.className='cardt';tw.appendChild(tb);wrap.appendChild(tw);
+ const tw=document.createElement('div');tw.className='twrap scroll';const tb=document.createElement('table');tb.className='cardt';tw.appendChild(tb);wrap.appendChild(tw);
  const numCols=cols.filter(c=>c.type==='num');
  function totals(){return numCols.reduce((o,c)=>{o[c.k]=rows.reduce((s,r)=>s+num(r[c.k]),0);return o;},{});}
  function applyFilter(){const q=(UI.search[coll]||'').toLowerCase();let vis=0;const trs=tb.querySelectorAll('tbody tr');
@@ -1724,4 +1742,50 @@ async function startAnalytics(){
  }catch(e){set('🐍 аналитика: офлайн','p-neut');}
 }
 startAnalytics();setInterval(startAnalytics,30000);
+/* ---------- guided tour (video-style walkthrough) ---------- */
+const TOUR=[
+ {v:'dash',h:'Планирование спринтов — обзор',p:'Веб-приложение для планирования по двухнедельным спринтам: данные, метрики и диаграммы в одном месте. Пройдёмся по всем разделам.',d:8000},
+ {v:'dash',h:'Дашборд',p:'Сводка проекта: KPI с RAG-подсветкой, блок «Что требует внимания», кликабельные карточки и sparkline-тренды. Ниже — графики ёмкости, velocity, багов и Time to Market.',d:10000},
+ {v:'roadmap',h:'Дорожная карта',p:'Спринты рассчитываются автоматически из параметров и состава команды: даты, рабочие дни, ёмкость, план, velocity и процент выполнения.',d:9000},
+ {v:'quarters',h:'Кварталы',p:'Агрегация спринтов по кварталам и квартальный roadmap на шкале дат.',d:7000},
+ {v:'rice',h:'RICE — приоритизация',p:'Оценка фич по методологии RICE = (Reach × Impact × Confidence) / Effort с авто-рангом, приоритетом и диаграммой.',d:9000},
+ {v:'backlog',h:'Бэклог',p:'Редактируемые задачи — источник данных для всех метрик. Есть поиск, сортировка по колонкам, строка итогов и отмена удаления.',d:9000},
+ {v:'gantt',h:'Диаграмма Ганта',p:'Задачи на шкале дат по спринтам. Красная рамка — критический путь, ромб ◆ — внешняя зависимость от другого стрима.',d:9000},
+ {v:'deps',h:'Зависимости',p:'Межстримовые зависимости задач, историй и фич: направление, статус с RAG-подсветкой, риск и отдельный список для эскалации.',d:9000},
+ {v:'team',h:'Команда',p:'Состав команды и доступность — из этого считается ёмкость каждого спринта.',d:6500},
+ {v:'releases',h:'Релизы',p:'Содержимое релизов считается автоматически. Строку можно раскрыть в список стори, задач и дефектов со ссылками на них.',d:9000},
+ {v:'milestones',h:'Вехи',p:'Контрольные точки, привязанные к спринтам и релизам.',d:6000},
+ {v:'debt',h:'Технический долг',p:'Реестр техдолга и тренд «создано / погашено / открыто» по спринтам.',d:7000},
+ {v:'analytics',h:'Аналитика',p:'Сводные графики: сгорание, burn-up, CFD, cycle time, распределение, прогноз Монте-Карло и качество — единый расчётный движок.',d:10000},
+ {v:'risks',h:'Риски',p:'Балл = Вероятность × Влияние, матрица рисков и диаграмма Исикавы причин срыва сроков спринта.',d:9000},
+ {v:'bugs',h:'Баги',p:'Дефекты с серьёзностью, статусом и причиной; питают метрики DRE и качества.',d:7000},
+ {v:'retro',h:'Ретроспективы',p:'Итоги спринтов и action items с процентом закрытия.',d:6500},
+ {v:'okr',h:'OKR',p:'Цели квартала и прогресс Key Results.',d:6000},
+ {v:'budget',h:'Бюджет',p:'Стоимость по ёмкости спринтов и накопленный расход относительно бюджета проекта.',d:6500},
+ {v:'params',h:'Параметры',p:'Дата старта, focus factor, длительность спринта, Definition of Done, ключ команды — база всех расчётов.',d:8000},
+ {v:'params',h:'И ещё',p:'Тёмная тема, палитра команд по Ctrl+K, экспорт в Excel и JSON, многопользовательский режим с общей БД и Python-сервис аналитики.',d:9000},
+ {v:'dash',h:'Спасибо за просмотр',p:'Стек: веб-интерфейс + Java (Spring Boot) + Python (FastAPI) + PostgreSQL. Полный проект — на GitHub.',d:8000},
+];
+let TS={i:0,timer:0,playing:false,t0:0,built:false};
+function tourEls(){return{w:document.getElementById('tourwrap'),h:document.querySelector('#tourwrap h4'),p:document.querySelector('#tourwrap .tour-cap p'),prog:document.querySelector('#tourwrap .tour-prog>i'),step:document.querySelector('#tourwrap .step'),play:document.querySelector('#tourwrap [data-a=play]')};}
+function buildTour(){if(TS.built)return;const w=document.createElement('div');w.id='tourwrap';
+ w.innerHTML='<div class="tour-badge">● ОБЗОР</div><div class="tour-cap"><h4></h4><p></p><div class="tour-prog"><i></i></div>'
+  +'<div class="tour-ctrl"><button data-a="prev" title="Назад">⏮</button><button data-a="play" title="Пауза / продолжить">⏸</button>'
+  +'<button data-a="next" title="Дальше">⏭</button><span class="sp"></span><span class="step"></span><button data-a="exit" title="Выйти (Esc)">✕</button></div></div>';
+ document.body.appendChild(w);TS.built=true;
+ w.querySelector('.tour-ctrl').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const a=b.dataset.a;
+  if(a==='prev')tourStep(TS.i-1);else if(a==='next')tourStep(TS.i+1);else if(a==='exit')endTour();else if(a==='play')TS.playing?tourPause():tourPlay();});}
+function tourStep(i){TS.i=Math.max(0,Math.min(TOUR.length-1,i));const s=TOUR[TS.i],e=tourEls();activate(s.v);
+ e.h.textContent=s.h;e.p.textContent=s.p;e.step.textContent=(TS.i+1)+' / '+TOUR.length;e.prog.style.width='0%';TS.t0=Date.now();}
+function tourTick(){if(!TS.playing)return;const s=TOUR[TS.i],e=tourEls();if(!e.prog)return;const f=(Date.now()-TS.t0)/s.d;
+ if(f>=1){if(TS.i>=TOUR.length-1){endTour();return;}tourStep(TS.i+1);}else{e.prog.style.width=(Math.min(1,f)*100)+'%';}}
+function tourPlay(){TS.playing=true;const e=tourEls();if(e.play)e.play.textContent='⏸';const w=parseFloat(e.prog.style.width)||0;TS.t0=Date.now()-w/100*TOUR[TS.i].d;clearInterval(TS.timer);TS.timer=setInterval(tourTick,100);}
+function tourPause(){TS.playing=false;clearInterval(TS.timer);const e=tourEls();if(e.play)e.play.textContent='▶';}
+function startTour(){buildTour();document.getElementById('tourwrap').classList.add('on');tourStep(0);tourPlay();}
+function endTour(){tourPause();const w=document.getElementById('tourwrap');if(w)w.classList.remove('on');}
+document.getElementById('tourbtn').onclick=startTour;
+document.addEventListener('keydown',e=>{const on=document.getElementById('tourwrap');if(!on||!on.classList.contains('on'))return;
+ if(e.key==='Escape'){e.preventDefault();endTour();}else if(e.key===' '){e.preventDefault();TS.playing?tourPause():tourPlay();}
+ else if(e.key==='ArrowRight'){e.preventDefault();tourStep(TS.i+1);}else if(e.key==='ArrowLeft'){e.preventDefault();tourStep(TS.i-1);}});
+if((location.hash||'').toLowerCase().indexOf('tour')>=0)setTimeout(startTour,700);
 </script>
