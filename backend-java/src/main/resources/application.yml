@@ -27,3 +27,10 @@ app:
     session-hours: ${AUTH_SESSION_HOURS:12}
     # Seed demo users (admin/editor/viewer) on first startup; turn off for real deployments.
     seed-defaults: ${AUTH_SEED_DEFAULTS:true}
+  audit:
+    # Event/audit logging into a SEPARATE PostgreSQL database. If that DB is unreachable,
+    # logging self-disables and the app keeps running. Create it once: CREATE DATABASE planirovanie_audit;
+    enabled: ${AUDIT_ENABLED:true}
+    url: ${AUDIT_DB_URL:jdbc:postgresql://localhost:5432/planirovanie_audit}
+    username: ${AUDIT_DB_USER:${DB_USER:planirovanie}}
+    password: ${AUDIT_DB_PASSWORD:${DB_PASSWORD:planirovanie}}
