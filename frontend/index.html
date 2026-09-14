@@ -229,7 +229,7 @@ tfoot td{font-weight:700;background:var(--panel2);color:var(--ink);border-top:2p
 .modal h3{margin:0 0 4px;font-size:17px}
 .modal .mnote{color:var(--muted);font-size:12.5px;margin:0 0 8px}
 .modal label{display:block;font-size:12.5px;color:var(--muted);margin:12px 0 4px}
-.modal input{width:100%;border:1px solid var(--line);background:var(--panel2);color:var(--ink);border-radius:8px;padding:9px 10px;font-family:inherit;font-size:14px}
+.modal input,.modal select{width:100%;border:1px solid var(--line);background:var(--panel2);color:var(--ink);border-radius:8px;padding:9px 10px;font-family:inherit;font-size:14px}
 .modal .mrow{display:flex;gap:8px;justify-content:flex-end;margin-top:18px;flex-wrap:wrap}
 body.ro #main .btn.primary,body.ro #main .rowdel{display:none}
 body.noadmin #rst,body.noadmin #imp{display:none}
@@ -325,6 +325,12 @@ body.noadmin #rst,body.noadmin #imp{display:none}
   <button class="btn primary" id="usr_add">Добавить</button>
  </div>
  <div class="mrow"><button class="btn" id="usr_close">Закрыть</button></div>
+</div></div>
+<div class="modal" id="pptxmodal"><div class="mbox">
+ <h3>Отчёт-презентация по спринту</h3>
+ <p class="mnote">Выберите спринт для отчёта. «Весь проект» — сводный отчёт по всем спринтам.</p>
+ <label>Спринт</label><select id="pptx_sprint"></select>
+ <div class="mrow"><button class="btn" id="pptx_cancel">Отмена</button><button class="btn primary" id="pptx_go">Сформировать</button></div>
 </div></div>
 <button class="chat-fab" id="chatfab" title="Помощник" aria-label="Открыть помощника">💬</button>
 <div class="chat-panel" id="chatpanel">
@@ -2160,8 +2166,12 @@ function exportXlsx(){const C=compute();const s=[];
 /* ---------- PPTX sprint report (charts + metrics) ---------- */
 const RCOL={accent:'#2D5BE3',warn:'#C98A00',good:'#1F9D6B',crit:'#D24545',muted:'#7A8AA0'};
 function loadPptxGen(){return new Promise((res,rej)=>{if(window.PptxGenJS)return res(window.PptxGenJS);
- const s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/pptxgenjs/3.12.0/pptxgen.bundle.js';
- s.onload=()=>window.PptxGenJS?res(window.PptxGenJS):rej(new Error('no global'));s.onerror=()=>rej(new Error('load'));document.head.appendChild(s);});}
+ const urls=['https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js',
+             'https://cdn.jsdelivr.net/npm/pptxgenjs/dist/pptxgen.bundle.js',
+             'https://unpkg.com/pptxgenjs@3.12.0/dist/pptxgen.bundle.js'];
+ let i=0;(function tryNext(){if(i>=urls.length)return rej(new Error('load'));
+  const s=document.createElement('script');s.src=urls[i++];
+  s.onload=()=>window.PptxGenJS?res(window.PptxGenJS):tryNext();s.onerror=tryNext;document.head.appendChild(s);})();});}
 function svgToPng(svg,w,h){return new Promise((res,rej)=>{svg.setAttribute('width',w);svg.setAttribute('height',h);
  const xml=new XMLSerializer().serializeToString(svg);const url='data:image/svg+xml;base64,'+btoa(unescape(encodeURIComponent(xml)));
  const im=new Image();im.onload=()=>{const c=document.createElement('canvas');c.width=w*2;c.height=h*2;const cx=c.getContext('2d');
@@ -2172,7 +2182,8 @@ function chartPng(kind,cats,series,opt){const box=document.createElement('div');
  return svgToPng(svg,640,290).finally(()=>box.remove());}
 function svgStrToPng(svgStr,w,h){const box=document.createElement('div');box.style.cssText='position:absolute;left:-9999px';box.innerHTML=svgStr;document.body.appendChild(box);
  const svg=box.querySelector('svg');if(!svg){box.remove();return Promise.resolve(null);}return svgToPng(svg,w,h).finally(()=>box.remove());}
-async function exportPptx(){
+async function exportPptx(sprintSel){
+ const spN=(sprintSel===undefined||sprintSel===''||sprintSel===null)?null:num(sprintSel);
  let Pptx;toast('Формирую отчёт-презентацию…');
  try{Pptx=await loadPptxGen();}catch(e){toast('Не удалось загрузить модуль PPTX (нужен интернет). Используйте экспорт в Excel.');return;}
  const C=compute(),T=ST.ttmTarget||15,P=ST.params||{};
@@ -2199,40 +2210,68 @@ async function exportPptx(){
   return s;}
  // 1. Title
  (function(){const s=p.addSlide();s.background={color:DARK};
-  s.addText('Отчёт по спринту',{x:0.7,y:1.5,w:12,h:1.0,fontSize:40,bold:true,color:WHITE,fontFace:'Calibri'});
-  s.addText((P.name||'Проект')+' · Спринт #'+C.cur,{x:0.72,y:2.7,w:12,h:0.6,fontSize:20,color:'AFC2E6',fontFace:'Calibri'});
+  s.addText(spN?('Отчёт по спринту #'+spN):'Отчёт по спринту (весь проект)',{x:0.7,y:1.5,w:12,h:1.0,fontSize:38,bold:true,color:WHITE,fontFace:'Calibri'});
+  s.addText((P.name||'Проект')+(spN?(' · Спринт #'+spN):(' · Текущий спринт #'+C.cur)),{x:0.72,y:2.7,w:12,h:0.6,fontSize:20,color:'AFC2E6',fontFace:'Calibri'});
   if(P.goal)s.addText('Цель: '+P.goal,{x:0.72,y:3.5,w:11.5,h:0.8,fontSize:15,color:'CFE0FF',fontFace:'Calibri'});
   s.addText('Сформировано: '+new Date().toLocaleString('ru-RU'),{x:0.72,y:6.7,w:8,h:0.4,fontSize:12,italic:true,color:'7C90B4',fontFace:'Calibri'});})();
- // 2. KPI metrics
+ // 2. KPI metrics (whole project or a specific sprint)
  (function(){const s=p.addSlide();s.background={color:WHITE};
-  s.addText('Ключевые метрики спринта',{x:0.6,y:0.35,w:12,h:0.7,fontSize:24,bold:true,color:INK,fontFace:'Calibri'});
-  const fc=C.avgVel?Math.ceil(C.remain/C.avgVel):null;
-  const rows=[['Показатель','Значение'],
-   ['Текущий спринт','#'+C.cur],
-   ['Health-index',pctf(C.health)],
-   ['Средняя velocity',fmt(C.avgVel,1)+' SP'],
-   ['Закрыто задач',String(C.closed)],
-   ['Time to Market',fmt(C.ttmAvg,1)+' дн (цель ≤ '+T+')'],
-   ['Готовность DoD',pctf(C.dodPct)],
-   ['Открыто багов',String(C.bugsOpen)+' (DRE '+pctf(C.dre)+')'],
-   ['Остаток бэклога',fmt(C.remain,0)+' SP'],
-   ['Прогноз завершения',fc==null?'—':'~'+fc+' спринт(ов)'],
-   ['Бюджет',fmt(C.spent,0)+' / '+fmt(C.budget,0)+' ₽ (остаток '+fmt(C.remBudget,0)+')']];
+  let rows,attn=[];
+  if(spN){
+   const sp=C.sp.find(x=>+x.s===+spN)||{};
+   const tks=(ST.tasks||[]).filter(t=>+t.sprint===+spN),tdone=tks.filter(t=>t.status==='Готово').length;
+   const bF=(ST.bugs||[]).filter(b=>+b.sprint===+spN),bC=bF.filter(b=>b.status==='Закрыт').length;
+   const md=(ST.mood||[]).find(m=>+m.sprint===+spN),dm=(ST.demo||[]).find(x=>+x.sprint===+spN);
+   const ai=(ST.retro||[]).filter(x=>+x.sprint===+spN&&(x.action||'').trim()),aiD=ai.filter(x=>x.status==='Сделано').length;
+   s.addText('Метрики спринта #'+spN,{x:0.6,y:0.35,w:12,h:0.7,fontSize:24,bold:true,color:INK,fontFace:'Calibri'});
+   rows=[['Показатель','Значение'],
+    ['Спринт','#'+spN+(sp.status?(' · '+sp.status):'')],
+    ['Даты',(sp.a&&sp.b)?(fmtd(sp.a)+'–'+fmtd(sp.b)):'—'],
+    ['Ёмкость / План',fmt(sp.cap,1)+' / '+fmt(sp.plan,1)+' SP'],
+    ['Velocity',sp.vel==null?'—':fmt(sp.vel,1)+' SP'],
+    ['% выполнения',sp.pct==null?'—':pctf(sp.pct)],
+    ['Задачи',tks.length+' (готово '+tdone+')'],
+    ['Баги',bF.length+' (закрыто '+bC+')'],
+    ['Настроение',md?(fmt(md.mood,0)+' / 5'):'—'],
+    ['Демо',dm?(dm.status||'—'):'—'],
+    ['Action items',ai.length+' (закрыто '+aiD+')']];
+   if(sp.cap&&sp.plan/sp.cap>1)attn.push('Перегрузка спринта: '+pctf(sp.plan/sp.cap));
+   const critB=bF.filter(b=>b.sev==='Critical'&&b.status!=='Закрыт').length;if(critB)attn.push('Critical-баги открыты: '+critB);
+   const blk=(ST.deps||[]).filter(d=>+d.sprint===+spN&&(d.status==='Заблокировано'||d.status==='Просрочено')).length;if(blk)attn.push('Заблокировано зависимостей: '+blk);
+   if(ai.length&&aiD<ai.length)attn.push('Не закрыто action items: '+(ai.length-aiD));
+  } else {
+   const fc=C.avgVel?Math.ceil(C.remain/C.avgVel):null;
+   s.addText('Ключевые метрики проекта',{x:0.6,y:0.35,w:12,h:0.7,fontSize:24,bold:true,color:INK,fontFace:'Calibri'});
+   rows=[['Показатель','Значение'],
+    ['Текущий спринт','#'+C.cur],['Health-index',pctf(C.health)],['Средняя velocity',fmt(C.avgVel,1)+' SP'],
+    ['Закрыто задач',String(C.closed)],['Time to Market',fmt(C.ttmAvg,1)+' дн (цель ≤ '+T+')'],
+    ['Готовность DoD',pctf(C.dodPct)],['Открыто багов',String(C.bugsOpen)+' (DRE '+pctf(C.dre)+')'],
+    ['Остаток бэклога',fmt(C.remain,0)+' SP'],['Прогноз завершения',fc==null?'—':'~'+fc+' спринт(ов)'],
+    ['Бюджет',fmt(C.spent,0)+' / '+fmt(C.budget,0)+' ₽ (остаток '+fmt(C.remBudget,0)+')']];
+   const blk=(ST.deps||[]).filter(d=>d.status==='Заблокировано'||d.status==='Просрочено').length;if(blk)attn.push('Заблокировано зависимостей: '+blk);
+   const critB=(ST.bugs||[]).filter(b=>b.sev==='Critical'&&b.status!=='Закрыт').length;if(critB)attn.push('Critical-баги открыты: '+critB);
+   if(C.ttmAvg>T)attn.push('TTM выше цели');if(C.dodPct<0.8)attn.push('Готовность DoD < 80%');
+  }
   s.addTable(rows,{x:0.6,y:1.35,w:8.6,colW:[4.3,4.3],fontSize:14,fontFace:'Calibri',border:{type:'solid',color:'E1E8F5',pt:1},
    rowH:0.42,valign:'middle',fill:{color:'F4F7FF'}});
-  const attn=[];const blk=(ST.deps||[]).filter(d=>d.status==='Заблокировано'||d.status==='Просрочено').length;if(blk)attn.push('Заблокировано зависимостей: '+blk);
-  const critB=(ST.bugs||[]).filter(b=>b.sev==='Critical'&&b.status!=='Закрыт').length;if(critB)attn.push('Critical-баги открыты: '+critB);
-  if(C.ttmAvg>T)attn.push('TTM выше цели');if(C.dodPct<0.8)attn.push('Готовность DoD < 80%');
   s.addText('Что требует внимания',{x:9.5,y:1.35,w:3.3,h:0.4,fontSize:14,bold:true,color:'D24545',fontFace:'Calibri'});
   s.addText((attn.length?attn:['Критичных сигналов нет']).map(t=>({text:t,options:{bullet:true,fontSize:12.5,color:BODY,breakLine:true,paraSpaceAfter:6}})),{x:9.5,y:1.8,w:3.3,h:4,fontFace:'Calibri',valign:'top'});})();
+ // 2b. Sprint task list (only for a specific sprint)
+ if(spN){(function(){const tks=(ST.tasks||[]).filter(t=>+t.sprint===+spN);if(!tks.length)return;
+  const s=p.addSlide();s.background={color:WHITE};
+  s.addText('Задачи спринта #'+spN,{x:0.6,y:0.35,w:12,h:0.7,fontSize:24,bold:true,color:INK,fontFace:'Calibri'});
+  const tr=[['ID','Задача','Исполнитель','Оценка','Статус']].concat(tks.slice(0,16).map(t=>[t.id||'',String(t.title||'').slice(0,46),t.assignee||'',fmt(num(t.est),0),t.status||'']));
+  s.addTable(tr,{x:0.6,y:1.35,w:12.1,colW:[1.2,6.4,2.2,1.1,1.2],fontSize:12,fontFace:'Calibri',border:{type:'solid',color:'E1E8F5',pt:1},rowH:0.36,valign:'middle',fill:{color:'F7F9FC'}});
+  if(tks.length>16)s.addText('… и ещё '+(tks.length-16)+' задач(и)',{x:0.6,y:6.9,w:8,h:0.4,fontSize:11,italic:true,color:'7A8AA0',fontFace:'Calibri'});})();}
  // 3+. Charts
  chartSlide('Ёмкость / План / Velocity по спринтам',[{d:ch.capvel,c:'Синий — ёмкость, жёлтый — план, зелёный — velocity'}]);
  chartSlide('Выполнение и дефекты',[{d:ch.pct,c:'% выполнения по спринтам'},{d:ch.bugs,c:'Баги: всего и закрыто'}]);
  const s5=[{d:ch.ttm,c:'Time to Market по задачам (цель ≤ '+T+' дн)'}];if(ch.mood)s5.push({d:ch.mood,c:'Настроение команды (1–5)'});
  chartSlide('Time to Market и настроение команды',s5);
  if(ch.moscow||ch.radar){const arr=[];if(ch.moscow)arr.push({d:ch.moscow,c:'MoSCoW: число фич по категориям'});if(ch.radar)arr.push({d:ch.radar,c:'Team Radar — самооценка команды'});chartSlide('Приоритеты и здоровье команды',arr);}
- const fn='Отчёт_спринта_'+(P.name?String(P.name).replace(/[^\wа-яА-Я0-9]+/g,'_'):'проект')+'_C'+C.cur+'.pptx';
- try{await p.writeFile({fileName:fn});toast('Отчёт-презентация готов');if(typeof auditClient==='function')auditClient('export_pptx','Спринт '+C.cur);}
+ const base=(P.name?String(P.name).replace(/[^\wа-яА-Я0-9]+/g,'_'):'проект');
+ const fn='Отчёт_спринта_'+base+'_'+(spN?('C'+spN):'весь_проект')+'.pptx';
+ try{await p.writeFile({fileName:fn});toast('Отчёт-презентация готов');if(typeof auditClient==='function')auditClient('export_pptx',spN?('Спринт '+spN):'весь проект');}
  catch(e){toast('Ошибка формирования файла');}
 }
 
@@ -2251,8 +2290,9 @@ const NAV=[
  {g:'Настройки',items:[['okr','OKR','🧭'],['budget','Бюджет','💰'],['calendar','Календарь','📅'],['params','Параметры','⚙️']]},
  {g:'Справка',items:[['faq','FAQ','❓'],['audit','Журнал событий','🧾']]},
 ];
-const APP_VERSION='1.15.0';const APP_DATE='2026-09-15';
+const APP_VERSION='1.16.0';const APP_DATE='2026-09-15';
 const CHANGELOG=[
+ {v:'1.16.0',date:'2026-09-15',items:['Отчёт PPTX: выбор спринта при формировании (конкретный спринт или весь проект). Для спринта — метрики спринта и список его задач.','Исправлена ошибка формирования отчёта (обновлён источник загрузки модуля PptxGenJS).']},
  {v:'1.15.0',date:'2026-09-15',items:['Отчёт-презентация по спринту в формате PPTX: кнопка «📊 Отчёт» формирует презентацию с ключевыми метриками и графиками (ёмкость/velocity, выполнение, баги, TTM, настроение команды, MoSCoW, Team Radar).']},
  {v:'1.14.0',date:'2026-09-15',items:['Ретроспективы прокачаны игровыми практиками Agile: форматы (Start/Stop/Continue, Sailboat и др.), dot-voting, стрик по action items.','Настроение команды по спринтам с трендом, Kudos (благодарности), эксперименты (проверяемые гипотезы) и Team Radar (радар-диаграмма самооценки).']},
  {v:'1.13.0',date:'2026-09-15',items:['Церемония «Дэйли» (Daily Standup) в группе «Церемонии».','Новая группа «Персонал»: «График отпусков» (отпуска, больничные, командировки) и «Дни рождения» (с ближайшими датами).']},
@@ -2297,7 +2337,7 @@ document.getElementById('scrim').onclick=closeDrawer;
 /* ---------- command palette (Ctrl/⌘+K) ---------- */
 const PACTIONS=[
  {t:'Экспорт в Excel',s:'действие',ic:'⬇️',run:()=>exportXlsx()},
- {t:'Отчёт-презентация (PPTX)',s:'действие',ic:'📊',run:()=>exportPptx()},
+ {t:'Отчёт-презентация (PPTX)',s:'действие',ic:'📊',run:()=>openPptxModal()},
  {t:'Экспорт данных (JSON)',s:'действие',ic:'⬇️',run:()=>document.getElementById('exp').click()},
  {t:'Импорт данных (JSON)',s:'действие',ic:'⬆️',run:()=>document.getElementById('imp').click()},
  {t:'Сменить тему',s:'действие',ic:'◐',run:()=>document.getElementById('themebtn').click()},
@@ -2322,7 +2362,15 @@ document.getElementById('pin').addEventListener('keydown',e=>{
  else if(e.key==='Escape'){closePalette();}});
 document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&(e.key==='k'||e.key==='K')){e.preventDefault();PAL.open?closePalette():openPalette();}});
 document.getElementById('xls').onclick=()=>{exportXlsx();auditClient('export_excel');};
-document.getElementById('pptxbtn').onclick=exportPptx;
+function openPptxModal(){const sel=document.getElementById('pptx_sprint');const C=compute();
+ let h='<option value="">Весь проект (все спринты)</option>';
+ C.sp.forEach(x=>{h+='<option value="'+x.s+'"'+(x.s===C.cur?' selected':'')+'>Спринт #'+x.s+(x.status?(' · '+x.status):'')+'</option>';});
+ sel.innerHTML=h;document.getElementById('pptxmodal').classList.add('open');}
+function closePptxModal(){document.getElementById('pptxmodal').classList.remove('open');}
+document.getElementById('pptxbtn').onclick=openPptxModal;
+document.getElementById('pptx_cancel').onclick=closePptxModal;
+document.getElementById('pptx_go').onclick=()=>{const v=document.getElementById('pptx_sprint').value;closePptxModal();exportPptx(v);};
+document.getElementById('pptxmodal').addEventListener('click',e=>{if(e.target.id==='pptxmodal')closePptxModal();});
 document.getElementById('exp').onclick=()=>{const b=new Blob([JSON.stringify(ST,null,1)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='planirovanie_data.json';a.click();toast('Экспортировано');auditClient('export_json');};
 document.getElementById('imp').onclick=()=>{if(!PERM.canAdmin){toast('Только для администратора');return;}document.getElementById('file').click();};
 document.getElementById('file').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{ST=JSON.parse(r.result);save();views();activate(CURV);toast('Импортировано');auditClient('import_json',f.name);}catch(err){toast('Ошибка файла');}};r.readAsText(f);};
