@@ -206,6 +206,12 @@ tfoot td{font-weight:700;background:var(--panel2);color:var(--ink);border-top:2p
 .modal .mrow{display:flex;gap:8px;justify-content:flex-end;margin-top:18px;flex-wrap:wrap}
 body.ro #main .btn.primary,body.ro #main .rowdel{display:none}
 body.noadmin #rst,body.noadmin #imp{display:none}
+.usr-add{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:6px}
+.usr-add input,.usr-add select{border:1px solid var(--line);background:var(--panel2);color:var(--ink);border-radius:8px;padding:8px 9px;font-family:inherit;font-size:13px}
+.usr-add input{flex:1 1 120px;min-width:100px}
+#usr_table select{border:1px solid var(--line);background:var(--panel2);color:var(--ink);border-radius:7px;padding:5px 6px;font-family:inherit;font-size:12.5px}
+#usr_table .u-me{color:var(--muted);font-size:11px;margin-left:5px}
+.rolebtn-user{max-width:190px;overflow:hidden;text-overflow:ellipsis}
 </style>
 <header class="top"><div class="inner">
  <button class="btn iconbtn" id="menubtn" aria-label="Меню" title="Свернуть / развернуть меню">☰</button>
@@ -233,6 +239,28 @@ body.noadmin #rst,body.noadmin #imp{display:none}
  <label>Код администратора</label><input id="acc_admin" type="text" autocomplete="off">
  <label>Код редактора (пусто — вход в «Редактор» без кода)</label><input id="acc_editor" type="text" autocomplete="off">
  <div class="mrow"><button class="btn" id="acc_cancel">Отмена</button><button class="btn" id="acc_clear">Очистить коды</button><button class="btn primary" id="acc_save">Сохранить</button></div>
+</div></div>
+<div class="modal" id="loginmodal"><div class="mbox">
+ <h3>Вход в приложение</h3>
+ <p class="mnote">Авторизация на сервере. Роль (просмотр / редактор / администратор) определяется учётной записью.</p>
+ <label>Пользователь</label><input id="lg_user" type="text" autocomplete="username">
+ <label>Пароль</label><input id="lg_pass" type="password" autocomplete="current-password">
+ <p class="mnote" id="lg_err" style="color:var(--crit);display:none"></p>
+ <div class="mrow"><button class="btn" id="lg_offline">Продолжить офлайн</button><button class="btn primary" id="lg_submit">Войти</button></div>
+</div></div>
+<div class="modal" id="usersmodal"><div class="mbox" style="width:min(640px,94vw)">
+ <h3>Пользователи и роли</h3>
+ <p class="mnote">Управление учётными записями на сервере (только для администратора).</p>
+ <div class="twrap scroll" style="max-height:46vh"><table class="cardt" id="usr_table"></table></div>
+ <p class="ctitle" style="margin-top:16px">Добавить пользователя</p>
+ <div class="usr-add">
+  <input id="usr_new_user" type="text" placeholder="логин" autocomplete="off">
+  <input id="usr_new_name" type="text" placeholder="имя (необязательно)" autocomplete="off">
+  <input id="usr_new_pass" type="text" placeholder="пароль" autocomplete="off">
+  <select id="usr_new_role"><option value="VIEWER">Просмотр</option><option value="EDITOR">Редактор</option><option value="ADMIN">Администратор</option></select>
+  <button class="btn primary" id="usr_add">Добавить</button>
+ </div>
+ <div class="mrow"><button class="btn" id="usr_close">Закрыть</button></div>
 </div></div>
 <div class="toast" id="toast"></div>
 <input type="file" id="file" accept=".json" style="display:none">
@@ -1791,7 +1819,7 @@ const NAV=[
  {g:'Настройки',items:[['okr','OKR','🧭'],['budget','Бюджет','💰'],['calendar','Календарь','📅'],['params','Параметры','⚙️']]},
  {g:'Справка',items:[['faq','FAQ','❓']]},
 ];
-const APP_VERSION='1.5.0';const APP_DATE='2026-09-14';
+const APP_VERSION='1.6.0';const APP_DATE='2026-09-14';
 function buildNav(){let h='';NAV.forEach(g=>{h+=`<div class="nav-group"><div class="nav-h">${g.g}</div>`;
   g.items.forEach(it=>h+=`<button class="nav-item" data-v="${it[0]}"><span class="nav-ic">${it[2]}</span><span>${it[1]}</span></button>`);
   h+='</div>';});document.getElementById('nav').innerHTML=h;
@@ -1843,11 +1871,17 @@ document.getElementById('rst').onclick=()=>{if(!PERM.canAdmin){toast('Тольк
 document.getElementById('themebtn').onclick=()=>{const cur=document.documentElement.getAttribute('data-theme');const sys=matchMedia('(prefers-color-scheme:dark)').matches;const nx=(cur||(sys?'dark':'light'))==='dark'?'light':'dark';document.documentElement.setAttribute('data-theme',nx);views();activate(CURV);};
 /* ---------- roles / access modes (UI) ---------- */
 var PERM={role:'viewer',canEdit:false,canAdmin:false};
+var AUTH={mode:'local',token:'',user:null,username:'',role:null};
 const ROLEMETA={viewer:['👁','Просмотр','только чтение'],editor:['✏️','Редактор','правка данных'],admin:['🛡️','Администратор','полный доступ']};
 function lsGet(k){try{return localStorage.getItem(k)||'';}catch(e){return '';}}
 function lsSet(k,v){try{localStorage.setItem(k,v);}catch(e){}}
-function setPerm(r){if(!ROLEMETA[r])r='viewer';PERM.role=r;PERM.canAdmin=(r==='admin');PERM.canEdit=(r!=='viewer');lsSet('app_role',r);}
-function updateRoleBtn(){const b=document.getElementById('rolebtn');if(!b)return;const m=ROLEMETA[PERM.role];b.textContent=m[0]+' '+m[1];b.className='btn'+(PERM.role==='admin'?' primary':'');}
+function setPerm(r){r=String(r||'').toLowerCase();if(!ROLEMETA[r])r='viewer';PERM.role=r;PERM.canAdmin=(r==='admin');PERM.canEdit=(r!=='viewer');lsSet('app_role',r);}
+function updateRoleBtn(){const b=document.getElementById('rolebtn');if(!b)return;const m=ROLEMETA[PERM.role];
+ b.className='btn'+(PERM.role==='admin'?' primary':'');
+ if(AUTH.mode==='server'){
+  if(AUTH.user){b.textContent=m[0]+' '+AUTH.user+' · '+m[1];b.classList.add('rolebtn-user');}
+  else{b.textContent='🔑 Войти';}
+ }else{b.textContent=m[0]+' '+m[1];}}
 function applyPerms(){document.body.classList.toggle('ro',!PERM.canEdit);document.body.classList.toggle('noadmin',!PERM.canAdmin);
  document.querySelectorAll('#main input:not(.tsearch), #main select, #main textarea').forEach(el=>{
   const admF=!!el.closest('#v_params');const locked=!PERM.canEdit||(admF&&!PERM.canAdmin);
@@ -1861,12 +1895,24 @@ function switchRole(t){
   if(!c){const nv=prompt('Первый вход администратора — задайте код администратора:');if(!nv||!nv.trim())return;lsSet('app_admin_code',nv.trim());applyRole('admin');return;}
   const v=prompt('Код администратора:');if(v==null)return;if(v.trim()!==c){toast('Неверный код');return;}applyRole('admin');return;}}
 function openRolePop(){const pop=document.getElementById('rolepop');let h='';
+ if(AUTH.mode==='server'){
+  if(!AUTH.user){h='<div class="role-opt" data-act="login"><span>🔑</span><span>Войти</span><small>на сервер</small></div>';}
+  else{const m=ROLEMETA[PERM.role];
+   h+=`<div class="role-opt cur"><span>${m[0]}</span><span>${esc(AUTH.user)}</span><small>${m[1]}</small></div>`;
+   if(PERM.canAdmin)h+='<div class="role-sep"></div><div class="role-opt" data-act="users"><span>👥</span><span>Пользователи и роли</span></div>';
+   h+='<div class="role-sep"></div><div class="role-opt" data-act="logout"><span>🚪</span><span>Выйти</span></div>';}
+  pop.innerHTML=h;pop.classList.add('open');return;}
  ['viewer','editor','admin'].forEach(r=>{const m=ROLEMETA[r];h+=`<div class="role-opt${r===PERM.role?' cur':''}" data-r="${r}"><span>${m[0]}</span><span>${m[1]}</span><small>${m[2]}</small></div>`;});
  if(PERM.canAdmin)h+='<div class="role-sep"></div><div class="role-opt" data-act="codes"><span>⚙️</span><span>Коды доступа</span></div>';
  pop.innerHTML=h;pop.classList.add('open');}
 function closeRolePop(){const p=document.getElementById('rolepop');if(p)p.classList.remove('open');}
 document.getElementById('rolebtn').onclick=e=>{e.stopPropagation();const p=document.getElementById('rolepop');p.classList.contains('open')?closeRolePop():openRolePop();};
-document.getElementById('rolepop').addEventListener('click',e=>{const o=e.target.closest('.role-opt');if(!o)return;if(o.dataset.act==='codes'){closeRolePop();openAccModal();}else if(o.dataset.r)switchRole(o.dataset.r);});
+document.getElementById('rolepop').addEventListener('click',e=>{const o=e.target.closest('.role-opt');if(!o)return;
+ if(o.dataset.act==='codes'){closeRolePop();openAccModal();}
+ else if(o.dataset.act==='login'){closeRolePop();openLogin();}
+ else if(o.dataset.act==='logout'){closeRolePop();serverLogout();}
+ else if(o.dataset.act==='users'){closeRolePop();openUsers();}
+ else if(o.dataset.r)switchRole(o.dataset.r);});
 document.addEventListener('click',e=>{if(!e.target.closest('#rolepop')&&!e.target.closest('#rolebtn'))closeRolePop();});
 function openAccModal(){document.getElementById('acc_admin').value=lsGet('app_admin_code');document.getElementById('acc_editor').value=lsGet('app_editor_code');document.getElementById('accmodal').classList.add('open');}
 function closeAccModal(){document.getElementById('accmodal').classList.remove('open');}
@@ -1877,30 +1923,111 @@ document.getElementById('accmodal').addEventListener('click',e=>{if(e.target.id=
 setPerm(lsGet('app_role')||'viewer');updateRoleBtn();
 views();activate('dash');
 
-/* ---------- multi-user sync (shared backend) ---------- */
-const API='api/state';
-let SYNC={on:false,ver:0,editAt:0,tk:localStorage.getItem('team_tk')||''};
-function hdrs(json){const h={};if(json)h['Content-Type']='application/json';if(SYNC.tk)h['x-team-token']=SYNC.tk;return h;}
+/* ---------- server authentication + multi-user sync ---------- */
+const API='api/state';const AUTHAPI='api/auth';
+let SYNC={on:false,ver:0,editAt:0};
+function hdrs(json){const h={};if(json)h['Content-Type']='application/json';if(AUTH.token)h['Authorization']='Bearer '+AUTH.token;return h;}
 function setSt(txt,cls){const e=document.getElementById('syncst');if(e){e.textContent=txt;e.className='pill '+cls;}}
-function askToken(){const t=prompt('Введите ключ команды для доступа к общей базе:');if(t){SYNC.tk=t.trim();localStorage.setItem('team_tk',SYNC.tk);syncPull(true);}else{setSt('🔒 нужен ключ','p-warn');}}
+function currentUsername(){return AUTH.username||'';}
+function sessionLost(){AUTH.token='';AUTH.user=null;AUTH.username='';AUTH.role=null;lsSet('auth_tk','');SYNC.on=false;setPerm('viewer');updateRoleBtn();applyPerms();setSt('🔒 нужен вход','p-warn');openLogin();}
+/* ---- login / logout / me ---- */
+function openLogin(){const m=document.getElementById('loginmodal');const e=document.getElementById('lg_err');e.style.display='none';document.getElementById('lg_pass').value='';m.classList.add('open');setTimeout(()=>document.getElementById('lg_user').focus(),40);}
+function closeLogin(){document.getElementById('loginmodal').classList.remove('open');}
+async function serverLogin(u,p){
+ const r=await fetch(AUTHAPI+'/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:u,password:p})});
+ if(!r.ok)throw (r.status===401?'Неверный логин или пароль':'Ошибка сервера ('+r.status+')');
+ const d=await r.json();AUTH.token=d.token;AUTH.username=d.username;AUTH.user=d.name||d.username;AUTH.role=d.role;
+ lsSet('auth_tk',AUTH.token);setPerm(d.role);updateRoleBtn();applyPerms();return d;
+}
+async function serverMe(){
+ try{const r=await fetch(AUTHAPI+'/me',{headers:hdrs(false),cache:'no-store'});
+  if(!r.ok)return false;const d=await r.json();
+  AUTH.username=d.username;AUTH.user=d.name||d.username;AUTH.role=d.role;setPerm(d.role);updateRoleBtn();applyPerms();return true;
+ }catch(e){return false;}
+}
+async function serverLogout(){
+ try{await fetch(AUTHAPI+'/logout',{method:'POST',headers:hdrs(false)});}catch(e){}
+ AUTH.token='';AUTH.user=null;AUTH.username='';AUTH.role=null;lsSet('auth_tk','');SYNC.on=false;
+ setPerm('viewer');updateRoleBtn();applyPerms();setSt('🔒 нужен вход','p-warn');toast('Вы вышли');openLogin();
+}
+document.getElementById('lg_submit').onclick=async()=>{
+ const u=document.getElementById('lg_user').value.trim(),p=document.getElementById('lg_pass').value;
+ if(!u||!p){return;}
+ try{await serverLogin(u,p);closeLogin();SYNC.on=true;setSt('🟢 онлайн','p-good');toast('Добро пожаловать, '+AUTH.user);syncPull(true);}
+ catch(err){const e=document.getElementById('lg_err');e.textContent=err;e.style.display='block';}
+};
+document.getElementById('lg_pass').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('lg_submit').click();});
+document.getElementById('lg_offline').onclick=()=>{closeLogin();AUTH.mode='local';updateRoleBtn();setSt('⚪ офлайн (локально)','p-neut');toast('Работаем офлайн — данные хранятся локально');};
+document.getElementById('loginmodal').addEventListener('click',e=>{if(e.target.id==='loginmodal')closeLogin();});
+/* ---- admin: users & roles ---- */
+async function openUsers(){if(!PERM.canAdmin)return;document.getElementById('usersmodal').classList.add('open');await renderUsers();}
+function closeUsers(){document.getElementById('usersmodal').classList.remove('open');}
+async function renderUsers(){const t=document.getElementById('usr_table');
+ try{const r=await fetch(AUTHAPI+'/users',{headers:hdrs(false),cache:'no-store'});
+  if(!r.ok){t.innerHTML='<tbody><tr><td>Не удалось загрузить список</td></tr></tbody>';return;}
+  const list=await r.json();
+  let h='<thead><tr><th>Имя</th><th>Логин</th><th>Роль</th><th>Активен</th><th></th></tr></thead><tbody>';
+  list.forEach(u=>{const me=(u.username===currentUsername());
+   h+=`<tr data-u="${esc(u.username)}"><td>${esc(u.name||u.username)}</td><td>${esc(u.username)}${me?'<span class="u-me">вы</span>':''}</td>`
+    +`<td><select data-act="role"><option value="VIEWER"${u.role==='VIEWER'?' selected':''}>Просмотр</option><option value="EDITOR"${u.role==='EDITOR'?' selected':''}>Редактор</option><option value="ADMIN"${u.role==='ADMIN'?' selected':''}>Администратор</option></select></td>`
+    +`<td style="text-align:center"><input type="checkbox" data-act="active"${u.active?' checked':''}></td>`
+    +`<td style="white-space:nowrap"><button class="btn" data-act="pass" title="Сменить пароль">🔑</button> <button class="rowdel" data-act="del" title="Удалить">✕</button></td></tr>`;});
+  h+='</tbody>';t.innerHTML=h;
+ }catch(e){t.innerHTML='<tbody><tr><td>Ошибка сети</td></tr></tbody>';}
+}
+async function usrUpdate(u,body){
+ const r=await fetch(AUTHAPI+'/users/'+encodeURIComponent(u),{method:'PUT',headers:hdrs(true),body:JSON.stringify(body)});
+ if(r.status===409){toast('Нельзя понизить/отключить последнего администратора');}
+ else if(!r.ok){toast('Ошибка сохранения');}
+ await renderUsers();
+}
+async function usrDelete(u){
+ const r=await fetch(AUTHAPI+'/users/'+encodeURIComponent(u),{method:'DELETE',headers:hdrs(false)});
+ if(r.status===409){toast('Нельзя удалить последнего администратора');}
+ else if(!r.ok&&r.status!==204){toast('Ошибка удаления');}
+ else{toast('Пользователь удалён');}
+ await renderUsers();
+}
+document.getElementById('usr_table').addEventListener('change',async e=>{const tr=e.target.closest('tr');if(!tr)return;const u=tr.dataset.u;
+ if(e.target.dataset.act==='role')await usrUpdate(u,{role:e.target.value});
+ else if(e.target.dataset.act==='active')await usrUpdate(u,{active:e.target.checked});});
+document.getElementById('usr_table').addEventListener('click',async e=>{const b=e.target.closest('button');if(!b)return;const tr=b.closest('tr');if(!tr)return;const u=tr.dataset.u;
+ if(b.dataset.act==='del'){if(confirm('Удалить пользователя «'+u+'»?'))await usrDelete(u);}
+ else if(b.dataset.act==='pass'){const np=prompt('Новый пароль для «'+u+'»:');if(np&&np.trim()){await usrUpdate(u,{password:np.trim()});toast('Пароль обновлён');}}});
+document.getElementById('usr_add').onclick=async()=>{
+ const u=document.getElementById('usr_new_user').value.trim(),p=document.getElementById('usr_new_pass').value.trim();
+ const name=document.getElementById('usr_new_name').value.trim(),role=document.getElementById('usr_new_role').value;
+ if(!u||!p){toast('Логин и пароль обязательны');return;}
+ const r=await fetch(AUTHAPI+'/users',{method:'POST',headers:hdrs(true),body:JSON.stringify({username:u,password:p,displayName:name,role:role})});
+ if(r.status===409){toast('Пользователь уже существует');return;}
+ if(!r.ok){toast('Ошибка создания');return;}
+ document.getElementById('usr_new_user').value='';document.getElementById('usr_new_pass').value='';document.getElementById('usr_new_name').value='';
+ toast('Пользователь добавлен');await renderUsers();
+};
+document.getElementById('usr_close').onclick=closeUsers;
+document.getElementById('usersmodal').addEventListener('click',e=>{if(e.target.id==='usersmodal')closeUsers();});
+/* ---- sync ---- */
 async function syncPull(initial){
+ if(AUTH.mode==='server'&&!AUTH.token)return;
  try{const r=await fetch(API,{headers:hdrs(false),cache:'no-store'});
-  if(r.status===401){SYNC.on=false;askToken();return;}
+  if(r.status===401){sessionLost();return;}
   if(!r.ok)throw 0;const d=await r.json();SYNC.on=true;
   const busy=(!initial)&&(Date.now()-SYNC.editAt<4000);
   if((initial||d.version>SYNC.ver)&&!busy){
     ST=migrate(d.state||JSON.parse(JSON.stringify(SEED)));SYNC.ver=d.version;
     localStorage.setItem('sprintapp',JSON.stringify(ST));views();activate(CURV);
     if(!initial)toast('Обновлено (другой пользователь)');
-  } else if(d.version>SYNC.ver){SYNC.ver=SYNC.ver;/* keep, will resync after edits settle */}
+  }
   setSt('🟢 онлайн','p-good');
  }catch(e){SYNC.on=false;setSt('⚪ офлайн','p-neut');}
 }
 let pushT=null;
 function syncSchedule(){SYNC.editAt=Date.now();if(!SYNC.on)return;clearTimeout(pushT);pushT=setTimeout(syncPush,700);}
 async function syncPush(){
+ if(!SYNC.on)return;
  try{const r=await fetch(API,{method:'PUT',headers:hdrs(true),body:JSON.stringify({state:ST,baseVersion:SYNC.ver})});
-  if(r.status===401){SYNC.on=false;askToken();return;}
+  if(r.status===401){sessionLost();return;}
+  if(r.status===403){setSt('🔒 только чтение','p-warn');toast('Недостаточно прав для сохранения на сервере');return;}
   if(r.status===409){ // another user saved first — adopt their version, never silently overwrite
     const d=await r.json();ST=migrate(d.state||JSON.parse(JSON.stringify(SEED)));SYNC.ver=d.version;
     localStorage.setItem('sprintapp',JSON.stringify(ST));views();activate(CURV);
@@ -1909,9 +2036,12 @@ async function syncPush(){
  }catch(e){SYNC.on=false;setSt('⚪ офлайн','p-neut');}
 }
 function startSync(){
- fetch(API,{method:'HEAD'}).then(r=>{ // probe: backend present?
+ fetch(API,{method:'HEAD'}).then(async r=>{ // probe: backend present?
   if(!r.ok&&r.status!==401&&r.status!==405){setSt('⚪ локально','p-neut');return;}
-  syncPull(true);setInterval(()=>syncPull(false),5000);
+  AUTH.mode='server';AUTH.token=lsGet('auth_tk');updateRoleBtn();
+  if(AUTH.token&&await serverMe()){SYNC.on=true;syncPull(true);}
+  else{AUTH.token='';lsSet('auth_tk','');updateRoleBtn();setSt('🔒 нужен вход','p-warn');openLogin();}
+  setInterval(()=>{if(AUTH.mode==='server'&&AUTH.token)syncPull(false);},5000);
  }).catch(()=>{setSt('⚪ локально','p-neut');});
 }
 startSync();

@@ -19,6 +19,11 @@ spring:
         format_sql: false
     open-in-view: false
 
-# Optional shared team token; if set, /api/state requires header X-Team-Token.
 app:
-  team-token: ${TEAM_TOKEN:}
+  auth:
+    # Server-side authentication: reads need any signed-in user; writes need EDITOR/ADMIN.
+    enabled: ${AUTH_ENABLED:true}
+    # Bearer-token session lifetime, hours.
+    session-hours: ${AUTH_SESSION_HOURS:12}
+    # Seed demo users (admin/editor/viewer) on first startup; turn off for real deployments.
+    seed-defaults: ${AUTH_SEED_DEFAULTS:true}
