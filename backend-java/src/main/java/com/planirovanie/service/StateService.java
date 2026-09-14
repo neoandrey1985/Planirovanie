@@ -24,6 +24,10 @@ public class StateService {
     private final BugRepo bugs;
     private final HolidayRepo calendar;
     private final RetroRepo retro;
+    private final MoodRepo mood;
+    private final KudosRepo kudos;
+    private final ExperimentRepo experiments;
+    private final RadarRepo radar;
     private final RiceRepo rice;
     private final MoscowRepo moscow;
     private final FaqRepo faq;
@@ -37,12 +41,14 @@ public class StateService {
 
     public StateService(ParamRepo params, AppMetaRepo meta, DodRepo dod, TeamRepo team, TaskRepo tasks,
                         ReleaseRepo releases, MilestoneRepo milestones, TechDebtRepo techDebt, RiskRepo risks,
-                        BugRepo bugs, HolidayRepo calendar, RetroRepo retro, RiceRepo rice, MoscowRepo moscow,
+                        BugRepo bugs, HolidayRepo calendar, RetroRepo retro, MoodRepo mood, KudosRepo kudos,
+                        ExperimentRepo experiments, RadarRepo radar, RiceRepo rice, MoscowRepo moscow,
                         FaqRepo faq, GroomingRepo grooming, DemoRepo demo, DailyRepo daily, VacationRepo vacation,
                         BirthdayRepo birthdays, DependencyRepo deps, OkrRepo okr) {
         this.params = params; this.meta = meta; this.dod = dod; this.team = team; this.tasks = tasks;
         this.releases = releases; this.milestones = milestones; this.techDebt = techDebt; this.risks = risks;
-        this.bugs = bugs; this.calendar = calendar; this.retro = retro; this.rice = rice; this.moscow = moscow;
+        this.bugs = bugs; this.calendar = calendar; this.retro = retro; this.mood = mood; this.kudos = kudos;
+        this.experiments = experiments; this.radar = radar; this.rice = rice; this.moscow = moscow;
         this.faq = faq; this.grooming = grooming; this.demo = demo; this.daily = daily; this.vacation = vacation;
         this.birthdays = birthdays; this.deps = deps;
         this.okr = okr;
@@ -70,6 +76,10 @@ public class StateService {
         s.bugs = bugs.findAllByOrderByOrdAsc();
         s.calendar = calendar.findAllByOrderByOrdAsc();
         s.retro = retro.findAllByOrderByOrdAsc();
+        s.mood = mood.findAllByOrderByOrdAsc();
+        s.kudos = kudos.findAllByOrderByOrdAsc();
+        s.experiments = experiments.findAllByOrderByOrdAsc();
+        s.radar = radar.findAllByOrderByOrdAsc();
         s.rice = rice.findAllByOrderByOrdAsc();
         s.moscow = moscow.findAllByOrderByOrdAsc();
         s.faq = faq.findAllByOrderByOrdAsc();
@@ -124,6 +134,10 @@ public class StateService {
         order(s.bugs, (e, i) -> { e.pk = null; e.ord = i; });
         order(s.calendar, (e, i) -> { e.id = null; e.ord = i; });
         order(s.retro, (e, i) -> { e.id = null; e.ord = i; });
+        order(s.mood, (e, i) -> { e.pk = null; e.ord = i; });
+        order(s.kudos, (e, i) -> { e.pk = null; e.ord = i; });
+        order(s.experiments, (e, i) -> { e.pk = null; e.ord = i; });
+        order(s.radar, (e, i) -> { e.pk = null; e.ord = i; });
         order(s.rice, (e, i) -> { e.pk = null; e.ord = i; });
         order(s.moscow, (e, i) -> { e.pk = null; e.ord = i; });
         order(s.faq, (e, i) -> { e.pk = null; e.ord = i; });
@@ -145,6 +159,10 @@ public class StateService {
         bugs.deleteAllInBatch();       if (s.bugs != null)       bugs.saveAll(s.bugs);
         calendar.deleteAllInBatch();   if (s.calendar != null)   calendar.saveAll(s.calendar);
         retro.deleteAllInBatch();      if (s.retro != null)      retro.saveAll(s.retro);
+        mood.deleteAllInBatch();       if (s.mood != null)       mood.saveAll(s.mood);
+        kudos.deleteAllInBatch();      if (s.kudos != null)      kudos.saveAll(s.kudos);
+        experiments.deleteAllInBatch();if (s.experiments != null) experiments.saveAll(s.experiments);
+        radar.deleteAllInBatch();      if (s.radar != null)      radar.saveAll(s.radar);
         rice.deleteAllInBatch();       if (s.rice != null)       rice.saveAll(s.rice);
         moscow.deleteAllInBatch();     if (s.moscow != null)     moscow.saveAll(s.moscow);
         faq.deleteAllInBatch();        if (s.faq != null)        faq.saveAll(s.faq);

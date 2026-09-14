@@ -39,6 +39,10 @@ public final class Dtos {
         public List<Bug> bugs;
         public List<Holiday> calendar;
         public List<Retro> retro;
+        public List<Mood> mood;
+        public List<Kudos> kudos;
+        public List<Experiment> experiments;
+        public List<RadarAxis> radar;
         public List<Rice> rice;
         public List<MoscowItem> moscow;
         public List<Faq> faq;

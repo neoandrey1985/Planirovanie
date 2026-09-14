@@ -6,18 +6,16 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "retro")
+@Table(name = "experiments")
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Retro {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY) @JsonIgnore public Long id;
+public class Experiment {
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY) @JsonIgnore public Long pk;
+    @Column(name = "exp_id") @JsonProperty("id") public String expId;
     public Integer sprint;
-    public String well;
-    public String improve;
+    public String hypothesis;
     public String action;
-    public String owner;
-    public String due;
+    public String metric;
+    public String result;
     public String status;
-    public Double votes;
-    @Column(name = "rformat") @JsonProperty("format") public String format;
     @JsonIgnore public Integer ord;
 }

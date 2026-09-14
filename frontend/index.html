@@ -79,6 +79,9 @@ details.faq-item[open]>summary::after{content:'\2212'}
 details.faq-item[open]>summary{border-bottom:1px solid var(--line)}
 .faq-a{padding:12px 14px;font-size:13px;color:var(--muted);line-height:1.65}
 .faq-empty{font-size:13px;color:var(--muted);font-style:italic;padding:8px 2px}
+.radar-wrap{display:flex;gap:18px;flex-wrap:wrap;align-items:center;margin-top:6px}
+.radar-legend{flex:1;min-width:180px;font-size:12px;color:var(--muted);line-height:1.6}
+.mood-box svg,.radar-box svg{max-width:100%;height:auto}
 .kpis{grid-template-columns:repeat(auto-fit,minmax(172px,1fr))}
 .kpi{position:relative;overflow:hidden}
 .kpi .stripe{position:absolute;left:0;top:0;bottom:0;width:4px}
@@ -1218,6 +1221,25 @@ function migrate(d){
   {id:'BD-03',member:'Кузнецов Д.',date:'1988-11-12',role:'Backend',notes:''},
   {id:'BD-04',member:'Орлова Е.',date:'1995-09-28',role:'Analyst',notes:''},
   {id:'BD-05',member:'Соколов Р.',date:'1991-12-03',role:'QA',notes:''}];
+ // retro gamification: heal existing items + add mood / kudos / experiments / radar
+ (d.retro||[]).forEach(r=>{if(r.votes==null)r.votes=0;if(r.format==null)r.format='';});
+ if(!Array.isArray(d.mood))d.mood=[
+  {id:'MD-01',sprint:1,mood:4,note:'Хороший старт, понятные цели'},
+  {id:'MD-02',sprint:2,mood:3,note:'Много переключений между задачами'},
+  {id:'MD-03',sprint:3,mood:4,note:'Наладили процесс, меньше блокеров'}];
+ if(!Array.isArray(d.kudos))d.kudos=[
+  {id:'KD-01',sprint:3,from:'Команда',to:'Кузнецов Д.',reason:'Быстро поднял платёжную интеграцию'},
+  {id:'KD-02',sprint:3,from:'Петрова М.',to:'Соколов Р.',reason:'Помог с регрессом в выходной'},
+  {id:'KD-03',sprint:2,from:'PO',to:'Команда',reason:'Отличное демо корзины'}];
+ if(!Array.isArray(d.experiments))d.experiments=[
+  {id:'EX-01',sprint:2,hypothesis:'Парное ревью ускорит закрытие сложных задач',action:'Ввести парное ревью для сложных PR',metric:'Cycle time сложных задач',result:'Cycle time −15%',status:'Успешно'},
+  {id:'EX-02',sprint:3,hypothesis:'WIP-лимит снизит переключения и ускорит поток',action:'Лимит 2 задачи «В работе» на человека',metric:'Число параллельных задач',result:'В процессе замера',status:'Идёт'}];
+ if(!Array.isArray(d.radar))d.radar=[
+  {id:'RD-01',axis:'Коммуникация',score:4,prev:3},
+  {id:'RD-02',axis:'Качество',score:3,prev:3},
+  {id:'RD-03',axis:'Процесс',score:4,prev:2},
+  {id:'RD-04',axis:'Инструменты',score:4,prev:4},
+  {id:'RD-05',axis:'Нагрузка',score:3,prev:2}];
  // calendar: migrate array of date-strings -> [{date,name}]
  if(Array.isArray(d.calendar))d.calendar=d.calendar.map(h=>typeof h==='string'?{date:h,name:''}:h);
  else d.calendar=[];
@@ -1824,14 +1846,62 @@ function demoView(){const w=document.createElement('div');
  lg.innerHTML='<p class="ctitle">Демо спринта (Sprint Review)</p><p style="font-size:13px;color:var(--muted);line-height:1.7;margin:0">'
   +'Обзор итогов спринта: команда демонстрирует готовый инкремент заказчикам и стейкхолдерам, собирает обратную связь и решает, что <b>принято</b>, что уходит <b>на доработку</b>. Результаты и фидбек влияют на приоритеты бэклога и планирование следующего спринта.</p>';
  w.appendChild(lg);return w;}
+function radarSvg(items){items=(items||[]).filter(x=>x.axis);const n=items.length;
+ if(n<3)return '<p style="color:var(--muted);font-size:13px;margin:0">Добавьте минимум 3 оси для диаграммы.</p>';
+ const cx=170,cy=165,R=118,max=5;
+ const P=(i,val)=>{const a=-Math.PI/2+i*2*Math.PI/n,rr=R*Math.max(0,Math.min(1,num(val)/max));return [cx+rr*Math.cos(a),cy+rr*Math.sin(a)];};
+ let g='';
+ for(let k=1;k<=max;k++){const p=[];for(let i=0;i<n;i++){const a=-Math.PI/2+i*2*Math.PI/n,rr=R*k/max;p.push((cx+rr*Math.cos(a)).toFixed(1)+','+(cy+rr*Math.sin(a)).toFixed(1));}g+='<polygon points="'+p.join(' ')+'" fill="none" stroke="'+col('--line')+'" stroke-width="1"/>';}
+ items.forEach((it,i)=>{const a=-Math.PI/2+i*2*Math.PI/n,ex=cx+R*Math.cos(a),ey=cy+R*Math.sin(a);
+   g+='<line x1="'+cx+'" y1="'+cy+'" x2="'+ex.toFixed(1)+'" y2="'+ey.toFixed(1)+'" stroke="'+col('--line')+'"/>';
+   const lx=cx+(R+14)*Math.cos(a),ly=cy+(R+14)*Math.sin(a),anc=Math.abs(Math.cos(a))<0.3?'middle':(Math.cos(a)>0?'start':'end');
+   g+='<text x="'+lx.toFixed(1)+'" y="'+ly.toFixed(1)+'" font-size="11" fill="'+col('--muted')+'" text-anchor="'+anc+'" dominant-baseline="middle">'+esc(it.axis)+'</text>';});
+ if(items.some(it=>num(it.prev)>0)){const pv=items.map((it,i)=>P(i,it.prev).map(x=>x.toFixed(1)).join(',')).join(' ');
+   g+='<polygon points="'+pv+'" fill="none" stroke="'+col('--muted')+'" stroke-width="1.5" stroke-dasharray="4 3"/>';}
+ const cur=items.map((it,i)=>P(i,it.score).map(x=>x.toFixed(1)).join(',')).join(' ');
+ g+='<polygon points="'+cur+'" fill="'+col('--accent-soft')+'" stroke="'+col('--accent')+'" stroke-width="2"/>';
+ items.forEach((it,i)=>{const p=P(i,it.score);g+='<circle cx="'+p[0].toFixed(1)+'" cy="'+p[1].toFixed(1)+'" r="3.2" fill="'+col('--accent')+'"/>';});
+ return '<svg viewBox="0 0 340 330" style="max-width:340px;width:100%">'+g+'</svg>';}
 function retroView(){const w=document.createElement('div');
- w.appendChild(editable('retro',[{k:'sprint',label:'Спринт',type:'num'},{k:'well',label:'Что прошло хорошо',wide:true},
-  {k:'improve',label:'Что улучшить',wide:true},{k:'action',label:'Action item',wide:true},
-  {k:'owner',label:'Ответственный'},{k:'due',label:'Срок'},{k:'status',label:'Статус',type:'select',opts:['Открыт','В работе','Сделано']}]));
+ // 1. Retro items — formats + dot-voting
+ w.appendChild(editable('retro',[{k:'sprint',label:'Спринт',type:'num'},
+   {k:'format',label:'Формат',type:'select',opts:['','Start/Stop/Continue','Mad/Sad/Glad','4L','Sailboat','Starfish','DAKI']},
+   {k:'well',label:'Что прошло хорошо',wide:true},{k:'improve',label:'Что улучшить',wide:true},
+   {k:'action',label:'Action item',wide:true},{k:'votes',label:'Голоса',type:'num'},
+   {k:'owner',label:'Ответственный'},{k:'due',label:'Срок'},
+   {k:'status',label:'Статус',type:'select',opts:['Открыт','В работе','Сделано']}]));
  const r=ST.retro||[],done=r.filter(x=>x.status==='Сделано').length,pct=r.length?done/r.length:0;
- const card=document.createElement('div');card.className='grid kpis';card.style.marginTop='14px';
- card.innerHTML=kpiCard('Action items',r.length,'всего','neut')+kpiCard('Закрыто',done,'сделано','neut')+kpiCard('% закрытых',pctf(pct),'выполнение',pct>=.8?'good':pct>=.5?'warn':'crit');
- w.appendChild(card);return w;}
+ const bySprint={};r.forEach(x=>{const s=num(x.sprint);(bySprint[s]=bySprint[s]||[]).push(x);});
+ let streak=0;Object.keys(bySprint).map(Number).sort((a,b)=>b-a).some(s=>{const it=bySprint[s].filter(x=>(x.action||'').trim());if(!it.length||!it.every(x=>x.status==='Сделано'))return true;streak++;return false;});
+ const kp=document.createElement('div');kp.className='grid kpis';kp.style.marginTop='14px';
+ kp.innerHTML=kpiCard('Action items',r.length,'всего','neut')+kpiCard('Закрыто',done,'сделано','neut')+kpiCard('% закрытых',pctf(pct),'выполнение',pct>=.8?'good':pct>=.5?'warn':'crit')+kpiCard('Стрик',streak+(streak?' 🏅':''),'спринтов со 100%',streak>=3?'good':streak?'warn':'neut');
+ w.appendChild(kp);
+ // 2. Team mood trend
+ const mood=(ST.mood||[]).slice().sort((a,b)=>num(a.sprint)-num(b.sprint));
+ const avgMood=mood.length?mood.reduce((a,x)=>a+num(x.mood),0)/mood.length:0;
+ const mc=document.createElement('div');mc.className='card';mc.style.marginTop='16px';
+ mc.innerHTML='<p class="ctitle">Настроение команды по спринтам (1–5) · среднее '+fmt(avgMood,1)+'</p><div class="mood-box"></div>';w.appendChild(mc);
+ if(mood.length)lines(mc.querySelector('.mood-box'),mood.map(m=>'С'+m.sprint),[{color:col('--good'),data:mood.map(m=>Math.max(0,Math.min(5,num(m.mood)))),trend:true}],{});
+ w.appendChild(editable('mood',[{k:'id',label:'ID'},{k:'sprint',label:'Спринт',type:'num'},{k:'mood',label:'Настроение (1–5)',type:'num'},{k:'note',label:'Комментарий',wide:true}],{newId:'id',prefix:'MD-'}));
+ // 3. Kudos
+ const kt=document.createElement('p');kt.className='ctitle';kt.style.marginTop='20px';kt.textContent='Kudos — благодарности ('+(ST.kudos||[]).length+')';w.appendChild(kt);
+ w.appendChild(editable('kudos',[{k:'id',label:'ID'},{k:'sprint',label:'Спринт',type:'num'},{k:'from',label:'От кого'},{k:'to',label:'Кому'},{k:'reason',label:'За что',wide:true}],{newId:'id',prefix:'KD-'}));
+ // 4. Experiments (hypothesis-driven)
+ const et=document.createElement('p');et.className='ctitle';et.style.marginTop='20px';et.textContent='Эксперименты — проверяемые улучшения';w.appendChild(et);
+ w.appendChild(editable('experiments',[{k:'id',label:'ID'},{k:'sprint',label:'Спринт',type:'num'},{k:'hypothesis',label:'Гипотеза («считаем, что…»)',wide:true},{k:'action',label:'Действие («сделаем…»)',wide:true},{k:'metric',label:'Метрика'},{k:'result',label:'Результат',wide:true},{k:'status',label:'Статус',type:'select',opts:['Идёт','Успешно','Не сработало']}],{newId:'id',prefix:'EX-'}));
+ // 5. Team Radar
+ const rc=document.createElement('div');rc.className='card';rc.style.marginTop='20px';
+ rc.innerHTML='<p class="ctitle">Team Radar — самооценка команды</p><div class="radar-wrap"><div class="radar-box"></div><div class="radar-legend">Оценка по осям 1–5. Сплошная линия — текущий спринт, пунктир — предыдущий. Показывает динамику по ключевым аспектам работы команды.</div></div>';
+ w.appendChild(rc);rc.querySelector('.radar-box').innerHTML=radarSvg(ST.radar||[]);
+ w.appendChild(editable('radar',[{k:'id',label:'ID'},{k:'axis',label:'Ось (аспект)'},{k:'score',label:'Сейчас (1–5)',type:'num'},{k:'prev',label:'Прошлый (1–5)',type:'num'}],{newId:'id',prefix:'RD-'}));
+ // 6. Formats legend
+ const lg=document.createElement('div');lg.className='card';lg.style.marginTop='20px';
+ lg.innerHTML='<p class="ctitle">Форматы ретроспектив и советы</p><p style="font-size:13px;color:var(--muted);line-height:1.7;margin:0">'
+  +'<b>Start / Stop / Continue</b> — что начать, прекратить, продолжить. <b>Mad / Sad / Glad</b> — через эмоции. '
+  +'<b>4L</b> — Liked / Learned / Lacked / Longed for. <b>Sailboat</b> — ветер (помогает), якоря (тормозит), скалы (риски), остров (цель). '
+  +'<b>Starfish</b> — Keep / More / Less / Start / Stop. <b>DAKI</b> — Drop / Add / Keep / Improve.<br>'
+  +'Голоса (dot-voting) помогают выбрать 2–3 темы для action items — отсортируйте по колонке «Голоса». Настроение и Team Radar отслеживайте по спринтам как тренд климата команды; эксперименты формулируйте как проверяемые гипотезы с метрикой.</p>';
+ w.appendChild(lg);return w;}
 function renderParams(){const P=ST.params;const v=document.getElementById('v_params');
  v.innerHTML=`<h1>Параметры</h1><p class="lede">Базовые настройки. Даты спринтов и все расчёты зависят от них.</p>
  <div class="card"><div class="param-grid">
@@ -2067,7 +2137,11 @@ function exportXlsx(){const C=compute();const s=[];
  s.push({name:'Риски',aoa:[['Риск','Вероятн','Влияние','Балл','Митигация','Владелец','Статус']].concat((ST.risks||[]).map(r=>[r.name,num(r.p),num(r.i),num(r.p)*num(r.i),r.mit,r.owner,r.status]))});
  s.push({name:'Баги',aoa:[['ID','Описание','Задача','Спринт','Серьёзность','Статус','Причина']].concat((ST.bugs||[]).map(b=>[b.id,b.desc,b.task,num(b.sprint),b.sev,b.status,b.cause]))});
  s.push({name:'Кварталы',aoa:[['Квартал','Спринтов','Ёмкость','План','Velocity','Загрузка','% вып','Вехи/эпики']].concat((C.quarters||[]).map(q=>[q.q,q.n,q.cap,q.plan,q.hasVel?q.vel:'',q.load,q.pct==null?'':q.pct,q.epics]))});
- s.push({name:'Ретроспективы',aoa:[['Спринт','Что хорошо','Что улучшить','Action item','Ответственный','Срок','Статус']].concat((ST.retro||[]).map(r=>[num(r.sprint),r.well,r.improve,r.action,r.owner,r.due,r.status]))});
+ s.push({name:'Ретроспективы',aoa:[['Спринт','Формат','Что хорошо','Что улучшить','Action item','Голоса','Ответственный','Срок','Статус']].concat((ST.retro||[]).map(r=>[num(r.sprint),r.format,r.well,r.improve,r.action,num(r.votes),r.owner,r.due,r.status]))});
+ s.push({name:'Настроение',aoa:[['ID','Спринт','Настроение (1-5)','Комментарий']].concat((ST.mood||[]).map(m=>[m.id,num(m.sprint),num(m.mood),m.note]))});
+ s.push({name:'Kudos',aoa:[['ID','Спринт','От кого','Кому','За что']].concat((ST.kudos||[]).map(k=>[k.id,num(k.sprint),k.from,k.to,k.reason]))});
+ s.push({name:'Эксперименты',aoa:[['ID','Спринт','Гипотеза','Действие','Метрика','Результат','Статус']].concat((ST.experiments||[]).map(x=>[x.id,num(x.sprint),x.hypothesis,x.action,x.metric,x.result,x.status]))});
+ s.push({name:'Team Radar',aoa:[['ID','Ось','Сейчас (1-5)','Прошлый (1-5)']].concat((ST.radar||[]).map(x=>[x.id,x.axis,num(x.score),num(x.prev)]))});
  s.push({name:'Календарь',aoa:[['Дата','Праздник / выходной']].concat((ST.calendar||[]).map(h=>[typeof h==='string'?h:h.date,typeof h==='string'?'':h.name]))});
  {const im=(ST.rice||[]).map(r=>riceScore(r));const rmx=im.reduce((a,b)=>Math.max(a,b),0)||1;
   s.push({name:'RICE',aoa:[['ID','Фича','Reach','Impact','Confidence','Effort','RICE score','Приоритет']].concat((ST.rice||[]).map(r=>{const sc=riceScore(r);return [r.id,r.name,num(r.reach),num(r.impact),riceConf(r.conf),num(r.effort),Math.round(sc*10)/10,sc>=0.6*rmx?'Высокий':sc>=0.3*rmx?'Средний':'Низкий'];}))});}
@@ -2097,8 +2171,9 @@ const NAV=[
  {g:'Настройки',items:[['okr','OKR','🧭'],['budget','Бюджет','💰'],['calendar','Календарь','📅'],['params','Параметры','⚙️']]},
  {g:'Справка',items:[['faq','FAQ','❓'],['audit','Журнал событий','🧾']]},
 ];
-const APP_VERSION='1.13.0';const APP_DATE='2026-09-15';
+const APP_VERSION='1.14.0';const APP_DATE='2026-09-15';
 const CHANGELOG=[
+ {v:'1.14.0',date:'2026-09-15',items:['Ретроспективы прокачаны игровыми практиками Agile: форматы (Start/Stop/Continue, Sailboat и др.), dot-voting, стрик по action items.','Настроение команды по спринтам с трендом, Kudos (благодарности), эксперименты (проверяемые гипотезы) и Team Radar (радар-диаграмма самооценки).']},
  {v:'1.13.0',date:'2026-09-15',items:['Церемония «Дэйли» (Daily Standup) в группе «Церемонии».','Новая группа «Персонал»: «График отпусков» (отпуска, больничные, командировки) и «Дни рождения» (с ближайшими датами).']},
  {v:'1.12.0',date:'2026-09-15',items:['Группа «Церемонии»: разделы «Груминг» (Backlog Refinement) и «Демо спринта» (Sprint Review); ретроспективы объединены в эту группу.']},
  {v:'1.11.0',date:'2026-09-14',items:['Kanban-доска в разделе «Планирование»: перетаскивание задач между статусами (К выполнению / В работе / Готово).','Перемещение карточки синхронно меняет статус и даты в «Бэклоге», «Дорожной карте», Ганте и аналитике; фильтр по спринту.']},

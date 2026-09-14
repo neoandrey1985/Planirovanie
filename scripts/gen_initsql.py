@@ -42,7 +42,11 @@ CREATE TABLE IF NOT EXISTS tech_debt  (pk SERIAL PRIMARY KEY, td_id TEXT, descr 
 CREATE TABLE IF NOT EXISTS risks      (pk SERIAL PRIMARY KEY, name TEXT, p INT, i INT, mit TEXT, owner TEXT, status TEXT, ord INT);
 CREATE TABLE IF NOT EXISTS bugs       (pk SERIAL PRIMARY KEY, bug_id TEXT, descr TEXT, task TEXT, sprint INT, sev TEXT, status TEXT, time_h DOUBLE PRECISION, reopened BOOLEAN, cause TEXT, ord INT);
 CREATE TABLE IF NOT EXISTS calendar   (id SERIAL PRIMARY KEY, cdate TEXT, name TEXT, ord INT);
-CREATE TABLE IF NOT EXISTS retro      (id SERIAL PRIMARY KEY, sprint INT, well TEXT, improve TEXT, action TEXT, owner TEXT, due TEXT, status TEXT, ord INT);
+CREATE TABLE IF NOT EXISTS retro      (id SERIAL PRIMARY KEY, sprint INT, well TEXT, improve TEXT, action TEXT, owner TEXT, due TEXT, status TEXT, votes DOUBLE PRECISION, rformat TEXT, ord INT);
+CREATE TABLE IF NOT EXISTS mood       (pk SERIAL PRIMARY KEY, mood_id TEXT, sprint INT, mood DOUBLE PRECISION, note TEXT, ord INT);
+CREATE TABLE IF NOT EXISTS kudos      (pk SERIAL PRIMARY KEY, kudos_id TEXT, sprint INT, from_who TEXT, to_who TEXT, reason TEXT, ord INT);
+CREATE TABLE IF NOT EXISTS experiments(pk SERIAL PRIMARY KEY, exp_id TEXT, sprint INT, hypothesis TEXT, action TEXT, metric TEXT, result TEXT, status TEXT, ord INT);
+CREATE TABLE IF NOT EXISTS radar      (pk SERIAL PRIMARY KEY, radar_id TEXT, axis TEXT, score DOUBLE PRECISION, prev DOUBLE PRECISION, ord INT);
 CREATE TABLE IF NOT EXISTS rice       (pk SERIAL PRIMARY KEY, rice_id TEXT, name TEXT, reach DOUBLE PRECISION, impact DOUBLE PRECISION, conf TEXT, effort DOUBLE PRECISION, ord INT);
 CREATE TABLE IF NOT EXISTS moscow     (pk SERIAL PRIMARY KEY, ms_id TEXT, name TEXT, category TEXT, note TEXT, ord INT);
 CREATE TABLE IF NOT EXISTS faq        (pk SERIAL PRIMARY KEY, faq_id TEXT, category TEXT, question TEXT, answer TEXT, ord INT);
@@ -91,8 +95,16 @@ rows("bugs", ["bug_id", "descr", "task", "sprint", "sev", "status", "time_h", "r
      lambda d, i: [d.get("id"), d.get("desc"), d.get("task"), d.get("sprint"), d.get("sev"), d.get("status"), d.get("time"), d.get("reopened"), d.get("cause"), i])
 rows("calendar", ["cdate", "name", "ord"], SEED.get("calendar", []),
      lambda d, i: [(d.get("date") if isinstance(d, dict) else d), (d.get("name") if isinstance(d, dict) else ""), i])
-rows("retro", ["sprint", "well", "improve", "action", "owner", "due", "status", "ord"], SEED.get("retro", []),
-     lambda d, i: [d.get("sprint"), d.get("well"), d.get("improve"), d.get("action"), d.get("owner"), d.get("due"), d.get("status"), i])
+rows("mood", ["mood_id", "sprint", "mood", "note", "ord"], SEED.get("mood", []),
+     lambda d, i: [d.get("id"), d.get("sprint"), d.get("mood"), d.get("note"), i])
+rows("kudos", ["kudos_id", "sprint", "from_who", "to_who", "reason", "ord"], SEED.get("kudos", []),
+     lambda d, i: [d.get("id"), d.get("sprint"), d.get("from"), d.get("to"), d.get("reason"), i])
+rows("experiments", ["exp_id", "sprint", "hypothesis", "action", "metric", "result", "status", "ord"], SEED.get("experiments", []),
+     lambda d, i: [d.get("id"), d.get("sprint"), d.get("hypothesis"), d.get("action"), d.get("metric"), d.get("result"), d.get("status"), i])
+rows("radar", ["radar_id", "axis", "score", "prev", "ord"], SEED.get("radar", []),
+     lambda d, i: [d.get("id"), d.get("axis"), d.get("score"), d.get("prev"), i])
+rows("retro", ["sprint", "well", "improve", "action", "owner", "due", "status", "votes", "rformat", "ord"], SEED.get("retro", []),
+     lambda d, i: [d.get("sprint"), d.get("well"), d.get("improve"), d.get("action"), d.get("owner"), d.get("due"), d.get("status"), d.get("votes"), d.get("format"), i])
 rows("rice", ["rice_id", "name", "reach", "impact", "conf", "effort", "ord"], SEED.get("rice", []),
      lambda d, i: [d.get("id"), d.get("name"), d.get("reach"), d.get("impact"), d.get("conf"), d.get("effort"), i])
 rows("moscow", ["ms_id", "name", "category", "note", "ord"], SEED.get("moscow", []),

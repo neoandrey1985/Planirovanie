@@ -17,7 +17,11 @@ CREATE TABLE IF NOT EXISTS tech_debt  (pk SERIAL PRIMARY KEY, td_id TEXT, descr 
 CREATE TABLE IF NOT EXISTS risks      (pk SERIAL PRIMARY KEY, name TEXT, p INT, i INT, mit TEXT, owner TEXT, status TEXT, ord INT);
 CREATE TABLE IF NOT EXISTS bugs       (pk SERIAL PRIMARY KEY, bug_id TEXT, descr TEXT, task TEXT, sprint INT, sev TEXT, status TEXT, time_h DOUBLE PRECISION, reopened BOOLEAN, cause TEXT, ord INT);
 CREATE TABLE IF NOT EXISTS calendar   (id SERIAL PRIMARY KEY, cdate TEXT, name TEXT, ord INT);
-CREATE TABLE IF NOT EXISTS retro      (id SERIAL PRIMARY KEY, sprint INT, well TEXT, improve TEXT, action TEXT, owner TEXT, due TEXT, status TEXT, ord INT);
+CREATE TABLE IF NOT EXISTS retro      (id SERIAL PRIMARY KEY, sprint INT, well TEXT, improve TEXT, action TEXT, owner TEXT, due TEXT, status TEXT, votes DOUBLE PRECISION, rformat TEXT, ord INT);
+CREATE TABLE IF NOT EXISTS mood       (pk SERIAL PRIMARY KEY, mood_id TEXT, sprint INT, mood DOUBLE PRECISION, note TEXT, ord INT);
+CREATE TABLE IF NOT EXISTS kudos      (pk SERIAL PRIMARY KEY, kudos_id TEXT, sprint INT, from_who TEXT, to_who TEXT, reason TEXT, ord INT);
+CREATE TABLE IF NOT EXISTS experiments(pk SERIAL PRIMARY KEY, exp_id TEXT, sprint INT, hypothesis TEXT, action TEXT, metric TEXT, result TEXT, status TEXT, ord INT);
+CREATE TABLE IF NOT EXISTS radar      (pk SERIAL PRIMARY KEY, radar_id TEXT, axis TEXT, score DOUBLE PRECISION, prev DOUBLE PRECISION, ord INT);
 CREATE TABLE IF NOT EXISTS rice       (pk SERIAL PRIMARY KEY, rice_id TEXT, name TEXT, reach DOUBLE PRECISION, impact DOUBLE PRECISION, conf TEXT, effort DOUBLE PRECISION, ord INT);
 CREATE TABLE IF NOT EXISTS moscow     (pk SERIAL PRIMARY KEY, ms_id TEXT, name TEXT, category TEXT, note TEXT, ord INT);
 CREATE TABLE IF NOT EXISTS faq        (pk SERIAL PRIMARY KEY, faq_id TEXT, category TEXT, question TEXT, answer TEXT, ord INT);
@@ -127,11 +131,32 @@ INSERT INTO calendar (cdate, name, ord) VALUES ('2026-11-04', 'День наро
 INSERT INTO calendar (cdate, name, ord) VALUES ('2027-01-01', 'Новый год', 1);
 INSERT INTO calendar (cdate, name, ord) VALUES ('2027-01-02', 'Новогодние каникулы', 2);
 
+-- mood
+INSERT INTO mood (mood_id, sprint, mood, note, ord) VALUES ('MD-01', 1, 4, 'Хороший старт, понятные цели', 0);
+INSERT INTO mood (mood_id, sprint, mood, note, ord) VALUES ('MD-02', 2, 3, 'Много переключений между задачами', 1);
+INSERT INTO mood (mood_id, sprint, mood, note, ord) VALUES ('MD-03', 3, 4, 'Наладили процесс, меньше блокеров', 2);
+
+-- kudos
+INSERT INTO kudos (kudos_id, sprint, from_who, to_who, reason, ord) VALUES ('KD-01', 3, 'Команда', 'Кузнецов Д.', 'Быстро поднял платёжную интеграцию', 0);
+INSERT INTO kudos (kudos_id, sprint, from_who, to_who, reason, ord) VALUES ('KD-02', 3, 'Петрова М.', 'Соколов Р.', 'Помог с регрессом в выходной', 1);
+INSERT INTO kudos (kudos_id, sprint, from_who, to_who, reason, ord) VALUES ('KD-03', 2, 'PO', 'Команда', 'Отличное демо корзины', 2);
+
+-- experiments
+INSERT INTO experiments (exp_id, sprint, hypothesis, action, metric, result, status, ord) VALUES ('EX-01', 2, 'Парное ревью ускорит закрытие сложных задач', 'Ввести парное ревью для сложных PR', 'Cycle time сложных задач', 'Cycle time −15%', 'Успешно', 0);
+INSERT INTO experiments (exp_id, sprint, hypothesis, action, metric, result, status, ord) VALUES ('EX-02', 3, 'WIP-лимит снизит переключения и ускорит поток', 'Лимит 2 задачи «В работе» на человека', 'Число параллельных задач', 'В процессе замера', 'Идёт', 1);
+
+-- radar
+INSERT INTO radar (radar_id, axis, score, prev, ord) VALUES ('RD-01', 'Коммуникация', 4, 3, 0);
+INSERT INTO radar (radar_id, axis, score, prev, ord) VALUES ('RD-02', 'Качество', 3, 3, 1);
+INSERT INTO radar (radar_id, axis, score, prev, ord) VALUES ('RD-03', 'Процесс', 4, 2, 2);
+INSERT INTO radar (radar_id, axis, score, prev, ord) VALUES ('RD-04', 'Инструменты', 4, 4, 3);
+INSERT INTO radar (radar_id, axis, score, prev, ord) VALUES ('RD-05', 'Нагрузка', 3, 2, 4);
+
 -- retro
-INSERT INTO retro (sprint, well, improve, action, owner, due, status, ord) VALUES (1, 'Быстрый старт, реалистичная оценка', 'Мало тестовых данных', 'Подготовить набор тест-данных', 'Сидоров К.', 'Спринт 2', 'Сделано', 0);
-INSERT INTO retro (sprint, well, improve, action, owner, due, status, ord) VALUES (1, 'Хорошее демо', 'Долгий код-ревью', 'SLA на ревью — 1 день', 'Иванов А.', 'Спринт 2', 'Сделано', 1);
-INSERT INTO retro (sprint, well, improve, action, owner, due, status, ord) VALUES (2, 'Стабильные демо', 'Скоуп рос по ходу', 'Фиксировать скоуп на планировании', 'Кузнецов Д.', 'Спринт 3', 'В работе', 2);
-INSERT INTO retro (sprint, well, improve, action, owner, due, status, ord) VALUES (2, 'Слаженная работа QA', 'Блокеры по внешнему API', 'Ранняя интеграция / моки', 'Иванов А.', 'Спринт 3', 'Открыт', 3);
+INSERT INTO retro (sprint, well, improve, action, owner, due, status, votes, rformat, ord) VALUES (1, 'Быстрый старт, реалистичная оценка', 'Мало тестовых данных', 'Подготовить набор тест-данных', 'Сидоров К.', 'Спринт 2', 'Сделано', 3, '', 0);
+INSERT INTO retro (sprint, well, improve, action, owner, due, status, votes, rformat, ord) VALUES (1, 'Хорошее демо', 'Долгий код-ревью', 'SLA на ревью — 1 день', 'Иванов А.', 'Спринт 2', 'Сделано', 2, '', 1);
+INSERT INTO retro (sprint, well, improve, action, owner, due, status, votes, rformat, ord) VALUES (2, 'Стабильные демо', 'Скоуп рос по ходу', 'Фиксировать скоуп на планировании', 'Кузнецов Д.', 'Спринт 3', 'В работе', 1, '', 2);
+INSERT INTO retro (sprint, well, improve, action, owner, due, status, votes, rformat, ord) VALUES (2, 'Слаженная работа QA', 'Блокеры по внешнему API', 'Ранняя интеграция / моки', 'Иванов А.', 'Спринт 3', 'Открыт', 2, '', 3);
 
 -- rice
 INSERT INTO rice (rice_id, name, reach, impact, conf, effort, ord) VALUES ('F-01', 'MVP оформления заказа', 5000, 3, '100%', 40, 0);
