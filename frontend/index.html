@@ -233,6 +233,22 @@ body.noadmin .nav-item[data-v="audit"]{display:none}
 .chat-input input{flex:1;border:1px solid var(--line);background:var(--panel2);color:var(--ink);border-radius:9px;padding:9px 11px;font-family:inherit;font-size:13px}
 .chat-input .btn{padding:8px 13px}
 @media(max-width:560px){.chat-panel{right:8px;left:8px;width:auto;bottom:78px}.chat-fab{right:14px;bottom:14px}}
+/* ---------- change history (all pages) ---------- */
+.changelog{margin-top:24px}
+.changelog details{background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);overflow:hidden}
+.changelog summary{cursor:pointer;list-style:none;padding:13px 16px;font-weight:700;font-size:14px;display:flex;align-items:center;gap:8px}
+.changelog summary::-webkit-details-marker{display:none}
+.changelog summary .cl-caret{margin-left:auto;color:var(--muted);transition:transform .15s;font-size:12px}
+.changelog details[open] summary .cl-caret{transform:rotate(180deg)}
+.changelog .cl-body{padding:2px 16px 12px;border-top:1px solid var(--line);max-height:340px;overflow:auto}
+.cl-item{padding:11px 0;border-bottom:1px solid var(--line)}
+.cl-item:last-child{border-bottom:none}
+.cl-head{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.cl-ver{font-weight:700;font-size:13px;color:var(--accent);font-variant-numeric:tabular-nums}
+.cl-cur{font-size:10px;font-weight:700;color:var(--good);border:1px solid var(--good);border-radius:10px;padding:1px 7px}
+.cl-date{font-size:11.5px;color:var(--muted)}
+.cl-list{margin:6px 0 0;padding-left:18px}
+.cl-list li{font-size:12.5px;color:var(--muted);line-height:1.55;margin:2px 0}
 </style>
 <header class="top"><div class="inner">
  <button class="btn iconbtn" id="menubtn" aria-label="Меню" title="Свернуть / развернуть меню">☰</button>
@@ -251,7 +267,7 @@ body.noadmin .nav-item[data-v="audit"]{display:none}
  </div>
 </div></header>
 <div class="shell"><aside class="side" id="side"><nav id="nav"></nav><div class="side-foot" id="sidefoot"></div></aside><div class="scrim" id="scrim"></div>
-<main id="main"><section class="view" id="v_dash"></section><section class="view" id="v_backlog"></section><section class="view" id="v_team"></section><section class="view" id="v_roadmap"></section><section class="view" id="v_quarters"></section><section class="view" id="v_rice"></section><section class="view" id="v_moscow"></section><section class="view" id="v_gantt"></section><section class="view" id="v_deps"></section><section class="view" id="v_releases"></section><section class="view" id="v_milestones"></section><section class="view" id="v_debt"></section><section class="view" id="v_okr"></section><section class="view" id="v_budget"></section><section class="view" id="v_analytics"></section><section class="view" id="v_risks"></section><section class="view" id="v_bugs"></section><section class="view" id="v_retro"></section><section class="view" id="v_calendar"></section><section class="view" id="v_params"></section><section class="view" id="v_faq"></section><section class="view" id="v_audit"></section></main></div>
+<main id="main"><section class="view" id="v_dash"></section><section class="view" id="v_backlog"></section><section class="view" id="v_team"></section><section class="view" id="v_roadmap"></section><section class="view" id="v_quarters"></section><section class="view" id="v_rice"></section><section class="view" id="v_moscow"></section><section class="view" id="v_gantt"></section><section class="view" id="v_deps"></section><section class="view" id="v_releases"></section><section class="view" id="v_milestones"></section><section class="view" id="v_debt"></section><section class="view" id="v_okr"></section><section class="view" id="v_budget"></section><section class="view" id="v_analytics"></section><section class="view" id="v_risks"></section><section class="view" id="v_bugs"></section><section class="view" id="v_retro"></section><section class="view" id="v_calendar"></section><section class="view" id="v_params"></section><section class="view" id="v_faq"></section><section class="view" id="v_audit"></section><section id="changelog" class="changelog"></section></main></div>
 <div class="palette" id="palette"><div class="pbox"><input class="pin" id="pin" placeholder="Поиск раздела или действия…" autocomplete="off"><div class="plist" id="plist"></div></div></div>
 <div class="role-pop" id="rolepop"></div>
 <div class="modal" id="accmodal"><div class="mbox">
@@ -1875,7 +1891,25 @@ const NAV=[
  {g:'Настройки',items:[['okr','OKR','🧭'],['budget','Бюджет','💰'],['calendar','Календарь','📅'],['params','Параметры','⚙️']]},
  {g:'Справка',items:[['faq','FAQ','❓'],['audit','Журнал событий','🧾']]},
 ];
-const APP_VERSION='1.8.0';const APP_DATE='2026-09-14';
+const APP_VERSION='1.9.0';const APP_DATE='2026-09-14';
+const CHANGELOG=[
+ {v:'1.9.0',date:'2026-09-14',items:['Раздел «История изменений» на всех страницах приложения.']},
+ {v:'1.8.0',date:'2026-09-14',items:['Логирование всех событий приложения в отдельную базу данных PostgreSQL.','Раздел «Журнал событий» для администратора.']},
+ {v:'1.7.0',date:'2026-09-14',items:['Чат-бот «Помощник»: ответы по данным проекта, навигация по разделам, поиск по FAQ.']},
+ {v:'1.6.0',date:'2026-09-14',items:['Серверная авторизация: вход по логину, роли в PostgreSQL, проверка прав в Java.','Управление пользователями и ролями для администратора.']},
+ {v:'1.5.0',date:'2026-09-14',items:['Подпись версии приложения в боковом меню.']},
+ {v:'1.4.0',date:'2026-09-11',items:['Раздел FAQ: частые вопросы со справкой и поиском.']},
+ {v:'1.3.0',date:'2026-09-11',items:['Метод приоритизации MoSCoW (Must / Should / Could / Won\'t).']},
+ {v:'1.2.0',date:'2026-09-11',items:['Режимы доступа: Просмотр, Редактор, Администратор (интерфейс).']},
+ {v:'1.1.0',date:'2026-09-11',items:['Скрывающееся боковое меню; убран устаревший верхний таб-бар.']},
+ {v:'1.0.0',date:'2026-08-03',items:['Базовое приложение: дашборд, дорожная карта, кварталы, RICE, бэклог, Гант, зависимости, команда, релизы, вехи, техдолг, аналитика, риски, баги, ретроспективы, OKR, бюджет, календарь, параметры.','Экспорт в Excel, синхронизация данных с сервером.']},
+];
+function renderChangelog(){const host=document.getElementById('changelog');if(!host)return;
+ let open=false;try{open=localStorage.getItem('changelog_open')==='1';}catch(e){}
+ let h='<details'+(open?' open':'')+'><summary>🕘 История изменений <span class="cl-date" style="font-weight:400">· текущая v'+esc(APP_VERSION)+'</span><span class="cl-caret">▾</span></summary><div class="cl-body">';
+ CHANGELOG.forEach((c,i)=>{h+='<div class="cl-item"><div class="cl-head"><span class="cl-ver">v'+esc(c.v)+'</span>'+(i===0?'<span class="cl-cur">текущая</span>':'')+'<span class="cl-date">'+esc(c.date)+'</span></div><ul class="cl-list">'+c.items.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul></div>';});
+ h+='</div></details>';host.innerHTML=h;
+ const d=host.querySelector('details');if(d)d.addEventListener('toggle',()=>{try{localStorage.setItem('changelog_open',d.open?'1':'0');}catch(e){}});}
 function buildNav(){let h='';NAV.forEach(g=>{h+=`<div class="nav-group"><div class="nav-h">${g.g}</div>`;
   g.items.forEach(it=>h+=`<button class="nav-item" data-v="${it[0]}"><span class="nav-ic">${it[2]}</span><span>${it[1]}</span></button>`);
   h+='</div>';});document.getElementById('nav').innerHTML=h;
@@ -1887,6 +1921,7 @@ function activate(id){CURV=id;
  document.querySelectorAll('.view').forEach(s=>s.classList.toggle('active',s.id==='v_'+id));
  closeDrawer();window.scrollTo(0,0);if(typeof applyPerms==='function')applyPerms();}
 buildNav();
+renderChangelog();
 document.getElementById('nav').addEventListener('click',e=>{const b=e.target.closest('.nav-item');if(b){activate(b.dataset.v);if(typeof auditClient==='function')auditClient('open_section',b.dataset.v);}});
 document.getElementById('menubtn').onclick=()=>{const shell=document.querySelector('.shell'),side=document.getElementById('side');
  if(window.matchMedia('(max-width:900px)').matches){side.classList.toggle('open');document.getElementById('scrim').classList.toggle('show',side.classList.contains('open'));}
