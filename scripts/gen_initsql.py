@@ -46,6 +46,8 @@ CREATE TABLE IF NOT EXISTS retro      (id SERIAL PRIMARY KEY, sprint INT, well T
 CREATE TABLE IF NOT EXISTS rice       (pk SERIAL PRIMARY KEY, rice_id TEXT, name TEXT, reach DOUBLE PRECISION, impact DOUBLE PRECISION, conf TEXT, effort DOUBLE PRECISION, ord INT);
 CREATE TABLE IF NOT EXISTS moscow     (pk SERIAL PRIMARY KEY, ms_id TEXT, name TEXT, category TEXT, note TEXT, ord INT);
 CREATE TABLE IF NOT EXISTS faq        (pk SERIAL PRIMARY KEY, faq_id TEXT, category TEXT, question TEXT, answer TEXT, ord INT);
+CREATE TABLE IF NOT EXISTS grooming   (pk SERIAL PRIMARY KEY, grm_id TEXT, gdate TEXT, item TEXT, action TEXT, est DOUBLE PRECISION, ready TEXT, owner TEXT, notes TEXT, ord INT);
+CREATE TABLE IF NOT EXISTS demo       (pk SERIAL PRIMARY KEY, demo_id TEXT, sprint INT, ddate TEXT, item TEXT, presenter TEXT, stakeholders TEXT, feedback TEXT, status TEXT, ord INT);
 CREATE TABLE IF NOT EXISTS deps       (pk SERIAL PRIMARY KEY, dep_id TEXT, item TEXT, type TEXT, task TEXT, stream TEXT, dir TEXT, descr TEXT, sprint INT, status TEXT, owner TEXT, risk TEXT, ord INT);
 CREATE TABLE IF NOT EXISTS okr        (id SERIAL PRIMARY KEY, q TEXT, obj TEXT, kr TEXT, target DOUBLE PRECISION, cur DOUBLE PRECISION, ord INT);
 CREATE TABLE IF NOT EXISTS app_meta   (id INT PRIMARY KEY DEFAULT 1, version BIGINT DEFAULT 1);
@@ -94,6 +96,10 @@ rows("moscow", ["ms_id", "name", "category", "note", "ord"], SEED.get("moscow", 
      lambda d, i: [d.get("id"), d.get("name"), d.get("category"), d.get("note"), i])
 rows("faq", ["faq_id", "category", "question", "answer", "ord"], SEED.get("faq", []),
      lambda d, i: [d.get("id"), d.get("category"), d.get("q"), d.get("a"), i])
+rows("grooming", ["grm_id", "gdate", "item", "action", "est", "ready", "owner", "notes", "ord"], SEED.get("grooming", []),
+     lambda d, i: [d.get("id"), d.get("date"), d.get("item"), d.get("action"), d.get("est"), d.get("ready"), d.get("owner"), d.get("notes"), i])
+rows("demo", ["demo_id", "sprint", "ddate", "item", "presenter", "stakeholders", "feedback", "status", "ord"], SEED.get("demo", []),
+     lambda d, i: [d.get("id"), d.get("sprint"), d.get("date"), d.get("item"), d.get("presenter"), d.get("stakeholders"), d.get("feedback"), d.get("status"), i])
 rows("deps", ["dep_id", "item", "type", "task", "stream", "dir", "descr", "sprint", "status", "owner", "risk", "ord"], SEED.get("deps", []),
      lambda d, i: [d.get("id"), d.get("item"), d.get("type"), d.get("task"), d.get("stream"), d.get("dir"), d.get("desc"), d.get("sprint"), d.get("status"), d.get("owner"), d.get("risk"), i])
 

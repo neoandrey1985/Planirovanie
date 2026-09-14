@@ -27,17 +27,19 @@ public class StateService {
     private final RiceRepo rice;
     private final MoscowRepo moscow;
     private final FaqRepo faq;
+    private final GroomingRepo grooming;
+    private final DemoRepo demo;
     private final DependencyRepo deps;
     private final OkrRepo okr;
 
     public StateService(ParamRepo params, AppMetaRepo meta, DodRepo dod, TeamRepo team, TaskRepo tasks,
                         ReleaseRepo releases, MilestoneRepo milestones, TechDebtRepo techDebt, RiskRepo risks,
                         BugRepo bugs, HolidayRepo calendar, RetroRepo retro, RiceRepo rice, MoscowRepo moscow,
-                        FaqRepo faq, DependencyRepo deps, OkrRepo okr) {
+                        FaqRepo faq, GroomingRepo grooming, DemoRepo demo, DependencyRepo deps, OkrRepo okr) {
         this.params = params; this.meta = meta; this.dod = dod; this.team = team; this.tasks = tasks;
         this.releases = releases; this.milestones = milestones; this.techDebt = techDebt; this.risks = risks;
         this.bugs = bugs; this.calendar = calendar; this.retro = retro; this.rice = rice; this.moscow = moscow;
-        this.faq = faq; this.deps = deps;
+        this.faq = faq; this.grooming = grooming; this.demo = demo; this.deps = deps;
         this.okr = okr;
     }
 
@@ -66,6 +68,8 @@ public class StateService {
         s.rice = rice.findAllByOrderByOrdAsc();
         s.moscow = moscow.findAllByOrderByOrdAsc();
         s.faq = faq.findAllByOrderByOrdAsc();
+        s.grooming = grooming.findAllByOrderByOrdAsc();
+        s.demo = demo.findAllByOrderByOrdAsc();
         s.deps = deps.findAllByOrderByOrdAsc();
         s.okr = okr.findAllByOrderByOrdAsc();
         return s;
@@ -115,6 +119,8 @@ public class StateService {
         order(s.rice, (e, i) -> { e.pk = null; e.ord = i; });
         order(s.moscow, (e, i) -> { e.pk = null; e.ord = i; });
         order(s.faq, (e, i) -> { e.pk = null; e.ord = i; });
+        order(s.grooming, (e, i) -> { e.pk = null; e.ord = i; });
+        order(s.demo, (e, i) -> { e.pk = null; e.ord = i; });
         order(s.deps, (e, i) -> { e.pk = null; e.ord = i; });
         order(s.okr, (e, i) -> { e.id = null; e.ord = i; });
 
@@ -131,6 +137,8 @@ public class StateService {
         rice.deleteAllInBatch();       if (s.rice != null)       rice.saveAll(s.rice);
         moscow.deleteAllInBatch();     if (s.moscow != null)     moscow.saveAll(s.moscow);
         faq.deleteAllInBatch();        if (s.faq != null)        faq.saveAll(s.faq);
+        grooming.deleteAllInBatch();   if (s.grooming != null)   grooming.saveAll(s.grooming);
+        demo.deleteAllInBatch();       if (s.demo != null)       demo.saveAll(s.demo);
         deps.deleteAllInBatch();       if (s.deps != null)       deps.saveAll(s.deps);
         okr.deleteAllInBatch();        if (s.okr != null)        okr.saveAll(s.okr);
 

@@ -21,6 +21,8 @@ CREATE TABLE IF NOT EXISTS retro      (id SERIAL PRIMARY KEY, sprint INT, well T
 CREATE TABLE IF NOT EXISTS rice       (pk SERIAL PRIMARY KEY, rice_id TEXT, name TEXT, reach DOUBLE PRECISION, impact DOUBLE PRECISION, conf TEXT, effort DOUBLE PRECISION, ord INT);
 CREATE TABLE IF NOT EXISTS moscow     (pk SERIAL PRIMARY KEY, ms_id TEXT, name TEXT, category TEXT, note TEXT, ord INT);
 CREATE TABLE IF NOT EXISTS faq        (pk SERIAL PRIMARY KEY, faq_id TEXT, category TEXT, question TEXT, answer TEXT, ord INT);
+CREATE TABLE IF NOT EXISTS grooming   (pk SERIAL PRIMARY KEY, grm_id TEXT, gdate TEXT, item TEXT, action TEXT, est DOUBLE PRECISION, ready TEXT, owner TEXT, notes TEXT, ord INT);
+CREATE TABLE IF NOT EXISTS demo       (pk SERIAL PRIMARY KEY, demo_id TEXT, sprint INT, ddate TEXT, item TEXT, presenter TEXT, stakeholders TEXT, feedback TEXT, status TEXT, ord INT);
 CREATE TABLE IF NOT EXISTS deps       (pk SERIAL PRIMARY KEY, dep_id TEXT, item TEXT, type TEXT, task TEXT, stream TEXT, dir TEXT, descr TEXT, sprint INT, status TEXT, owner TEXT, risk TEXT, ord INT);
 CREATE TABLE IF NOT EXISTS okr        (id SERIAL PRIMARY KEY, q TEXT, obj TEXT, kr TEXT, target DOUBLE PRECISION, cur DOUBLE PRECISION, ord INT);
 CREATE TABLE IF NOT EXISTS app_meta   (id INT PRIMARY KEY DEFAULT 1, version BIGINT DEFAULT 1);
@@ -169,6 +171,18 @@ INSERT INTO faq (faq_id, category, question, answer, ord) VALUES ('Q-11', 'Да�
 INSERT INTO faq (faq_id, category, question, answer, ord) VALUES ('Q-12', 'Экспорт и интерфейс', 'Как выгрузить план в Excel?', 'Кнопка «Excel» в шапке или Ctrl/⌘+K → «Экспорт в Excel». Файл включает все разделы, в том числе RICE, MoSCoW и FAQ, с формулами и форматированием.', 11);
 INSERT INTO faq (faq_id, category, question, answer, ord) VALUES ('Q-13', 'Экспорт и интерфейс', 'Есть ли описание и презентация приложения?', 'Да. К приложению прилагаются документы: «Описание…», «Иллюстрированное описание…» (docx) и презентация (pptx). В них разделы приложения описаны с иллюстрациями.', 12);
 INSERT INTO faq (faq_id, category, question, answer, ord) VALUES ('Q-14', 'Экспорт и интерфейс', 'Как свернуть боковое меню?', 'Кнопка-гамбургер (☰) в шапке сворачивает и разворачивает список разделов на десктопе; на мобильном она открывает выдвижное меню. Состояние запоминается.', 13);
+
+-- grooming
+INSERT INTO grooming (grm_id, gdate, item, action, est, ready, owner, notes, ord) VALUES ('GR-01', '2026-08-28', 'История: оформление заказа', 'Декомпозиция', 8, 'Готово к спринту', 'Иванов А.', 'Разбита на 3 подзадачи; критерии приёмки уточнены', 0);
+INSERT INTO grooming (grm_id, gdate, item, action, est, ready, owner, notes, ord) VALUES ('GR-02', '2026-08-28', 'История: оплата картой', 'Оценка', 5, 'Готово к спринту', 'Кузнецов Д.', 'Оценка по покеру, риск интеграции учтён', 1);
+INSERT INTO grooming (grm_id, gdate, item, action, est, ready, owner, notes, ord) VALUES ('GR-03', '2026-08-28', 'История: промокоды', 'Уточнение', 3, 'Требует доработки', 'Петрова М.', 'Нужны правила комбинирования скидок от заказчика', 2);
+INSERT INTO grooming (grm_id, gdate, item, action, est, ready, owner, notes, ord) VALUES ('GR-04', '2026-09-04', 'Фича: рекомендации товаров', 'Приоритизация', 13, 'Требует доработки', 'Орлова Е.', 'Отложено: зависит от аналитики поведения', 3);
+INSERT INTO grooming (grm_id, gdate, item, action, est, ready, owner, notes, ord) VALUES ('GR-05', '2026-09-04', 'История: история заказов', 'Оценка', 5, 'Готово к спринту', 'Соколов Р.', 'Готова к взятию в спринт 4', 4);
+
+-- demo
+INSERT INTO demo (demo_id, sprint, ddate, item, presenter, stakeholders, feedback, status, ord) VALUES ('DM-01', 1, '2026-08-14', 'Каркас каталога и карточка товара', 'Иванов А.', 'PO, маркетинг', 'Одобрено; просят добавить бейджи скидок', 'Принято', 0);
+INSERT INTO demo (demo_id, sprint, ddate, item, presenter, stakeholders, feedback, status, ord) VALUES ('DM-02', 2, '2026-08-28', 'Корзина и черновик оформления заказа', 'Петрова М.', 'PO, поддержка', 'В целом ок; доработать валидацию адреса', 'На доработку', 1);
+INSERT INTO demo (demo_id, sprint, ddate, item, presenter, stakeholders, feedback, status, ord) VALUES ('DM-03', 3, '2026-09-11', 'Оплата картой (MVP)', 'Кузнецов Д.', 'PO, финансы, безопасность', 'Принято для пилота; нужен лог транзакций', 'Принято', 2);
 
 -- deps
 INSERT INTO deps (dep_id, item, type, task, stream, dir, descr, sprint, status, owner, risk, ord) VALUES ('D-01', 'Интеграция платежей', 'Задача', 'T-03', 'Платёжный шлюз', 'Мы зависим', 'API оплаты v2 (токенизация карт)', 3, 'Заблокировано', 'Команда Payments', 'High', 0);

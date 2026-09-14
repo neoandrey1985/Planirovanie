@@ -290,7 +290,7 @@ body.noadmin #rst,body.noadmin #imp{display:none}
  </div>
 </div></header>
 <div class="shell"><aside class="side" id="side"><nav id="nav"></nav><div class="side-foot" id="sidefoot"></div></aside><div class="scrim" id="scrim"></div>
-<main id="main"><section class="view" id="v_dash"></section><section class="view" id="v_kanban"></section><section class="view" id="v_backlog"></section><section class="view" id="v_team"></section><section class="view" id="v_roadmap"></section><section class="view" id="v_quarters"></section><section class="view" id="v_rice"></section><section class="view" id="v_moscow"></section><section class="view" id="v_gantt"></section><section class="view" id="v_deps"></section><section class="view" id="v_releases"></section><section class="view" id="v_milestones"></section><section class="view" id="v_debt"></section><section class="view" id="v_okr"></section><section class="view" id="v_budget"></section><section class="view" id="v_analytics"></section><section class="view" id="v_risks"></section><section class="view" id="v_bugs"></section><section class="view" id="v_retro"></section><section class="view" id="v_calendar"></section><section class="view" id="v_params"></section><section class="view" id="v_faq"></section><section class="view" id="v_audit"></section></main></div>
+<main id="main"><section class="view" id="v_dash"></section><section class="view" id="v_kanban"></section><section class="view" id="v_backlog"></section><section class="view" id="v_team"></section><section class="view" id="v_roadmap"></section><section class="view" id="v_quarters"></section><section class="view" id="v_rice"></section><section class="view" id="v_moscow"></section><section class="view" id="v_gantt"></section><section class="view" id="v_deps"></section><section class="view" id="v_releases"></section><section class="view" id="v_milestones"></section><section class="view" id="v_debt"></section><section class="view" id="v_okr"></section><section class="view" id="v_budget"></section><section class="view" id="v_analytics"></section><section class="view" id="v_risks"></section><section class="view" id="v_bugs"></section><section class="view" id="v_grooming"></section><section class="view" id="v_demo"></section><section class="view" id="v_retro"></section><section class="view" id="v_calendar"></section><section class="view" id="v_params"></section><section class="view" id="v_faq"></section><section class="view" id="v_audit"></section></main></div>
 <div class="palette" id="palette"><div class="pbox"><input class="pin" id="pin" placeholder="Поиск раздела или действия…" autocomplete="off"><div class="plist" id="plist"></div></div></div>
 <div class="role-pop" id="rolepop"></div>
 <div class="modal" id="accmodal"><div class="mbox">
@@ -1190,6 +1190,16 @@ function migrate(d){
   {id:'Q-12',category:'Экспорт и интерфейс',q:'Как выгрузить план в Excel?',a:'Кнопка «Excel» в шапке или Ctrl/⌘+K → «Экспорт в Excel». Файл включает все разделы, в том числе RICE, MoSCoW и FAQ, с формулами и форматированием.'},
   {id:'Q-13',category:'Экспорт и интерфейс',q:'Есть ли описание и презентация приложения?',a:'Да. К приложению прилагаются документы: «Описание…», «Иллюстрированное описание…» (docx) и презентация (pptx). В них разделы приложения описаны с иллюстрациями.'},
   {id:'Q-14',category:'Экспорт и интерфейс',q:'Как свернуть боковое меню?',a:'Кнопка-гамбургер (☰) в шапке сворачивает и разворачивает список разделов на десктопе; на мобильном она открывает выдвижное меню. Состояние запоминается.'}];
+ if(!Array.isArray(d.grooming))d.grooming=[
+  {id:'GR-01',date:'2026-08-28',item:'История: оформление заказа',action:'Декомпозиция',est:8,ready:'Готово к спринту',owner:'Иванов А.',notes:'Разбита на 3 подзадачи; критерии приёмки уточнены'},
+  {id:'GR-02',date:'2026-08-28',item:'История: оплата картой',action:'Оценка',est:5,ready:'Готово к спринту',owner:'Кузнецов Д.',notes:'Оценка по покеру, риск интеграции учтён'},
+  {id:'GR-03',date:'2026-08-28',item:'История: промокоды',action:'Уточнение',est:3,ready:'Требует доработки',owner:'Петрова М.',notes:'Нужны правила комбинирования скидок от заказчика'},
+  {id:'GR-04',date:'2026-09-04',item:'Фича: рекомендации товаров',action:'Приоритизация',est:13,ready:'Требует доработки',owner:'Орлова Е.',notes:'Отложено: зависит от аналитики поведения'},
+  {id:'GR-05',date:'2026-09-04',item:'История: история заказов',action:'Оценка',est:5,ready:'Готово к спринту',owner:'Соколов Р.',notes:'Готова к взятию в спринт 4'}];
+ if(!Array.isArray(d.demo))d.demo=[
+  {id:'DM-01',sprint:1,date:'2026-08-14',item:'Каркас каталога и карточка товара',presenter:'Иванов А.',stakeholders:'PO, маркетинг',feedback:'Одобрено; просят добавить бейджи скидок',status:'Принято'},
+  {id:'DM-02',sprint:2,date:'2026-08-28',item:'Корзина и черновик оформления заказа',presenter:'Петрова М.',stakeholders:'PO, поддержка',feedback:'В целом ок; доработать валидацию адреса',status:'На доработку'},
+  {id:'DM-03',sprint:3,date:'2026-09-11',item:'Оплата картой (MVP)',presenter:'Кузнецов Д.',stakeholders:'PO, финансы, безопасность',feedback:'Принято для пилота; нужен лог транзакций',status:'Принято'}];
  // calendar: migrate array of date-strings -> [{date,name}]
  if(Array.isArray(d.calendar))d.calendar=d.calendar.map(h=>typeof h==='string'?{date:h,name:''}:h);
  else d.calendar=[];
@@ -1406,6 +1416,8 @@ function views(){
     {k:'sprint',label:'Спринт',type:'num'},{k:'sev',label:'Серьёзность',type:'select',opts:['Critical','Major','Minor']},
     {k:'status',label:'Статус',type:'select',opts:['Открыт','Закрыт']},{k:'cause',label:'Причина',type:'select',opts:['Требования','Код','Тестирование','Интеграция','Данные','Инфраструктура']}],{newId:'id',prefix:'B-'}));
  // Retrospectives (Ретроспективы)
+ setView('grooming','Груминг бэклога','Backlog Refinement: подготовка элементов бэклога к спринту — оценка, декомпозиция, уточнение и приоритизация (Definition of Ready).',groomingView());
+ setView('demo','Демо спринта','Sprint Review: демонстрация инкремента заказчикам, сбор обратной связи и решение о приёмке.',demoView());
  setView('retro','Ретроспективы','Итоги спринтов и action items. Ниже — доля закрытых action items.',retroView());
  // Calendar (Календарь) — праздники/выходные, влияют на рабочие дни спринтов
  setView('calendar','Календарь','Праздники и нерабочие дни. Учитываются при расчёте рабочих дней и ёмкости спринтов.',
@@ -1716,6 +1728,35 @@ function riceView(){const w=document.createElement('div');
   +'<b>Effort</b> — трудозатраты команды, человеко-дни.<br>'
   +'Приоритет: <b>Высокий</b> ≥ 60% макс. балла · <b>Средний</b> ≥ 30% · иначе <b>Низкий</b>.</p>';
  w.appendChild(lg);return w;}
+function groomingView(){const w=document.createElement('div');
+ w.appendChild(editable('grooming',[{k:'id',label:'ID'},{k:'date',label:'Дата',type:'date'},
+   {k:'item',label:'Элемент бэклога / история',wide:true},
+   {k:'action',label:'Действие',type:'select',opts:['Оценка','Декомпозиция','Уточнение','Приоритизация','Отклонено']},
+   {k:'est',label:'Оценка (SP)',type:'num'},
+   {k:'ready',label:'Готовность',type:'select',opts:['Готово к спринту','Требует доработки']},
+   {k:'owner',label:'Ответственный'},{k:'notes',label:'Комментарий / критерии',wide:true}],{newId:'id',prefix:'GR-'}));
+ const g=ST.grooming||[],ready=g.filter(x=>x.ready==='Готово к спринту').length,pct=g.length?ready/g.length:0;
+ const sum=g.reduce((a,x)=>a+num(x.est),0);
+ const card=document.createElement('div');card.className='grid kpis';card.style.marginTop='14px';
+ card.innerHTML=kpiCard('Разобрано',g.length,'элементов','neut')+kpiCard('Готово к спринту',ready,'Definition of Ready',pct>=.6?'good':pct>=.3?'warn':'crit')+kpiCard('Оценено',fmt(sum,0)+' <small>SP</small>','суммарно','neut')+kpiCard('% готовности',pctf(pct),'к взятию в спринт',pct>=.6?'good':pct>=.3?'warn':'crit');
+ w.appendChild(card);
+ const lg=document.createElement('div');lg.className='card';lg.style.marginTop='14px';
+ lg.innerHTML='<p class="ctitle">Груминг (Backlog Refinement)</p><p style="font-size:13px;color:var(--muted);line-height:1.7;margin:0">'
+  +'Регулярная встреча команды для подготовки бэклога: элементы <b>уточняются</b>, <b>декомпозируются</b>, <b>оцениваются</b> и <b>приоритизируются</b>, чтобы к планированию спринта они соответствовали Definition of Ready. Здесь фиксируются результаты груминга; оценки и готовность используются при наборе спринта.</p>';
+ w.appendChild(lg);return w;}
+function demoView(){const w=document.createElement('div');
+ w.appendChild(editable('demo',[{k:'id',label:'ID'},{k:'sprint',label:'Спринт',type:'num'},{k:'date',label:'Дата',type:'date'},
+   {k:'item',label:'Что демонстрировали',wide:true},{k:'presenter',label:'Докладчик'},
+   {k:'stakeholders',label:'Участники / заказчики'},{k:'feedback',label:'Обратная связь',wide:true},
+   {k:'status',label:'Итог',type:'select',opts:['Принято','На доработку','Отклонено']}],{newId:'id',prefix:'DM-'}));
+ const d=ST.demo||[],acc=d.filter(x=>x.status==='Принято').length,rework=d.filter(x=>x.status==='На доработку').length,pct=d.length?acc/d.length:0;
+ const card=document.createElement('div');card.className='grid kpis';card.style.marginTop='14px';
+ card.innerHTML=kpiCard('Демо проведено',d.length,'обзоров спринта','neut')+kpiCard('Принято',acc,'результатов','good')+kpiCard('На доработку',rework,'по фидбеку',rework?'warn':'neut')+kpiCard('% приёмки',pctf(pct),'принято заказчиком',pct>=.7?'good':pct>=.4?'warn':'crit');
+ w.appendChild(card);
+ const lg=document.createElement('div');lg.className='card';lg.style.marginTop='14px';
+ lg.innerHTML='<p class="ctitle">Демо спринта (Sprint Review)</p><p style="font-size:13px;color:var(--muted);line-height:1.7;margin:0">'
+  +'Обзор итогов спринта: команда демонстрирует готовый инкремент заказчикам и стейкхолдерам, собирает обратную связь и решает, что <b>принято</b>, что уходит <b>на доработку</b>. Результаты и фидбек влияют на приоритеты бэклога и планирование следующего спринта.</p>';
+ w.appendChild(lg);return w;}
 function retroView(){const w=document.createElement('div');
  w.appendChild(editable('retro',[{k:'sprint',label:'Спринт',type:'num'},{k:'well',label:'Что прошло хорошо',wide:true},
   {k:'improve',label:'Что улучшить',wide:true},{k:'action',label:'Action item',wide:true},
@@ -1966,6 +2007,8 @@ function exportXlsx(){const C=compute();const s=[];
  s.push({name:'MoSCoW',aoa:[['ID','Фича / требование','Категория','Приоритет','Обоснование']].concat((ST.moscow||[]).map(m=>[m.id,m.name,m.category,(MOSCOW_META[m.category]||{}).ru||'',m.note]))});
  s.push({name:'Зависимости',aoa:[['ID','Элемент','Тип','Задача','Внешний стрим','Направление','Что именно','Спринт','Статус','Владелец','Риск']].concat((ST.deps||[]).map(d=>[d.id,d.item,d.type,d.task,d.stream,d.dir,d.desc,num(d.sprint),d.status,d.owner,d.risk]))});
  s.push({name:'FAQ',aoa:[['ID','Категория','Вопрос','Ответ']].concat((ST.faq||[]).map(f=>[f.id,f.category,f.q,f.a]))});
+ s.push({name:'Груминг',aoa:[['ID','Дата','Элемент бэклога','Действие','Оценка (SP)','Готовность','Ответственный','Комментарий']].concat((ST.grooming||[]).map(g=>[g.id,g.date,g.item,g.action,num(g.est),g.ready,g.owner,g.notes]))});
+ s.push({name:'Демо спринта',aoa:[['ID','Спринт','Дата','Что демонстрировали','Докладчик','Участники','Обратная связь','Итог']].concat((ST.demo||[]).map(d=>[d.id,num(d.sprint),d.date,d.item,d.presenter,d.stakeholders,d.feedback,d.status]))});
  const bin=buildXlsx(s);const blob=new Blob([bin],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='Планирование_спринта.xlsx';document.body.appendChild(a);a.click();a.remove();toast('Excel экспортирован');}
 
@@ -1978,12 +2021,14 @@ const NAV=[
  {g:'Планирование',items:[['dash','Дашборд','📋'],['roadmap','Дорожная карта','🗺️'],['kanban','Kanban-доска','🗃️'],['quarters','Кварталы','🗓️'],['rice','RICE','🎯'],['moscow','MoSCoW','📌']]},
  {g:'Работа',items:[['backlog','Бэклог','🗂️'],['gantt','Гант','📊'],['deps','Зависимости','🔗'],['team','Команда','👥']]},
  {g:'Выпуск',items:[['releases','Релизы','🚀'],['milestones','Вехи','🏁'],['debt','Техдолг','🧱']]},
- {g:'Аналитика',items:[['analytics','Аналитика','📈'],['risks','Риски','⚠️'],['bugs','Баги','🐞'],['retro','Ретроспективы','🔄']]},
+ {g:'Аналитика',items:[['analytics','Аналитика','📈'],['risks','Риски','⚠️'],['bugs','Баги','🐞']]},
+ {g:'Церемонии',items:[['grooming','Груминг','🧹'],['demo','Демо спринта','🎬'],['retro','Ретроспективы','🔄']]},
  {g:'Настройки',items:[['okr','OKR','🧭'],['budget','Бюджет','💰'],['calendar','Календарь','📅'],['params','Параметры','⚙️']]},
  {g:'Справка',items:[['faq','FAQ','❓'],['audit','Журнал событий','🧾']]},
 ];
-const APP_VERSION='1.11.0';const APP_DATE='2026-09-14';
+const APP_VERSION='1.12.0';const APP_DATE='2026-09-15';
 const CHANGELOG=[
+ {v:'1.12.0',date:'2026-09-15',items:['Группа «Церемонии»: разделы «Груминг» (Backlog Refinement) и «Демо спринта» (Sprint Review); ретроспективы объединены в эту группу.']},
  {v:'1.11.0',date:'2026-09-14',items:['Kanban-доска в разделе «Планирование»: перетаскивание задач между статусами (К выполнению / В работе / Готово).','Перемещение карточки синхронно меняет статус и даты в «Бэклоге», «Дорожной карте», Ганте и аналитике; фильтр по спринту.']},
  {v:'1.10.0',date:'2026-09-14',items:['«История изменений» размещена в разделе «Журнал событий»; раздел виден всем пользователям (полный журнал событий — только администратору).']},
  {v:'1.9.0',date:'2026-09-14',items:['Добавлен раздел «История изменений».']},
