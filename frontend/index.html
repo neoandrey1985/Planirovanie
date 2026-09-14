@@ -111,7 +111,11 @@ tr.rel-row{cursor:pointer}tr.rel-row:hover td{background:var(--panel2)}
 button:focus-visible,input:focus-visible,select:focus-visible,.nav-item:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
 /* layout: sidebar + main */
 .shell{display:flex;align-items:flex-start}
-.side{width:224px;flex:none;position:sticky;top:56px;height:calc(100vh - 56px);overflow:auto;padding:12px 10px;border-right:1px solid var(--line);background:var(--panel)}
+.side{width:224px;flex:none;position:sticky;top:56px;height:calc(100vh - 56px);overflow:auto;padding:12px 10px;border-right:1px solid var(--line);background:var(--panel);display:flex;flex-direction:column}
+#nav{flex:1 1 auto}
+.side-foot{flex:none;margin-top:10px;padding:10px 10px 4px;border-top:1px solid var(--line);font-size:11px;line-height:1.5;color:var(--muted)}
+.side-foot .sf-name{font-weight:600;color:var(--ink)}
+.side-foot .sf-ver{font-variant-numeric:tabular-nums}
 main{flex:1;min-width:0;max-width:1240px;margin:0;padding:20px 22px 60px}
 .nav-group{margin-bottom:9px}
 .nav-h{font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700;padding:9px 10px 4px}
@@ -219,7 +223,7 @@ body.noadmin #rst,body.noadmin #imp{display:none}
   <button class="btn" id="themebtn" aria-label="Тема">◐</button>
  </div>
 </div></header>
-<div class="shell"><aside class="side" id="side"><nav id="nav"></nav></aside><div class="scrim" id="scrim"></div>
+<div class="shell"><aside class="side" id="side"><nav id="nav"></nav><div class="side-foot" id="sidefoot"></div></aside><div class="scrim" id="scrim"></div>
 <main id="main"><section class="view" id="v_dash"></section><section class="view" id="v_backlog"></section><section class="view" id="v_team"></section><section class="view" id="v_roadmap"></section><section class="view" id="v_quarters"></section><section class="view" id="v_rice"></section><section class="view" id="v_moscow"></section><section class="view" id="v_gantt"></section><section class="view" id="v_deps"></section><section class="view" id="v_releases"></section><section class="view" id="v_milestones"></section><section class="view" id="v_debt"></section><section class="view" id="v_okr"></section><section class="view" id="v_budget"></section><section class="view" id="v_analytics"></section><section class="view" id="v_risks"></section><section class="view" id="v_bugs"></section><section class="view" id="v_retro"></section><section class="view" id="v_calendar"></section><section class="view" id="v_params"></section><section class="view" id="v_faq"></section></main></div>
 <div class="palette" id="palette"><div class="pbox"><input class="pin" id="pin" placeholder="Поиск раздела или действия…" autocomplete="off"><div class="plist" id="plist"></div></div></div>
 <div class="role-pop" id="rolepop"></div>
@@ -1787,9 +1791,12 @@ const NAV=[
  {g:'Настройки',items:[['okr','OKR','🧭'],['budget','Бюджет','💰'],['calendar','Календарь','📅'],['params','Параметры','⚙️']]},
  {g:'Справка',items:[['faq','FAQ','❓']]},
 ];
+const APP_VERSION='1.5.0';const APP_DATE='2026-09-14';
 function buildNav(){let h='';NAV.forEach(g=>{h+=`<div class="nav-group"><div class="nav-h">${g.g}</div>`;
   g.items.forEach(it=>h+=`<button class="nav-item" data-v="${it[0]}"><span class="nav-ic">${it[2]}</span><span>${it[1]}</span></button>`);
-  h+='</div>';});document.getElementById('nav').innerHTML=h;}
+  h+='</div>';});document.getElementById('nav').innerHTML=h;
+ const sf=document.getElementById('sidefoot');
+ if(sf)sf.innerHTML=`<div class="sf-name">Планирование спринтов</div><div class="sf-ver">v${APP_VERSION} · ${APP_DATE}</div>`;}
 function closeDrawer(){document.getElementById('side').classList.remove('open');document.getElementById('scrim').classList.remove('show');}
 function activate(id){CURV=id;
  document.querySelectorAll('.nav-item').forEach(b=>b.classList.toggle('active',b.dataset.v===id));
