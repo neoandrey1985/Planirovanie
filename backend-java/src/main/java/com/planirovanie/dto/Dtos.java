@@ -41,6 +41,7 @@ public final class Dtos {
         public List<Retro> retro;
         public List<Rice> rice;
         public List<MoscowItem> moscow;
+        public List<Faq> faq;
         public List<Dependency> deps;
         public List<Okr> okr;
         public BudgetDto budget;

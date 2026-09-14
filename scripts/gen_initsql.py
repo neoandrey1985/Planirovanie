@@ -45,6 +45,7 @@ CREATE TABLE IF NOT EXISTS calendar   (id SERIAL PRIMARY KEY, cdate TEXT, name T
 CREATE TABLE IF NOT EXISTS retro      (id SERIAL PRIMARY KEY, sprint INT, well TEXT, improve TEXT, action TEXT, owner TEXT, due TEXT, status TEXT, ord INT);
 CREATE TABLE IF NOT EXISTS rice       (pk SERIAL PRIMARY KEY, rice_id TEXT, name TEXT, reach DOUBLE PRECISION, impact DOUBLE PRECISION, conf TEXT, effort DOUBLE PRECISION, ord INT);
 CREATE TABLE IF NOT EXISTS moscow     (pk SERIAL PRIMARY KEY, ms_id TEXT, name TEXT, category TEXT, note TEXT, ord INT);
+CREATE TABLE IF NOT EXISTS faq        (pk SERIAL PRIMARY KEY, faq_id TEXT, category TEXT, question TEXT, answer TEXT, ord INT);
 CREATE TABLE IF NOT EXISTS deps       (pk SERIAL PRIMARY KEY, dep_id TEXT, item TEXT, type TEXT, task TEXT, stream TEXT, dir TEXT, descr TEXT, sprint INT, status TEXT, owner TEXT, risk TEXT, ord INT);
 CREATE TABLE IF NOT EXISTS okr        (id SERIAL PRIMARY KEY, q TEXT, obj TEXT, kr TEXT, target DOUBLE PRECISION, cur DOUBLE PRECISION, ord INT);
 CREATE TABLE IF NOT EXISTS app_meta   (id INT PRIMARY KEY DEFAULT 1, version BIGINT DEFAULT 1);
@@ -91,6 +92,8 @@ rows("rice", ["rice_id", "name", "reach", "impact", "conf", "effort", "ord"], SE
      lambda d, i: [d.get("id"), d.get("name"), d.get("reach"), d.get("impact"), d.get("conf"), d.get("effort"), i])
 rows("moscow", ["ms_id", "name", "category", "note", "ord"], SEED.get("moscow", []),
      lambda d, i: [d.get("id"), d.get("name"), d.get("category"), d.get("note"), i])
+rows("faq", ["faq_id", "category", "question", "answer", "ord"], SEED.get("faq", []),
+     lambda d, i: [d.get("id"), d.get("category"), d.get("q"), d.get("a"), i])
 rows("deps", ["dep_id", "item", "type", "task", "stream", "dir", "descr", "sprint", "status", "owner", "risk", "ord"], SEED.get("deps", []),
      lambda d, i: [d.get("id"), d.get("item"), d.get("type"), d.get("task"), d.get("stream"), d.get("dir"), d.get("desc"), d.get("sprint"), d.get("status"), d.get("owner"), d.get("risk"), i])
 

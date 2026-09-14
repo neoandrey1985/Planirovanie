@@ -44,6 +44,17 @@ h1{font-size:23px;margin:4px 0 4px;letter-spacing:-.01em}
 .moscow-card .mm-name{font-size:13px;font-weight:600;margin:2px 0 3px;line-height:1.35}
 .moscow-card .mm-note{font-size:11.5px;color:var(--muted);line-height:1.5}
 .moscow-col .mc-empty{font-size:12px;color:var(--muted);font-style:italic;padding:6px 2px}
+.faq-search{margin-bottom:12px}
+.faq-cat{font-weight:700;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin:16px 0 8px}
+.faq-cat:first-child{margin-top:2px}
+details.faq-item{border:1px solid var(--line);border-radius:10px;margin-bottom:8px;background:var(--bg);overflow:hidden}
+details.faq-item>summary{cursor:pointer;padding:12px 14px;font-weight:600;font-size:14px;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:12px}
+details.faq-item>summary::-webkit-details-marker{display:none}
+details.faq-item>summary::after{content:'+';color:var(--accent);font-weight:700;font-size:18px;line-height:1;flex:none}
+details.faq-item[open]>summary::after{content:'\2212'}
+details.faq-item[open]>summary{border-bottom:1px solid var(--line)}
+.faq-a{padding:12px 14px;font-size:13px;color:var(--muted);line-height:1.65}
+.faq-empty{font-size:13px;color:var(--muted);font-style:italic;padding:8px 2px}
 .kpis{grid-template-columns:repeat(auto-fit,minmax(172px,1fr))}
 .kpi{position:relative;overflow:hidden}
 .kpi .stripe{position:absolute;left:0;top:0;bottom:0;width:4px}
@@ -209,7 +220,7 @@ body.noadmin #rst,body.noadmin #imp{display:none}
  </div>
 </div></header>
 <div class="shell"><aside class="side" id="side"><nav id="nav"></nav></aside><div class="scrim" id="scrim"></div>
-<main id="main"><section class="view" id="v_dash"></section><section class="view" id="v_backlog"></section><section class="view" id="v_team"></section><section class="view" id="v_roadmap"></section><section class="view" id="v_quarters"></section><section class="view" id="v_rice"></section><section class="view" id="v_moscow"></section><section class="view" id="v_gantt"></section><section class="view" id="v_deps"></section><section class="view" id="v_releases"></section><section class="view" id="v_milestones"></section><section class="view" id="v_debt"></section><section class="view" id="v_okr"></section><section class="view" id="v_budget"></section><section class="view" id="v_analytics"></section><section class="view" id="v_risks"></section><section class="view" id="v_bugs"></section><section class="view" id="v_retro"></section><section class="view" id="v_calendar"></section><section class="view" id="v_params"></section></main></div>
+<main id="main"><section class="view" id="v_dash"></section><section class="view" id="v_backlog"></section><section class="view" id="v_team"></section><section class="view" id="v_roadmap"></section><section class="view" id="v_quarters"></section><section class="view" id="v_rice"></section><section class="view" id="v_moscow"></section><section class="view" id="v_gantt"></section><section class="view" id="v_deps"></section><section class="view" id="v_releases"></section><section class="view" id="v_milestones"></section><section class="view" id="v_debt"></section><section class="view" id="v_okr"></section><section class="view" id="v_budget"></section><section class="view" id="v_analytics"></section><section class="view" id="v_risks"></section><section class="view" id="v_bugs"></section><section class="view" id="v_retro"></section><section class="view" id="v_calendar"></section><section class="view" id="v_params"></section><section class="view" id="v_faq"></section></main></div>
 <div class="palette" id="palette"><div class="pbox"><input class="pin" id="pin" placeholder="Поиск раздела или действия…" autocomplete="off"><div class="plist" id="plist"></div></div></div>
 <div class="role-pop" id="rolepop"></div>
 <div class="modal" id="accmodal"><div class="mbox">
@@ -1065,6 +1076,21 @@ function migrate(d){
   {id:'MS-10',name:'Экспорт отчётов',category:'Could',note:'Удобно, но не критично'},
   {id:'MS-11',name:'Программа лояльности / бонусы',category:"Won't",note:'Отдельная инициатива на следующий квартал'},
   {id:'MS-12',name:'Офлайн-режим приложения',category:"Won't",note:'Вне scope текущего релиза'}];
+ if(!Array.isArray(d.faq))d.faq=[
+  {id:'Q-01',category:'Начало работы',q:'С чего начать работу в приложении?',a:'Заполните «Параметры» (даты старта, число спринтов, focus factor), затем «Команду» и «Бэклог». Дорожная карта, ёмкость, velocity, релизы и метрики считаются автоматически из этих данных.'},
+  {id:'Q-02',category:'Начало работы',q:'Нужен ли интернет или сервер?',a:'Нет. Приложение работает локально в браузере, данные хранятся в localStorage. Если поднят backend (Java + Python), состояние дополнительно синхронизируется через /api/state — индикатор в шапке показывает статус.'},
+  {id:'Q-03',category:'Начало работы',q:'Как быстро найти нужный раздел или действие?',a:'Нажмите Ctrl/⌘+K — откроется командная палитра с поиском по всем разделам и действиям (экспорт, смена темы, сброс и т.д.).'},
+  {id:'Q-04',category:'Планирование',q:'Как рассчитывается ёмкость спринта?',a:'Из состава «Команды» и её доступности, отсутствий, числа рабочих дней спринта (с учётом «Календаря» праздников) и focus factor из «Параметров».'},
+  {id:'Q-05',category:'Планирование',q:'Что такое focus factor?',a:'Доля рабочего времени, реально уходящая на задачи спринта (обычно 0.7–0.8). Остаток — митинги, поддержка, переключения между задачами. Задаётся в «Параметрах».'},
+  {id:'Q-06',category:'Планирование',q:'Чем отличаются RICE и MoSCoW?',a:'RICE даёт числовой балл (Reach × Impact × Confidence / Effort) для ранжирования фич по приоритету. MoSCoW распределяет фичи по категориям Must / Should / Could / Won\'t. Их удобно использовать вместе: RICE — что важнее внутри списка, MoSCoW — что вообще войдёт в релиз.'},
+  {id:'Q-07',category:'Данные и доступ',q:'Где хранятся мои данные?',a:'Локально в браузере (localStorage) и, если настроен сервер, в базе PostgreSQL через /api/state. Для резервной копии выгружайте JSON или Excel.'},
+  {id:'Q-08',category:'Данные и доступ',q:'Как перенести данные на другой компьютер?',a:'На текущем компьютере нажмите «JSON» (экспорт), на другом — «Импорт» и выберите сохранённый файл. Импорт доступен администратору.'},
+  {id:'Q-09',category:'Данные и доступ',q:'Что делает кнопка «Сброс»?',a:'Возвращает данные к исходному демонстрационному набору. Действие необратимо и доступно только администратору — перед сбросом сделайте экспорт JSON.'},
+  {id:'Q-10',category:'Данные и доступ',q:'Чем отличаются режимы Просмотр, Редактор и Администратор?',a:'Просмотр — только чтение, редактирование недоступно. Редактор правит данные во всех разделах, кроме «Параметров», «Сброса» и «Импорта». Администратор — полный доступ, включая параметры и управление кодами доступа.'},
+  {id:'Q-11',category:'Данные и доступ',q:'Как сменить режим доступа?',a:'Кнопка режима в шапке (👁/✏️/🛡). Переход в «Редактор» или «Администратор» — по коду, который задаёт администратор в панели «Коды доступа».'},
+  {id:'Q-12',category:'Экспорт и интерфейс',q:'Как выгрузить план в Excel?',a:'Кнопка «Excel» в шапке или Ctrl/⌘+K → «Экспорт в Excel». Файл включает все разделы, в том числе RICE, MoSCoW и FAQ, с формулами и форматированием.'},
+  {id:'Q-13',category:'Экспорт и интерфейс',q:'Есть ли описание и презентация приложения?',a:'Да. К приложению прилагаются документы: «Описание…», «Иллюстрированное описание…» (docx) и презентация (pptx). В них разделы приложения описаны с иллюстрациями.'},
+  {id:'Q-14',category:'Экспорт и интерфейс',q:'Как свернуть боковое меню?',a:'Кнопка-гамбургер (☰) в шапке сворачивает и разворачивает список разделов на десктопе; на мобильном она открывает выдвижное меню. Состояние запоминается.'}];
  // calendar: migrate array of date-strings -> [{date,name}]
  if(Array.isArray(d.calendar))d.calendar=d.calendar.map(h=>typeof h==='string'?{date:h,name:''}:h);
  else d.calendar=[];
@@ -1285,6 +1311,8 @@ function views(){
    editable('calendar',[{k:'date',label:'Дата',type:'date'},{k:'name',label:'Праздник / выходной',wide:true}]));
  // Params
  renderParams();
+ // FAQ (Справка)
+ setView('faq','FAQ — частые вопросы','Ответы на типичные вопросы о работе с приложением. Раскройте вопрос, чтобы увидеть ответ; ниже — таблица для редактирования.',faqView());
 }
 function setView(id,title,lede,node){const v=document.getElementById('v_'+id);v.innerHTML=`<h1>${title}</h1><p class="lede">${lede}</p>`;if(node)v.appendChild(node);}
 
@@ -1412,6 +1440,28 @@ function drawIshikawa(box){const W=1012,H=560,cy=280,x0=60,xHead=770;const svg=e
  box.innerHTML='';box.appendChild(svg);}
 function riceConf(v){const s=String(v);return s.indexOf('%')>=0?num(s)/100:num(v);}
 function riceScore(r){const eff=num(r.effort);return eff?num(r.reach)*num(r.impact)*riceConf(r.conf)/eff:0;}
+var FAQ_CATS=['Начало работы','Планирование','Данные и доступ','Экспорт и интерфейс'];
+function faqView(){const w=document.createElement('div');
+ const items=ST.faq||[];
+ const card=document.createElement('div');card.className='card';
+ const sb=document.createElement('input');sb.type='search';sb.className='tsearch faq-search';sb.placeholder='Поиск по вопросам…';sb.style.maxWidth='360px';sb.value=UI.search.faq_read||'';
+ const box=document.createElement('div');box.className='faq-acc';
+ function renderAcc(){const q=(UI.search.faq_read||'').toLowerCase();
+   const cats=[];items.forEach(it=>{if(cats.indexOf(it.category)<0)cats.push(it.category);});
+   let h='',any=false;
+   cats.forEach(cat=>{const list=items.filter(x=>x.category===cat&&(!q||((x.q||'')+' '+(x.a||'')).toLowerCase().includes(q)));
+     if(!list.length)return;any=true;h+='<div class="faq-cat">'+esc(cat)+'</div>';
+     list.forEach(x=>{h+='<details class="faq-item"><summary>'+esc(x.q)+'</summary><div class="faq-a">'+esc(x.a).replace(/\n/g,'<br>')+'</div></details>';});});
+   box.innerHTML=any?h:'<p class="faq-empty">Ничего не найдено.</p>';}
+ renderAcc();
+ sb.addEventListener('input',()=>{UI.search.faq_read=sb.value;renderAcc();});
+ card.appendChild(sb);card.appendChild(box);w.appendChild(card);
+ const tt=document.createElement('p');tt.className='ctitle';tt.style.marginTop='18px';tt.textContent='Управление вопросами и ответами';
+ w.appendChild(tt);
+ w.appendChild(editable('faq',[{k:'id',label:'ID'},
+   {k:'category',label:'Категория',type:'select',opts:FAQ_CATS.slice()},
+   {k:'q',label:'Вопрос',wide:true},{k:'a',label:'Ответ',wide:true}],{newId:'id',prefix:'Q-'}));
+ return w;}
 var MOSCOW_CATS=['Must','Should','Could',"Won't"];
 var MOSCOW_META={
  'Must':{label:'Must have',ru:'Обязательно',color:'#D24545',sub:'Без этого релиз не состоится'},
@@ -1720,6 +1770,7 @@ function exportXlsx(){const C=compute();const s=[];
   s.push({name:'RICE',aoa:[['ID','Фича','Reach','Impact','Confidence','Effort','RICE score','Приоритет']].concat((ST.rice||[]).map(r=>{const sc=riceScore(r);return [r.id,r.name,num(r.reach),num(r.impact),riceConf(r.conf),num(r.effort),Math.round(sc*10)/10,sc>=0.6*rmx?'Высокий':sc>=0.3*rmx?'Средний':'Низкий'];}))});}
  s.push({name:'MoSCoW',aoa:[['ID','Фича / требование','Категория','Приоритет','Обоснование']].concat((ST.moscow||[]).map(m=>[m.id,m.name,m.category,(MOSCOW_META[m.category]||{}).ru||'',m.note]))});
  s.push({name:'Зависимости',aoa:[['ID','Элемент','Тип','Задача','Внешний стрим','Направление','Что именно','Спринт','Статус','Владелец','Риск']].concat((ST.deps||[]).map(d=>[d.id,d.item,d.type,d.task,d.stream,d.dir,d.desc,num(d.sprint),d.status,d.owner,d.risk]))});
+ s.push({name:'FAQ',aoa:[['ID','Категория','Вопрос','Ответ']].concat((ST.faq||[]).map(f=>[f.id,f.category,f.q,f.a]))});
  const bin=buildXlsx(s);const blob=new Blob([bin],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='Планирование_спринта.xlsx';document.body.appendChild(a);a.click();a.remove();toast('Excel экспортирован');}
 
@@ -1734,6 +1785,7 @@ const NAV=[
  {g:'Выпуск',items:[['releases','Релизы','🚀'],['milestones','Вехи','🏁'],['debt','Техдолг','🧱']]},
  {g:'Аналитика',items:[['analytics','Аналитика','📈'],['risks','Риски','⚠️'],['bugs','Баги','🐞'],['retro','Ретроспективы','🔄']]},
  {g:'Настройки',items:[['okr','OKR','🧭'],['budget','Бюджет','💰'],['calendar','Календарь','📅'],['params','Параметры','⚙️']]},
+ {g:'Справка',items:[['faq','FAQ','❓']]},
 ];
 function buildNav(){let h='';NAV.forEach(g=>{h+=`<div class="nav-group"><div class="nav-h">${g.g}</div>`;
   g.items.forEach(it=>h+=`<button class="nav-item" data-v="${it[0]}"><span class="nav-ic">${it[2]}</span><span>${it[1]}</span></button>`);
