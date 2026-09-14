@@ -212,6 +212,26 @@ body.noadmin #rst,body.noadmin #imp{display:none}
 #usr_table select{border:1px solid var(--line);background:var(--panel2);color:var(--ink);border-radius:7px;padding:5px 6px;font-family:inherit;font-size:12.5px}
 #usr_table .u-me{color:var(--muted);font-size:11px;margin-left:5px}
 .rolebtn-user{max-width:190px;overflow:hidden;text-overflow:ellipsis}
+/* ---------- chat assistant ---------- */
+.chat-fab{position:fixed;right:20px;bottom:20px;z-index:60;width:52px;height:52px;border-radius:50%;border:none;background:var(--accent);color:#fff;font-size:22px;cursor:pointer;box-shadow:0 6px 20px rgba(45,91,227,.42);display:flex;align-items:center;justify-content:center}
+.chat-fab:hover{filter:brightness(1.08)}
+.chat-panel{position:fixed;right:20px;bottom:84px;z-index:61;width:min(380px,calc(100vw - 32px));height:min(560px,calc(100vh - 120px));background:var(--panel);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);display:none;flex-direction:column;overflow:hidden}
+.chat-panel.open{display:flex}
+.chat-head{display:flex;align-items:center;justify-content:space-between;padding:11px 14px;border-bottom:1px solid var(--line);background:var(--panel2)}
+.chat-title{font-weight:700;font-size:14px}
+.chat-x{background:none;border:none;color:var(--muted);font-size:15px;cursor:pointer;line-height:1}
+.chat-log{flex:1;overflow:auto;padding:14px;display:flex;flex-direction:column;gap:10px}
+.chat-msg{max-width:86%;padding:9px 12px;border-radius:13px;font-size:13px;line-height:1.5;white-space:pre-wrap;word-wrap:break-word}
+.chat-msg.bot{align-self:flex-start;background:var(--bg);border:1px solid var(--line);border-bottom-left-radius:4px}
+.chat-msg.user{align-self:flex-end;background:var(--accent);color:#fff;border-bottom-right-radius:4px}
+.chat-msg .chat-link{display:inline-block;margin-top:6px;color:var(--accent);cursor:pointer;text-decoration:underline;font-weight:600;font-size:12.5px}
+.chat-chips{display:flex;flex-wrap:wrap;gap:6px;padding:0 12px 8px}
+.chat-chip{border:1px solid var(--line);background:var(--panel2);color:var(--ink);border-radius:14px;padding:5px 10px;font-size:11.5px;cursor:pointer;font-family:inherit}
+.chat-chip:hover{border-color:var(--accent);color:var(--accent)}
+.chat-input{display:flex;gap:8px;padding:10px 12px;border-top:1px solid var(--line)}
+.chat-input input{flex:1;border:1px solid var(--line);background:var(--panel2);color:var(--ink);border-radius:9px;padding:9px 11px;font-family:inherit;font-size:13px}
+.chat-input .btn{padding:8px 13px}
+@media(max-width:560px){.chat-panel{right:8px;left:8px;width:auto;bottom:78px}.chat-fab{right:14px;bottom:14px}}
 </style>
 <header class="top"><div class="inner">
  <button class="btn iconbtn" id="menubtn" aria-label="Меню" title="Свернуть / развернуть меню">☰</button>
@@ -262,6 +282,13 @@ body.noadmin #rst,body.noadmin #imp{display:none}
  </div>
  <div class="mrow"><button class="btn" id="usr_close">Закрыть</button></div>
 </div></div>
+<button class="chat-fab" id="chatfab" title="Помощник" aria-label="Открыть помощника">💬</button>
+<div class="chat-panel" id="chatpanel">
+ <div class="chat-head"><span class="chat-title">🤖 Помощник</span><button class="chat-x" id="chatx" aria-label="Закрыть">✕</button></div>
+ <div class="chat-log" id="chatlog"></div>
+ <div class="chat-chips" id="chatchips"></div>
+ <div class="chat-input"><input id="chatin" type="text" placeholder="Спросите о данных или разделах…" autocomplete="off"><button class="btn primary" id="chatsend" title="Отправить">▶</button></div>
+</div>
 <div class="toast" id="toast"></div>
 <input type="file" id="file" accept=".json" style="display:none">
 <script>
@@ -1819,7 +1846,7 @@ const NAV=[
  {g:'Настройки',items:[['okr','OKR','🧭'],['budget','Бюджет','💰'],['calendar','Календарь','📅'],['params','Параметры','⚙️']]},
  {g:'Справка',items:[['faq','FAQ','❓']]},
 ];
-const APP_VERSION='1.6.0';const APP_DATE='2026-09-14';
+const APP_VERSION='1.7.0';const APP_DATE='2026-09-14';
 function buildNav(){let h='';NAV.forEach(g=>{h+=`<div class="nav-group"><div class="nav-h">${g.g}</div>`;
   g.items.forEach(it=>h+=`<button class="nav-item" data-v="${it[0]}"><span class="nav-ic">${it[2]}</span><span>${it[1]}</span></button>`);
   h+='</div>';});document.getElementById('nav').innerHTML=h;
@@ -2059,6 +2086,75 @@ async function startAnalytics(){
  }catch(e){set('🐍 аналитика: офлайн','p-neut');}
 }
 startAnalytics();setInterval(startAnalytics,30000);
+/* ---------- chat assistant (offline, data-aware) ---------- */
+(function(){
+ const fab=document.getElementById('chatfab'),panel=document.getElementById('chatpanel'),
+       log=document.getElementById('chatlog'),input=document.getElementById('chatin');
+ let greeted=false;
+ const ID2LABEL={};NAV.forEach(g=>g.items.forEach(it=>ID2LABEL[it[0]]=it[1]));
+ // section keyword → view id (matched as substring; navigation needs a verb)
+ const SYN={'дашборд':'dash','обзор проект':'dash','дорожн':'roadmap','карт':'roadmap','квартал':'quarters',
+  'rice':'rice','moscow':'moscow','москоу':'moscow','москов':'moscow','бэклог':'backlog','беклог':'backlog',
+  'гантт':'gantt','гант':'gantt','зависимост':'deps','команд':'team','релиз':'releases','вех':'milestones',
+  'техдолг':'debt','тех долг':'debt','аналитик':'analytics','риск':'risks','баг':'bugs','дефект':'bugs',
+  'ретро':'retro','okr':'okr','окр':'okr','бюджет':'budget','календар':'calendar','параметр':'params',
+  'настройк':'params','faq':'faq','справк':'faq'};
+ function navLabel(id){return ID2LABEL[id]||id;}
+ function attnText(C){const T=ST.ttmTarget||15,it=[];
+  const blk=(ST.deps||[]).filter(d=>d.status==='Заблокировано'||d.status==='Просрочено').length;if(blk)it.push('⛔ Заблокировано зависимостей: '+blk);
+  const critB=(ST.bugs||[]).filter(b=>b.sev==='Critical'&&b.status!=='Закрыт').length;if(critB)it.push('🔴 Critical-баги открыты: '+critB);
+  if(C.curSp&&C.curSp.cap&&C.curSp.plan/C.curSp.cap>1)it.push('⚠ Перегрузка спринта #'+C.cur+': '+pctf(C.curSp.plan/C.curSp.cap));
+  if(C.ttmAvg>T)it.push('⏱ TTM '+fmt(C.ttmAvg,1)+' дн > цель '+T);
+  if(C.bugsOpen>3)it.push('🐞 Открытых багов: '+C.bugsOpen);
+  if(C.dodPct<0.8)it.push('✔ Готовность DoD: '+pctf(C.dodPct));
+  return it.length?('Что требует внимания:\n• '+it.join('\n• ')):'✓ Критичных сигналов нет — всё в норме.';}
+ function faqMatch(s){const items=ST.faq||[];if(!items.length)return null;
+  const qt=s.split(/[^a-zа-яё0-9]+/i).filter(w=>w.length>2);if(!qt.length)return null;
+  let best=null,bs=0;items.forEach(it=>{const hay=((it.q||'')+' '+(it.a||'')+' '+(it.category||'')).toLowerCase();
+   let sc=0;qt.forEach(w=>{if(hay.indexOf(w)>=0)sc++;});if(sc>bs){bs=sc;best=it;}});
+  return (best&&bs>=Math.min(2,qt.length))?(best.q+'\n\n'+best.a):null;}
+ function help(){return {t:'Я помощник по приложению «Планирование спринтов». Могу:\n• показать метрики — velocity, health, TTM, баги, зависимости, бюджет, прогноз;\n• подсказать, что требует внимания;\n• объяснить разделы и методологии (RICE, MoSCoW);\n• открыть нужный раздел (напр. «открой риски»).',chips:true};}
+ function reply(q){const s=(q||'').toLowerCase().trim();if(!s)return help();
+  if(/^(привет|здравств|хай|hello|hi|добр|ку\b|yo)/.test(s))return {t:'Привет! Спросите про данные проекта (velocity, баги, риски, «что требует внимания») или про разделы приложения. Могу и открыть нужный раздел.',chips:true};
+  if(/(что ты умеешь|как польз|помоги|help|что можешь|команды)/.test(s))return help();
+  // navigation (requires a verb)
+  if(/(открой|откр\b|покажи|перейд|переключ|запусти|show|go to)/.test(s)){
+   for(const k in SYN){if(s.indexOf(k)>=0){activate(SYN[k]);return {t:'Открыл раздел «'+navLabel(SYN[k])+'».'};}}}
+  const C=compute();
+  if(/(что.*вниман|треб.*вниман|проблем|тревож|сигнал|блокер)/.test(s))return {t:attnText(C),goto:'dash'};
+  if(/(velocity|велосит|скорост команд)/.test(s))return {t:`Средняя velocity: ${fmt(C.avgVel,1)} SP/спринт. Закрыто задач: ${C.closed}.`,goto:'analytics'};
+  if(/(health|здоров|индекс здоров)/.test(s))return {t:`Health-index: ${pctf(C.health)} — ${C.health>=.8?'хорошо':C.health>=.6?'требует внимания':'критично'}.`,goto:'analytics'};
+  if(/(баг|дефект|bug|качеств|dre)/.test(s)){const cr=(ST.bugs||[]).filter(b=>b.sev==='Critical'&&b.status!=='Закрыт').length;return {t:`Открытых багов: ${C.bugsOpen} (Critical: ${cr}). DRE: ${pctf(C.dre)}.`,goto:'bugs'};}
+  if(/(заблок|блок|зависим|deps|эскалац)/.test(s)){const blk=(ST.deps||[]).filter(d=>d.status==='Заблокировано'||d.status==='Просрочено');return {t:`Проблемных зависимостей: ${blk.length}${blk.length?'.\n• '+blk.slice(0,5).map(d=>d.id+' — '+(d.item||d.desc||'')).join('\n• '):'.'}`,goto:'deps'};}
+  if(/(dod|готовност|definition of done)/.test(s))return {t:`Готовность DoD: ${pctf(C.dodPct)}.`,goto:'params'};
+  if(/(ttm|time to market|время.*рынок|время вывода)/.test(s))return {t:`Time to Market: ${fmt(C.ttmAvg,1)} дн (цель ≤ ${ST.ttmTarget||15}).`,goto:'analytics'};
+  if(/(текущ.*спринт|какой спринт|номер спринта|сейчас спринт)/.test(s)){const sp=C.curSp;return {t:`Текущий спринт: #${C.cur}${sp?`, ёмкость ${fmt(sp.cap,1)}, план ${fmt(sp.plan,1)}, выполнение ${sp.pct==null?'—':pctf(sp.pct)}`:''}.`,goto:'roadmap'};}
+  if(/(сколько.*команд|команд.*сколько|состав команд|кто в команд)/.test(s)){const tm=(ST.team||[]);return {t:`В команде ${tm.length} участник(ов): ${tm.map(m=>m.name).filter(Boolean).slice(0,10).join(', ')||'—'}.`,goto:'team'};}
+  if(/(сколько задач|задач в бэклог|беклог|кол-во задач|задач всего)/.test(s)){const t=ST.tasks||[],done=t.filter(x=>x.status==='Готово').length;return {t:`Задач в бэклоге: ${t.length}, из них готово: ${done}.`,goto:'backlog'};}
+  if(/риск/.test(s)){const r=ST.risks||[];const top=r.map(x=>({n:x.name,v:num(x.p)*num(x.i)})).sort((a,b)=>b.v-a.v)[0];return {t:`Рисков в реестре: ${r.length}${top&&top.n?`. Топ по баллу: «${top.n}» (${top.v})`:''}.`,goto:'risks'};}
+  if(/релиз/.test(s))return {t:`Релизов запланировано: ${(ST.releases||[]).length}.`,goto:'releases'};
+  if(/(бюджет|деньг|стоимост|расход|затрат)/.test(s))return {t:`Бюджет: ${fmt(C.budget,0)} ₽, потрачено ${fmt(C.spent,0)} ₽, остаток ${fmt(C.remBudget,0)} ₽.`,goto:'budget'};
+  if(/(прогноз|forecast|когда законч|сколько спринтов.*ост)/.test(s)){const fc=C.avgVel?Math.ceil(C.remain/C.avgVel):null;return {t:`Прогноз на остаток бэклога: ${fc==null?'—':'~'+fc+' спринт(ов)'} при velocity ${fmt(C.avgVel,1)}.`,goto:'analytics'};}
+  if(/(предсказуем|стабильн velocity|cv)/.test(s)){const v=C.vels||[],m=v.length?v.reduce((a,b)=>a+b,0)/v.length:0,sd=v.length?Math.sqrt(v.reduce((a,b)=>a+(b-m)*(b-m),0)/v.length):0,cv=m?sd/m:0;return {t:`Предсказуемость: ${pctf(1-Math.min(1,cv))} (CV velocity ${pctf(cv)}).`,goto:'analytics'};}
+  if(/rice/.test(s))return {t:'RICE = (Reach × Impact × Confidence) / Effort — числовой балл для ранжирования фич по приоритету.',goto:'rice'};
+  if(/(moscow|москоу|москов)/.test(s))return {t:'MoSCoW распределяет фичи по категориям Must / Should / Could / Won\'t — что обязательно, желательно, возможно и что откладываем.',goto:'moscow'};
+  if(/(focus factor|фокус.?фактор)/.test(s))return {t:'Focus factor — доля рабочего времени, реально уходящая на задачи спринта (обычно 0.7–0.8). Задаётся в «Параметрах».',goto:'params'};
+  const f=faqMatch(s);if(f)return {t:f,goto:'faq'};
+  return {t:'Не уверен, что понял вопрос. Могу показать метрики (velocity, health, баги, зависимости, бюджет, прогноз), объяснить разделы или открыть нужный. Примеры — на кнопках ниже.',chips:true};}
+ function addMsg(text,who,goto){const d=document.createElement('div');d.className='chat-msg '+who;d.textContent=text;
+  if(goto){const a=document.createElement('span');a.className='chat-link';a.textContent='Открыть «'+navLabel(goto)+'» →';a.onclick=()=>{activate(goto);};d.appendChild(document.createElement('br'));d.appendChild(a);}
+  log.appendChild(d);log.scrollTop=log.scrollHeight;}
+ const CHIPS=[['Что требует внимания?','что требует внимания'],['Velocity?','какая velocity'],['Открытых багов?','сколько открытых багов'],['Что заблокировано?','что заблокировано'],['Ёмкость спринта?','как рассчитывается ёмкость спринта'],['Открой аналитику','открой аналитику']];
+ function renderChips(){const c=document.getElementById('chatchips');c.innerHTML='';CHIPS.forEach(([lbl,q])=>{const b=document.createElement('button');b.className='chat-chip';b.textContent=lbl;b.onclick=()=>send(q);c.appendChild(b);});}
+ function send(text){text=(text==null?input.value:text).trim();if(!text)return;addMsg(text,'user');input.value='';
+  const r=reply(text);setTimeout(()=>{addMsg(r.t,'bot',r.goto);renderChips();},140);}
+ function openChat(){panel.classList.add('open');if(!greeted){greeted=true;addMsg('Здравствуйте! Я помощник по приложению. Спросите про данные проекта или разделы — или выберите вопрос ниже.','bot');renderChips();}setTimeout(()=>input.focus(),50);}
+ function closeChat(){panel.classList.remove('open');}
+ fab.onclick=()=>panel.classList.contains('open')?closeChat():openChat();
+ document.getElementById('chatx').onclick=closeChat;
+ document.getElementById('chatsend').onclick=()=>send();
+ input.addEventListener('keydown',e=>{if(e.key==='Enter')send();});
+})();
 /* ---------- guided tour (video-style walkthrough) ---------- */
 const TOUR=[
  {v:'dash',h:'Планирование спринтов — обзор',p:'Веб-приложение для планирования по двухнедельным спринтам: данные, метрики и диаграммы в одном месте. Пройдёмся по всем разделам.',d:8000},
