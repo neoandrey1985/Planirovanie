@@ -290,7 +290,7 @@ body.noadmin #rst,body.noadmin #imp{display:none}
  </div>
 </div></header>
 <div class="shell"><aside class="side" id="side"><nav id="nav"></nav><div class="side-foot" id="sidefoot"></div></aside><div class="scrim" id="scrim"></div>
-<main id="main"><section class="view" id="v_dash"></section><section class="view" id="v_kanban"></section><section class="view" id="v_backlog"></section><section class="view" id="v_team"></section><section class="view" id="v_roadmap"></section><section class="view" id="v_quarters"></section><section class="view" id="v_rice"></section><section class="view" id="v_moscow"></section><section class="view" id="v_gantt"></section><section class="view" id="v_deps"></section><section class="view" id="v_releases"></section><section class="view" id="v_milestones"></section><section class="view" id="v_debt"></section><section class="view" id="v_okr"></section><section class="view" id="v_budget"></section><section class="view" id="v_analytics"></section><section class="view" id="v_risks"></section><section class="view" id="v_bugs"></section><section class="view" id="v_grooming"></section><section class="view" id="v_demo"></section><section class="view" id="v_retro"></section><section class="view" id="v_calendar"></section><section class="view" id="v_params"></section><section class="view" id="v_faq"></section><section class="view" id="v_audit"></section></main></div>
+<main id="main"><section class="view" id="v_dash"></section><section class="view" id="v_kanban"></section><section class="view" id="v_backlog"></section><section class="view" id="v_team"></section><section class="view" id="v_roadmap"></section><section class="view" id="v_quarters"></section><section class="view" id="v_rice"></section><section class="view" id="v_moscow"></section><section class="view" id="v_gantt"></section><section class="view" id="v_deps"></section><section class="view" id="v_releases"></section><section class="view" id="v_milestones"></section><section class="view" id="v_debt"></section><section class="view" id="v_okr"></section><section class="view" id="v_budget"></section><section class="view" id="v_analytics"></section><section class="view" id="v_risks"></section><section class="view" id="v_bugs"></section><section class="view" id="v_daily"></section><section class="view" id="v_grooming"></section><section class="view" id="v_demo"></section><section class="view" id="v_vacation"></section><section class="view" id="v_birthdays"></section><section class="view" id="v_retro"></section><section class="view" id="v_calendar"></section><section class="view" id="v_params"></section><section class="view" id="v_faq"></section><section class="view" id="v_audit"></section></main></div>
 <div class="palette" id="palette"><div class="pbox"><input class="pin" id="pin" placeholder="Поиск раздела или действия…" autocomplete="off"><div class="plist" id="plist"></div></div></div>
 <div class="role-pop" id="rolepop"></div>
 <div class="modal" id="accmodal"><div class="mbox">
@@ -1200,6 +1200,24 @@ function migrate(d){
   {id:'DM-01',sprint:1,date:'2026-08-14',item:'Каркас каталога и карточка товара',presenter:'Иванов А.',stakeholders:'PO, маркетинг',feedback:'Одобрено; просят добавить бейджи скидок',status:'Принято'},
   {id:'DM-02',sprint:2,date:'2026-08-28',item:'Корзина и черновик оформления заказа',presenter:'Петрова М.',stakeholders:'PO, поддержка',feedback:'В целом ок; доработать валидацию адреса',status:'На доработку'},
   {id:'DM-03',sprint:3,date:'2026-09-11',item:'Оплата картой (MVP)',presenter:'Кузнецов Д.',stakeholders:'PO, финансы, безопасность',feedback:'Принято для пилота; нужен лог транзакций',status:'Принято'}];
+ if(!Array.isArray(d.daily))d.daily=[
+  {id:'DL-01',date:'2026-09-14',sprint:3,participant:'Иванов А.',yesterday:'Завершил API оформления заказа',today:'Ревью и интеграция оплаты',blocker:''},
+  {id:'DL-02',date:'2026-09-14',sprint:3,participant:'Кузнецов Д.',yesterday:'Настроил песочницу платёжного шлюза',today:'Обработка вебхуков оплаты',blocker:'Ждём ключи от платёжного провайдера'},
+  {id:'DL-03',date:'2026-09-14',sprint:3,participant:'Петрова М.',yesterday:'Вёрстка корзины',today:'Валидация адреса доставки',blocker:''},
+  {id:'DL-04',date:'2026-09-15',sprint:3,participant:'Иванов А.',yesterday:'Интеграция оплаты',today:'Логирование транзакций',blocker:''},
+  {id:'DL-05',date:'2026-09-15',sprint:3,participant:'Соколов Р.',yesterday:'Тест-кейсы оформления',today:'Регресс по корзине',blocker:'Нестабильный стенд QA'}];
+ if(!Array.isArray(d.vacation))d.vacation=[
+  {id:'VC-01',member:'Иванов А.',type:'Отпуск',from:'2026-09-22',to:'2026-10-03',days:10,status:'Утверждён',notes:'Плановый отпуск'},
+  {id:'VC-02',member:'Петрова М.',type:'Отгул',from:'2026-09-18',to:'2026-09-18',days:1,status:'Утверждён',notes:''},
+  {id:'VC-03',member:'Кузнецов Д.',type:'Командировка',from:'2026-09-29',to:'2026-10-01',days:3,status:'Запланирован',notes:'Встреча с платёжным провайдером'},
+  {id:'VC-04',member:'Орлова Е.',type:'Больничный',from:'2026-09-08',to:'2026-09-10',days:3,status:'Завершён',notes:''},
+  {id:'VC-05',member:'Соколов Р.',type:'Отпуск',from:'2026-10-13',to:'2026-10-24',days:10,status:'Запланирован',notes:''}];
+ if(!Array.isArray(d.birthdays))d.birthdays=[
+  {id:'BD-01',member:'Иванов А.',date:'1990-09-20',role:'Backend',notes:''},
+  {id:'BD-02',member:'Петрова М.',date:'1993-10-05',role:'Frontend',notes:''},
+  {id:'BD-03',member:'Кузнецов Д.',date:'1988-11-12',role:'Backend',notes:''},
+  {id:'BD-04',member:'Орлова Е.',date:'1995-09-28',role:'Analyst',notes:''},
+  {id:'BD-05',member:'Соколов Р.',date:'1991-12-03',role:'QA',notes:''}];
  // calendar: migrate array of date-strings -> [{date,name}]
  if(Array.isArray(d.calendar))d.calendar=d.calendar.map(h=>typeof h==='string'?{date:h,name:''}:h);
  else d.calendar=[];
@@ -1416,8 +1434,11 @@ function views(){
     {k:'sprint',label:'Спринт',type:'num'},{k:'sev',label:'Серьёзность',type:'select',opts:['Critical','Major','Minor']},
     {k:'status',label:'Статус',type:'select',opts:['Открыт','Закрыт']},{k:'cause',label:'Причина',type:'select',opts:['Требования','Код','Тестирование','Интеграция','Данные','Инфраструктура']}],{newId:'id',prefix:'B-'}));
  // Retrospectives (Ретроспективы)
+ setView('daily','Дэйли (Daily Standup)','Ежедневная синхронизация команды: что сделано вчера, план на сегодня и блокеры — по дням и участникам.',dailyView());
  setView('grooming','Груминг бэклога','Backlog Refinement: подготовка элементов бэклога к спринту — оценка, декомпозиция, уточнение и приоритизация (Definition of Ready).',groomingView());
  setView('demo','Демо спринта','Sprint Review: демонстрация инкремента заказчикам, сбор обратной связи и решение о приёмке.',demoView());
+ setView('vacation','График отпусков','Отпуска, больничные, отгулы и командировки команды — для учёта доступности при планировании.',vacationView());
+ setView('birthdays','Дни рождения','Дни рождения участников команды и ближайшие даты.',birthdaysView());
  setView('retro','Ретроспективы','Итоги спринтов и action items. Ниже — доля закрытых action items.',retroView());
  // Calendar (Календарь) — праздники/выходные, влияют на рабочие дни спринтов
  setView('calendar','Календарь','Праздники и нерабочие дни. Учитываются при расчёте рабочих дней и ёмкости спринтов.',
@@ -1728,6 +1749,52 @@ function riceView(){const w=document.createElement('div');
   +'<b>Effort</b> — трудозатраты команды, человеко-дни.<br>'
   +'Приоритет: <b>Высокий</b> ≥ 60% макс. балла · <b>Средний</b> ≥ 30% · иначе <b>Низкий</b>.</p>';
  w.appendChild(lg);return w;}
+function dailyView(){const w=document.createElement('div');
+ w.appendChild(editable('daily',[{k:'id',label:'ID'},{k:'date',label:'Дата',type:'date'},{k:'sprint',label:'Спринт',type:'num'},
+   {k:'participant',label:'Участник'},{k:'yesterday',label:'Вчера',wide:true},{k:'today',label:'Сегодня',wide:true},{k:'blocker',label:'Блокер',wide:true}],{newId:'id',prefix:'DL-'}));
+ const a=ST.daily||[],blk=a.filter(x=>(x.blocker||'').trim()).length;
+ const days=new Set(a.map(x=>x.date).filter(Boolean)).size,ppl=new Set(a.map(x=>x.participant).filter(Boolean)).size;
+ const card=document.createElement('div');card.className='grid kpis';card.style.marginTop='14px';
+ card.innerHTML=kpiCard('Записей',a.length,'обновлений','neut')+kpiCard('Дней',days,'проведено','neut')+kpiCard('Участников',ppl,'в стендапах','neut')+kpiCard('Блокеров',blk,'озвучено',blk?'warn':'good');
+ w.appendChild(card);
+ const lg=document.createElement('div');lg.className='card';lg.style.marginTop='14px';
+ lg.innerHTML='<p class="ctitle">Дэйли (Daily Standup)</p><p style="font-size:13px;color:var(--muted);line-height:1.7;margin:0">'
+  +'Ежедневная короткая синхронизация команды: каждый отвечает на три вопроса — <b>что сделал вчера</b>, <b>что планирую сегодня</b> и <b>что мешает</b> (блокеры). Здесь фиксируются записи по дням и участникам; озвученные блокеры удобно превращать в задачи или зависимости.</p>';
+ w.appendChild(lg);return w;}
+function appTodayDate(){const p=String(kanToday()).split('-');return new Date(+p[0]||2026,(+p[1]||1)-1,+p[2]||1);}
+function bdayFmtDM(dstr){const p=String(dstr||'').split('-');return p.length<3?esc(dstr||''):p[2].padStart(2,'0')+'.'+p[1].padStart(2,'0');}
+function bdayDaysUntil(dstr){const p=String(dstr||'').split('-');if(p.length<3)return null;const mm=+p[1]-1,dd=+p[2];if(isNaN(mm)||isNaN(dd))return null;
+ const base=appTodayDate();let n=new Date(base.getFullYear(),mm,dd);if(n<base)n=new Date(base.getFullYear()+1,mm,dd);return Math.round((n-base)/86400000);}
+function vacationView(){const w=document.createElement('div');
+ w.appendChild(editable('vacation',[{k:'id',label:'ID'},{k:'member',label:'Участник'},
+   {k:'type',label:'Тип',type:'select',opts:['Отпуск','Больничный','Отгул','Командировка','Удалёнка']},
+   {k:'from',label:'С',type:'date'},{k:'to',label:'По',type:'date'},{k:'days',label:'Дней',type:'num'},
+   {k:'status',label:'Статус',type:'select',opts:['Запланирован','Утверждён','Завершён']},{k:'notes',label:'Комментарий',wide:true}],{newId:'id',prefix:'VC-'}));
+ const v=ST.vacation||[],today=kanToday();
+ const now=v.filter(x=>x.from&&x.to&&String(x.from)<=today&&String(x.to)>=today).length;
+ const upcoming=v.filter(x=>x.from&&String(x.from)>today).length;
+ const totalDays=v.reduce((a,x)=>a+num(x.days),0);
+ const card=document.createElement('div');card.className='grid kpis';card.style.marginTop='14px';
+ card.innerHTML=kpiCard('Записей',v.length,'всего','neut')+kpiCard('Сейчас отсутствуют',now,'на текущую дату',now?'warn':'good')+kpiCard('Предстоящие',upcoming,'запланировано','neut')+kpiCard('Всего дней',fmt(totalDays,0),'суммарно','neut');
+ w.appendChild(card);
+ const lg=document.createElement('div');lg.className='card';lg.style.marginTop='14px';
+ lg.innerHTML='<p class="ctitle">График отпусков и отсутствий</p><p style="font-size:13px;color:var(--muted);line-height:1.7;margin:0">'
+  +'Отпуска, больничные, отгулы и командировки участников команды. Помогает учитывать доступность при планировании спринтов и распределении задач; статус отражает, запланировано отсутствие, утверждено или уже завершено.</p>';
+ w.appendChild(lg);return w;}
+function birthdaysView(){const w=document.createElement('div');
+ w.appendChild(editable('birthdays',[{k:'id',label:'ID'},{k:'member',label:'Участник'},{k:'date',label:'Дата рождения',type:'date'},{k:'role',label:'Роль'},{k:'notes',label:'Комментарий',wide:true}],{newId:'id',prefix:'BD-'}));
+ const b=(ST.birthdays||[]).map(x=>({m:x.member,r:x.role,dt:x.date,d:bdayDaysUntil(x.date)})).filter(x=>x.d!=null).sort((a,b)=>a.d-b.d);
+ const nearest=b[0],curM=appTodayDate().getMonth();
+ const inMonth=b.filter(x=>{const p=String(x.dt).split('-');return p.length>=2&&(+p[1]-1)===curM;}).length;
+ const card=document.createElement('div');card.className='grid kpis';card.style.marginTop='14px';
+ card.innerHTML=kpiCard('В команде',(ST.birthdays||[]).length,'дней рождения','neut')
+  +kpiCard('Ближайший',nearest?esc(nearest.m||'—'):'—',nearest?(bdayFmtDM(nearest.dt)+' · через '+nearest.d+' дн'):'','good')
+  +kpiCard('В этом месяце',inMonth,'ДР','neut');
+ w.appendChild(card);
+ const cc=document.createElement('div');cc.className='card';cc.style.marginTop='14px';
+ let h='<p class="ctitle">Ближайшие дни рождения</p><div class="twrap" style="border:none"><table><tr><th>Участник</th><th>Роль</th><th>Дата</th><th class="num">Через (дней)</th></tr>';
+ b.slice(0,10).forEach(x=>{h+=`<tr><td>${esc(x.m||'')}</td><td>${esc(x.r||'')}</td><td>${bdayFmtDM(x.dt)}</td><td class="num">${x.d===0?'сегодня 🎉':x.d}</td></tr>`;});
+ h+='</table></div>';cc.innerHTML=h;w.appendChild(cc);return w;}
 function groomingView(){const w=document.createElement('div');
  w.appendChild(editable('grooming',[{k:'id',label:'ID'},{k:'date',label:'Дата',type:'date'},
    {k:'item',label:'Элемент бэклога / история',wide:true},
@@ -2009,6 +2076,9 @@ function exportXlsx(){const C=compute();const s=[];
  s.push({name:'FAQ',aoa:[['ID','Категория','Вопрос','Ответ']].concat((ST.faq||[]).map(f=>[f.id,f.category,f.q,f.a]))});
  s.push({name:'Груминг',aoa:[['ID','Дата','Элемент бэклога','Действие','Оценка (SP)','Готовность','Ответственный','Комментарий']].concat((ST.grooming||[]).map(g=>[g.id,g.date,g.item,g.action,num(g.est),g.ready,g.owner,g.notes]))});
  s.push({name:'Демо спринта',aoa:[['ID','Спринт','Дата','Что демонстрировали','Докладчик','Участники','Обратная связь','Итог']].concat((ST.demo||[]).map(d=>[d.id,num(d.sprint),d.date,d.item,d.presenter,d.stakeholders,d.feedback,d.status]))});
+ s.push({name:'Дэйли',aoa:[['ID','Дата','Спринт','Участник','Вчера','Сегодня','Блокер']].concat((ST.daily||[]).map(x=>[x.id,x.date,num(x.sprint),x.participant,x.yesterday,x.today,x.blocker]))});
+ s.push({name:'График отпусков',aoa:[['ID','Участник','Тип','С','По','Дней','Статус','Комментарий']].concat((ST.vacation||[]).map(x=>[x.id,x.member,x.type,x.from,x.to,num(x.days),x.status,x.notes]))});
+ s.push({name:'Дни рождения',aoa:[['ID','Участник','Дата рождения','Роль','Комментарий']].concat((ST.birthdays||[]).map(x=>[x.id,x.member,x.date,x.role,x.notes]))});
  const bin=buildXlsx(s);const blob=new Blob([bin],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='Планирование_спринта.xlsx';document.body.appendChild(a);a.click();a.remove();toast('Excel экспортирован');}
 
@@ -2022,12 +2092,14 @@ const NAV=[
  {g:'Работа',items:[['backlog','Бэклог','🗂️'],['gantt','Гант','📊'],['deps','Зависимости','🔗'],['team','Команда','👥']]},
  {g:'Выпуск',items:[['releases','Релизы','🚀'],['milestones','Вехи','🏁'],['debt','Техдолг','🧱']]},
  {g:'Аналитика',items:[['analytics','Аналитика','📈'],['risks','Риски','⚠️'],['bugs','Баги','🐞']]},
- {g:'Церемонии',items:[['grooming','Груминг','🧹'],['demo','Демо спринта','🎬'],['retro','Ретроспективы','🔄']]},
+ {g:'Церемонии',items:[['daily','Дэйли','☀️'],['grooming','Груминг','🧹'],['demo','Демо спринта','🎬'],['retro','Ретроспективы','🔄']]},
+ {g:'Персонал',items:[['vacation','График отпусков','🏖️'],['birthdays','Дни рождения','🎂']]},
  {g:'Настройки',items:[['okr','OKR','🧭'],['budget','Бюджет','💰'],['calendar','Календарь','📅'],['params','Параметры','⚙️']]},
  {g:'Справка',items:[['faq','FAQ','❓'],['audit','Журнал событий','🧾']]},
 ];
-const APP_VERSION='1.12.0';const APP_DATE='2026-09-15';
+const APP_VERSION='1.13.0';const APP_DATE='2026-09-15';
 const CHANGELOG=[
+ {v:'1.13.0',date:'2026-09-15',items:['Церемония «Дэйли» (Daily Standup) в группе «Церемонии».','Новая группа «Персонал»: «График отпусков» (отпуска, больничные, командировки) и «Дни рождения» (с ближайшими датами).']},
  {v:'1.12.0',date:'2026-09-15',items:['Группа «Церемонии»: разделы «Груминг» (Backlog Refinement) и «Демо спринта» (Sprint Review); ретроспективы объединены в эту группу.']},
  {v:'1.11.0',date:'2026-09-14',items:['Kanban-доска в разделе «Планирование»: перетаскивание задач между статусами (К выполнению / В работе / Готово).','Перемещение карточки синхронно меняет статус и даты в «Бэклоге», «Дорожной карте», Ганте и аналитике; фильтр по спринту.']},
  {v:'1.10.0',date:'2026-09-14',items:['«История изменений» размещена в разделе «Журнал событий»; раздел виден всем пользователям (полный журнал событий — только администратору).']},

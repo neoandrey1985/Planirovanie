@@ -29,17 +29,22 @@ public class StateService {
     private final FaqRepo faq;
     private final GroomingRepo grooming;
     private final DemoRepo demo;
+    private final DailyRepo daily;
+    private final VacationRepo vacation;
+    private final BirthdayRepo birthdays;
     private final DependencyRepo deps;
     private final OkrRepo okr;
 
     public StateService(ParamRepo params, AppMetaRepo meta, DodRepo dod, TeamRepo team, TaskRepo tasks,
                         ReleaseRepo releases, MilestoneRepo milestones, TechDebtRepo techDebt, RiskRepo risks,
                         BugRepo bugs, HolidayRepo calendar, RetroRepo retro, RiceRepo rice, MoscowRepo moscow,
-                        FaqRepo faq, GroomingRepo grooming, DemoRepo demo, DependencyRepo deps, OkrRepo okr) {
+                        FaqRepo faq, GroomingRepo grooming, DemoRepo demo, DailyRepo daily, VacationRepo vacation,
+                        BirthdayRepo birthdays, DependencyRepo deps, OkrRepo okr) {
         this.params = params; this.meta = meta; this.dod = dod; this.team = team; this.tasks = tasks;
         this.releases = releases; this.milestones = milestones; this.techDebt = techDebt; this.risks = risks;
         this.bugs = bugs; this.calendar = calendar; this.retro = retro; this.rice = rice; this.moscow = moscow;
-        this.faq = faq; this.grooming = grooming; this.demo = demo; this.deps = deps;
+        this.faq = faq; this.grooming = grooming; this.demo = demo; this.daily = daily; this.vacation = vacation;
+        this.birthdays = birthdays; this.deps = deps;
         this.okr = okr;
     }
 
@@ -70,6 +75,9 @@ public class StateService {
         s.faq = faq.findAllByOrderByOrdAsc();
         s.grooming = grooming.findAllByOrderByOrdAsc();
         s.demo = demo.findAllByOrderByOrdAsc();
+        s.daily = daily.findAllByOrderByOrdAsc();
+        s.vacation = vacation.findAllByOrderByOrdAsc();
+        s.birthdays = birthdays.findAllByOrderByOrdAsc();
         s.deps = deps.findAllByOrderByOrdAsc();
         s.okr = okr.findAllByOrderByOrdAsc();
         return s;
@@ -121,6 +129,9 @@ public class StateService {
         order(s.faq, (e, i) -> { e.pk = null; e.ord = i; });
         order(s.grooming, (e, i) -> { e.pk = null; e.ord = i; });
         order(s.demo, (e, i) -> { e.pk = null; e.ord = i; });
+        order(s.daily, (e, i) -> { e.pk = null; e.ord = i; });
+        order(s.vacation, (e, i) -> { e.pk = null; e.ord = i; });
+        order(s.birthdays, (e, i) -> { e.pk = null; e.ord = i; });
         order(s.deps, (e, i) -> { e.pk = null; e.ord = i; });
         order(s.okr, (e, i) -> { e.id = null; e.ord = i; });
 
@@ -139,6 +150,9 @@ public class StateService {
         faq.deleteAllInBatch();        if (s.faq != null)        faq.saveAll(s.faq);
         grooming.deleteAllInBatch();   if (s.grooming != null)   grooming.saveAll(s.grooming);
         demo.deleteAllInBatch();       if (s.demo != null)       demo.saveAll(s.demo);
+        daily.deleteAllInBatch();      if (s.daily != null)      daily.saveAll(s.daily);
+        vacation.deleteAllInBatch();   if (s.vacation != null)   vacation.saveAll(s.vacation);
+        birthdays.deleteAllInBatch();  if (s.birthdays != null)  birthdays.saveAll(s.birthdays);
         deps.deleteAllInBatch();       if (s.deps != null)       deps.saveAll(s.deps);
         okr.deleteAllInBatch();        if (s.okr != null)        okr.saveAll(s.okr);
 

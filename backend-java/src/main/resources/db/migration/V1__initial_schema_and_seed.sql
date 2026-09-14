@@ -23,6 +23,9 @@ CREATE TABLE IF NOT EXISTS moscow     (pk SERIAL PRIMARY KEY, ms_id TEXT, name T
 CREATE TABLE IF NOT EXISTS faq        (pk SERIAL PRIMARY KEY, faq_id TEXT, category TEXT, question TEXT, answer TEXT, ord INT);
 CREATE TABLE IF NOT EXISTS grooming   (pk SERIAL PRIMARY KEY, grm_id TEXT, gdate TEXT, item TEXT, action TEXT, est DOUBLE PRECISION, ready TEXT, owner TEXT, notes TEXT, ord INT);
 CREATE TABLE IF NOT EXISTS demo       (pk SERIAL PRIMARY KEY, demo_id TEXT, sprint INT, ddate TEXT, item TEXT, presenter TEXT, stakeholders TEXT, feedback TEXT, status TEXT, ord INT);
+CREATE TABLE IF NOT EXISTS daily      (pk SERIAL PRIMARY KEY, daily_id TEXT, ddate TEXT, sprint INT, participant TEXT, yesterday TEXT, today TEXT, blocker TEXT, ord INT);
+CREATE TABLE IF NOT EXISTS vacation   (pk SERIAL PRIMARY KEY, vac_id TEXT, member TEXT, vtype TEXT, dfrom TEXT, dto TEXT, days DOUBLE PRECISION, status TEXT, notes TEXT, ord INT);
+CREATE TABLE IF NOT EXISTS birthdays  (pk SERIAL PRIMARY KEY, bd_id TEXT, member TEXT, bdate TEXT, role TEXT, notes TEXT, ord INT);
 CREATE TABLE IF NOT EXISTS deps       (pk SERIAL PRIMARY KEY, dep_id TEXT, item TEXT, type TEXT, task TEXT, stream TEXT, dir TEXT, descr TEXT, sprint INT, status TEXT, owner TEXT, risk TEXT, ord INT);
 CREATE TABLE IF NOT EXISTS okr        (id SERIAL PRIMARY KEY, q TEXT, obj TEXT, kr TEXT, target DOUBLE PRECISION, cur DOUBLE PRECISION, ord INT);
 CREATE TABLE IF NOT EXISTS app_meta   (id INT PRIMARY KEY DEFAULT 1, version BIGINT DEFAULT 1);
@@ -183,6 +186,27 @@ INSERT INTO grooming (grm_id, gdate, item, action, est, ready, owner, notes, ord
 INSERT INTO demo (demo_id, sprint, ddate, item, presenter, stakeholders, feedback, status, ord) VALUES ('DM-01', 1, '2026-08-14', 'Каркас каталога и карточка товара', 'Иванов А.', 'PO, маркетинг', 'Одобрено; просят добавить бейджи скидок', 'Принято', 0);
 INSERT INTO demo (demo_id, sprint, ddate, item, presenter, stakeholders, feedback, status, ord) VALUES ('DM-02', 2, '2026-08-28', 'Корзина и черновик оформления заказа', 'Петрова М.', 'PO, поддержка', 'В целом ок; доработать валидацию адреса', 'На доработку', 1);
 INSERT INTO demo (demo_id, sprint, ddate, item, presenter, stakeholders, feedback, status, ord) VALUES ('DM-03', 3, '2026-09-11', 'Оплата картой (MVP)', 'Кузнецов Д.', 'PO, финансы, безопасность', 'Принято для пилота; нужен лог транзакций', 'Принято', 2);
+
+-- daily
+INSERT INTO daily (daily_id, ddate, sprint, participant, yesterday, today, blocker, ord) VALUES ('DL-01', '2026-09-14', 3, 'Иванов А.', 'Завершил API оформления заказа', 'Ревью и интеграция оплаты', '', 0);
+INSERT INTO daily (daily_id, ddate, sprint, participant, yesterday, today, blocker, ord) VALUES ('DL-02', '2026-09-14', 3, 'Кузнецов Д.', 'Настроил песочницу платёжного шлюза', 'Обработка вебхуков оплаты', 'Ждём ключи от платёжного провайдера', 1);
+INSERT INTO daily (daily_id, ddate, sprint, participant, yesterday, today, blocker, ord) VALUES ('DL-03', '2026-09-14', 3, 'Петрова М.', 'Вёрстка корзины', 'Валидация адреса доставки', '', 2);
+INSERT INTO daily (daily_id, ddate, sprint, participant, yesterday, today, blocker, ord) VALUES ('DL-04', '2026-09-15', 3, 'Иванов А.', 'Интеграция оплаты', 'Логирование транзакций', '', 3);
+INSERT INTO daily (daily_id, ddate, sprint, participant, yesterday, today, blocker, ord) VALUES ('DL-05', '2026-09-15', 3, 'Соколов Р.', 'Тест-кейсы оформления', 'Регресс по корзине', 'Нестабильный стенд QA', 4);
+
+-- vacation
+INSERT INTO vacation (vac_id, member, vtype, dfrom, dto, days, status, notes, ord) VALUES ('VC-01', 'Иванов А.', 'Отпуск', '2026-09-22', '2026-10-03', 10, 'Утверждён', 'Плановый отпуск', 0);
+INSERT INTO vacation (vac_id, member, vtype, dfrom, dto, days, status, notes, ord) VALUES ('VC-02', 'Петрова М.', 'Отгул', '2026-09-18', '2026-09-18', 1, 'Утверждён', '', 1);
+INSERT INTO vacation (vac_id, member, vtype, dfrom, dto, days, status, notes, ord) VALUES ('VC-03', 'Кузнецов Д.', 'Командировка', '2026-09-29', '2026-10-01', 3, 'Запланирован', 'Встреча с платёжным провайдером', 2);
+INSERT INTO vacation (vac_id, member, vtype, dfrom, dto, days, status, notes, ord) VALUES ('VC-04', 'Орлова Е.', 'Больничный', '2026-09-08', '2026-09-10', 3, 'Завершён', '', 3);
+INSERT INTO vacation (vac_id, member, vtype, dfrom, dto, days, status, notes, ord) VALUES ('VC-05', 'Соколов Р.', 'Отпуск', '2026-10-13', '2026-10-24', 10, 'Запланирован', '', 4);
+
+-- birthdays
+INSERT INTO birthdays (bd_id, member, bdate, role, notes, ord) VALUES ('BD-01', 'Иванов А.', '1990-09-20', 'Backend', '', 0);
+INSERT INTO birthdays (bd_id, member, bdate, role, notes, ord) VALUES ('BD-02', 'Петрова М.', '1993-10-05', 'Frontend', '', 1);
+INSERT INTO birthdays (bd_id, member, bdate, role, notes, ord) VALUES ('BD-03', 'Кузнецов Д.', '1988-11-12', 'Backend', '', 2);
+INSERT INTO birthdays (bd_id, member, bdate, role, notes, ord) VALUES ('BD-04', 'Орлова Е.', '1995-09-28', 'Analyst', '', 3);
+INSERT INTO birthdays (bd_id, member, bdate, role, notes, ord) VALUES ('BD-05', 'Соколов Р.', '1991-12-03', 'QA', '', 4);
 
 -- deps
 INSERT INTO deps (dep_id, item, type, task, stream, dir, descr, sprint, status, owner, risk, ord) VALUES ('D-01', 'Интеграция платежей', 'Задача', 'T-03', 'Платёжный шлюз', 'Мы зависим', 'API оплаты v2 (токенизация карт)', 3, 'Заблокировано', 'Команда Payments', 'High', 0);

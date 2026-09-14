@@ -51,6 +51,14 @@ def load_state():
         "demo": [{"id": r["demo_id"], "sprint": r["sprint"], "date": r["ddate"], "item": r["item"],
                   "presenter": r["presenter"], "stakeholders": r["stakeholders"], "feedback": r["feedback"],
                   "status": r["status"]} for r in _rows("SELECT * FROM demo ORDER BY ord")],
+        "daily": [{"id": r["daily_id"], "date": r["ddate"], "sprint": r["sprint"], "participant": r["participant"],
+                   "yesterday": r["yesterday"], "today": r["today"], "blocker": r["blocker"]}
+                  for r in _rows("SELECT * FROM daily ORDER BY ord")],
+        "vacation": [{"id": r["vac_id"], "member": r["member"], "type": r["vtype"], "from": r["dfrom"],
+                      "to": r["dto"], "days": r["days"], "status": r["status"], "notes": r["notes"]}
+                     for r in _rows("SELECT * FROM vacation ORDER BY ord")],
+        "birthdays": [{"id": r["bd_id"], "member": r["member"], "date": r["bdate"], "role": r["role"],
+                       "notes": r["notes"]} for r in _rows("SELECT * FROM birthdays ORDER BY ord")],
         "deps": [{"id": r["dep_id"], "item": r["item"], "stream": r["stream"], "dir": r["dir"],
                   "status": r["status"], "task": r["task"]} for r in _rows("SELECT * FROM deps ORDER BY ord")],
         "dod": [{"crit": r["crit"], "done": r["done"]} for r in _rows("SELECT * FROM dod ORDER BY ord")],

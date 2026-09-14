@@ -44,6 +44,9 @@ public final class Dtos {
         public List<Faq> faq;
         public List<Grooming> grooming;
         public List<Demo> demo;
+        public List<Daily> daily;
+        public List<Vacation> vacation;
+        public List<Birthday> birthdays;
         public List<Dependency> deps;
         public List<Okr> okr;
         public BudgetDto budget;
