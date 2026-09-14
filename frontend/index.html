@@ -206,7 +206,6 @@ tfoot td{font-weight:700;background:var(--panel2);color:var(--ink);border-top:2p
 .modal .mrow{display:flex;gap:8px;justify-content:flex-end;margin-top:18px;flex-wrap:wrap}
 body.ro #main .btn.primary,body.ro #main .rowdel{display:none}
 body.noadmin #rst,body.noadmin #imp{display:none}
-body.noadmin .nav-item[data-v="audit"]{display:none}
 .usr-add{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:6px}
 .usr-add input,.usr-add select{border:1px solid var(--line);background:var(--panel2);color:var(--ink);border-radius:8px;padding:8px 9px;font-family:inherit;font-size:13px}
 .usr-add input{flex:1 1 120px;min-width:100px}
@@ -267,7 +266,7 @@ body.noadmin .nav-item[data-v="audit"]{display:none}
  </div>
 </div></header>
 <div class="shell"><aside class="side" id="side"><nav id="nav"></nav><div class="side-foot" id="sidefoot"></div></aside><div class="scrim" id="scrim"></div>
-<main id="main"><section class="view" id="v_dash"></section><section class="view" id="v_backlog"></section><section class="view" id="v_team"></section><section class="view" id="v_roadmap"></section><section class="view" id="v_quarters"></section><section class="view" id="v_rice"></section><section class="view" id="v_moscow"></section><section class="view" id="v_gantt"></section><section class="view" id="v_deps"></section><section class="view" id="v_releases"></section><section class="view" id="v_milestones"></section><section class="view" id="v_debt"></section><section class="view" id="v_okr"></section><section class="view" id="v_budget"></section><section class="view" id="v_analytics"></section><section class="view" id="v_risks"></section><section class="view" id="v_bugs"></section><section class="view" id="v_retro"></section><section class="view" id="v_calendar"></section><section class="view" id="v_params"></section><section class="view" id="v_faq"></section><section class="view" id="v_audit"></section><section id="changelog" class="changelog"></section></main></div>
+<main id="main"><section class="view" id="v_dash"></section><section class="view" id="v_backlog"></section><section class="view" id="v_team"></section><section class="view" id="v_roadmap"></section><section class="view" id="v_quarters"></section><section class="view" id="v_rice"></section><section class="view" id="v_moscow"></section><section class="view" id="v_gantt"></section><section class="view" id="v_deps"></section><section class="view" id="v_releases"></section><section class="view" id="v_milestones"></section><section class="view" id="v_debt"></section><section class="view" id="v_okr"></section><section class="view" id="v_budget"></section><section class="view" id="v_analytics"></section><section class="view" id="v_risks"></section><section class="view" id="v_bugs"></section><section class="view" id="v_retro"></section><section class="view" id="v_calendar"></section><section class="view" id="v_params"></section><section class="view" id="v_faq"></section><section class="view" id="v_audit"></section></main></div>
 <div class="palette" id="palette"><div class="pbox"><input class="pin" id="pin" placeholder="Поиск раздела или действия…" autocomplete="off"><div class="plist" id="plist"></div></div></div>
 <div class="role-pop" id="rolepop"></div>
 <div class="modal" id="accmodal"><div class="mbox">
@@ -1389,8 +1388,8 @@ function views(){
  renderParams();
  // FAQ (Справка)
  setView('faq','FAQ — частые вопросы','Ответы на типичные вопросы о работе с приложением. Раскройте вопрос, чтобы увидеть ответ; ниже — таблица для редактирования.',faqView());
- // Audit log (Справка) — admin only, server-side
- setView('audit','Журнал событий','Все события приложения фиксируются в отдельной базе данных PostgreSQL. Доступно администратору.',auditView());
+ // Audit log (Справка) — история изменений для всех; полный журнал — администратору
+ setView('audit','Журнал событий','История изменений приложения. Для администратора также доступен полный журнал всех событий (отдельная база данных PostgreSQL).',auditView());
 }
 function setView(id,title,lede,node){const v=document.getElementById('v_'+id);v.innerHTML=`<h1>${title}</h1><p class="lede">${lede}</p>`;if(node)v.appendChild(node);}
 
@@ -1521,8 +1520,16 @@ function riceScore(r){const eff=num(r.effort);return eff?num(r.reach)*num(r.impa
 function auditFmtTs(ts){try{const d=(typeof ts==='number')?new Date(ts):new Date(ts);return isNaN(d)?String(ts):d.toLocaleString('ru-RU');}catch(e){return String(ts);}}
 function auditCatCls(c){return (c==='DENY'||c==='ERROR')?'p-crit':c==='DATA'?'p-good':c==='CLIENT'?'p-warn':'p-neut';}
 function auditView(){const w=document.createElement('div');
+ // История изменений — видна всем пользователям
+ w.appendChild(changelogNode());
+ // Полный журнал всех событий — только администратору при работе с сервером
  if(!(typeof AUTH!=='undefined'&&AUTH.mode==='server'&&PERM.canAdmin)){
-  w.innerHTML='<div class="card">Журнал событий доступен администратору при работе с сервером. Все события пишутся в отдельную базу данных PostgreSQL на сервере.</div>';return w;}
+  const note=document.createElement('div');note.className='card';note.style.marginTop='16px';
+  note.style.cssText+=';color:var(--muted);font-size:13px;line-height:1.6';
+  note.textContent='Полный журнал событий (кто, что и когда менял — вход, изменения данных, действия) доступен администратору при работе с сервером. Все события пишутся в отдельную базу данных PostgreSQL.';
+  w.appendChild(note);return w;}
+ const tt=document.createElement('p');tt.className='ctitle';tt.style.marginTop='22px';tt.textContent='Журнал всех событий (сервер)';
+ w.appendChild(tt);
  const bar=document.createElement('div');bar.className='tbar';
  const sel=document.createElement('select');sel.className='tsearch';
  [['','Все категории'],['ACCESS','Запросы'],['DATA','Изменения данных'],['AUTH','Авторизация'],['DENY','Отказы доступа'],['CLIENT','Действия в UI'],['ERROR','Ошибки']].forEach(([v,l])=>{const o=document.createElement('option');o.value=v;o.textContent=l;sel.appendChild(o);});
@@ -1891,9 +1898,10 @@ const NAV=[
  {g:'Настройки',items:[['okr','OKR','🧭'],['budget','Бюджет','💰'],['calendar','Календарь','📅'],['params','Параметры','⚙️']]},
  {g:'Справка',items:[['faq','FAQ','❓'],['audit','Журнал событий','🧾']]},
 ];
-const APP_VERSION='1.9.0';const APP_DATE='2026-09-14';
+const APP_VERSION='1.10.0';const APP_DATE='2026-09-14';
 const CHANGELOG=[
- {v:'1.9.0',date:'2026-09-14',items:['Раздел «История изменений» на всех страницах приложения.']},
+ {v:'1.10.0',date:'2026-09-14',items:['«История изменений» размещена в разделе «Журнал событий»; раздел виден всем пользователям (полный журнал событий — только администратору).']},
+ {v:'1.9.0',date:'2026-09-14',items:['Добавлен раздел «История изменений».']},
  {v:'1.8.0',date:'2026-09-14',items:['Логирование всех событий приложения в отдельную базу данных PostgreSQL.','Раздел «Журнал событий» для администратора.']},
  {v:'1.7.0',date:'2026-09-14',items:['Чат-бот «Помощник»: ответы по данным проекта, навигация по разделам, поиск по FAQ.']},
  {v:'1.6.0',date:'2026-09-14',items:['Серверная авторизация: вход по логину, роли в PostgreSQL, проверка прав в Java.','Управление пользователями и ролями для администратора.']},
@@ -1904,12 +1912,13 @@ const CHANGELOG=[
  {v:'1.1.0',date:'2026-09-11',items:['Скрывающееся боковое меню; убран устаревший верхний таб-бар.']},
  {v:'1.0.0',date:'2026-08-03',items:['Базовое приложение: дашборд, дорожная карта, кварталы, RICE, бэклог, Гант, зависимости, команда, релизы, вехи, техдолг, аналитика, риски, баги, ретроспективы, OKR, бюджет, календарь, параметры.','Экспорт в Excel, синхронизация данных с сервером.']},
 ];
-function renderChangelog(){const host=document.getElementById('changelog');if(!host)return;
- let open=false;try{open=localStorage.getItem('changelog_open')==='1';}catch(e){}
+function changelogNode(){const host=document.createElement('div');host.className='changelog';
+ let open=true;try{const v=localStorage.getItem('changelog_open');if(v!=null)open=(v==='1');}catch(e){}
  let h='<details'+(open?' open':'')+'><summary>🕘 История изменений <span class="cl-date" style="font-weight:400">· текущая v'+esc(APP_VERSION)+'</span><span class="cl-caret">▾</span></summary><div class="cl-body">';
  CHANGELOG.forEach((c,i)=>{h+='<div class="cl-item"><div class="cl-head"><span class="cl-ver">v'+esc(c.v)+'</span>'+(i===0?'<span class="cl-cur">текущая</span>':'')+'<span class="cl-date">'+esc(c.date)+'</span></div><ul class="cl-list">'+c.items.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul></div>';});
  h+='</div></details>';host.innerHTML=h;
- const d=host.querySelector('details');if(d)d.addEventListener('toggle',()=>{try{localStorage.setItem('changelog_open',d.open?'1':'0');}catch(e){}});}
+ const d=host.querySelector('details');if(d)d.addEventListener('toggle',()=>{try{localStorage.setItem('changelog_open',d.open?'1':'0');}catch(e){}});
+ return host;}
 function buildNav(){let h='';NAV.forEach(g=>{h+=`<div class="nav-group"><div class="nav-h">${g.g}</div>`;
   g.items.forEach(it=>h+=`<button class="nav-item" data-v="${it[0]}"><span class="nav-ic">${it[2]}</span><span>${it[1]}</span></button>`);
   h+='</div>';});document.getElementById('nav').innerHTML=h;
@@ -1921,7 +1930,6 @@ function activate(id){CURV=id;
  document.querySelectorAll('.view').forEach(s=>s.classList.toggle('active',s.id==='v_'+id));
  closeDrawer();window.scrollTo(0,0);if(typeof applyPerms==='function')applyPerms();}
 buildNav();
-renderChangelog();
 document.getElementById('nav').addEventListener('click',e=>{const b=e.target.closest('.nav-item');if(b){activate(b.dataset.v);if(typeof auditClient==='function')auditClient('open_section',b.dataset.v);}});
 document.getElementById('menubtn').onclick=()=>{const shell=document.querySelector('.shell'),side=document.getElementById('side');
  if(window.matchMedia('(max-width:900px)').matches){side.classList.toggle('open');document.getElementById('scrim').classList.toggle('show',side.classList.contains('open'));}
