@@ -288,6 +288,7 @@ body.noadmin #rst,body.noadmin #imp{display:none}
   <button class="btn" id="pptxbtn" title="Отчёт-презентация по спринту (PPTX)">📊 Отчёт</button>
   <button class="btn" id="exp">JSON</button>
   <button class="btn" id="imp">Импорт</button>
+  <button class="btn" id="impcsv" title="Импорт задач из CSV / Jira в Бэклог">CSV</button>
   <button class="btn danger" id="rst">Сброс</button>
   <span id="syncst" class="pill p-neut" style="align-self:center;white-space:nowrap">⚪ локально</span>
   <span id="anst" class="pill p-neut" style="align-self:center;white-space:nowrap" title="Сервис аналитики (Python)">🐍 аналитика</span>
@@ -344,6 +345,7 @@ body.noadmin #rst,body.noadmin #imp{display:none}
 </div>
 <div class="toast" id="toast"></div>
 <input type="file" id="file" accept=".json" style="display:none">
+<input type="file" id="filecsv" accept=".csv,.tsv,text/csv" style="display:none">
 <script>
 const SEED={
  "params": {
@@ -1429,10 +1431,10 @@ function sprintOpts(){return Array.from({length:ST.params.sprints||11},(_,i)=>i+
 function moscowRankOf(id){const m=(ST.moscow||[]).find(x=>x.task===id);if(!m)return 2.5;const r={'Must':0,'Should':1,'Could':2,"Won't":3}[m.category];return r==null?2.5:r;}
 function riceScoreOf(id){const r=(ST.rice||[]).find(x=>x.task===id);return r?riceScore(r):0;}
 function cmpPriority(a,b){const ma=moscowRankOf(a.id),mb=moscowRankOf(b.id);if(ma!==mb)return ma-mb;const ra=riceScoreOf(a.id),rb=riceScoreOf(b.id);if(ra!==rb)return rb-ra;return num(a.est)-num(b.est);}
-function isTaskReady(id){return (ST.grooming||[]).some(g=>g.task===id&&g.ready==='Готово к спринту');}
+function isTaskReady(id){const t=(ST.tasks||[]).find(x=>x.id===id);if(t&&t.dor==='Готова')return true;return (ST.grooming||[]).some(g=>g.task===id&&g.ready==='Готово к спринту');}
 function todayISO(){return (ST.params&&ST.params.today)||new Date().toISOString().slice(0,10);}
 function sortBacklogByPriority(){if(!PERM.canEdit){toast('Только для редактора/администратора');return;}
- (ST.tasks||[]).sort(cmpPriority);save();views();activate('backlog');if(typeof auditClient==='function')auditClient('backlog_sort_priority');toast('Бэклог отсортирован по приоритету (MoSCoW → RICE)');}
+ const np=applyPriorities();(ST.tasks||[]).sort(cmpPriority);save();views();activate('backlog');if(typeof auditClient==='function')auditClient('backlog_sort_priority',np);toast('Бэклог отсортирован; приоритет проставлен в '+np+' задач (MoSCoW → RICE)');}
 function autoFillSprint(N){if(!PERM.canEdit){toast('Только для редактора/администратора');return;}
  N=num(N);const C=compute(),spo=C.sp.find(x=>+x.s===N);if(!spo){toast('Нет спринта #'+N);return;}
  let avail=spo.cap-(ST.tasks||[]).filter(t=>+t.sprint===N&&t.status!=='Готово').reduce((a,t)=>a+num(t.est),0);
@@ -1477,7 +1479,57 @@ function dataChecks(){const issues=[],tasks=ST.tasks||[],ids={};
  });
  [['grooming','Груминг'],['rice','RICE'],['moscow','MoSCoW']].forEach(function(p){(ST[p[0]]||[]).forEach(x=>{if(x.task&&!tasks.some(t=>t.id===x.task))issues.push({lvl:'warn',msg:p[1]+' '+x.id+': ссылка на несуществующую задачу '+x.task,fix:()=>{x.task='';}});});});
  (ST.rice||[]).forEach(r=>{if(!num(r.reach)||!num(r.effort))issues.push({lvl:'info',msg:'RICE '+r.id+': не заполнены Reach/Effort',fix:null});});
+ depCycleIds().forEach(id=>issues.push({lvl:'crit',msg:'Циклическая зависимость с участием '+id,fix:null}));
+ depConflictList().forEach(c=>issues.push({lvl:'warn',msg:'Задача раньше зависимости: '+c,fix:null}));
  return issues;}
+/* ---- v1.20: приоритет→в задачу, DoR-синхронизация, циклы зависимостей, груминг-команда, CSV/Jira ---- */
+function priorityOf(id){const m=(ST.moscow||[]).find(x=>x.task===id);if(m&&m.category)return m.category;const r=riceScoreOf(id);if(r>0)return 'RICE '+Math.round(r);return '';}
+function applyPriorities(){let n=0;(ST.tasks||[]).forEach(t=>{const p=priorityOf(t.id);if(p&&t.priority!==p){t.priority=p;n++;}});return n;}
+function syncReadiness(){let n=0;(ST.tasks||[]).forEach(t=>{const g=(ST.grooming||[]).filter(x=>x.task===t.id);if(!g.length)return;
+   const ready=g.some(x=>x.ready==='Готово к спринту');const nd=ready?'Готова':'';if((t.dor||'')!==nd){t.dor=nd;n++;}
+   if(ready){const est=g.map(x=>num(x.est)).filter(v=>v>0).pop();if(est&&num(t.est)!==est){t.est=est;n++;}}});return n;}
+function syncReadinessAction(){if(!PERM.canEdit){toast('Только для редактора/администратора');return;}const n=syncReadiness();save();views();activate('grooming');if(typeof auditClient==='function')auditClient('groom_sync_dor',n);toast(n?('Синхронизировано с задачами: '+n+' изм.'):'Задачи уже синхронизированы');}
+function depCycleIds(){const byId={};(ST.tasks||[]).forEach(t=>byId[t.id]=t);const res=[];
+ (ST.tasks||[]).forEach(t=>{const seen=new Set();let c=t;while(c&&c.dep){if(seen.has(c.id))break;seen.add(c.id);c=byId[c.dep];if(c&&c.id===t.id){res.push(t.id);break;}}});
+ return res;}
+function depConflictList(){const tasks=ST.tasks||[],confs=[];
+ tasks.forEach(t=>{if(!t.dep||t.sprint==null||t.sprint==='')return;const dt=tasks.find(x=>x.id===t.dep);
+   if(dt&&dt.sprint!=null&&dt.sprint!==''&&+dt.sprint>+t.sprint)confs.push(t.id+' (спринт '+t.sprint+') раньше '+dt.id+' (спринт '+dt.sprint+')');});
+ return confs;}
+function depIssuesBannerHTML(){const cy=depCycleIds(),cf=depConflictList();if(!cy.length&&!cf.length)return '';
+ let h='<div class="card" style="border-left:4px solid var(--crit);margin-bottom:14px"><p class="ctitle" style="color:var(--crit);margin:0 0 6px">⚠ Проблемы расписания зависимостей</p><ul style="margin:0 0 0 18px;font-size:13px;color:var(--muted);line-height:1.75">';
+ cy.forEach(id=>h+='<li>🔁 Цикл зависимостей с участием '+esc(id)+' — устраните круговую ссылку.</li>');
+ cf.forEach(x=>h+='<li>🔗 '+esc(x)+'</li>');
+ return h+'</ul></div>';}
+function depIssuesBanner(){const html=depIssuesBannerHTML();if(!html)return document.createComment('ok');const d=document.createElement('div');d.innerHTML=html;return d.firstChild;}
+function groomUngroomed(){const arr=ST.grooming||(ST.grooming=[]);let n=0;
+ (ST.tasks||[]).forEach(t=>{if(arr.some(g=>g.task===t.id))return;
+   arr.push({id:genId(arr,'id','GR-'),task:t.id,date:todayISO(),item:t.title||t.id,action:'Оценка',est:num(t.est),ready:'Требует доработки',owner:t.assignee||'',notes:'Авто: не разобрано'});n++;});
+ if(n){save();views();}return n;}
+function doneSprintForReport(C){for(let i=(C.sp||[]).length-1;i>=0;i--){const s=C.sp[i];const tk=(ST.tasks||[]).filter(t=>+t.sprint===+s.s);if(tk.length&&tk.every(t=>t.status==='Готово'))return s.s;}return null;}
+function detectDelim(line){const cands=[',',';','\t'];let best=',',n=-1;cands.forEach(d=>{const c=line.split(d).length;if(c>n){n=c;best=d;}});return best;}
+function parseCSV(text,delim){const rows=[];let i=0,f='',row=[],q=false;text=String(text).replace(/\r\n/g,'\n').replace(/\r/g,'\n');
+ while(i<text.length){const c=text[i];
+  if(q){if(c==='"'){if(text[i+1]==='"'){f+='"';i+=2;continue;}q=false;i++;continue;}f+=c;i++;continue;}
+  if(c==='"'){q=true;i++;continue;}
+  if(c===delim){row.push(f);f='';i++;continue;}
+  if(c==='\n'){row.push(f);rows.push(row);row=[];f='';i++;continue;}
+  f+=c;i++;}
+ if(f.length||row.length){row.push(f);rows.push(row);}
+ return rows.filter(r=>r.some(x=>String(x).trim()!==''));}
+const CSV_MAP={title:['title','summary','задача','название','name','tasks'],id:['id','key','issue key','issuekey','ключ'],assignee:['assignee','исполнитель','assigned','owner'],role:['role','роль'],type:['type','тип','issue type','issuetype'],est:['est','story points','storypoints','оценка','sp','estimate','points'],status:['status','статус','state'],sprint:['sprint','спринт','iteration'],dep:['dep','depends','зависит','depends on','blocks','зависит от']};
+function csvFieldFor(header){const h=String(header||'').trim().toLowerCase();for(const k in CSV_MAP){if(CSV_MAP[k].indexOf(h)>=0)return k;}return null;}
+function importCSVTasks(text){const first=(String(text).split('\n')[0]||'');const delim=detectDelim(first);const rows=parseCSV(text,delim);
+ if(rows.length<2){toast('CSV пуст или без строк данных');return;}
+ const head=rows[0].map(csvFieldFor);if(head.indexOf('title')<0){toast('В CSV нет столбца названия (title / Summary / Задача)');return;}
+ const tks=ST.tasks||(ST.tasks=[]);let n=0;
+ rows.slice(1).forEach(r=>{const o={};head.forEach((k,idx)=>{if(k)o[k]=(r[idx]||'').trim();});if(!o.title)return;
+   const raw=(o.status||'').toLowerCase();
+   const st=STAT_TASK.indexOf(o.status)>=0?o.status:(/gotov|done|closed|resolved|готов|закры/.test(raw)?'Готово':/progress|работ|doing/.test(raw)?'В работе':'To Do');
+   tks.push({id:o.id||genId(tks,'id','T-'),title:o.title,assignee:o.assignee||'',role:ROLES.indexOf(o.role)>=0?o.role:'',type:o.type||'Задача',
+     est:num(o.est),status:st,sprint:o.sprint?num(o.sprint):'',dep:(o.dep&&tks.some(x=>x.id===o.dep))?o.dep:'',started:'',done:'',priority:'',dor:'',added:true});n++;});
+ if(!n){toast('Не удалось разобрать строки CSV');return;}
+ save();views();activate('backlog');if(typeof auditClient==='function')auditClient('import_csv',n);toast('Импортировано из CSV: '+n+' задач');}
 function checksView(){const w=document.createElement('div');const issues=dataChecks(),fixable=issues.filter(i=>i.fix);
  const bar=document.createElement('div');bar.className='grm-pick';
  const b=document.createElement('button');b.className='btn primary';b.textContent='🧹 Исправить автоматически ('+fixable.length+')';
@@ -1491,7 +1543,7 @@ function checksView(){const w=document.createElement('div');const issues=dataChe
    h+='</tbody></table></div>';card.innerHTML=h;}
  w.appendChild(card);
  const lg=document.createElement('div');lg.className='card';lg.style.marginTop='14px';
- lg.innerHTML='<p class="ctitle">Проверки данных (авто-контроль)</p><p style="font-size:13px;color:var(--muted);line-height:1.7;margin:0">Контроль целостности: дубли ID, «Готово» без даты, «В работе» без старта, задачи без оценки, осиротевшие зависимости и ссылки RICE/MoSCoW/Груминга, формулы из старого импорта. «Исправить автоматически» чинит всё, что можно без потери смысла.</p>';
+ lg.innerHTML='<p class="ctitle">Проверки данных (авто-контроль)</p><p style="font-size:13px;color:var(--muted);line-height:1.7;margin:0">Контроль целостности: дубли ID, «Готово» без даты, «В работе» без старта, задачи без оценки, осиротевшие зависимости и ссылки RICE/MoSCoW/Груминга, формулы из старого импорта, а также <b>циклы зависимостей</b> и <b>конфликты расписания</b> (задача стоит раньше своей зависимости). «Исправить автоматически» чинит всё, что можно без потери смысла; циклы и конфликты помечаются для ручного разбора.</p>';
  w.appendChild(lg);return w;}
 function backlogView(){const w=document.createElement('div');const C=compute();
  const bar=document.createElement('div');bar.className='grm-pick';
@@ -1505,7 +1557,8 @@ function backlogView(){const w=document.createElement('div');const C=compute();
  w.appendChild(editable('tasks',[
     {k:'id',label:'ID'},{k:'title',label:'Задача',wide:true},{k:'assignee',label:'Исполнитель'},
     {k:'role',label:'Роль',type:'select',opts:ROLES},{k:'type',label:'Тип',type:'select',opts:['История','Задача','Тех.долг']},
-    {k:'est',label:'Оценка',type:'num'},{k:'status',label:'Статус',type:'select',opts:STAT_TASK},
+    {k:'est',label:'Оценка',type:'num'},{k:'priority',label:'Приоритет'},{k:'dor',label:'DoR',type:'select',opts:['','Готова']},
+    {k:'status',label:'Статус',type:'select',opts:STAT_TASK},
     {k:'sprint',label:'Спринт',type:'num'},{k:'dep',label:'Зависит от',type:'dep'},{k:'started',label:'В работу',type:'date'},{k:'done',label:'Готово',type:'date'}
    ],{newId:'id',prefix:'T-'}));
  return w;}
@@ -1612,8 +1665,10 @@ function renderDash(C){const v=document.getElementById('v_dash');const T=ST.ttmT
   kpiCard('Открыто багов',C.bugsOpen,'DRE '+pctf(C.dre),C.bugsOpen===0?'good':C.bugsOpen<=3?'warn':'crit',{goto:'bugs'}),
   kpiCard('Остаток',fmt(C.remain,1)+' <small>дн</small>','незакрытые спринты','neut',{goto:'roadmap'}),
  ];
+ const doneSp=doneSprintForReport(C);
  v.innerHTML=`<h1>Дашборд</h1><p class="lede">Цель: <b>${esc(ST.params.goal||'—')}</b>. Всё пересчитывается при изменении данных.</p>
  ${attnBand(C)}
+ ${doneSp?`<div class="card" style="border-left:4px solid var(--good);margin-top:12px;display:flex;gap:12px;align-items:center;flex-wrap:wrap"><span style="font-size:13.5px">🏁 Спринт #${doneSp} завершён — все задачи в статусе «Готово». Сформировать отчёт по спринту?</span><button class="btn primary" style="margin-left:auto" onclick="openPptxModalFor(${doneSp})">📊 Сформировать отчёт</button></div>`:''}
  <div class="grid kpis" id="dk"></div>
  <div class="cols two" style="margin-top:14px">
   <div class="card"><p class="ctitle">Ёмкость / План / Velocity по спринтам</p><div id="dc1"></div>
@@ -1951,6 +2006,11 @@ function backlogPickerBar(coll,addLabel,counterLabel,makeItem){
    save();views();activate(CURV);if(typeof auditClient==='function')auditClient(coll+'_from_backlog',t.id);toast('Добавлена задача '+t.id);};
  return bar;}
 function groomingView(){const w=document.createElement('div');
+ const sbar=document.createElement('div');sbar.className='grm-pick';
+ const sync=document.createElement('button');sync.className='btn';sync.textContent='✅ Синхронизировать готовность (DoR) в задачи';sync.onclick=syncReadinessAction;
+ const gc=document.createElement('span');gc.style.cssText='font-size:12.5px;color:var(--muted);align-self:center;margin-left:auto';
+ gc.textContent='Готовы к спринту: '+(ST.tasks||[]).filter(t=>isTaskReady(t.id)).length+' из '+(ST.tasks||[]).length;
+ sbar.appendChild(sync);sbar.appendChild(gc);w.appendChild(sbar);
  w.appendChild(backlogPickerBar('grooming','+ В груминг','Не разобрано',(t,arr)=>({id:genId(arr,'id','GR-'),task:t.id,
    date:(ST.params&&ST.params.today)||new Date().toISOString().slice(0,10),item:t.title||t.id,action:'Оценка',
    est:num(t.est),ready:'Требует доработки',owner:t.assignee||'',notes:'Взято из Бэклога'})));
@@ -2079,6 +2139,7 @@ function renderRoadmap(C){const v=document.getElementById('v_roadmap');
 /* ---------- Гант ---------- */
 function depColor(st){return (st==='Заблокировано'||st==='Просрочено')?col('--crit'):(st==='Получено'||st==='Подтверждено')?col('--good'):col('--warn');}
 function depsView(){const w=document.createElement('div');
+ w.appendChild(depIssuesBanner());
  w.appendChild(editable('deps',[{k:'id',label:'ID'},{k:'item',label:'Элемент',wide:true},
    {k:'type',label:'Тип',type:'select',opts:['История','Задача','Фича','Эпик']},
    {k:'task',label:'Задача (Гант)',type:'dep'},{k:'stream',label:'Внешний стрим'},
@@ -2110,6 +2171,7 @@ function depsView(){const w=document.createElement('div');
  return w;}
 function renderGantt(C){const v=document.getElementById('v_gantt');const tasks=(ST.tasks||[]).slice();
  v.innerHTML=`<h1>Гант</h1><p class="lede">Задачи на шкале дат по спринтам; красная рамка — критический путь. Меняйте спринт и зависимости.</p>
+  ${depIssuesBannerHTML()}
   <div class="card"><div id="gc"></div><div class="legend"><span><i style="border:2px solid var(--crit);background:transparent"></i>Критический путь</span><span><b style="color:var(--warn);font-size:13px">◆</b> Внешняя зависимость от другого стрима (цвет — статус)</span></div></div>
   <div class="twrap" style="margin-top:14px"><table id="gt"></table></div>`;
  drawGantt(document.getElementById('gc'),tasks,C);
@@ -2431,8 +2493,15 @@ const NAV=[
  {g:'Настройки',items:[['okr','OKR','🧭'],['budget','Бюджет','💰'],['calendar','Календарь','📅'],['checks','Проверки данных','🧪'],['params','Параметры','⚙️']]},
  {g:'Справка',items:[['faq','FAQ','❓'],['audit','Журнал событий','🧾']]},
 ];
-const APP_VERSION='1.19.0';const APP_DATE='2026-09-15';
+const APP_VERSION='1.20.0';const APP_DATE='2026-09-15';
 const CHANGELOG=[
+ {v:'1.20.0',date:'2026-09-15',items:[
+   'Приоритет из RICE/MoSCoW проставляется прямо в задачу (колонка «Приоритет» в Бэклоге) при сортировке.',
+   'Груминг → готовность задачи: флаг «DoR» на задаче и синхронизация оценки одной кнопкой (isTaskReady учитывает флаг).',
+   'Циклы зависимостей и конфликты «задача раньше зависимости» — в «Проверках данных» и баннером на Ганте и в «Зависимостях».',
+   'Авто-предложение отчёта на дашборде, когда спринт завершён на 100%.',
+   'Импорт задач из CSV/Jira в Бэклог (авто-маппинг столбцов, кнопка «CSV»).',
+   'Помощник: «добавь в груминг все незаполненные», «синхронизируй готовность».']},
  {v:'1.19.0',date:'2026-09-15',items:[
    'Отпуска влияют на ёмкость: пересечение отпусков/больничных/отгулов со спринтом автоматически уменьшает его ёмкость.',
    'Авто-набор спринта по ёмкости (с учётом приоритета RICE/MoSCoW, готовности по грумингу и зависимостей) и сортировка Бэклога по приоритету.',
@@ -2517,6 +2586,7 @@ function openPptxModal(){const sel=document.getElementById('pptx_sprint');const 
  C.sp.forEach(x=>{h+='<option value="'+x.s+'"'+(x.s===C.cur?' selected':'')+'>Спринт #'+x.s+(x.status?(' · '+x.status):'')+'</option>';});
  sel.innerHTML=h;document.getElementById('pptxmodal').classList.add('open');}
 function closePptxModal(){document.getElementById('pptxmodal').classList.remove('open');}
+function openPptxModalFor(n){openPptxModal();const sel=document.getElementById('pptx_sprint');if(sel)sel.value=String(n);}
 document.getElementById('pptxbtn').onclick=openPptxModal;
 document.getElementById('pptx_cancel').onclick=closePptxModal;
 document.getElementById('pptx_go').onclick=()=>{const v=document.getElementById('pptx_sprint').value;closePptxModal();exportPptx(v);};
@@ -2524,6 +2594,8 @@ document.getElementById('pptxmodal').addEventListener('click',e=>{if(e.target.id
 document.getElementById('exp').onclick=()=>{const b=new Blob([JSON.stringify(ST,null,1)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='planirovanie_data.json';a.click();toast('Экспортировано');auditClient('export_json');};
 document.getElementById('imp').onclick=()=>{if(!PERM.canAdmin){toast('Только для администратора');return;}document.getElementById('file').click();};
 document.getElementById('file').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{ST=JSON.parse(r.result);save();views();activate(CURV);toast('Импортировано');auditClient('import_json',f.name);}catch(err){toast('Ошибка файла');}};r.readAsText(f);};
+document.getElementById('impcsv').onclick=()=>{if(!PERM.canEdit){toast('Только для редактора/администратора');return;}document.getElementById('filecsv').click();};
+document.getElementById('filecsv').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{importCSVTasks(String(r.result));}catch(err){toast('Ошибка CSV');}e.target.value='';};r.readAsText(f);};
 document.getElementById('rst').onclick=()=>{if(!PERM.canAdmin){toast('Только для администратора');return;}if(confirm('Сбросить все данные к исходным?')){ST=migrate(JSON.parse(JSON.stringify(SEED)));save();views();activate(CURV);toast('Сброшено');auditClient('reset_data');}};
 document.getElementById('themebtn').onclick=()=>{const cur=document.documentElement.getAttribute('data-theme');const sys=matchMedia('(prefers-color-scheme:dark)').matches;const nx=(cur||(sys?'dark':'light'))==='dark'?'light':'dark';document.documentElement.setAttribute('data-theme',nx);views();activate(CURV);};
 /* ---------- roles / access modes (UI) ---------- */
@@ -2757,6 +2829,8 @@ startAnalytics();setInterval(startAnalytics,30000);
   if(/(исправь|почини|проверь).{0,10}данн|проверк.{0,6}данн/.test(s)){if(!canDo)return {t:'Действие доступно редактору/администратору.'};const fx=dataChecks().filter(i=>i.fix);if(!fx.length)return {t:'Проблем для авто-исправления не найдено.',goto:'checks'};fx.forEach(i=>i.fix());save();views();activate('checks');return {t:'Исправлено автоматически: '+fx.length+' проблем(ы).',goto:'checks'};}
   if(/(перенеси|перемести).{0,20}спринт/.test(s)&&/т-?\d+|t-?\d+/.test(s)){const im=s.match(/t-?(\d+)/),sm=s.match(/спринт[а-я]*\s*#?(\d+)/);if(im&&sm){if(!canDo)return {t:'Действие доступно редактору/администратору.'};const tid='T-'+String(im[1]).padStart(2,'0');const t=(ST.tasks||[]).find(x=>String(x.id).toUpperCase()===tid);if(!t)return {t:'Задача '+tid+' не найдена.'};t.sprint=+sm[1];save();views();activate('backlog');return {t:tid+' перенесена в спринт #'+sm[1]+'.',goto:'roadmap'};}}
   if(/(создай|добавь|нов(ая|ую)).{0,8}задач/.test(s)){if(!canDo)return {t:'Создание задач доступно редактору/администратору.'};let title=q.replace(/.*?задач[а-яё]*/i,'').replace(/^[\s:—–-]+/,'').trim()||'Новая задача';const tks=ST.tasks||(ST.tasks=[]);const id=genId(tks,'id','T-');tks.push({id:id,title:title,assignee:'',role:'',type:'Задача',est:0,status:'To Do',sprint:'',dep:'',started:'',done:'',added:true});save();views();activate('backlog');return {t:'Создал задачу '+id+': «'+title+'».',goto:'backlog'};}
+  if(/(добав|занеси|разбери|отправ).{0,16}груминг|груминг.{0,16}(незаполн|незакрыт|не разобр|все)/.test(s)){if(!canDo)return {t:'Действие доступно редактору/администратору.'};const n=groomUngroomed();return {t:n?('Добавлено в груминг: '+n+' задач(и) без разбора.'):'Все задачи уже есть в груминге.',goto:'grooming'};}
+  if(/(синхрон|обнов).{0,16}(готовн|dor|dod задач)/.test(s)){if(!canDo)return {t:'Действие доступно редактору/администратору.'};const n=syncReadiness();save();views();activate('backlog');return {t:'Готовность (DoR) синхронизирована с задачами: '+n+' изменений.',goto:'backlog'};}
   // navigation (requires a verb)
   if(/(открой|откр\b|покажи|перейд|переключ|запусти|show|go to)/.test(s)){
    for(const k in SYN){if(s.indexOf(k)>=0){activate(SYN[k]);return {t:'Открыл раздел «'+navLabel(SYN[k])+'».'};}}}
