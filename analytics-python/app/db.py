@@ -45,7 +45,7 @@ def load_state():
                     "note": r["note"]} for r in _rows("SELECT * FROM moscow ORDER BY ord")],
         "faq": [{"id": r["faq_id"], "category": r["category"], "q": r["question"],
                  "a": r["answer"]} for r in _rows("SELECT * FROM faq ORDER BY ord")],
-        "grooming": [{"id": r["grm_id"], "date": r["gdate"], "item": r["item"], "action": r["action"],
+        "grooming": [{"id": r["grm_id"], "task": r["task"], "date": r["gdate"], "item": r["item"], "action": r["action"],
                       "est": r["est"], "ready": r["ready"], "owner": r["owner"], "notes": r["notes"]}
                      for r in _rows("SELECT * FROM grooming ORDER BY ord")],
         "demo": [{"id": r["demo_id"], "sprint": r["sprint"], "date": r["ddate"], "item": r["item"],

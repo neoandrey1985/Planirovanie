@@ -79,6 +79,9 @@ details.faq-item[open]>summary::after{content:'\2212'}
 details.faq-item[open]>summary{border-bottom:1px solid var(--line)}
 .faq-a{padding:12px 14px;font-size:13px;color:var(--muted);line-height:1.65}
 .faq-empty{font-size:13px;color:var(--muted);font-style:italic;padding:8px 2px}
+.grm-pick{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:12px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 12px;box-shadow:var(--shadow)}
+.grm-pick select{border:1px solid var(--line);background:var(--panel2);color:var(--ink);border-radius:8px;padding:8px 10px;font-family:inherit;font-size:13px;flex:1 1 300px;min-width:200px}
+body.ro .grm-pick .btn.primary{display:none}
 .radar-wrap{display:flex;gap:18px;flex-wrap:wrap;align-items:center;margin-top:6px}
 .radar-legend{flex:1;min-width:180px;font-size:12px;color:var(--muted);line-height:1.6}
 .mood-box svg,.radar-box svg{max-width:100%;height:auto}
@@ -1201,8 +1204,8 @@ function migrate(d){
   {id:'Q-13',category:'Экспорт и интерфейс',q:'Есть ли описание и презентация приложения?',a:'Да. К приложению прилагаются документы: «Описание…», «Иллюстрированное описание…» (docx) и презентация (pptx). В них разделы приложения описаны с иллюстрациями.'},
   {id:'Q-14',category:'Экспорт и интерфейс',q:'Как свернуть боковое меню?',a:'Кнопка-гамбургер (☰) в шапке сворачивает и разворачивает список разделов на десктопе; на мобильном она открывает выдвижное меню. Состояние запоминается.'}];
  if(!Array.isArray(d.grooming))d.grooming=[
-  {id:'GR-01',date:'2026-08-28',item:'История: оформление заказа',action:'Декомпозиция',est:8,ready:'Готово к спринту',owner:'Иванов А.',notes:'Разбита на 3 подзадачи; критерии приёмки уточнены'},
-  {id:'GR-02',date:'2026-08-28',item:'История: оплата картой',action:'Оценка',est:5,ready:'Готово к спринту',owner:'Кузнецов Д.',notes:'Оценка по покеру, риск интеграции учтён'},
+  {id:'GR-01',task:'T-01',date:'2026-08-28',item:'История: оформление заказа',action:'Декомпозиция',est:8,ready:'Готово к спринту',owner:'Иванов А.',notes:'Разбита на 3 подзадачи; критерии приёмки уточнены'},
+  {id:'GR-02',task:'T-03',date:'2026-08-28',item:'История: оплата картой',action:'Оценка',est:5,ready:'Готово к спринту',owner:'Кузнецов Д.',notes:'Оценка по покеру, риск интеграции учтён'},
   {id:'GR-03',date:'2026-08-28',item:'История: промокоды',action:'Уточнение',est:3,ready:'Требует доработки',owner:'Петрова М.',notes:'Нужны правила комбинирования скидок от заказчика'},
   {id:'GR-04',date:'2026-09-04',item:'Фича: рекомендации товаров',action:'Приоритизация',est:13,ready:'Требует доработки',owner:'Орлова Е.',notes:'Отложено: зависит от аналитики поведения'},
   {id:'GR-05',date:'2026-09-04',item:'История: история заказов',action:'Оценка',est:5,ready:'Готово к спринту',owner:'Соколов Р.',notes:'Готова к взятию в спринт 4'}];
@@ -1228,6 +1231,8 @@ function migrate(d){
   {id:'BD-03',member:'Кузнецов Д.',date:'1988-11-12',role:'Backend',notes:''},
   {id:'BD-04',member:'Орлова Е.',date:'1995-09-28',role:'Analyst',notes:''},
   {id:'BD-05',member:'Соколов Р.',date:'1991-12-03',role:'QA',notes:''}];
+ // grooming: link column to backlog
+ (d.grooming||[]).forEach(g=>{if(g.task==null)g.task='';});
  // retro gamification: heal existing items + add mood / kudos / experiments / radar
  (d.retro||[]).forEach(r=>{if(r.votes==null)r.votes=0;if(r.format==null)r.format='';});
  if(!Array.isArray(d.mood))d.mood=[
@@ -1825,7 +1830,24 @@ function birthdaysView(){const w=document.createElement('div');
  b.slice(0,10).forEach(x=>{h+=`<tr><td>${esc(x.m||'')}</td><td>${esc(x.r||'')}</td><td>${bdayFmtDM(x.dt)}</td><td class="num">${x.d===0?'сегодня 🎉':x.d}</td></tr>`;});
  h+='</table></div>';cc.innerHTML=h;w.appendChild(cc);return w;}
 function groomingView(){const w=document.createElement('div');
- w.appendChild(editable('grooming',[{k:'id',label:'ID'},{k:'date',label:'Дата',type:'date'},
+ // Связь с Бэклогом: выбор задачи для груминга (автозаполнение из бэклога)
+ const linked=new Set((ST.grooming||[]).map(g=>g.task).filter(Boolean));
+ const avail=(ST.tasks||[]).filter(t=>t.id&&!linked.has(t.id));
+ const bar=document.createElement('div');bar.className='grm-pick';
+ const sel=document.createElement('select');sel.className='tsearch';
+ sel.innerHTML='<option value="">— выбрать задачу из «Бэклога» —</option>'+avail.map(t=>'<option value="'+esc(t.id)+'">'+esc(t.id+' · '+(t.title||''))+(t.est?(' · '+t.est+' SP'):'')+'</option>').join('');
+ const add=document.createElement('button');add.className='btn primary';add.textContent='+ В груминг';
+ const cnt=document.createElement('span');cnt.style.cssText='font-size:12.5px;color:var(--muted);align-self:center;margin-left:auto';
+ cnt.textContent='Не разобрано: '+avail.length+' из '+(ST.tasks||[]).length+' задач';
+ bar.appendChild(sel);bar.appendChild(add);bar.appendChild(cnt);w.appendChild(bar);
+ add.onclick=()=>{if(!PERM.canEdit){toast('Только для редактора/администратора');return;}
+   const id=sel.value;if(!id){toast('Выберите задачу из Бэклога');return;}
+   const t=(ST.tasks||[]).find(x=>x.id===id);if(!t)return;
+   const g=ST.grooming||(ST.grooming=[]);
+   g.push({id:genId(g,'id','GR-'),task:t.id,date:(ST.params&&ST.params.today)||new Date().toISOString().slice(0,10),
+     item:t.title||t.id,action:'Оценка',est:num(t.est),ready:'Требует доработки',owner:t.assignee||'',notes:'Взято из Бэклога'});
+   save();views();activate('grooming');if(typeof auditClient==='function')auditClient('grooming_from_backlog',t.id);toast('В груминг добавлена задача '+t.id);};
+ w.appendChild(editable('grooming',[{k:'id',label:'ID'},{k:'task',label:'Задача (Бэклог)',type:'dep'},{k:'date',label:'Дата',type:'date'},
    {k:'item',label:'Элемент бэклога / история',wide:true},
    {k:'action',label:'Действие',type:'select',opts:['Оценка','Декомпозиция','Уточнение','Приоритизация','Отклонено']},
    {k:'est',label:'Оценка (SP)',type:'num'},
@@ -1838,7 +1860,8 @@ function groomingView(){const w=document.createElement('div');
  w.appendChild(card);
  const lg=document.createElement('div');lg.className='card';lg.style.marginTop='14px';
  lg.innerHTML='<p class="ctitle">Груминг (Backlog Refinement)</p><p style="font-size:13px;color:var(--muted);line-height:1.7;margin:0">'
-  +'Регулярная встреча команды для подготовки бэклога: элементы <b>уточняются</b>, <b>декомпозируются</b>, <b>оцениваются</b> и <b>приоритизируются</b>, чтобы к планированию спринта они соответствовали Definition of Ready. Здесь фиксируются результаты груминга; оценки и готовность используются при наборе спринта.</p>';
+  +'Регулярная встреча команды для подготовки бэклога: элементы <b>уточняются</b>, <b>декомпозируются</b>, <b>оцениваются</b> и <b>приоритизируются</b>, чтобы к планированию спринта они соответствовали Definition of Ready.<br>'
+  +'Задачи берутся напрямую из «Бэклога»: выберите задачу в списке выше и нажмите «+ В груминг» — карточка создастся автоматически (название, оценка и исполнитель подтянутся из задачи, колонка «Задача» свяжет запись с бэклогом). Уже разобранные задачи из списка исключаются.</p>';
  w.appendChild(lg);return w;}
 function demoView(){const w=document.createElement('div');
  w.appendChild(editable('demo',[{k:'id',label:'ID'},{k:'sprint',label:'Спринт',type:'num'},{k:'date',label:'Дата',type:'date'},
@@ -2155,7 +2178,7 @@ function exportXlsx(){const C=compute();const s=[];
  s.push({name:'MoSCoW',aoa:[['ID','Фича / требование','Категория','Приоритет','Обоснование']].concat((ST.moscow||[]).map(m=>[m.id,m.name,m.category,(MOSCOW_META[m.category]||{}).ru||'',m.note]))});
  s.push({name:'Зависимости',aoa:[['ID','Элемент','Тип','Задача','Внешний стрим','Направление','Что именно','Спринт','Статус','Владелец','Риск']].concat((ST.deps||[]).map(d=>[d.id,d.item,d.type,d.task,d.stream,d.dir,d.desc,num(d.sprint),d.status,d.owner,d.risk]))});
  s.push({name:'FAQ',aoa:[['ID','Категория','Вопрос','Ответ']].concat((ST.faq||[]).map(f=>[f.id,f.category,f.q,f.a]))});
- s.push({name:'Груминг',aoa:[['ID','Дата','Элемент бэклога','Действие','Оценка (SP)','Готовность','Ответственный','Комментарий']].concat((ST.grooming||[]).map(g=>[g.id,g.date,g.item,g.action,num(g.est),g.ready,g.owner,g.notes]))});
+ s.push({name:'Груминг',aoa:[['ID','Задача (Бэклог)','Дата','Элемент бэклога','Действие','Оценка (SP)','Готовность','Ответственный','Комментарий']].concat((ST.grooming||[]).map(g=>[g.id,g.task,g.date,g.item,g.action,num(g.est),g.ready,g.owner,g.notes]))});
  s.push({name:'Демо спринта',aoa:[['ID','Спринт','Дата','Что демонстрировали','Докладчик','Участники','Обратная связь','Итог']].concat((ST.demo||[]).map(d=>[d.id,num(d.sprint),d.date,d.item,d.presenter,d.stakeholders,d.feedback,d.status]))});
  s.push({name:'Дэйли',aoa:[['ID','Дата','Спринт','Участник','Вчера','Сегодня','Блокер']].concat((ST.daily||[]).map(x=>[x.id,x.date,num(x.sprint),x.participant,x.yesterday,x.today,x.blocker]))});
  s.push({name:'График отпусков',aoa:[['ID','Участник','Тип','С','По','Дней','Статус','Комментарий']].concat((ST.vacation||[]).map(x=>[x.id,x.member,x.type,x.from,x.to,num(x.days),x.status,x.notes]))});
@@ -2290,8 +2313,9 @@ const NAV=[
  {g:'Настройки',items:[['okr','OKR','🧭'],['budget','Бюджет','💰'],['calendar','Календарь','📅'],['params','Параметры','⚙️']]},
  {g:'Справка',items:[['faq','FAQ','❓'],['audit','Журнал событий','🧾']]},
 ];
-const APP_VERSION='1.16.0';const APP_DATE='2026-09-15';
+const APP_VERSION='1.17.0';const APP_DATE='2026-09-15';
 const CHANGELOG=[
+ {v:'1.17.0',date:'2026-09-15',items:['Груминг связан с «Бэклогом»: выбор задачи из бэклога с автозаполнением (название, оценка, исполнитель) и колонка-ссылка «Задача». Уже разобранные задачи исключаются из списка.']},
  {v:'1.16.0',date:'2026-09-15',items:['Отчёт PPTX: выбор спринта при формировании (конкретный спринт или весь проект). Для спринта — метрики спринта и список его задач.','Исправлена ошибка формирования отчёта (обновлён источник загрузки модуля PptxGenJS).']},
  {v:'1.15.0',date:'2026-09-15',items:['Отчёт-презентация по спринту в формате PPTX: кнопка «📊 Отчёт» формирует презентацию с ключевыми метриками и графиками (ёмкость/velocity, выполнение, баги, TTM, настроение команды, MoSCoW, Team Radar).']},
  {v:'1.14.0',date:'2026-09-15',items:['Ретроспективы прокачаны игровыми практиками Agile: форматы (Start/Stop/Continue, Sailboat и др.), dot-voting, стрик по action items.','Настроение команды по спринтам с трендом, Kudos (благодарности), эксперименты (проверяемые гипотезы) и Team Radar (радар-диаграмма самооценки).']},

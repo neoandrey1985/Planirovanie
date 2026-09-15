@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS radar      (pk SERIAL PRIMARY KEY, radar_id TEXT, axi
 CREATE TABLE IF NOT EXISTS rice       (pk SERIAL PRIMARY KEY, rice_id TEXT, name TEXT, reach DOUBLE PRECISION, impact DOUBLE PRECISION, conf TEXT, effort DOUBLE PRECISION, ord INT);
 CREATE TABLE IF NOT EXISTS moscow     (pk SERIAL PRIMARY KEY, ms_id TEXT, name TEXT, category TEXT, note TEXT, ord INT);
 CREATE TABLE IF NOT EXISTS faq        (pk SERIAL PRIMARY KEY, faq_id TEXT, category TEXT, question TEXT, answer TEXT, ord INT);
-CREATE TABLE IF NOT EXISTS grooming   (pk SERIAL PRIMARY KEY, grm_id TEXT, gdate TEXT, item TEXT, action TEXT, est DOUBLE PRECISION, ready TEXT, owner TEXT, notes TEXT, ord INT);
+CREATE TABLE IF NOT EXISTS grooming   (pk SERIAL PRIMARY KEY, grm_id TEXT, task TEXT, gdate TEXT, item TEXT, action TEXT, est DOUBLE PRECISION, ready TEXT, owner TEXT, notes TEXT, ord INT);
 CREATE TABLE IF NOT EXISTS demo       (pk SERIAL PRIMARY KEY, demo_id TEXT, sprint INT, ddate TEXT, item TEXT, presenter TEXT, stakeholders TEXT, feedback TEXT, status TEXT, ord INT);
 CREATE TABLE IF NOT EXISTS daily      (pk SERIAL PRIMARY KEY, daily_id TEXT, ddate TEXT, sprint INT, participant TEXT, yesterday TEXT, today TEXT, blocker TEXT, ord INT);
 CREATE TABLE IF NOT EXISTS vacation   (pk SERIAL PRIMARY KEY, vac_id TEXT, member TEXT, vtype TEXT, dfrom TEXT, dto TEXT, days DOUBLE PRECISION, status TEXT, notes TEXT, ord INT);
@@ -201,11 +201,11 @@ INSERT INTO faq (faq_id, category, question, answer, ord) VALUES ('Q-13', 'Эк�
 INSERT INTO faq (faq_id, category, question, answer, ord) VALUES ('Q-14', 'Экспорт и интерфейс', 'Как свернуть боковое меню?', 'Кнопка-гамбургер (☰) в шапке сворачивает и разворачивает список разделов на десктопе; на мобильном она открывает выдвижное меню. Состояние запоминается.', 13);
 
 -- grooming
-INSERT INTO grooming (grm_id, gdate, item, action, est, ready, owner, notes, ord) VALUES ('GR-01', '2026-08-28', 'История: оформление заказа', 'Декомпозиция', 8, 'Готово к спринту', 'Иванов А.', 'Разбита на 3 подзадачи; критерии приёмки уточнены', 0);
-INSERT INTO grooming (grm_id, gdate, item, action, est, ready, owner, notes, ord) VALUES ('GR-02', '2026-08-28', 'История: оплата картой', 'Оценка', 5, 'Готово к спринту', 'Кузнецов Д.', 'Оценка по покеру, риск интеграции учтён', 1);
-INSERT INTO grooming (grm_id, gdate, item, action, est, ready, owner, notes, ord) VALUES ('GR-03', '2026-08-28', 'История: промокоды', 'Уточнение', 3, 'Требует доработки', 'Петрова М.', 'Нужны правила комбинирования скидок от заказчика', 2);
-INSERT INTO grooming (grm_id, gdate, item, action, est, ready, owner, notes, ord) VALUES ('GR-04', '2026-09-04', 'Фича: рекомендации товаров', 'Приоритизация', 13, 'Требует доработки', 'Орлова Е.', 'Отложено: зависит от аналитики поведения', 3);
-INSERT INTO grooming (grm_id, gdate, item, action, est, ready, owner, notes, ord) VALUES ('GR-05', '2026-09-04', 'История: история заказов', 'Оценка', 5, 'Готово к спринту', 'Соколов Р.', 'Готова к взятию в спринт 4', 4);
+INSERT INTO grooming (grm_id, task, gdate, item, action, est, ready, owner, notes, ord) VALUES ('GR-01', 'T-01', '2026-08-28', 'История: оформление заказа', 'Декомпозиция', 8, 'Готово к спринту', 'Иванов А.', 'Разбита на 3 подзадачи; критерии приёмки уточнены', 0);
+INSERT INTO grooming (grm_id, task, gdate, item, action, est, ready, owner, notes, ord) VALUES ('GR-02', 'T-03', '2026-08-28', 'История: оплата картой', 'Оценка', 5, 'Готово к спринту', 'Кузнецов Д.', 'Оценка по покеру, риск интеграции учтён', 1);
+INSERT INTO grooming (grm_id, task, gdate, item, action, est, ready, owner, notes, ord) VALUES ('GR-03', '', '2026-08-28', 'История: промокоды', 'Уточнение', 3, 'Требует доработки', 'Петрова М.', 'Нужны правила комбинирования скидок от заказчика', 2);
+INSERT INTO grooming (grm_id, task, gdate, item, action, est, ready, owner, notes, ord) VALUES ('GR-04', '', '2026-09-04', 'Фича: рекомендации товаров', 'Приоритизация', 13, 'Требует доработки', 'Орлова Е.', 'Отложено: зависит от аналитики поведения', 3);
+INSERT INTO grooming (grm_id, task, gdate, item, action, est, ready, owner, notes, ord) VALUES ('GR-05', '', '2026-09-04', 'История: история заказов', 'Оценка', 5, 'Готово к спринту', 'Соколов Р.', 'Готова к взятию в спринт 4', 4);
 
 -- demo
 INSERT INTO demo (demo_id, sprint, ddate, item, presenter, stakeholders, feedback, status, ord) VALUES ('DM-01', 1, '2026-08-14', 'Каркас каталога и карточка товара', 'Иванов А.', 'PO, маркетинг', 'Одобрено; просят добавить бейджи скидок', 'Принято', 0);

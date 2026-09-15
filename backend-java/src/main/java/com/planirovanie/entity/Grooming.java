@@ -11,6 +11,7 @@ import jakarta.persistence.*;
 public class Grooming {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY) @JsonIgnore public Long pk;
     @Column(name = "grm_id") @JsonProperty("id") public String grmId;
+    public String task;
     @Column(name = "gdate") @JsonProperty("date") public String date;
     public String item;
     public String action;
