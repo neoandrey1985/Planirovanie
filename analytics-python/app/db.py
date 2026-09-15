@@ -39,9 +39,9 @@ def load_state():
         "bugs": [{"id": r["bug_id"], "sprint": r["sprint"], "sev": r["sev"], "status": r["status"], "task": r["task"]}
                  for r in _rows("SELECT * FROM bugs ORDER BY ord")],
         "calendar": [{"date": r["cdate"], "name": r["name"]} for r in _rows("SELECT * FROM calendar ORDER BY ord")],
-        "rice": [{"id": r["rice_id"], "name": r["name"], "reach": r["reach"], "impact": r["impact"],
+        "rice": [{"id": r["rice_id"], "task": r["task"], "name": r["name"], "reach": r["reach"], "impact": r["impact"],
                   "conf": r["conf"], "effort": r["effort"]} for r in _rows("SELECT * FROM rice ORDER BY ord")],
-        "moscow": [{"id": r["ms_id"], "name": r["name"], "category": r["category"],
+        "moscow": [{"id": r["ms_id"], "task": r["task"], "name": r["name"], "category": r["category"],
                     "note": r["note"]} for r in _rows("SELECT * FROM moscow ORDER BY ord")],
         "faq": [{"id": r["faq_id"], "category": r["category"], "q": r["question"],
                  "a": r["answer"]} for r in _rows("SELECT * FROM faq ORDER BY ord")],

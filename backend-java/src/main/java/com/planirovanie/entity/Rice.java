@@ -11,6 +11,7 @@ import jakarta.persistence.*;
 public class Rice {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY) @JsonIgnore public Long pk;
     @Column(name = "rice_id") @JsonProperty("id") public String riceId;
+    public String task;
     public String name;
     public Double reach;
     public Double impact;

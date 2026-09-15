@@ -11,6 +11,7 @@ import jakarta.persistence.*;
 public class MoscowItem {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY) @JsonIgnore public Long pk;
     @Column(name = "ms_id") @JsonProperty("id") public String msId;
+    public String task;
     public String name;
     public String category;
     public String note;

@@ -22,8 +22,8 @@ CREATE TABLE IF NOT EXISTS mood       (pk SERIAL PRIMARY KEY, mood_id TEXT, spri
 CREATE TABLE IF NOT EXISTS kudos      (pk SERIAL PRIMARY KEY, kudos_id TEXT, sprint INT, from_who TEXT, to_who TEXT, reason TEXT, ord INT);
 CREATE TABLE IF NOT EXISTS experiments(pk SERIAL PRIMARY KEY, exp_id TEXT, sprint INT, hypothesis TEXT, action TEXT, metric TEXT, result TEXT, status TEXT, ord INT);
 CREATE TABLE IF NOT EXISTS radar      (pk SERIAL PRIMARY KEY, radar_id TEXT, axis TEXT, score DOUBLE PRECISION, prev DOUBLE PRECISION, ord INT);
-CREATE TABLE IF NOT EXISTS rice       (pk SERIAL PRIMARY KEY, rice_id TEXT, name TEXT, reach DOUBLE PRECISION, impact DOUBLE PRECISION, conf TEXT, effort DOUBLE PRECISION, ord INT);
-CREATE TABLE IF NOT EXISTS moscow     (pk SERIAL PRIMARY KEY, ms_id TEXT, name TEXT, category TEXT, note TEXT, ord INT);
+CREATE TABLE IF NOT EXISTS rice       (pk SERIAL PRIMARY KEY, rice_id TEXT, task TEXT, name TEXT, reach DOUBLE PRECISION, impact DOUBLE PRECISION, conf TEXT, effort DOUBLE PRECISION, ord INT);
+CREATE TABLE IF NOT EXISTS moscow     (pk SERIAL PRIMARY KEY, ms_id TEXT, task TEXT, name TEXT, category TEXT, note TEXT, ord INT);
 CREATE TABLE IF NOT EXISTS faq        (pk SERIAL PRIMARY KEY, faq_id TEXT, category TEXT, question TEXT, answer TEXT, ord INT);
 CREATE TABLE IF NOT EXISTS grooming   (pk SERIAL PRIMARY KEY, grm_id TEXT, task TEXT, gdate TEXT, item TEXT, action TEXT, est DOUBLE PRECISION, ready TEXT, owner TEXT, notes TEXT, ord INT);
 CREATE TABLE IF NOT EXISTS demo       (pk SERIAL PRIMARY KEY, demo_id TEXT, sprint INT, ddate TEXT, item TEXT, presenter TEXT, stakeholders TEXT, feedback TEXT, status TEXT, ord INT);
@@ -159,30 +159,30 @@ INSERT INTO retro (sprint, well, improve, action, owner, due, status, votes, rfo
 INSERT INTO retro (sprint, well, improve, action, owner, due, status, votes, rformat, ord) VALUES (2, 'Слаженная работа QA', 'Блокеры по внешнему API', 'Ранняя интеграция / моки', 'Иванов А.', 'Спринт 3', 'Открыт', 2, '', 3);
 
 -- rice
-INSERT INTO rice (rice_id, name, reach, impact, conf, effort, ord) VALUES ('F-01', 'MVP оформления заказа', 5000, 3, '100%', 40, 0);
-INSERT INTO rice (rice_id, name, reach, impact, conf, effort, ord) VALUES ('F-02', 'Оплата картой', 5000, 3, '80%', 25, 1);
-INSERT INTO rice (rice_id, name, reach, impact, conf, effort, ord) VALUES ('F-03', 'Промокоды и скидки', 3000, 1, '80%', 12, 2);
-INSERT INTO rice (rice_id, name, reach, impact, conf, effort, ord) VALUES ('F-04', 'Уведомления (e-mail/push)', 4000, 1, '80%', 15, 3);
-INSERT INTO rice (rice_id, name, reach, impact, conf, effort, ord) VALUES ('F-05', 'История заказов', 3500, 0.5, '100%', 10, 4);
-INSERT INTO rice (rice_id, name, reach, impact, conf, effort, ord) VALUES ('F-06', 'Мобильная вёрстка', 4500, 2, '80%', 20, 5);
-INSERT INTO rice (rice_id, name, reach, impact, conf, effort, ord) VALUES ('F-07', 'Личный кабинет', 3000, 1, '50%', 18, 6);
-INSERT INTO rice (rice_id, name, reach, impact, conf, effort, ord) VALUES ('F-08', 'Рекомендации товаров', 2000, 2, '50%', 22, 7);
-INSERT INTO rice (rice_id, name, reach, impact, conf, effort, ord) VALUES ('F-09', 'Экспорт отчётов', 800, 0.5, '80%', 8, 8);
-INSERT INTO rice (rice_id, name, reach, impact, conf, effort, ord) VALUES ('F-10', 'Мультиязычность', 1500, 1, '50%', 30, 9);
+INSERT INTO rice (rice_id, task, name, reach, impact, conf, effort, ord) VALUES ('F-01', 'T-01', 'MVP оформления заказа', 5000, 3, '100%', 40, 0);
+INSERT INTO rice (rice_id, task, name, reach, impact, conf, effort, ord) VALUES ('F-02', 'T-03', 'Оплата картой', 5000, 3, '80%', 25, 1);
+INSERT INTO rice (rice_id, task, name, reach, impact, conf, effort, ord) VALUES ('F-03', '', 'Промокоды и скидки', 3000, 1, '80%', 12, 2);
+INSERT INTO rice (rice_id, task, name, reach, impact, conf, effort, ord) VALUES ('F-04', '', 'Уведомления (e-mail/push)', 4000, 1, '80%', 15, 3);
+INSERT INTO rice (rice_id, task, name, reach, impact, conf, effort, ord) VALUES ('F-05', '', 'История заказов', 3500, 0.5, '100%', 10, 4);
+INSERT INTO rice (rice_id, task, name, reach, impact, conf, effort, ord) VALUES ('F-06', '', 'Мобильная вёрстка', 4500, 2, '80%', 20, 5);
+INSERT INTO rice (rice_id, task, name, reach, impact, conf, effort, ord) VALUES ('F-07', '', 'Личный кабинет', 3000, 1, '50%', 18, 6);
+INSERT INTO rice (rice_id, task, name, reach, impact, conf, effort, ord) VALUES ('F-08', '', 'Рекомендации товаров', 2000, 2, '50%', 22, 7);
+INSERT INTO rice (rice_id, task, name, reach, impact, conf, effort, ord) VALUES ('F-09', '', 'Экспорт отчётов', 800, 0.5, '80%', 8, 8);
+INSERT INTO rice (rice_id, task, name, reach, impact, conf, effort, ord) VALUES ('F-10', '', 'Мультиязычность', 1500, 1, '50%', 30, 9);
 
 -- moscow
-INSERT INTO moscow (ms_id, name, category, note, ord) VALUES ('MS-01', 'Оформление заказа (MVP)', 'Must', 'Без этого запуск подписки невозможен', 0);
-INSERT INTO moscow (ms_id, name, category, note, ord) VALUES ('MS-02', 'Оплата картой', 'Must', 'Ключевой сценарий монетизации', 1);
-INSERT INTO moscow (ms_id, name, category, note, ord) VALUES ('MS-03', 'Каталог товаров и цены', 'Must', 'Данные для оформления заказа', 2);
-INSERT INTO moscow (ms_id, name, category, note, ord) VALUES ('MS-04', 'Личный кабинет (базовый)', 'Must', 'Управление подпиской', 3);
-INSERT INTO moscow (ms_id, name, category, note, ord) VALUES ('MS-05', 'Промокоды и скидки', 'Should', 'Повышает конверсию, но релиз возможен без них', 4);
-INSERT INTO moscow (ms_id, name, category, note, ord) VALUES ('MS-06', 'Уведомления (e-mail/push)', 'Should', 'Удержание пользователей', 5);
-INSERT INTO moscow (ms_id, name, category, note, ord) VALUES ('MS-07', 'История заказов', 'Should', 'Ожидаемо пользователями', 6);
-INSERT INTO moscow (ms_id, name, category, note, ord) VALUES ('MS-08', 'Рекомендации товаров', 'Could', 'Если останется время', 7);
-INSERT INTO moscow (ms_id, name, category, note, ord) VALUES ('MS-09', 'Мультиязычность', 'Could', 'Для будущих рынков', 8);
-INSERT INTO moscow (ms_id, name, category, note, ord) VALUES ('MS-10', 'Экспорт отчётов', 'Could', 'Удобно, но не критично', 9);
-INSERT INTO moscow (ms_id, name, category, note, ord) VALUES ('MS-11', 'Программа лояльности / бонусы', 'Won''t', 'Отдельная инициатива на следующий квартал', 10);
-INSERT INTO moscow (ms_id, name, category, note, ord) VALUES ('MS-12', 'Офлайн-режим приложения', 'Won''t', 'Вне scope текущего релиза', 11);
+INSERT INTO moscow (ms_id, task, name, category, note, ord) VALUES ('MS-01', 'T-01', 'Оформление заказа (MVP)', 'Must', 'Без этого запуск подписки невозможен', 0);
+INSERT INTO moscow (ms_id, task, name, category, note, ord) VALUES ('MS-02', 'T-03', 'Оплата картой', 'Must', 'Ключевой сценарий монетизации', 1);
+INSERT INTO moscow (ms_id, task, name, category, note, ord) VALUES ('MS-03', '', 'Каталог товаров и цены', 'Must', 'Данные для оформления заказа', 2);
+INSERT INTO moscow (ms_id, task, name, category, note, ord) VALUES ('MS-04', '', 'Личный кабинет (базовый)', 'Must', 'Управление подпиской', 3);
+INSERT INTO moscow (ms_id, task, name, category, note, ord) VALUES ('MS-05', '', 'Промокоды и скидки', 'Should', 'Повышает конверсию, но релиз возможен без них', 4);
+INSERT INTO moscow (ms_id, task, name, category, note, ord) VALUES ('MS-06', '', 'Уведомления (e-mail/push)', 'Should', 'Удержание пользователей', 5);
+INSERT INTO moscow (ms_id, task, name, category, note, ord) VALUES ('MS-07', '', 'История заказов', 'Should', 'Ожидаемо пользователями', 6);
+INSERT INTO moscow (ms_id, task, name, category, note, ord) VALUES ('MS-08', '', 'Рекомендации товаров', 'Could', 'Если останется время', 7);
+INSERT INTO moscow (ms_id, task, name, category, note, ord) VALUES ('MS-09', '', 'Мультиязычность', 'Could', 'Для будущих рынков', 8);
+INSERT INTO moscow (ms_id, task, name, category, note, ord) VALUES ('MS-10', '', 'Экспорт отчётов', 'Could', 'Удобно, но не критично', 9);
+INSERT INTO moscow (ms_id, task, name, category, note, ord) VALUES ('MS-11', '', 'Программа лояльности / бонусы', 'Won''t', 'Отдельная инициатива на следующий квартал', 10);
+INSERT INTO moscow (ms_id, task, name, category, note, ord) VALUES ('MS-12', '', 'Офлайн-режим приложения', 'Won''t', 'Вне scope текущего релиза', 11);
 
 -- faq
 INSERT INTO faq (faq_id, category, question, answer, ord) VALUES ('Q-01', 'Начало работы', 'С чего начать работу в приложении?', 'Заполните «Параметры» (даты старта, число спринтов, focus factor), затем «Команду» и «Бэклог». Дорожная карта, ёмкость, velocity, релизы и метрики считаются автоматически из этих данных.', 0);

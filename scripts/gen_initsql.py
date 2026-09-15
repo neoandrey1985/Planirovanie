@@ -47,8 +47,8 @@ CREATE TABLE IF NOT EXISTS mood       (pk SERIAL PRIMARY KEY, mood_id TEXT, spri
 CREATE TABLE IF NOT EXISTS kudos      (pk SERIAL PRIMARY KEY, kudos_id TEXT, sprint INT, from_who TEXT, to_who TEXT, reason TEXT, ord INT);
 CREATE TABLE IF NOT EXISTS experiments(pk SERIAL PRIMARY KEY, exp_id TEXT, sprint INT, hypothesis TEXT, action TEXT, metric TEXT, result TEXT, status TEXT, ord INT);
 CREATE TABLE IF NOT EXISTS radar      (pk SERIAL PRIMARY KEY, radar_id TEXT, axis TEXT, score DOUBLE PRECISION, prev DOUBLE PRECISION, ord INT);
-CREATE TABLE IF NOT EXISTS rice       (pk SERIAL PRIMARY KEY, rice_id TEXT, name TEXT, reach DOUBLE PRECISION, impact DOUBLE PRECISION, conf TEXT, effort DOUBLE PRECISION, ord INT);
-CREATE TABLE IF NOT EXISTS moscow     (pk SERIAL PRIMARY KEY, ms_id TEXT, name TEXT, category TEXT, note TEXT, ord INT);
+CREATE TABLE IF NOT EXISTS rice       (pk SERIAL PRIMARY KEY, rice_id TEXT, task TEXT, name TEXT, reach DOUBLE PRECISION, impact DOUBLE PRECISION, conf TEXT, effort DOUBLE PRECISION, ord INT);
+CREATE TABLE IF NOT EXISTS moscow     (pk SERIAL PRIMARY KEY, ms_id TEXT, task TEXT, name TEXT, category TEXT, note TEXT, ord INT);
 CREATE TABLE IF NOT EXISTS faq        (pk SERIAL PRIMARY KEY, faq_id TEXT, category TEXT, question TEXT, answer TEXT, ord INT);
 CREATE TABLE IF NOT EXISTS grooming   (pk SERIAL PRIMARY KEY, grm_id TEXT, task TEXT, gdate TEXT, item TEXT, action TEXT, est DOUBLE PRECISION, ready TEXT, owner TEXT, notes TEXT, ord INT);
 CREATE TABLE IF NOT EXISTS demo       (pk SERIAL PRIMARY KEY, demo_id TEXT, sprint INT, ddate TEXT, item TEXT, presenter TEXT, stakeholders TEXT, feedback TEXT, status TEXT, ord INT);
@@ -105,10 +105,10 @@ rows("radar", ["radar_id", "axis", "score", "prev", "ord"], SEED.get("radar", []
      lambda d, i: [d.get("id"), d.get("axis"), d.get("score"), d.get("prev"), i])
 rows("retro", ["sprint", "well", "improve", "action", "owner", "due", "status", "votes", "rformat", "ord"], SEED.get("retro", []),
      lambda d, i: [d.get("sprint"), d.get("well"), d.get("improve"), d.get("action"), d.get("owner"), d.get("due"), d.get("status"), d.get("votes"), d.get("format"), i])
-rows("rice", ["rice_id", "name", "reach", "impact", "conf", "effort", "ord"], SEED.get("rice", []),
-     lambda d, i: [d.get("id"), d.get("name"), d.get("reach"), d.get("impact"), d.get("conf"), d.get("effort"), i])
-rows("moscow", ["ms_id", "name", "category", "note", "ord"], SEED.get("moscow", []),
-     lambda d, i: [d.get("id"), d.get("name"), d.get("category"), d.get("note"), i])
+rows("rice", ["rice_id", "task", "name", "reach", "impact", "conf", "effort", "ord"], SEED.get("rice", []),
+     lambda d, i: [d.get("id"), d.get("task"), d.get("name"), d.get("reach"), d.get("impact"), d.get("conf"), d.get("effort"), i])
+rows("moscow", ["ms_id", "task", "name", "category", "note", "ord"], SEED.get("moscow", []),
+     lambda d, i: [d.get("id"), d.get("task"), d.get("name"), d.get("category"), d.get("note"), i])
 rows("faq", ["faq_id", "category", "question", "answer", "ord"], SEED.get("faq", []),
      lambda d, i: [d.get("id"), d.get("category"), d.get("q"), d.get("a"), i])
 rows("grooming", ["grm_id", "task", "gdate", "item", "action", "est", "ready", "owner", "notes", "ord"], SEED.get("grooming", []),
