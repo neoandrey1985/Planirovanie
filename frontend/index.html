@@ -1515,6 +1515,7 @@ function dataChecks(){const issues=[],tasks=ST.tasks||[],ids={};
    if(t.status==='В работе'&&!t.started)issues.push({lvl:'warn',msg:t.id+': «В работе» без даты старта',fix:()=>{t.started=todayISO();}});
    if((t.est===''||t.est==null||num(t.est)===0)&&t.status!=='Готово')issues.push({lvl:'info',msg:t.id+': задача без оценки',fix:null});
    if(t.dep&&!tasks.some(x=>x.id===t.dep))issues.push({lvl:'warn',msg:t.id+': осиротевшая зависимость → '+t.dep,fix:()=>{t.dep='';}});
+   const tr=teamRoleOf(t.assignee);if(tr&&kanClean(t.role)!==tr)issues.push({lvl:'info',msg:t.id+': роль задачи не совпадает с ролью исполнителя в «Команде» ('+tr+')',fix:()=>{t.role=tr;}});
  });
  [['grooming','Груминг'],['rice','RICE'],['moscow','MoSCoW']].forEach(function(p){(ST[p[0]]||[]).forEach(x=>{if(x.task&&!tasks.some(t=>t.id===x.task))issues.push({lvl:'warn',msg:p[1]+' '+x.id+': ссылка на несуществующую задачу '+x.task,fix:()=>{x.task='';}});});});
  (ST.rice||[]).forEach(r=>{if(!num(r.reach)||!num(r.effort))issues.push({lvl:'info',msg:'RICE '+r.id+': не заполнены Reach/Effort',fix:null});});
@@ -1889,6 +1890,10 @@ var KAN_COL_COLORS={'To Do':'#7A8AA0','В работе':'#2D5BE3','Готово'
 function kanColColor(s){return KAN_COL_COLORS[s]||'#6B7A90';}
 function kanToday(){return (ST.params&&ST.params.today)||new Date().toISOString().slice(0,10);}
 function kanClean(v){v=(v==null?'':String(v)).trim();return (!v||v[0]==='=')?'':v;}  // drop leftover Excel formulas
+/* Роль участника из раздела «Команда». */
+function teamRoleOf(name){name=kanClean(name);if(!name)return '';const m=(ST.team||[]).find(x=>kanClean(x.name)===name);return m?kanClean(m.role):'';}
+/* Эффективная роль задачи для канбан-досок: приоритет — роль исполнителя из «Команды», иначе поле «Роль» задачи. */
+function taskRole(t){return teamRoleOf(t.assignee)||kanClean(t.role);}
 function kanBoards(){if(!Array.isArray(ST.boards)||!ST.boards.length)ST.boards=migrate({}).boards;return ST.boards;}
 function kanActiveBoard(){const bs=kanBoards();return bs.find(x=>x.id===UI.kanBoard)||bs[0];}
 function kanIsRelease(board){return board&&board.filter&&board.filter.type==='release';}
@@ -1904,7 +1909,7 @@ function kanColLabel(board,colKey){if(!kanIsCompose(board))return colKey;return 
 function kanBoardItems(board){
  if(kanIsRelease(board))return (ST.releases||[]).slice();
  const flt=UI.kanSprint;let arr=(ST.tasks||[]);
- if(board.filter&&board.filter.type==='role')arr=arr.filter(t=>kanClean(t.role)===board.filter.value);
+ if(board.filter&&board.filter.type==='role')arr=arr.filter(t=>taskRole(t)===board.filter.value);
  return arr.filter(t=>(!flt||String(t.sprint)===String(flt)));
 }
 /* Column order = configured columns plus any status actually present among items (so nothing is hidden). */
@@ -1918,7 +1923,7 @@ function kanColOf(board,it){if(kanIsCompose(board))return relOfTask(it);
  const st=(it.status==null?'':String(it.status)).trim();const cols=board.cols||[];return cols.indexOf(st)>=0?st:(kanEffectiveCols(board).indexOf(st)>=0?st:cols[0]);}
 function kanTaskCard(t){
  const asg=kanClean(t.assignee)?esc(kanClean(t.assignee)):'—';
- const roleV=kanClean(t.role);const role=roleV?'<span class="kn-chip">'+esc(roleV)+'</span>':'';
+ const roleV=taskRole(t);const role=roleV?'<span class="kn-chip">'+esc(roleV)+'</span>':'';
  const sp=(t.sprint!=null&&t.sprint!=='')?'<span class="kn-chip">С'+esc(String(t.sprint))+'</span>':'';
  const rel=(t.release&&(ST.releases||[]).some(r=>r.id===t.release))?'<span class="kn-chip" title="Явно привязана к релизу">📌 '+esc(t.release)+'</span>':'';
  return '<div class="kan-card" draggable="'+(PERM.canEdit?'true':'false')+'" data-id="'+esc(t.id||'')+'">'
@@ -2668,8 +2673,11 @@ const NAV=[
  {g:'Настройки',items:[['budget','Бюджет','💰'],['calendar','Календарь','📅'],['checks','Проверки данных','🧪'],['params','Параметры','⚙️']]},
  {g:'Справка',items:[['faq','FAQ','❓'],['audit','Журнал событий','🧾']]},
 ];
-const APP_VERSION='1.23.0';const APP_DATE='2026-09-15';
+const APP_VERSION='1.24.0';const APP_DATE='2026-09-15';
 const CHANGELOG=[
+ {v:'1.24.0',date:'2026-09-15',items:[
+   'Исправлено: задачи попадают на доски по ролям по роли исполнителя из «Команды» (а не по возможно пустому полю «Роль» задачи) — доски Backend/Frontend/QA/… больше не пустуют.',
+   'Роль на карточке Kanban берётся из «Команды» по исполнителю; в «Проверках данных» — сверка роли задачи с ролью исполнителя и авто-исправление.']},
  {v:'1.23.0',date:'2026-09-15',items:[
    'Явная привязка задачи к релизу: поле «Релиз» в «Бэклоге» — альтернатива авто-расчёту по спринтам (явная привязка имеет приоритет).',
    'Новая доска «Состав релизов»: перетаскивание задач в колонку релиза формирует его состав вручную; кнопка «＋ Релиз» создаёт релиз на месте.',
