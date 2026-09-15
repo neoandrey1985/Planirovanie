@@ -297,7 +297,7 @@ body.noadmin #rst,body.noadmin #imp{display:none}
  </div>
 </div></header>
 <div class="shell"><aside class="side" id="side"><nav id="nav"></nav><div class="side-foot" id="sidefoot"></div></aside><div class="scrim" id="scrim"></div>
-<main id="main"><section class="view" id="v_dash"></section><section class="view" id="v_kanban"></section><section class="view" id="v_backlog"></section><section class="view" id="v_team"></section><section class="view" id="v_roadmap"></section><section class="view" id="v_quarters"></section><section class="view" id="v_rice"></section><section class="view" id="v_moscow"></section><section class="view" id="v_gantt"></section><section class="view" id="v_deps"></section><section class="view" id="v_releases"></section><section class="view" id="v_milestones"></section><section class="view" id="v_debt"></section><section class="view" id="v_okr"></section><section class="view" id="v_budget"></section><section class="view" id="v_analytics"></section><section class="view" id="v_risks"></section><section class="view" id="v_bugs"></section><section class="view" id="v_daily"></section><section class="view" id="v_grooming"></section><section class="view" id="v_demo"></section><section class="view" id="v_vacation"></section><section class="view" id="v_birthdays"></section><section class="view" id="v_retro"></section><section class="view" id="v_calendar"></section><section class="view" id="v_params"></section><section class="view" id="v_faq"></section><section class="view" id="v_audit"></section></main></div>
+<main id="main"><section class="view" id="v_dash"></section><section class="view" id="v_kanban"></section><section class="view" id="v_backlog"></section><section class="view" id="v_team"></section><section class="view" id="v_roadmap"></section><section class="view" id="v_quarters"></section><section class="view" id="v_rice"></section><section class="view" id="v_moscow"></section><section class="view" id="v_gantt"></section><section class="view" id="v_deps"></section><section class="view" id="v_releases"></section><section class="view" id="v_milestones"></section><section class="view" id="v_debt"></section><section class="view" id="v_okr"></section><section class="view" id="v_budget"></section><section class="view" id="v_analytics"></section><section class="view" id="v_risks"></section><section class="view" id="v_bugs"></section><section class="view" id="v_daily"></section><section class="view" id="v_grooming"></section><section class="view" id="v_demo"></section><section class="view" id="v_vacation"></section><section class="view" id="v_birthdays"></section><section class="view" id="v_retro"></section><section class="view" id="v_calendar"></section><section class="view" id="v_checks"></section><section class="view" id="v_params"></section><section class="view" id="v_faq"></section><section class="view" id="v_audit"></section></main></div>
 <div class="palette" id="palette"><div class="pbox"><input class="pin" id="pin" placeholder="Поиск раздела или действия…" autocomplete="off"><div class="plist" id="plist"></div></div></div>
 <div class="role-pop" id="rolepop"></div>
 <div class="modal" id="accmodal"><div class="mbox">
@@ -466,7 +466,7 @@ const SEED={
    "id": "T-01",
    "title": "Проектирование API заказов",
    "assignee": "Иванов А.",
-   "role": "=IFERROR(INDEX(Капасити!$C$5:$C$147,MATCH($C5,Капасити!$B$5:$B$147,0)),\"\")",
+   "role": "Backend",
    "type": "История",
    "est": 5,
    "status": "Готово",
@@ -480,7 +480,7 @@ const SEED={
    "id": "T-02",
    "title": "Экран корзины (вёрстка)",
    "assignee": "Петрова М.",
-   "role": "=IFERROR(INDEX(Капасити!$C$5:$C$147,MATCH($C6,Капасити!$B$5:$B$147,0)),\"\")",
+   "role": "Frontend",
    "type": "Задача",
    "est": 8,
    "status": "Готово",
@@ -494,7 +494,7 @@ const SEED={
    "id": "T-09",
    "title": "Настройка CI/CD",
    "assignee": "Новиков А.",
-   "role": "=IFERROR(INDEX(Капасити!$C$5:$C$147,MATCH($C7,Капасити!$B$5:$B$147,0)),\"\")",
+   "role": "DevOps",
    "type": "Задача",
    "est": 4,
    "status": "Готово",
@@ -508,7 +508,7 @@ const SEED={
    "id": "T-10",
    "title": "Модель данных заказа",
    "assignee": "Кузнецов Д.",
-   "role": "=IFERROR(INDEX(Капасити!$C$5:$C$147,MATCH($C8,Капасити!$B$5:$B$147,0)),\"\")",
+   "role": "Backend",
    "type": "История",
    "est": 5,
    "status": "В работе",
@@ -522,7 +522,7 @@ const SEED={
    "id": "T-03",
    "title": "Интеграция платежей",
    "assignee": "Иванов А.",
-   "role": "=IFERROR(INDEX(Капасити!$C$5:$C$147,MATCH($C9,Капасити!$B$5:$B$147,0)),\"\")",
+   "role": "Backend",
    "type": "Задача",
    "est": 8,
    "status": "Готово",
@@ -536,7 +536,7 @@ const SEED={
    "id": "T-04",
    "title": "Тест-кейсы оформления",
    "assignee": "Сидоров К.",
-   "role": "=IFERROR(INDEX(Капасити!$C$5:$C$147,MATCH($C10,Капасити!$B$5:$B$147,0)),\"\")",
+   "role": "QA",
    "type": "Тех.долг",
    "est": 4,
    "status": "Готово",
@@ -550,7 +550,7 @@ const SEED={
    "id": "T-08",
    "title": "Уведомления по e-mail",
    "assignee": "Смирнов П.",
-   "role": "=IFERROR(INDEX(Капасити!$C$5:$C$147,MATCH($C11,Капасити!$B$5:$B$147,0)),\"\")",
+   "role": "Backend",
    "type": "Задача",
    "est": 4,
    "status": "Готово",
@@ -564,7 +564,7 @@ const SEED={
    "id": "T-11",
    "title": "API промокодов",
    "assignee": "Козлов В.",
-   "role": "=IFERROR(INDEX(Капасити!$C$5:$C$147,MATCH($C12,Капасити!$B$5:$B$147,0)),\"\")",
+   "role": "Backend",
    "type": "История",
    "est": 5,
    "status": "Готово",
@@ -578,7 +578,7 @@ const SEED={
    "id": "T-12",
    "title": "Логирование и метрики",
    "assignee": "Новиков А.",
-   "role": "=IFERROR(INDEX(Капасити!$C$5:$C$147,MATCH($C13,Капасити!$B$5:$B$147,0)),\"\")",
+   "role": "DevOps",
    "type": "Задача",
    "est": 3,
    "status": "To Do",
@@ -592,7 +592,7 @@ const SEED={
    "id": "T-05",
    "title": "Рефакторинг авторизации",
    "assignee": "Кузнецов Д.",
-   "role": "=IFERROR(INDEX(Капасити!$C$5:$C$147,MATCH($C14,Капасити!$B$5:$B$147,0)),\"\")",
+   "role": "Backend",
    "type": "Задача",
    "est": 3,
    "status": "В работе",
@@ -606,7 +606,7 @@ const SEED={
    "id": "T-06",
    "title": "Аналитика воронки",
    "assignee": "Орлова Е.",
-   "role": "=IFERROR(INDEX(Капасити!$C$5:$C$147,MATCH($C15,Капасити!$B$5:$B$147,0)),\"\")",
+   "role": "Analyst",
    "type": "История",
    "est": 3,
    "status": "To Do",
@@ -620,7 +620,7 @@ const SEED={
    "id": "T-07",
    "title": "Регресс-тестирование релиза",
    "assignee": "Сидоров К.",
-   "role": "=IFERROR(INDEX(Капасити!$C$5:$C$147,MATCH($C16,Капасити!$B$5:$B$147,0)),\"\")",
+   "role": "QA",
    "type": "Задача",
    "est": 5,
    "status": "To Do",
@@ -634,7 +634,7 @@ const SEED={
    "id": "T-13",
    "title": "Экран оплаты",
    "assignee": "Волкова Н.",
-   "role": "=IFERROR(INDEX(Капасити!$C$5:$C$147,MATCH($C17,Капасити!$B$5:$B$147,0)),\"\")",
+   "role": "Frontend",
    "type": "Задача",
    "est": 8,
    "status": "В работе",
@@ -648,7 +648,7 @@ const SEED={
    "id": "T-14",
    "title": "Вебхуки платежей",
    "assignee": "Иванов А.",
-   "role": "=IFERROR(INDEX(Капасити!$C$5:$C$147,MATCH($C18,Капасити!$B$5:$B$147,0)),\"\")",
+   "role": "Backend",
    "type": "История",
    "est": 5,
    "status": "To Do",
@@ -662,7 +662,7 @@ const SEED={
    "id": "T-15",
    "title": "История заказов",
    "assignee": "Соколов Р.",
-   "role": "=IFERROR(INDEX(Капасити!$C$5:$C$147,MATCH($C19,Капасити!$B$5:$B$147,0)),\"\")",
+   "role": "Frontend",
    "type": "Задача",
    "est": 5,
    "status": "To Do",
@@ -676,7 +676,7 @@ const SEED={
    "id": "T-16",
    "title": "Личный кабинет",
    "assignee": "Волкова Н.",
-   "role": "=IFERROR(INDEX(Капасити!$C$5:$C$147,MATCH($C20,Капасити!$B$5:$B$147,0)),\"\")",
+   "role": "Frontend",
    "type": "Задача",
    "est": 8,
    "status": "To Do",
@@ -690,7 +690,7 @@ const SEED={
    "id": "T-17",
    "title": "Фильтры каталога",
    "assignee": "Морозов И.",
-   "role": "=IFERROR(INDEX(Капасити!$C$5:$C$147,MATCH($C21,Капасити!$B$5:$B$147,0)),\"\")",
+   "role": "QA",
    "type": "История",
    "est": 6,
    "status": "To Do",
@@ -704,7 +704,7 @@ const SEED={
    "id": "T-18",
    "title": "Отзывы и рейтинги",
    "assignee": "Лебедева Т.",
-   "role": "=IFERROR(INDEX(Капасити!$C$5:$C$147,MATCH($C22,Капасити!$B$5:$B$147,0)),\"\")",
+   "role": "Designer",
    "type": "Тех.долг",
    "est": 5,
    "status": "To Do",
@@ -718,7 +718,7 @@ const SEED={
    "id": "T-19",
    "title": "Рекомендации",
    "assignee": "Фёдорова О.",
-   "role": "=IFERROR(INDEX(Капасити!$C$5:$C$147,MATCH($C23,Капасити!$B$5:$B$147,0)),\"\")",
+   "role": "Analyst",
    "type": "История",
    "est": 8,
    "status": "To Do",
@@ -732,7 +732,7 @@ const SEED={
    "id": "T-20",
    "title": "A/B тесты чекаута",
    "assignee": "Морозов И.",
-   "role": "=IFERROR(INDEX(Капасити!$C$5:$C$147,MATCH($C24,Капасити!$B$5:$B$147,0)),\"\")",
+   "role": "QA",
    "type": "Задача",
    "est": 5,
    "status": "To Do",
@@ -1293,6 +1293,10 @@ function iso(d){return d.toISOString().slice(0,10);}
 function addD(d,n){const x=new Date(d);x.setUTCDate(x.getUTCDate()+n);return x;}
 function fmtd(d){return d?('0'+d.getUTCDate()).slice(-2)+'.'+('0'+(d.getUTCMonth()+1)).slice(-2)+'.'+d.getUTCFullYear():'';}
 function netdays(a,b,hol){const set=new Set(hol||[]);let c=0,d=new Date(a);while(d<=b){const g=d.getUTCDay();if(g!==0&&g!==6&&!set.has(iso(d)))c++;d=addD(d,1);}return c;}
+/* рабочие дни отсутствия участника (отпуск/больничный/отгул) в окне [a,b] — из «Графика отпусков» */
+var VAC_REDUCE={'Отпуск':1,'Больничный':1,'Отгул':1};
+function vacDays(member,a,b,hol){let d=0;(ST.vacation||[]).forEach(v=>{if(v.member!==member||!VAC_REDUCE[v.type])return;
+  const f=pd(v.from),t=pd(v.to);if(!f||!t)return;const s=f>a?f:a,e=t<b?t:b;if(s<=e)d+=netdays(s,e,hol);});return d;}
 function num(v){const n=parseFloat(v);return isNaN(n)?0:n;}
 
 function compute(){
@@ -1301,7 +1305,7 @@ function compute(){
  const sp=[];
  for(let s=1;s<=N;s++){const a=addD(start,(s-1)*14),b=addD(start,(s-1)*14+11);
   const wd=netdays(a,b,holidays);
-  const cap=(ST.team||[]).reduce((t,m)=>t+(wd-(num(m.absent)))*num(m.avail)*focus,0);
+  const cap=(ST.team||[]).reduce((t,m)=>t+Math.max(0,(wd-num(m.absent)-vacDays(m.name,a,b,holidays)))*num(m.avail)*focus,0);
   const plan=(ST.tasks||[]).filter(t=>+t.sprint===s).reduce((x,t)=>x+num(t.est),0);
   let status= today>b?'Закрыт': today>=a?'Активный':'Планируется';
   const vel= status==='Закрыт'? (ST.tasks||[]).filter(t=>+t.sprint===s&&t.status==='Готово').reduce((x,t)=>x+num(t.est),0):null;
@@ -1421,18 +1425,96 @@ const ROLES=['Backend','Frontend','QA','DevOps','Analyst','Designer'];
 const STAT_TASK=['To Do','В работе','Готово'];
 const STAT_MS=['Планируется','В работе','Готово','Задержка'];
 function sprintOpts(){return Array.from({length:ST.params.sprints||11},(_,i)=>i+1);}
-function views(){
- const C=compute();
- // Dashboard
- renderDash(C);
- // Backlog
- setView('backlog','Бэклог','Задачи проекта — источник данных для плана, velocity, релизов и метрик.',
-   editable('tasks',[
+/* ================= Автоматизации (приоритет, авто-набор, конвертации, линтер) ================= */
+function moscowRankOf(id){const m=(ST.moscow||[]).find(x=>x.task===id);if(!m)return 2.5;const r={'Must':0,'Should':1,'Could':2,"Won't":3}[m.category];return r==null?2.5:r;}
+function riceScoreOf(id){const r=(ST.rice||[]).find(x=>x.task===id);return r?riceScore(r):0;}
+function cmpPriority(a,b){const ma=moscowRankOf(a.id),mb=moscowRankOf(b.id);if(ma!==mb)return ma-mb;const ra=riceScoreOf(a.id),rb=riceScoreOf(b.id);if(ra!==rb)return rb-ra;return num(a.est)-num(b.est);}
+function isTaskReady(id){return (ST.grooming||[]).some(g=>g.task===id&&g.ready==='Готово к спринту');}
+function todayISO(){return (ST.params&&ST.params.today)||new Date().toISOString().slice(0,10);}
+function sortBacklogByPriority(){if(!PERM.canEdit){toast('Только для редактора/администратора');return;}
+ (ST.tasks||[]).sort(cmpPriority);save();views();activate('backlog');if(typeof auditClient==='function')auditClient('backlog_sort_priority');toast('Бэклог отсортирован по приоритету (MoSCoW → RICE)');}
+function autoFillSprint(N){if(!PERM.canEdit){toast('Только для редактора/администратора');return;}
+ N=num(N);const C=compute(),spo=C.sp.find(x=>+x.s===N);if(!spo){toast('Нет спринта #'+N);return;}
+ let avail=spo.cap-(ST.tasks||[]).filter(t=>+t.sprint===N&&t.status!=='Готово').reduce((a,t)=>a+num(t.est),0);
+ if(avail<=0){toast('Спринт #'+N+' уже заполнен (ёмкость '+fmt(spo.cap,1)+' SP)');return;}
+ const cand=(ST.tasks||[]).filter(t=>(t.sprint===''||t.sprint==null)&&t.status!=='Готово');
+ cand.sort((a,b)=>{const ra=isTaskReady(a.id)?0:1,rb=isTaskReady(b.id)?0:1;return ra!==rb?ra-rb:cmpPriority(a,b);});
+ let added=0,sp=0,held=0;
+ cand.forEach(t=>{const e=num(t.est)||0;if(e>avail)return;
+   if(t.dep){const dt=(ST.tasks||[]).find(x=>x.id===t.dep);const ds=dt?(dt.sprint===''||dt.sprint==null?null:+dt.sprint):null;
+     if(!((dt&&dt.status==='Готово')||(ds!=null&&ds<=N))){held++;return;}}
+   t.sprint=N;avail-=e;added++;sp+=e;});
+ if(!added){toast('Нет свободных готовых задач для набора'+(held?' ('+held+' отложено по зависимостям)':'')+'. Нужны задачи без спринта.');return;}
+ save();views();activate('roadmap');if(typeof auditClient==='function')auditClient('sprint_autofill','Спринт '+N+': +'+added);
+ toast('Спринт #'+N+': +'+added+' задач ('+fmt(sp,1)+' SP)'+(held?', отложено по зависимостям: '+held:''));}
+function dailyBlockersToDeps(){if(!PERM.canEdit){toast('Только для редактора/администратора');return;}
+ const deps=ST.deps||(ST.deps=[]);let n=0;
+ (ST.daily||[]).forEach(d=>{const bl=(d.blocker||'').trim();if(!bl||deps.some(x=>(x.desc||'').trim()===bl))return;
+   deps.push({id:genId(deps,'id','D-'),item:d.participant||'Дэйли',type:'Задача',task:'',stream:'Дэйли',dir:'Мы зависим',desc:bl,sprint:num(d.sprint),status:'Ожидается',owner:d.participant||'',risk:'Medium'});n++;});
+ if(!n){toast('Новых блокеров нет (или уже перенесены)');return;}
+ save();views();activate('deps');if(typeof auditClient==='function')auditClient('daily_blockers_to_deps',n);toast('В «Зависимости» добавлено: '+n);}
+function demoReworkToTasks(){if(!PERM.canEdit){toast('Только для редактора/администратора');return;}
+ const tks=ST.tasks||(ST.tasks=[]);let n=0;
+ (ST.demo||[]).forEach(d=>{if(d.status!=='На доработку')return;const title='Доработка: '+(d.item||'демо');if(tks.some(t=>(t.title||'')===title))return;
+   tks.push({id:genId(tks,'id','T-'),title:title,assignee:'',role:'',type:'Задача',est:0,status:'To Do',sprint:num(d.sprint)||'',dep:'',started:'',done:'',added:true});n++;});
+ if(!n){toast('Нет демо «на доработку» для переноса');return;}
+ save();views();activate('backlog');if(typeof auditClient==='function')auditClient('demo_rework_to_tasks',n);toast('В «Бэклог» добавлено задач: '+n);}
+function retroActionsToTasks(){if(!PERM.canEdit){toast('Только для редактора/администратора');return;}
+ const tks=ST.tasks||(ST.tasks=[]);let n=0;
+ (ST.retro||[]).forEach(r=>{const a=(r.action||'').trim();if(!a||r.status==='Сделано')return;const title='Action: '+a;if(tks.some(t=>(t.title||'')===title))return;
+   tks.push({id:genId(tks,'id','T-'),title:title,assignee:r.owner||'',role:'',type:'Задача',est:0,status:'To Do',sprint:'',dep:'',started:'',done:r.due||'',added:true});n++;});
+ if(!n){toast('Нет открытых action items для переноса');return;}
+ save();views();activate('backlog');if(typeof auditClient==='function')auditClient('retro_actions_to_tasks',n);toast('В «Бэклог» добавлено задач: '+n);}
+function dataChecks(){const issues=[],tasks=ST.tasks||[],ids={};
+ tasks.forEach(t=>{if(t.id)ids[t.id]=(ids[t.id]||0)+1;});
+ Object.keys(ids).forEach(id=>{if(ids[id]>1)issues.push({lvl:'crit',msg:'Дублирующийся ID задачи: '+id+' ('+ids[id]+')',fix:null});});
+ tasks.forEach(t=>{
+   if(/^=/.test(String(t.role||'')))issues.push({lvl:'warn',msg:'Формула в поле «Роль» у '+t.id,fix:()=>{t.role='';}});
+   if(t.status==='Готово'&&!t.done)issues.push({lvl:'warn',msg:t.id+': «Готово» без даты завершения',fix:()=>{t.done=todayISO();}});
+   if(t.status==='В работе'&&!t.started)issues.push({lvl:'warn',msg:t.id+': «В работе» без даты старта',fix:()=>{t.started=todayISO();}});
+   if((t.est===''||t.est==null||num(t.est)===0)&&t.status!=='Готово')issues.push({lvl:'info',msg:t.id+': задача без оценки',fix:null});
+   if(t.dep&&!tasks.some(x=>x.id===t.dep))issues.push({lvl:'warn',msg:t.id+': осиротевшая зависимость → '+t.dep,fix:()=>{t.dep='';}});
+ });
+ [['grooming','Груминг'],['rice','RICE'],['moscow','MoSCoW']].forEach(function(p){(ST[p[0]]||[]).forEach(x=>{if(x.task&&!tasks.some(t=>t.id===x.task))issues.push({lvl:'warn',msg:p[1]+' '+x.id+': ссылка на несуществующую задачу '+x.task,fix:()=>{x.task='';}});});});
+ (ST.rice||[]).forEach(r=>{if(!num(r.reach)||!num(r.effort))issues.push({lvl:'info',msg:'RICE '+r.id+': не заполнены Reach/Effort',fix:null});});
+ return issues;}
+function checksView(){const w=document.createElement('div');const issues=dataChecks(),fixable=issues.filter(i=>i.fix);
+ const bar=document.createElement('div');bar.className='grm-pick';
+ const b=document.createElement('button');b.className='btn primary';b.textContent='🧹 Исправить автоматически ('+fixable.length+')';
+ b.onclick=()=>{if(!PERM.canEdit){toast('Только для редактора/администратора');return;}if(!fixable.length){toast('Нечего исправлять');return;}fixable.forEach(i=>i.fix());save();views();activate('checks');if(typeof auditClient==='function')auditClient('data_autofix',fixable.length);toast('Исправлено: '+fixable.length);};
+ const cnt=document.createElement('span');cnt.style.cssText='font-size:12.5px;color:var(--muted);align-self:center;margin-left:auto';cnt.textContent='Найдено: '+issues.length+' (авто-исправимо: '+fixable.length+')';
+ bar.appendChild(b);bar.appendChild(cnt);w.appendChild(bar);
+ const card=document.createElement('div');card.className='card';
+ if(!issues.length)card.innerHTML='<p style="margin:0;color:var(--good);font-weight:600">✓ Проблем не найдено — данные в порядке.</p>';
+ else{let h='<div class="twrap scroll" style="border:none;max-height:52vh"><table class="cardt"><thead><tr><th>Уровень</th><th>Проблема</th><th>Исправление</th></tr></thead><tbody>';
+   issues.forEach(i=>{const p=i.lvl==='crit'?'p-crit':i.lvl==='warn'?'p-warn':'p-neut';h+='<tr><td><span class="pill '+p+'">'+(i.lvl==='crit'?'критично':i.lvl==='warn'?'внимание':'инфо')+'</span></td><td>'+esc(i.msg)+'</td><td>'+(i.fix?'авто':'вручную')+'</td></tr>';});
+   h+='</tbody></table></div>';card.innerHTML=h;}
+ w.appendChild(card);
+ const lg=document.createElement('div');lg.className='card';lg.style.marginTop='14px';
+ lg.innerHTML='<p class="ctitle">Проверки данных (авто-контроль)</p><p style="font-size:13px;color:var(--muted);line-height:1.7;margin:0">Контроль целостности: дубли ID, «Готово» без даты, «В работе» без старта, задачи без оценки, осиротевшие зависимости и ссылки RICE/MoSCoW/Груминга, формулы из старого импорта. «Исправить автоматически» чинит всё, что можно без потери смысла.</p>';
+ w.appendChild(lg);return w;}
+function backlogView(){const w=document.createElement('div');const C=compute();
+ const bar=document.createElement('div');bar.className='grm-pick';
+ const sb=document.createElement('button');sb.className='btn';sb.textContent='↕ По приоритету (RICE/MoSCoW)';sb.onclick=sortBacklogByPriority;
+ const fs=document.createElement('select');fs.className='tsearch';fs.style.cssText='flex:0 0 auto;min-width:150px';
+ fs.innerHTML=sprintOpts().map(s=>'<option value="'+s+'"'+(s===C.cur?' selected':'')+'>Спринт #'+s+'</option>').join('');
+ const fb=document.createElement('button');fb.className='btn primary';fb.textContent='⚙ Авто-набор спринта';fb.onclick=()=>autoFillSprint(fs.value);
+ const cnt=document.createElement('span');cnt.style.cssText='font-size:12.5px;color:var(--muted);align-self:center;margin-left:auto';
+ cnt.textContent='Готовы к спринту (по грумингу): '+(ST.tasks||[]).filter(t=>isTaskReady(t.id)).length;
+ bar.appendChild(sb);bar.appendChild(fs);bar.appendChild(fb);bar.appendChild(cnt);w.appendChild(bar);
+ w.appendChild(editable('tasks',[
     {k:'id',label:'ID'},{k:'title',label:'Задача',wide:true},{k:'assignee',label:'Исполнитель'},
     {k:'role',label:'Роль',type:'select',opts:ROLES},{k:'type',label:'Тип',type:'select',opts:['История','Задача','Тех.долг']},
     {k:'est',label:'Оценка',type:'num'},{k:'status',label:'Статус',type:'select',opts:STAT_TASK},
     {k:'sprint',label:'Спринт',type:'num'},{k:'dep',label:'Зависит от',type:'dep'},{k:'started',label:'В работу',type:'date'},{k:'done',label:'Готово',type:'date'}
    ],{newId:'id',prefix:'T-'}));
+ return w;}
+function views(){
+ const C=compute();
+ // Dashboard
+ renderDash(C);
+ // Backlog (с авто-сортировкой по приоритету и авто-набором спринта)
+ setView('backlog','Бэклог','Задачи проекта — источник данных для плана, velocity, релизов и метрик. Кнопки выше: сортировка по приоритету (RICE/MoSCoW) и авто-набор спринта по ёмкости.',backlogView());
  // Team
  setView('team','Команда','Состав команды и доступность — из этого считается ёмкость спринтов.',
    editable('team',[{k:'name',label:'Участник',wide:true},{k:'role',label:'Роль',type:'select',opts:ROLES},
@@ -1481,6 +1563,7 @@ function views(){
    editable('calendar',[{k:'date',label:'Дата',type:'date'},{k:'name',label:'Праздник / выходной',wide:true}]));
  // Params
  renderParams();
+ setView('checks','Проверки данных','Автоматический контроль целостности данных с авто-исправлением типичных проблем.',checksView());
  // FAQ (Справка)
  setView('faq','FAQ — частые вопросы','Ответы на типичные вопросы о работе с приложением. Раскройте вопрос, чтобы увидеть ответ; ниже — таблица для редактирования.',faqView());
  // Audit log (Справка) — история изменений для всех; полный журнал — администратору
@@ -1504,6 +1587,18 @@ function attnBand(C){const it=[],T=ST.ttmTarget||15;
  if(C.ttmAvg>T)it.push(['warn','analytics','⏱ TTM '+fmt(C.ttmAvg,1)+' дн > цель '+T]);
  if(C.bugsOpen>3)it.push(['warn','bugs','🐞 Открытых багов: '+C.bugsOpen]);
  if(C.dodPct<0.8)it.push(['warn','params','✔ Готовность DoD: '+pctf(C.dodPct)]);
+ const reopened=(ST.bugs||[]).filter(b=>b.reopened&&b.status!=='Закрыт').length;
+ if(reopened)it.push(['warn','bugs','🔁 Переоткрытые баги: '+reopened]);
+ const spOf={};(C.sp||[]).forEach(x=>spOf[x.s]=x);
+ const depConf=(ST.tasks||[]).filter(t=>{if(!t.dep||t.sprint==null||t.sprint==='')return false;const dt=(ST.tasks||[]).find(x=>x.id===t.dep);return dt&&dt.sprint!=null&&dt.sprint!==''&&+dt.sprint>+t.sprint;}).length;
+ if(depConf)it.push(['crit','gantt','🔗 Конфликт зависимостей: '+depConf+' (задача раньше своей зависимости)']);
+ const tdy=(ST.params&&ST.params.today)||new Date().toISOString().slice(0,10);
+ const overAI=(ST.retro||[]).filter(r=>(r.action||'').trim()&&r.status!=='Сделано'&&r.due&&String(r.due)<tdy).length;
+ if(overAI)it.push(['warn','retro','⏰ Просроченные action items: '+overAI]);
+ const msDelay=(ST.milestones||[]).filter(m=>m.status==='Задержка').length;
+ if(msDelay)it.push(['warn','milestones','🏁 Вехи с задержкой: '+msDelay]);
+ const wipCur=(ST.tasks||[]).filter(t=>+t.sprint===C.cur&&t.status==='В работе').length,team=(ST.team||[]).length;
+ if(team&&wipCur>team*2)it.push(['warn','kanban','🚦 Много задач «В работе»: '+wipCur+' (WIP > 2×команда)']);
  if(!it.length)it.push(['good','analytics','✓ Критичных сигналов нет']);
  return '<div class="attn">'+it.map(x=>`<a class="a-${x[0]}" data-goto="${x[1]}">${esc(x[2])}</a>`).join('')+'</div>';}
 function renderDash(C){const v=document.getElementById('v_dash');const T=ST.ttmTarget||15;
@@ -1788,6 +1883,11 @@ function riceView(){const w=document.createElement('div');
   +'Приоритет: <b>Высокий</b> ≥ 60% макс. балла · <b>Средний</b> ≥ 30% · иначе <b>Низкий</b>.</p>';
  w.appendChild(lg);return w;}
 function dailyView(){const w=document.createElement('div');
+ (function(){const bar=document.createElement('div');bar.className='grm-pick';
+  const b=document.createElement('button');b.className='btn primary';b.textContent='⛔ Блокеры → в «Зависимости»';b.onclick=dailyBlockersToDeps;
+  const c=document.createElement('span');c.style.cssText='font-size:12.5px;color:var(--muted);align-self:center;margin-left:auto';
+  c.textContent='Блокеров озвучено: '+(ST.daily||[]).filter(x=>(x.blocker||'').trim()).length;
+  bar.appendChild(b);bar.appendChild(c);w.appendChild(bar);})();
  w.appendChild(editable('daily',[{k:'id',label:'ID'},{k:'date',label:'Дата',type:'date'},{k:'sprint',label:'Спринт',type:'num'},
    {k:'participant',label:'Участник'},{k:'yesterday',label:'Вчера',wide:true},{k:'today',label:'Сегодня',wide:true},{k:'blocker',label:'Блокер',wide:true}],{newId:'id',prefix:'DL-'}));
  const a=ST.daily||[],blk=a.filter(x=>(x.blocker||'').trim()).length;
@@ -1871,6 +1971,11 @@ function groomingView(){const w=document.createElement('div');
   +'Задачи берутся напрямую из «Бэклога»: выберите задачу в списке выше и нажмите «+ В груминг» — карточка создастся автоматически (название, оценка и исполнитель подтянутся из задачи, колонка «Задача» свяжет запись с бэклогом). Уже разобранные задачи из списка исключаются.</p>';
  w.appendChild(lg);return w;}
 function demoView(){const w=document.createElement('div');
+ (function(){const bar=document.createElement('div');bar.className='grm-pick';
+  const b=document.createElement('button');b.className='btn primary';b.textContent='🔧 «На доработку» → в «Бэклог»';b.onclick=demoReworkToTasks;
+  const c=document.createElement('span');c.style.cssText='font-size:12.5px;color:var(--muted);align-self:center;margin-left:auto';
+  c.textContent='На доработку: '+(ST.demo||[]).filter(x=>x.status==='На доработку').length;
+  bar.appendChild(b);bar.appendChild(c);w.appendChild(bar);})();
  w.appendChild(editable('demo',[{k:'id',label:'ID'},{k:'sprint',label:'Спринт',type:'num'},{k:'date',label:'Дата',type:'date'},
    {k:'item',label:'Что демонстрировали',wide:true},{k:'presenter',label:'Докладчик'},
    {k:'stakeholders',label:'Участники / заказчики'},{k:'feedback',label:'Обратная связь',wide:true},
@@ -1900,6 +2005,11 @@ function radarSvg(items){items=(items||[]).filter(x=>x.axis);const n=items.lengt
  items.forEach((it,i)=>{const p=P(i,it.score);g+='<circle cx="'+p[0].toFixed(1)+'" cy="'+p[1].toFixed(1)+'" r="3.2" fill="'+col('--accent')+'"/>';});
  return '<svg viewBox="0 0 340 330" style="max-width:340px;width:100%">'+g+'</svg>';}
 function retroView(){const w=document.createElement('div');
+ (function(){const bar=document.createElement('div');bar.className='grm-pick';
+  const b=document.createElement('button');b.className='btn primary';b.textContent='📋 Action items → в «Бэклог»';b.onclick=retroActionsToTasks;
+  const c=document.createElement('span');c.style.cssText='font-size:12.5px;color:var(--muted);align-self:center;margin-left:auto';
+  c.textContent='Открытых action items: '+(ST.retro||[]).filter(x=>(x.action||'').trim()&&x.status!=='Сделано').length;
+  bar.appendChild(b);bar.appendChild(c);w.appendChild(bar);})();
  // 1. Retro items — formats + dot-voting
  w.appendChild(editable('retro',[{k:'sprint',label:'Спринт',type:'num'},
    {k:'format',label:'Формат',type:'select',opts:['','Start/Stop/Continue','Mad/Sad/Glad','4L','Sailboat','Starfish','DAKI']},
@@ -2127,7 +2237,8 @@ function renderAnalytics(C){const v=document.getElementById('v_analytics');const
  // role load current sprint: capacity vs demand
  const cs=sp[C.cur-1]||sp[0],focus=num(ST.params.focus)||0.8;
  const capRole={},demRole={};ROLES.forEach(r=>{capRole[r]=0;demRole[r]=0;});
- (ST.team||[]).forEach(m=>{if(capRole[m.role]!=null)capRole[m.role]+=Math.max(0,(cs.wd-num(m.absent)))*num(m.avail)*focus;});
+ const csHol=(ST.calendar||[]).map(h=>typeof h==='string'?h:h.date);
+ (ST.team||[]).forEach(m=>{if(capRole[m.role]!=null)capRole[m.role]+=Math.max(0,(cs.wd-num(m.absent)-vacDays(m.name,cs.a,cs.b,csHol)))*num(m.avail)*focus;});
  tasks.filter(t=>+t.sprint===C.cur).forEach(t=>{if(demRole[t.role]!=null)demRole[t.role]+=num(t.est);});
  bars(document.getElementById('an_rl'),ROLES,[{color:col('--accent'),data:ROLES.map(r=>Math.round(capRole[r]*10)/10)},{color:col('--warn'),data:ROLES.map(r=>demRole[r])}]);
  // capacity vs demand by quarter
@@ -2317,11 +2428,18 @@ const NAV=[
  {g:'Аналитика',items:[['analytics','Аналитика','📈'],['risks','Риски','⚠️'],['bugs','Баги','🐞']]},
  {g:'Церемонии',items:[['daily','Дэйли','☀️'],['grooming','Груминг','🧹'],['demo','Демо спринта','🎬'],['retro','Ретроспективы','🔄']]},
  {g:'Персонал',items:[['vacation','График отпусков','🏖️'],['birthdays','Дни рождения','🎂']]},
- {g:'Настройки',items:[['okr','OKR','🧭'],['budget','Бюджет','💰'],['calendar','Календарь','📅'],['params','Параметры','⚙️']]},
+ {g:'Настройки',items:[['okr','OKR','🧭'],['budget','Бюджет','💰'],['calendar','Календарь','📅'],['checks','Проверки данных','🧪'],['params','Параметры','⚙️']]},
  {g:'Справка',items:[['faq','FAQ','❓'],['audit','Журнал событий','🧾']]},
 ];
-const APP_VERSION='1.18.0';const APP_DATE='2026-09-15';
+const APP_VERSION='1.19.0';const APP_DATE='2026-09-15';
 const CHANGELOG=[
+ {v:'1.19.0',date:'2026-09-15',items:[
+   'Отпуска влияют на ёмкость: пересечение отпусков/больничных/отгулов со спринтом автоматически уменьшает его ёмкость.',
+   'Авто-набор спринта по ёмкости (с учётом приоритета RICE/MoSCoW, готовности по грумингу и зависимостей) и сортировка Бэклога по приоритету.',
+   'Церемонии → задачи одной кнопкой: блокеры Дэйли → «Зависимости», «на доработку» Демо и action items Ретро → «Бэклог».',
+   'Раздел «Проверки данных»: авто-контроль целостности (дубли, «Готово» без даты, осиротевшие ссылки, формулы) с авто-исправлением.',
+   'Расширены авто-сигналы: конфликт зависимостей, переоткрытые баги, просроченные action items, вехи с задержкой, WIP.',
+   'Помощник выполняет действия: «набери спринт N», «сортируй бэклог», «исправь данные», «создай задачу», «перенеси T-05 в спринт 4».']},
  {v:'1.18.0',date:'2026-09-15',items:['RICE и MoSCoW связаны с «Бэклогом» (как Груминг): выбор задачи из бэклога с автозаполнением и колонка-ссылка «Задача»; уже добавленные задачи исключаются из списка.']},
  {v:'1.17.0',date:'2026-09-15',items:['Груминг связан с «Бэклогом»: выбор задачи из бэклога с автозаполнением (название, оценка, исполнитель) и колонка-ссылка «Задача». Уже разобранные задачи исключаются из списка.']},
  {v:'1.16.0',date:'2026-09-15',items:['Отчёт PPTX: выбор спринта при формировании (конкретный спринт или весь проект). Для спринта — метрики спринта и список его задач.','Исправлена ошибка формирования отчёта (обновлён источник загрузки модуля PptxGenJS).']},
@@ -2630,8 +2748,15 @@ startAnalytics();setInterval(startAnalytics,30000);
   return (best&&bs>=Math.min(2,qt.length))?(best.q+'\n\n'+best.a):null;}
  function help(){return {t:'Я помощник по приложению «Планирование спринтов». Могу:\n• показать метрики — velocity, health, TTM, баги, зависимости, бюджет, прогноз;\n• подсказать, что требует внимания;\n• объяснить разделы и методологии (RICE, MoSCoW);\n• открыть нужный раздел (напр. «открой риски»).',chips:true};}
  function reply(q){const s=(q||'').toLowerCase().trim();if(!s)return help();
-  if(/^(привет|здравств|хай|hello|hi|добр|ку\b|yo)/.test(s))return {t:'Привет! Спросите про данные проекта (velocity, баги, риски, «что требует внимания») или про разделы приложения. Могу и открыть нужный раздел.',chips:true};
+  if(/^(привет|здравств|хай|hello|hi|добр|ку\b|yo)/.test(s))return {t:'Привет! Спросите про данные проекта (velocity, баги, риски, «что требует внимания») или про разделы приложения. Могу и открыть нужный раздел, а также выполнить действия: «набери спринт 4», «сортируй бэклог по приоритету», «исправь данные», «создай задачу …».',chips:true};
   if(/(что ты умеешь|как польз|помоги|help|что можешь|команды)/.test(s))return help();
+  // --- команды-действия (нужны права редактора) ---
+  const canDo=(typeof PERM!=='undefined'&&PERM.canEdit);
+  if(/(набери|авто.?набор|заполни).{0,12}спринт/.test(s)){const m=s.match(/спринт[а-я]*\s*#?(\d+)/);if(!m)return {t:'Укажите номер спринта, например «набери спринт 4».'};if(!canDo)return {t:'Действие доступно редактору/администратору.'};autoFillSprint(+m[1]);return {t:'Выполняю авто-набор спринта #'+m[1]+' по ёмкости.',goto:'roadmap'};}
+  if(/(сортир|упоряд|приоритет).{0,10}бэклог|бэклог.{0,10}приоритет/.test(s)){if(!canDo)return {t:'Действие доступно редактору/администратору.'};sortBacklogByPriority();return {t:'Сортирую бэклог по приоритету (MoSCoW → RICE).',goto:'backlog'};}
+  if(/(исправь|почини|проверь).{0,10}данн|проверк.{0,6}данн/.test(s)){if(!canDo)return {t:'Действие доступно редактору/администратору.'};const fx=dataChecks().filter(i=>i.fix);if(!fx.length)return {t:'Проблем для авто-исправления не найдено.',goto:'checks'};fx.forEach(i=>i.fix());save();views();activate('checks');return {t:'Исправлено автоматически: '+fx.length+' проблем(ы).',goto:'checks'};}
+  if(/(перенеси|перемести).{0,20}спринт/.test(s)&&/т-?\d+|t-?\d+/.test(s)){const im=s.match(/t-?(\d+)/),sm=s.match(/спринт[а-я]*\s*#?(\d+)/);if(im&&sm){if(!canDo)return {t:'Действие доступно редактору/администратору.'};const tid='T-'+String(im[1]).padStart(2,'0');const t=(ST.tasks||[]).find(x=>String(x.id).toUpperCase()===tid);if(!t)return {t:'Задача '+tid+' не найдена.'};t.sprint=+sm[1];save();views();activate('backlog');return {t:tid+' перенесена в спринт #'+sm[1]+'.',goto:'roadmap'};}}
+  if(/(создай|добавь|нов(ая|ую)).{0,8}задач/.test(s)){if(!canDo)return {t:'Создание задач доступно редактору/администратору.'};let title=q.replace(/.*?задач[а-яё]*/i,'').replace(/^[\s:—–-]+/,'').trim()||'Новая задача';const tks=ST.tasks||(ST.tasks=[]);const id=genId(tks,'id','T-');tks.push({id:id,title:title,assignee:'',role:'',type:'Задача',est:0,status:'To Do',sprint:'',dep:'',started:'',done:'',added:true});save();views();activate('backlog');return {t:'Создал задачу '+id+': «'+title+'».',goto:'backlog'};}
   // navigation (requires a verb)
   if(/(открой|откр\b|покажи|перейд|переключ|запусти|show|go to)/.test(s)){
    for(const k in SYN){if(s.indexOf(k)>=0){activate(SYN[k]);return {t:'Открыл раздел «'+navLabel(SYN[k])+'».'};}}}
