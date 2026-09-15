@@ -72,6 +72,19 @@ h1{font-size:23px;margin:4px 0 4px;letter-spacing:-.01em}
 .kan-card .kn-move{display:flex;gap:5px;margin-top:8px}
 .kan-card .kn-move button{border:1px solid var(--line);background:var(--panel2);color:var(--muted);border-radius:7px;padding:2px 9px;font-size:12px;cursor:pointer;font-family:inherit;line-height:1.3}
 .kan-card .kn-move button:hover{border-color:var(--accent);color:var(--accent)}
+.kan-card.rel .kn-prog{display:flex;align-items:center;gap:7px;margin-top:8px;font-size:10.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+.kan-card.rel .kn-prog-bar{flex:1;height:6px;border-radius:4px;background:var(--panel2);overflow:hidden}
+.kan-card.rel .kn-prog-bar i{display:block;height:100%;background:var(--good);border-radius:4px}
+.kan-card .kn-comp,.kan-comp-row{margin-top:7px;display:flex;flex-wrap:wrap;gap:4px;align-items:center}
+.kan-card .kn-comp{max-height:82px;overflow:auto}
+.kan-card .kn-comp-lbl{font-size:9.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.03em;width:100%;margin-bottom:1px}
+.kan-card .kn-item{font-size:10.5px;border:1px solid var(--line);border-radius:8px;padding:1px 6px;background:var(--panel2);color:var(--accent);cursor:pointer;text-decoration:none}
+.kan-card .kn-item:hover{border-color:var(--accent)}
+.kan-card .kn-item.story{color:var(--good)}
+.kan-card .kn-item.def{color:var(--crit)}
+.kan-card .kn-more{font-size:10.5px;color:var(--muted)}
+.kan-card .kn-none{margin-top:7px;font-size:11px;color:var(--muted);font-style:italic}
+.kan-card .kn-ready{margin-top:7px;font-size:10.5px;color:var(--good);font-weight:700}
 .kan-empty{font-size:12px;color:var(--muted);font-style:italic;padding:8px 4px}
 body.ro .kan-card{cursor:default}
 body.ro .kan-card .kn-move{display:none}
@@ -1709,17 +1722,28 @@ function sprintsTable(C){const w=document.createElement('div');w.className='twra
  let h='<tr><th>Спринт</th><th>Начало</th><th>Конец</th><th class="num">Раб.дни</th><th class="num">Ёмкость</th><th class="num">План</th><th class="num">Velocity</th><th class="num">% вып.</th><th>Статус</th></tr>';
  C.sp.forEach(x=>{h+=`<tr><td>С${x.s}</td><td>${fmtd(x.a)}</td><td>${fmtd(x.b)}</td><td class="num">${x.wd}</td><td class="num">${fmt(x.cap,1)}</td><td class="num">${fmt(x.plan,1)}</td><td class="num">${x.vel==null?'—':fmt(x.vel,1)}</td><td class="num">${x.pct==null?'—':pctf(x.pct)}</td><td>${statusPill(x.status)}</td></tr>`;});
  t.innerHTML=h;w.appendChild(t);return w;}
+/* Состав релиза = задачи и дефекты по диапазону спринтов (общий источник для «Релизы» и Релизной доски). */
+function releaseComp(r){
+ const f=(r.sfrom===''||r.sfrom==null)?null:+r.sfrom, tt=(r.sto===''||r.sto==null)?null:+r.sto;
+ const inR=t=>f!=null&&tt!=null&&t.sprint!==''&&t.sprint!=null&&+t.sprint>=f&&+t.sprint<=tt;
+ const items=(ST.tasks||[]).filter(inR);
+ const stories=items.filter(t=>t.type==='История');
+ const tasks=items.filter(t=>t.type==='Задача');
+ const other=items.filter(t=>t.type!=='История'&&t.type!=='Задача');
+ const bugs=(ST.bugs||[]).filter(b=>f!=null&&tt!=null&&b.sprint!==''&&b.sprint!=null&&+b.sprint>=f&&+b.sprint<=tt);
+ const totalSP=items.reduce((a,b)=>a+num(b.est),0);
+ const doneItems=items.filter(t=>t.status==='Готово');
+ const doneSP=doneItems.reduce((a,b)=>a+num(b.est),0);
+ return {items,stories,tasks,other,bugs,totalSP,doneSP,doneCnt:doneItems.length,pct:totalSP?doneSP/totalSP:(items.length?doneItems.length/items.length:0)};
+}
 function releasesView(C){const w=document.createElement('div');
  w.appendChild(editable('releases',[{k:'id',label:'ID'},{k:'name',label:'Релиз',wide:true},{k:'sfrom',label:'Спр. от',type:'num'},{k:'sto',label:'Спр. до',type:'num'},{k:'status',label:'Статус',type:'select',opts:STAT_MS}],{newId:'id',prefix:'R-'}));
  const card=document.createElement('div');card.className='card';card.style.marginTop='14px';card.innerHTML='<p class="ctitle">Содержимое релизов (авто) — нажмите строку, чтобы раскрыть список</p>';
  const tw=document.createElement('div');tw.className='twrap';const t=document.createElement('table');
  let h='<tr><th></th><th>ID</th><th>Релиз</th><th>Дата</th><th class="num">Стори</th><th class="num">Задач</th><th class="num">Дефектов</th><th class="num">Объём</th></tr>';
  const chip=(id,title,goto,cls)=>`<a class="itemlnk${cls?' '+cls:''}" data-goto="${goto}" title="${esc(title||'')}">${esc(id)}${title?' · '+esc(String(title).slice(0,40)):''}</a>`;
- (ST.releases||[]).forEach((r,ri)=>{const inR=t2=>+r.sfrom<=+t2.sprint&&+r.sto>=+t2.sprint;
-   const stories=(ST.tasks||[]).filter(t2=>inR(t2)&&t2.type==='История');
-   const tasksA=(ST.tasks||[]).filter(t2=>inR(t2)&&t2.type==='Задача');
-   const bugs=(ST.bugs||[]).filter(b=>+b.sprint>=+r.sfrom&&+b.sprint<=+r.sto);
-   const vol=(ST.tasks||[]).filter(inR).reduce((a,b)=>a+num(b.est),0);
+ (ST.releases||[]).forEach((r,ri)=>{const cmp=releaseComp(r);
+   const stories=cmp.stories,tasksA=cmp.tasks,bugs=cmp.bugs,vol=cmp.totalSP;
    const rd=C.relDate(r);
    h+=`<tr class="rel-row" data-ri="${ri}"><td class="exp" data-ri="${ri}">▸</td><td>${r.id}</td><td>${esc(r.name)}</td><td>${rd?fmtd(rd):''}</td><td class="num">${stories.length}</td><td class="num">${tasksA.length}</td><td class="num">${bugs.length}</td><td class="num">${fmt(vol,1)}</td></tr>`;
    const grp=(lbl,arr)=>`<div class="rel-grp"><span class="rel-lbl">${lbl} (${arr.length})</span>${arr.length?arr.join(''):'<span class="rel-none">—</span>'}</div>`;
@@ -1864,11 +1888,25 @@ function kanTaskCard(t){
   +'<div class="kn-meta"><span>'+asg+'</span>'+role+sp+'<span class="kn-chip">'+fmt(num(t.est),0)+' SP</span></div>'
   +'<div class="kn-move"><button data-move="prev" title="На шаг назад">◀</button><button data-move="next" title="На шаг вперёд">▶</button></div></div>';}
 function kanReleaseCard(r){
+ const c=releaseComp(r);
  const range='Спринты '+esc(String(r.sfrom!=null?r.sfrom:'?'))+'–'+esc(String(r.sto!=null?r.sto:'?'));
- return '<div class="kan-card" draggable="'+(PERM.canEdit?'true':'false')+'" data-id="'+esc(r.id||'')+'">'
+ const pct=Math.round(c.pct*100);
+ const workItems=c.stories.concat(c.tasks,c.other);
+ const cap=14;
+ const itemChip=(t,cls)=>'<a class="kn-item'+(cls?' '+cls:'')+'" data-goto="backlog" data-id="'+esc(t.id)+'" title="'+esc(t.title||'')+'">'+esc(t.id)+'</a>';
+ const chips=workItems.slice(0,cap).map(t=>itemChip(t,t.type==='История'?'story':'')).join('')
+   +(workItems.length>cap?'<span class="kn-more">+'+(workItems.length-cap)+'</span>':'');
+ const bugRow=c.bugs.length?'<div class="kan-comp-row"><span class="kn-comp-lbl">Дефекты ('+c.bugs.length+')</span>'
+   +c.bugs.slice(0,10).map(b=>'<a class="kn-item def" data-goto="bugs" data-id="'+esc(b.id)+'" title="'+esc(b.desc||'')+'">'+esc(b.id)+'</a>').join('')
+   +(c.bugs.length>10?'<span class="kn-more">+'+(c.bugs.length-10)+'</span>':'')+'</div>':'';
+ const ready=(c.items.length&&c.pct>=1&&r.status!=='Готово')?'<div class="kn-ready">✓ Все задачи готовы — можно закрыть релиз</div>':'';
+ return '<div class="kan-card rel" draggable="'+(PERM.canEdit?'true':'false')+'" data-id="'+esc(r.id||'')+'">'
   +'<div class="kn-id">'+esc(r.id||'')+'</div>'
   +'<div class="kn-title">'+esc(r.name||'(без названия)')+'</div>'
-  +'<div class="kn-meta"><span class="kn-chip">'+range+'</span></div>'
+  +'<div class="kn-meta"><span class="kn-chip">'+range+'</span><span class="kn-chip">Стори '+c.stories.length+'</span><span class="kn-chip">Задач '+c.tasks.length+'</span>'+(c.bugs.length?'<span class="kn-chip">Деф '+c.bugs.length+'</span>':'')+'</div>'
+  +'<div class="kn-prog" title="Готово '+c.doneCnt+' из '+c.items.length+' задач"><div class="kn-prog-bar"><i style="width:'+pct+'%"></i></div><span>'+pct+'% · '+fmt(c.doneSP,0)+'/'+fmt(c.totalSP,0)+' SP</span></div>'
+  +(workItems.length?'<div class="kn-comp"><span class="kn-comp-lbl">Состав ('+workItems.length+')</span>'+chips+'</div>':'<div class="kn-none">Нет задач в диапазоне спринтов</div>')
+  +bugRow+ready
   +'<div class="kn-move"><button data-move="prev" title="На шаг назад">◀</button><button data-move="next" title="На шаг вперёд">▶</button></div></div>';}
 /* Move a task/release to a new status; keeps task dates logical; propagates via views(). */
 function kanApplyMove(board,id,newStatus){
@@ -1891,7 +1929,9 @@ function wireKanbanDnD(board,def){let dragId=null;
  board.addEventListener('dragenter',e=>{const col=e.target.closest('.kan-col');if(col&&PERM.canEdit){board.querySelectorAll('.kan-col').forEach(x=>x.classList.remove('drop-hl'));col.classList.add('drop-hl');}});
  board.addEventListener('drop',e=>{const col=e.target.closest('.kan-col');if(!col||!PERM.canEdit)return;e.preventDefault();
   let id=dragId;try{if(!id)id=e.dataTransfer.getData('text/plain');}catch(_){}dragId=null;if(id)kanApplyMove(def,id,col.dataset.status);});
- board.addEventListener('click',e=>{const b=e.target.closest('button[data-move]');if(!b)return;const c=b.closest('.kan-card');if(!c)return;
+ board.addEventListener('click',e=>{
+  const lnk=e.target.closest('.kn-item');if(lnk){e.stopPropagation();activate(lnk.dataset.goto||'backlog');return;}
+  const b=e.target.closest('button[data-move]');if(!b)return;const c=b.closest('.kan-card');if(!c)return;
   const cols=kanEffectiveCols(def);const list=kanBoardItems(def);const it=list.find(x=>x.id===c.dataset.id);if(!it)return;
   let i=cols.indexOf(kanColOf(def,it));i=Math.max(0,Math.min(cols.length-1,i+(b.dataset.move==='next'?1:-1)));kanApplyMove(def,c.dataset.id,cols[i]);});}
 /* ----- admin board management ----- */
@@ -2575,8 +2615,12 @@ const NAV=[
  {g:'Настройки',items:[['budget','Бюджет','💰'],['calendar','Календарь','📅'],['checks','Проверки данных','🧪'],['params','Параметры','⚙️']]},
  {g:'Справка',items:[['faq','FAQ','❓'],['audit','Журнал событий','🧾']]},
 ];
-const APP_VERSION='1.21.0';const APP_DATE='2026-09-15';
+const APP_VERSION='1.22.0';const APP_DATE='2026-09-15';
 const CHANGELOG=[
+ {v:'1.22.0',date:'2026-09-15',items:[
+   'Релизная доска показывает состав каждого релиза: стори, задачи и дефекты (по диапазону спринтов) с прогрессом готовности — тот же источник, что и в разделе «Релизы».',
+   'Двусторонняя связь релизной доски и раздела «Релизы»: статус меняется перетаскиванием, состав и прогресс пересчитываются автоматически; клик по элементу открывает «Бэклог»/«Баги».',
+   'На карточке релиза — подсказка «можно закрыть релиз», когда все его задачи готовы.']},
  {v:'1.21.0',date:'2026-09-15',items:[
    'Kanban-доска разделена на доски по направлениям: «Все задачи», Backend, Frontend, Тестировщики, Аналитики и «Релизная доска» — переключение вкладками.',
    'Администратор может создавать новые доски, переименовывать и удалять их, а также добавлять и удалять колонки-статусы.',
