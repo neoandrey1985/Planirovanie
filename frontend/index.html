@@ -1182,7 +1182,19 @@ function migrate(d){
   {id:'b-frontend',name:'Frontend',filter:{type:'role',value:'Frontend'},cols:['To Do','В работе','Готово']},
   {id:'b-qa',name:'Тестировщики',filter:{type:'role',value:'QA'},cols:['To Do','В работе','Готово']},
   {id:'b-analyst',name:'Аналитики',filter:{type:'role',value:'Analyst'},cols:['To Do','В работе','Готово']},
-  {id:'b-release',name:'Релизная доска',filter:{type:'release'},cols:['Планируется','В работе','Готово','Задержка']}];
+  {id:'b-devops',name:'DevOps',filter:{type:'role',value:'DevOps'},cols:['To Do','В работе','Готово']},
+  {id:'b-designer',name:'Дизайнеры',filter:{type:'role',value:'Designer'},cols:['To Do','В работе','Готово']},
+  {id:'b-release',name:'Релизная доска',filter:{type:'release'},cols:['Планируется','В работе','Готово','Задержка']},
+  {id:'b-release-compose',name:'Состав релизов',filter:{type:'release-compose'},cols:[]}];
+ // дополнить ранее сохранённые доски недостающими досками ролей и составом релизов (индекс — перед релизными досками)
+ if(Array.isArray(d.boards)){
+  const relIx=()=>{const i=d.boards.findIndex(b=>b.filter&&(b.filter.type==='release'||b.filter.type==='release-compose'));return i<0?d.boards.length:i;};
+  [['DevOps','b-devops','DevOps'],['Designer','b-designer','Дизайнеры']].forEach(([role,id,name])=>{
+    if(!d.boards.some(b=>b.filter&&b.filter.type==='role'&&b.filter.value===role))
+     d.boards.splice(relIx(),0,{id:id,name:name,filter:{type:'role',value:role},cols:['To Do','В работе','Готово']});});
+  if(!d.boards.some(b=>b.filter&&b.filter.type==='release-compose'))
+   d.boards.push({id:'b-release-compose',name:'Состав релизов',filter:{type:'release-compose'},cols:[]});
+ }
  if(!d.budget)d.budget={rate:8000,total:8000000};
  if(!Array.isArray(d.deps))d.deps=[
   {id:'D-01',item:'Интеграция платежей',type:'Задача',task:'T-03',stream:'Платёжный шлюз',dir:'Мы зависим',desc:'API оплаты v2 (токенизация карт)',sprint:3,status:'Заблокировано',owner:'Команда Payments',risk:'High'},
@@ -1508,6 +1520,16 @@ function dataChecks(){const issues=[],tasks=ST.tasks||[],ids={};
  (ST.rice||[]).forEach(r=>{if(!num(r.reach)||!num(r.effort))issues.push({lvl:'info',msg:'RICE '+r.id+': не заполнены Reach/Effort',fix:null});});
  depCycleIds().forEach(id=>issues.push({lvl:'crit',msg:'Циклическая зависимость с участием '+id,fix:null}));
  depConflictList().forEach(c=>issues.push({lvl:'warn',msg:'Задача раньше зависимости: '+c,fix:null}));
+ // релизы: осиротевшая привязка, некорректный диапазон, пересечения и пропуски спринтов
+ const rels=ST.releases||[];
+ tasks.forEach(t=>{if(t.release&&!rels.some(r=>r.id===t.release))issues.push({lvl:'warn',msg:t.id+': ссылка на несуществующий релиз '+t.release,fix:()=>{t.release='';}});});
+ const rr=rels.filter(r=>r.sfrom!==''&&r.sfrom!=null&&r.sto!==''&&r.sto!=null);
+ rr.forEach(r=>{if(+r.sfrom>+r.sto)issues.push({lvl:'warn',msg:'Релиз '+r.id+': «Спр. от» ('+r.sfrom+') больше «Спр. до» ('+r.sto+')',fix:null});});
+ for(let i=0;i<rr.length;i++)for(let j=i+1;j<rr.length;j++){const a=rr[i],b=rr[j];
+   if(+a.sfrom<=+b.sto&&+b.sfrom<=+a.sto)issues.push({lvl:'warn',msg:'Пересечение диапазонов релизов: '+a.id+' (сп.'+a.sfrom+'–'+a.sto+') и '+b.id+' (сп.'+b.sfrom+'–'+b.sto+')',fix:null});}
+ const Nsp=(ST.params&&ST.params.sprints)||0;
+ if(Nsp&&rr.length){const gaps=[];for(let s=1;s<=Nsp;s++){if(!rr.some(r=>s>=+r.sfrom&&s<=+r.sto))gaps.push(s);}
+   if(gaps.length)issues.push({lvl:'info',msg:'Спринты вне релизов: '+gaps.join(', '),fix:null});}
  return issues;}
 /* ---- v1.20: приоритет→в задачу, DoR-синхронизация, циклы зависимостей, груминг-команда, CSV/Jira ---- */
 function priorityOf(id){const m=(ST.moscow||[]).find(x=>x.task===id);if(m&&m.category)return m.category;const r=riceScoreOf(id);if(r>0)return 'RICE '+Math.round(r);return '';}
@@ -1570,7 +1592,7 @@ function checksView(){const w=document.createElement('div');const issues=dataChe
    h+='</tbody></table></div>';card.innerHTML=h;}
  w.appendChild(card);
  const lg=document.createElement('div');lg.className='card';lg.style.marginTop='14px';
- lg.innerHTML='<p class="ctitle">Проверки данных (авто-контроль)</p><p style="font-size:13px;color:var(--muted);line-height:1.7;margin:0">Контроль целостности: дубли ID, «Готово» без даты, «В работе» без старта, задачи без оценки, осиротевшие зависимости и ссылки RICE/MoSCoW/Груминга, формулы из старого импорта, а также <b>циклы зависимостей</b> и <b>конфликты расписания</b> (задача стоит раньше своей зависимости). «Исправить автоматически» чинит всё, что можно без потери смысла; циклы и конфликты помечаются для ручного разбора.</p>';
+ lg.innerHTML='<p class="ctitle">Проверки данных (авто-контроль)</p><p style="font-size:13px;color:var(--muted);line-height:1.7;margin:0">Контроль целостности: дубли ID, «Готово» без даты, «В работе» без старта, задачи без оценки, осиротевшие зависимости и ссылки RICE/MoSCoW/Груминга, формулы из старого импорта, <b>циклы зависимостей</b> и <b>конфликты расписания</b> (задача стоит раньше своей зависимости), а также проблемы релизов: <b>пересечения и пропуски диапазонов спринтов</b>, некорректный диапазон и ссылки на несуществующий релиз. «Исправить автоматически» чинит всё, что можно без потери смысла; циклы, конфликты и пересечения помечаются для ручного разбора.</p>';
  w.appendChild(lg);return w;}
 function backlogView(){const w=document.createElement('div');const C=compute();
  const bar=document.createElement('div');bar.className='grm-pick';
@@ -1586,7 +1608,8 @@ function backlogView(){const w=document.createElement('div');const C=compute();
     {k:'role',label:'Роль',type:'select',opts:ROLES},{k:'type',label:'Тип',type:'select',opts:['История','Задача','Тех.долг']},
     {k:'est',label:'Оценка',type:'num'},{k:'priority',label:'Приоритет'},{k:'dor',label:'DoR',type:'select',opts:['','Готова']},
     {k:'status',label:'Статус',type:'select',opts:STAT_TASK},
-    {k:'sprint',label:'Спринт',type:'num'},{k:'dep',label:'Зависит от',type:'dep'},{k:'started',label:'В работу',type:'date'},{k:'done',label:'Готово',type:'date'}
+    {k:'sprint',label:'Спринт',type:'num'},{k:'release',label:'Релиз',type:'select',opts:[''].concat((ST.releases||[]).map(r=>r.id))},
+    {k:'dep',label:'Зависит от',type:'dep'},{k:'started',label:'В работу',type:'date'},{k:'done',label:'Готово',type:'date'}
    ],{newId:'id',prefix:'T-'}));
  return w;}
 function views(){
@@ -1602,7 +1625,7 @@ function views(){
  // Roadmap (Дорожная карта): computed roadmap + editable эпики per sprint + chart
  renderRoadmap(C);
  // Kanban board (Планирование) — drag tasks to change status; syncs to Бэклог/Дорожная карта/Гант/аналитика
- setView('kanban','Kanban-доска','Отдельные доски по направлениям (Backend, Frontend, Тестировщики, Аналитики) и релизная доска — переключаются вкладками выше. Перетаскивайте карточки между колонками — статус синхронно меняется в «Бэклоге», «Дорожной карте», Ганте и аналитике. Администратор может создавать доски и добавлять колонки-статусы.',kanbanView());
+ setView('kanban','Kanban-доска','Доски по направлениям (Backend, Frontend, Тестировщики, Аналитики), релизная доска и «Состав релизов» — переключаются вкладками выше. Перетаскивайте карточки между колонками (статус синхронно меняется в «Бэклоге», Ганте и аналитике); на доске «Состав релизов» перетаскивание задачи в колонку релиза явно включает её в релиз. Администратор может создавать доски и добавлять колонки-статусы.',kanbanView());
  // Quarters (Кварталы) + quarterly roadmap
  renderQuarters(C);
  setView('rice','RICE','Приоритизация фич по методологии RICE = (Reach × Impact × Confidence) / Effort.',riceView());
@@ -1722,10 +1745,15 @@ function sprintsTable(C){const w=document.createElement('div');w.className='twra
  let h='<tr><th>Спринт</th><th>Начало</th><th>Конец</th><th class="num">Раб.дни</th><th class="num">Ёмкость</th><th class="num">План</th><th class="num">Velocity</th><th class="num">% вып.</th><th>Статус</th></tr>';
  C.sp.forEach(x=>{h+=`<tr><td>С${x.s}</td><td>${fmtd(x.a)}</td><td>${fmtd(x.b)}</td><td class="num">${x.wd}</td><td class="num">${fmt(x.cap,1)}</td><td class="num">${fmt(x.plan,1)}</td><td class="num">${x.vel==null?'—':fmt(x.vel,1)}</td><td class="num">${x.pct==null?'—':pctf(x.pct)}</td><td>${statusPill(x.status)}</td></tr>`;});
  t.innerHTML=h;w.appendChild(t);return w;}
-/* Состав релиза = задачи и дефекты по диапазону спринтов (общий источник для «Релизы» и Релизной доски). */
+/* Задача входит в релиз: явная привязка task.release имеет приоритет; иначе — по диапазону спринтов. */
+function taskInRelease(t,r,f,tt){
+ if(t.release)return t.release===r.id;
+ return f!=null&&tt!=null&&t.sprint!==''&&t.sprint!=null&&+t.sprint>=f&&+t.sprint<=tt;
+}
+/* Состав релиза = задачи (явно привязанные или по диапазону спринтов) + дефекты по диапазону. Общий источник для «Релизы» и Релизной доски. */
 function releaseComp(r){
  const f=(r.sfrom===''||r.sfrom==null)?null:+r.sfrom, tt=(r.sto===''||r.sto==null)?null:+r.sto;
- const inR=t=>f!=null&&tt!=null&&t.sprint!==''&&t.sprint!=null&&+t.sprint>=f&&+t.sprint<=tt;
+ const inR=t=>taskInRelease(t,r,f,tt);
  const items=(ST.tasks||[]).filter(inR);
  const stories=items.filter(t=>t.type==='История');
  const tasks=items.filter(t=>t.type==='Задача');
@@ -1864,7 +1892,15 @@ function kanClean(v){v=(v==null?'':String(v)).trim();return (!v||v[0]==='=')?'':
 function kanBoards(){if(!Array.isArray(ST.boards)||!ST.boards.length)ST.boards=migrate({}).boards;return ST.boards;}
 function kanActiveBoard(){const bs=kanBoards();return bs.find(x=>x.id===UI.kanBoard)||bs[0];}
 function kanIsRelease(board){return board&&board.filter&&board.filter.type==='release';}
-/* Items shown on a board (tasks by role/all, or releases). */
+function kanIsCompose(board){return board&&board.filter&&board.filter.type==='release-compose';}
+function kanRelName(id){const r=(ST.releases||[]).find(x=>x.id===id);return r?(r.id+' · '+(r.name||'')):id;}
+/* Релиз задачи по спринту (первый релиз, чей диапазон включает спринт). */
+function autoReleaseOf(t){if(t.sprint===''||t.sprint==null)return '';const s=+t.sprint;
+ const r=(ST.releases||[]).find(x=>x.sfrom!==''&&x.sfrom!=null&&x.sto!==''&&x.sto!=null&&s>=+x.sfrom&&s<=+x.sto);return r?r.id:'';}
+/* Текущий релиз задачи: явная привязка (если релиз существует), иначе авто по спринту, иначе «Без релиза». */
+function relOfTask(t){if(t.release&&(ST.releases||[]).some(r=>r.id===t.release))return t.release;return autoReleaseOf(t)||'__none__';}
+function kanColLabel(board,colKey){if(!kanIsCompose(board))return colKey;return colKey==='__none__'?'Без релиза':kanRelName(colKey);}
+/* Items shown on a board (tasks by role/all/compose, or releases). */
 function kanBoardItems(board){
  if(kanIsRelease(board))return (ST.releases||[]).slice();
  const flt=UI.kanSprint;let arr=(ST.tasks||[]);
@@ -1873,19 +1909,22 @@ function kanBoardItems(board){
 }
 /* Column order = configured columns plus any status actually present among items (so nothing is hidden). */
 function kanEffectiveCols(board){
+ if(kanIsCompose(board))return ['__none__'].concat((ST.releases||[]).map(r=>r.id));
  const cols=(board.cols||['To Do','В работе','Готово']).slice();
  kanBoardItems(board).forEach(it=>{const s=(it.status==null?'':String(it.status)).trim();if(s&&cols.indexOf(s)<0)cols.push(s);});
  return cols;
 }
-function kanColOf(board,it){const st=(it.status==null?'':String(it.status)).trim();const cols=board.cols||[];return cols.indexOf(st)>=0?st:(kanEffectiveCols(board).indexOf(st)>=0?st:cols[0]);}
+function kanColOf(board,it){if(kanIsCompose(board))return relOfTask(it);
+ const st=(it.status==null?'':String(it.status)).trim();const cols=board.cols||[];return cols.indexOf(st)>=0?st:(kanEffectiveCols(board).indexOf(st)>=0?st:cols[0]);}
 function kanTaskCard(t){
  const asg=kanClean(t.assignee)?esc(kanClean(t.assignee)):'—';
  const roleV=kanClean(t.role);const role=roleV?'<span class="kn-chip">'+esc(roleV)+'</span>':'';
  const sp=(t.sprint!=null&&t.sprint!=='')?'<span class="kn-chip">С'+esc(String(t.sprint))+'</span>':'';
+ const rel=(t.release&&(ST.releases||[]).some(r=>r.id===t.release))?'<span class="kn-chip" title="Явно привязана к релизу">📌 '+esc(t.release)+'</span>':'';
  return '<div class="kan-card" draggable="'+(PERM.canEdit?'true':'false')+'" data-id="'+esc(t.id||'')+'">'
   +'<div class="kn-id">'+esc(t.id||'')+'</div>'
   +'<div class="kn-title">'+esc(t.title||'(без названия)')+'</div>'
-  +'<div class="kn-meta"><span>'+asg+'</span>'+role+sp+'<span class="kn-chip">'+fmt(num(t.est),0)+' SP</span></div>'
+  +'<div class="kn-meta"><span>'+asg+'</span>'+role+sp+rel+'<span class="kn-chip">'+fmt(num(t.est),0)+' SP</span></div>'
   +'<div class="kn-move"><button data-move="prev" title="На шаг назад">◀</button><button data-move="next" title="На шаг вперёд">▶</button></div></div>';}
 function kanReleaseCard(r){
  const c=releaseComp(r);
@@ -1913,6 +1952,10 @@ function kanApplyMove(board,id,newStatus){
  if(!PERM.canEdit){toast('Только для редактора/администратора');return;}
  if(kanIsRelease(board)){const r=(ST.releases||[]).find(x=>x.id===id);if(!r||r.status===newStatus)return;
   r.status=newStatus;save();views();activate('kanban');if(typeof auditClient==='function')auditClient('kanban_move','релиз '+id+' → '+newStatus);toast('«'+id+'» → '+newStatus);return;}
+ if(kanIsCompose(board)){const t2=(ST.tasks||[]).find(x=>x.id===id);if(!t2)return;const nv=(newStatus==='__none__')?'':newStatus;
+  if((t2.release||'')===nv)return;t2.release=nv;save();views();activate('kanban');
+  if(typeof auditClient==='function')auditClient('release_assign',(t2.id||'')+' → '+(nv||'без релиза'));
+  toast('«'+(t2.id||'')+'» → '+(nv?kanRelName(nv):'без релиза'));return;}
  const t=(ST.tasks||[]).find(x=>x.id===id);if(!t||t.status===newStatus)return;
  t.status=newStatus;const today=kanToday(),first=(board.cols&&board.cols[0])||'To Do';
  if(newStatus==='Готово'){if(!t.started)t.started=today;if(!t.done)t.done=today;}
@@ -1961,6 +2004,12 @@ function kanDelColumn(board,st){if(!PERM.canAdmin){toast('Только для а
  if(kanBoardItems(board).some(it=>kanColOf(board,it)===st)){toast('Сначала перенесите карточки из «'+st+'»');return;}
  const i=(board.cols||[]).indexOf(st);if(i<0)return;board.cols.splice(i,1);
  save();views();activate('kanban');if(typeof auditClient==='function')auditClient('kanban_col_del',(board.name||'')+': '+st);toast('Колонка «'+st+'» удалена');}
+/* Ручное формирование релиза: создать релиз, затем наполнять его перетаскиванием задач. */
+function kanNewRelease(){if(!PERM.canEdit){toast('Только для редактора/администратора');return;}
+ const name=(prompt('Название нового релиза:','Новый релиз')||'').trim();if(!name)return;
+ const rels=ST.releases||(ST.releases=[]);const id=genId(rels,'id','R-');
+ rels.push({id:id,name:name,sfrom:'',sto:'',status:'Планируется'});
+ save();views();activate('kanban');if(typeof auditClient==='function')auditClient('release_add',id+' '+name);toast('Релиз '+id+' создан — перетащите в него задачи');}
 function kanbanView(){const w=document.createElement('div');const bs=kanBoards();const def=kanActiveBoard();
  // board tabs
  const tabs=document.createElement('div');tabs.className='kan-tabs';
@@ -1974,13 +2023,16 @@ function kanbanView(){const w=document.createElement('div');const bs=kanBoards()
    const sprints=Array.from(new Set((ST.tasks||[]).map(t=>t.sprint).filter(x=>x!=null&&x!=='').map(String))).sort((a,b)=>num(a)-num(b));
    sel.innerHTML='<option value="">Все спринты</option>'+sprints.map(s=>'<option value="'+esc(s)+'"'+(String(UI.kanSprint||'')===s?' selected':'')+'>Спринт '+esc(s)+'</option>').join('');
    sel.addEventListener('change',()=>{UI.kanSprint=sel.value;views();activate('kanban');});tools.appendChild(sel);}
- if(PERM.canAdmin){
+ if(kanIsCompose(def)&&PERM.canEdit){const nr=document.createElement('button');nr.className='btn primary';nr.textContent='＋ Релиз';nr.title='Создать релиз и наполнить его перетаскиванием';nr.onclick=kanNewRelease;tools.appendChild(nr);}
+ if(PERM.canAdmin&&!kanIsCompose(def)){
    const ac=document.createElement('button');ac.className='btn';ac.textContent='＋ Колонка';ac.onclick=()=>kanAddColumn(def);tools.appendChild(ac);
+ }
+ if(PERM.canAdmin){
    const rn=document.createElement('button');rn.className='btn';rn.textContent='✎ Переименовать';rn.onclick=()=>kanRenameBoard(def);tools.appendChild(rn);
    const dl=document.createElement('button');dl.className='btn danger';dl.textContent='🗑 Удалить доску';dl.onclick=()=>kanDeleteBoard(def);tools.appendChild(dl);
  }
  const hint=document.createElement('span');hint.style.cssText='font-size:12px;color:var(--muted)';
- hint.textContent=!PERM.canEdit?'Режим просмотра: перетаскивание недоступно.':kanIsRelease(def)?'Перетащите релиз между колонками статуса.':'Перетащите карточку между колонками — статус синхронно обновится в «Бэклоге», «Дорожной карте», Ганте и аналитике.';
+ hint.textContent=!PERM.canEdit?'Режим просмотра: перетаскивание недоступно.':kanIsCompose(def)?'Перетащите задачу в колонку релиза, чтобы включить её явно; «Без релиза» вернёт авто-привязку по спринту.':kanIsRelease(def)?'Перетащите релиз между колонками статуса.':'Перетащите карточку между колонками — статус синхронно обновится в «Бэклоге», «Дорожной карте», Ганте и аналитике.';
  tools.appendChild(hint);w.appendChild(tools);
  // board
  const scroll=document.createElement('div');scroll.className='kan-scroll';
@@ -1988,11 +2040,12 @@ function kanbanView(){const w=document.createElement('div');const bs=kanBoards()
  b.style.gridTemplateColumns='repeat('+cols.length+',minmax(200px,1fr))';
  const items=kanBoardItems(def);const cardFn=kanIsRelease(def)?kanReleaseCard:kanTaskCard;
  cols.forEach(function(st){const list=items.filter(it=>kanColOf(def,it)===st);
-   const col=document.createElement('div');col.className='kan-col';col.style.setProperty('--kc',kanColColor(st));col.dataset.status=st;
+   const kc=kanIsCompose(def)?(st==='__none__'?'#7A8AA0':'#2D5BE3'):kanColColor(st);
+   const col=document.createElement('div');col.className='kan-col';col.style.setProperty('--kc',kc);col.dataset.status=st;
    const sum=kanIsRelease(def)?null:list.reduce((a,t)=>a+num(t.est),0);
    const cnt=list.length+(sum!=null?' · '+fmt(sum,0)+' SP':'');
    const delBtn=(PERM.canAdmin&&(def.cols||[]).indexOf(st)>=0)?'<button class="kc-del" data-del="'+esc(st)+'" title="Удалить колонку">✕</button>':'';
-   let h='<div class="kc-head"><span class="kc-dot"></span><span class="kc-title">'+esc(st)+'</span><span class="kc-count">'+cnt+'</span>'+delBtn+'</div><div class="kc-body">';
+   let h='<div class="kc-head"><span class="kc-dot"></span><span class="kc-title">'+esc(kanColLabel(def,st))+'</span><span class="kc-count">'+cnt+'</span>'+delBtn+'</div><div class="kc-body">';
    h+=list.length?list.map(cardFn).join(''):'<div class="kan-empty">Нет карточек</div>';
    h+='</div>';col.innerHTML=h;b.appendChild(col);});
  b.addEventListener('click',e=>{const d=e.target.closest('button[data-del]');if(d){e.stopPropagation();kanDelColumn(def,d.dataset.del);}});
@@ -2615,8 +2668,12 @@ const NAV=[
  {g:'Настройки',items:[['budget','Бюджет','💰'],['calendar','Календарь','📅'],['checks','Проверки данных','🧪'],['params','Параметры','⚙️']]},
  {g:'Справка',items:[['faq','FAQ','❓'],['audit','Журнал событий','🧾']]},
 ];
-const APP_VERSION='1.22.0';const APP_DATE='2026-09-15';
+const APP_VERSION='1.23.0';const APP_DATE='2026-09-15';
 const CHANGELOG=[
+ {v:'1.23.0',date:'2026-09-15',items:[
+   'Явная привязка задачи к релизу: поле «Релиз» в «Бэклоге» — альтернатива авто-расчёту по спринтам (явная привязка имеет приоритет).',
+   'Новая доска «Состав релизов»: перетаскивание задач в колонку релиза формирует его состав вручную; кнопка «＋ Релиз» создаёт релиз на месте.',
+   'Проверки данных: пересечения и пропуски диапазонов спринтов релизов, некорректный диапазон и ссылки на несуществующий релиз.']},
  {v:'1.22.0',date:'2026-09-15',items:[
    'Релизная доска показывает состав каждого релиза: стори, задачи и дефекты (по диапазону спринтов) с прогрессом готовности — тот же источник, что и в разделе «Релизы».',
    'Двусторонняя связь релизной доски и раздела «Релизы»: статус меняется перетаскиванием, состав и прогресс пересчитываются автоматически; клик по элементу открывает «Бэклог»/«Баги».',
