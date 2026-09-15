@@ -23,10 +23,12 @@ class StateRoundTripTest {
           "budget":{"rate":8000,"total":8000000},
           "ttmTarget":15,
           "team":[{"name":"A","role":"Backend","avail":1,"absent":0}],
-          "tasks":[{"id":"T-01","title":"X","role":"Backend","type":"Задача","est":5,"status":"Готово","sprint":1}],
+          "tasks":[{"id":"T-01","title":"X","role":"Backend","type":"Задача","est":5,"status":"Готово","sprint":1,"release":"R-1","priority":"Must","dor":"Готова"}],
           "deps":[{"id":"D-01","item":"I","stream":"S","dir":"Мы зависим","status":"Заблокировано","task":"T-01"}],
           "rice":[{"id":"F-01","name":"R","reach":5000,"impact":3,"conf":"100%","effort":40}],
-          "calendar":[{"date":"2026-11-04","name":"Праздник"}]
+          "calendar":[{"date":"2026-11-04","name":"Праздник"}],
+          "boards":[{"id":"b-all","name":"Все задачи","filter":{"type":"all"},"cols":["To Do","В работе","Готово"]},
+                    {"id":"b-backend","name":"Backend","filter":{"type":"role","value":"Backend"},"cols":["To Do","В работе","Готово"]}]
         }}""";
 
     /** Same state envelope with an explicit baseVersion for concurrency checks. */
@@ -51,10 +53,18 @@ class StateRoundTripTest {
            .andExpect(jsonPath("$.state.budget.rate").value(8000.0))
            .andExpect(jsonPath("$.state.ttmTarget").value(15))
            .andExpect(jsonPath("$.state.tasks[0].id").value("T-01"))
+           .andExpect(jsonPath("$.state.tasks[0].release").value("R-1"))
+           .andExpect(jsonPath("$.state.tasks[0].priority").value("Must"))
+           .andExpect(jsonPath("$.state.tasks[0].dor").value("Готова"))
            .andExpect(jsonPath("$.state.deps[0].id").value("D-01"))
            .andExpect(jsonPath("$.state.deps[0].desc").doesNotExist())
            .andExpect(jsonPath("$.state.rice[0].id").value("F-01"))
-           .andExpect(jsonPath("$.state.calendar[0].date").value("2026-11-04"));
+           .andExpect(jsonPath("$.state.calendar[0].date").value("2026-11-04"))
+           .andExpect(jsonPath("$.state.boards[0].id").value("b-all"))
+           .andExpect(jsonPath("$.state.boards[0].filter.type").value("all"))
+           .andExpect(jsonPath("$.state.boards[1].filter.type").value("role"))
+           .andExpect(jsonPath("$.state.boards[1].filter.value").value("Backend"))
+           .andExpect(jsonPath("$.state.boards[1].cols[2]").value("Готово"));
 
         // second PUT bumps the version (no baseVersion => backward-compatible, always accepted)
         mvc.perform(put("/api/state").contentType(MediaType.APPLICATION_JSON).content(STATE))

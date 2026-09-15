@@ -38,20 +38,21 @@ public class StateService {
     private final BirthdayRepo birthdays;
     private final DependencyRepo deps;
     private final OkrRepo okr;
+    private final BoardRepo boards;
 
     public StateService(ParamRepo params, AppMetaRepo meta, DodRepo dod, TeamRepo team, TaskRepo tasks,
                         ReleaseRepo releases, MilestoneRepo milestones, TechDebtRepo techDebt, RiskRepo risks,
                         BugRepo bugs, HolidayRepo calendar, RetroRepo retro, MoodRepo mood, KudosRepo kudos,
                         ExperimentRepo experiments, RadarRepo radar, RiceRepo rice, MoscowRepo moscow,
                         FaqRepo faq, GroomingRepo grooming, DemoRepo demo, DailyRepo daily, VacationRepo vacation,
-                        BirthdayRepo birthdays, DependencyRepo deps, OkrRepo okr) {
+                        BirthdayRepo birthdays, DependencyRepo deps, OkrRepo okr, BoardRepo boards) {
         this.params = params; this.meta = meta; this.dod = dod; this.team = team; this.tasks = tasks;
         this.releases = releases; this.milestones = milestones; this.techDebt = techDebt; this.risks = risks;
         this.bugs = bugs; this.calendar = calendar; this.retro = retro; this.mood = mood; this.kudos = kudos;
         this.experiments = experiments; this.radar = radar; this.rice = rice; this.moscow = moscow;
         this.faq = faq; this.grooming = grooming; this.demo = demo; this.daily = daily; this.vacation = vacation;
         this.birthdays = birthdays; this.deps = deps;
-        this.okr = okr;
+        this.okr = okr; this.boards = boards;
     }
 
     @Transactional(readOnly = true)
@@ -90,6 +91,7 @@ public class StateService {
         s.birthdays = birthdays.findAllByOrderByOrdAsc();
         s.deps = deps.findAllByOrderByOrdAsc();
         s.okr = okr.findAllByOrderByOrdAsc();
+        s.boards = boards.findAllByOrderByOrdAsc();
         return s;
     }
 
@@ -148,6 +150,7 @@ public class StateService {
         order(s.birthdays, (e, i) -> { e.pk = null; e.ord = i; });
         order(s.deps, (e, i) -> { e.pk = null; e.ord = i; });
         order(s.okr, (e, i) -> { e.id = null; e.ord = i; });
+        order(s.boards, (e, i) -> { e.pk = null; e.ord = i; });
 
         dod.deleteAllInBatch();        if (s.dod != null)        dod.saveAll(s.dod);
         team.deleteAllInBatch();       if (s.team != null)       team.saveAll(s.team);
@@ -173,6 +176,7 @@ public class StateService {
         birthdays.deleteAllInBatch();  if (s.birthdays != null)  birthdays.saveAll(s.birthdays);
         deps.deleteAllInBatch();       if (s.deps != null)       deps.saveAll(s.deps);
         okr.deleteAllInBatch();        if (s.okr != null)        okr.saveAll(s.okr);
+        boards.deleteAllInBatch();     if (s.boards != null)     boards.saveAll(s.boards);
 
         m.version = current + 1;
         meta.save(m);

@@ -53,6 +53,7 @@ public final class Dtos {
         public List<Birthday> birthdays;
         public List<Dependency> deps;
         public List<Okr> okr;
+        public List<Board> boards;
         public BudgetDto budget;
         public Integer ttmTarget;
     }

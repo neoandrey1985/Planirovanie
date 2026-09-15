@@ -22,5 +22,8 @@ public class Task {
     public String started;
     public String done;
     public Boolean added;
+    @Column(name = "release_id") @JsonProperty("release") public String release;
+    public String priority;
+    public String dor;
     @JsonIgnore public Integer ord;
 }
