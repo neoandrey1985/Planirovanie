@@ -46,7 +46,14 @@ h1{font-size:23px;margin:4px 0 4px;letter-spacing:-.01em}
 .moscow-col .mc-empty{font-size:12px;color:var(--muted);font-style:italic;padding:6px 2px}
 /* ---------- Kanban board ---------- */
 .kan-tools{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
+.kan-tabs{display:flex;gap:7px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+.kan-tab{border:1px solid var(--line);background:var(--panel);color:var(--muted);border-radius:9px;padding:6px 13px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;white-space:nowrap}
+.kan-tab:hover{border-color:var(--accent)}
+.kan-tab.active{background:var(--accent);color:#fff;border-color:var(--accent)}
 .kan-board{display:grid;gap:14px;grid-template-columns:repeat(3,1fr)}
+.kan-scroll{overflow-x:auto;padding-bottom:4px}
+.kan-col .kc-del{margin-left:2px;border:none;background:transparent;color:var(--muted);cursor:pointer;font-size:12px;line-height:1;padding:0 2px}
+.kan-col .kc-del:hover{color:var(--crit)}
 @media(max-width:900px){.kan-board{grid-template-columns:1fr}}
 .kan-col{background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);display:flex;flex-direction:column;min-height:120px}
 .kan-col .kc-head{padding:11px 13px;border-top:3px solid var(--kc);display:flex;align-items:center;gap:8px}
@@ -1156,6 +1163,13 @@ function migrate(d){
   {q:'Q3 2026',obj:'Обеспечить качество релиза',kr:'Покрытие автотестами, %',target:80,cur:45},
   {q:'Q4 2026',obj:'Масштабировать на площадки',kr:'Подключено площадок, шт',target:20,cur:6}];
  if(!d.epics)d.epics={};
+ if(!Array.isArray(d.boards)||!d.boards.length)d.boards=[
+  {id:'b-all',name:'Все задачи',filter:{type:'all'},cols:['To Do','В работе','Готово']},
+  {id:'b-backend',name:'Backend',filter:{type:'role',value:'Backend'},cols:['To Do','В работе','Готово']},
+  {id:'b-frontend',name:'Frontend',filter:{type:'role',value:'Frontend'},cols:['To Do','В работе','Готово']},
+  {id:'b-qa',name:'Тестировщики',filter:{type:'role',value:'QA'},cols:['To Do','В работе','Готово']},
+  {id:'b-analyst',name:'Аналитики',filter:{type:'role',value:'Analyst'},cols:['To Do','В работе','Готово']},
+  {id:'b-release',name:'Релизная доска',filter:{type:'release'},cols:['Планируется','В работе','Готово','Задержка']}];
  if(!d.budget)d.budget={rate:8000,total:8000000};
  if(!Array.isArray(d.deps))d.deps=[
   {id:'D-01',item:'Интеграция платежей',type:'Задача',task:'T-03',stream:'Платёжный шлюз',dir:'Мы зависим',desc:'API оплаты v2 (токенизация карт)',sprint:3,status:'Заблокировано',owner:'Команда Payments',risk:'High'},
@@ -1575,7 +1589,7 @@ function views(){
  // Roadmap (Дорожная карта): computed roadmap + editable эпики per sprint + chart
  renderRoadmap(C);
  // Kanban board (Планирование) — drag tasks to change status; syncs to Бэклог/Дорожная карта/Гант/аналитика
- setView('kanban','Kanban-доска','Доска задач по статусам. Перетаскивайте карточки между колонками — статус синхронно меняется в «Бэклоге», «Дорожной карте», Ганте и аналитике.',kanbanView());
+ setView('kanban','Kanban-доска','Отдельные доски по направлениям (Backend, Frontend, Тестировщики, Аналитики) и релизная доска — переключаются вкладками выше. Перетаскивайте карточки между колонками — статус синхронно меняется в «Бэклоге», «Дорожной карте», Ганте и аналитике. Администратор может создавать доски и добавлять колонки-статусы.',kanbanView());
  // Quarters (Кварталы) + quarterly roadmap
  renderQuarters(C);
  setView('rice','RICE','Приоритизация фич по методологии RICE = (Reach × Impact × Confidence) / Effort.',riceView());
@@ -1818,13 +1832,29 @@ function faqView(){const w=document.createElement('div');
    {k:'category',label:'Категория',type:'select',opts:FAQ_CATS.slice()},
    {k:'q',label:'Вопрос',wide:true},{k:'a',label:'Ответ',wide:true}],{newId:'id',prefix:'Q-'}));
  return w;}
-/* ---------- Kanban board (linked to tasks: Бэклог, Дорожная карта, Гант, аналитика) ---------- */
-var KAN_COLS=[['To Do','К выполнению','#7A8AA0'],['В работе','В работе','#2D5BE3'],['Готово','Готово','#1F9D6B']];
-var KAN_ORDER=['To Do','В работе','Готово'];
-function kanStatusCol(s){return s==='Готово'?'Готово':s==='В работе'?'В работе':'To Do';}
+/* ---------- Kanban boards (multi-board, admin-configurable; linked to tasks и релизам) ---------- */
+var KAN_COL_COLORS={'To Do':'#7A8AA0','В работе':'#2D5BE3','Готово':'#1F9D6B','Задержка':'#D24545','Планируется':'#7A8AA0','Ревью':'#8A5BD6','Тестирование':'#0EA5A5','Блокировано':'#D24545'};
+function kanColColor(s){return KAN_COL_COLORS[s]||'#6B7A90';}
 function kanToday(){return (ST.params&&ST.params.today)||new Date().toISOString().slice(0,10);}
 function kanClean(v){v=(v==null?'':String(v)).trim();return (!v||v[0]==='=')?'':v;}  // drop leftover Excel formulas
-function kanCard(t){
+function kanBoards(){if(!Array.isArray(ST.boards)||!ST.boards.length)ST.boards=migrate({}).boards;return ST.boards;}
+function kanActiveBoard(){const bs=kanBoards();return bs.find(x=>x.id===UI.kanBoard)||bs[0];}
+function kanIsRelease(board){return board&&board.filter&&board.filter.type==='release';}
+/* Items shown on a board (tasks by role/all, or releases). */
+function kanBoardItems(board){
+ if(kanIsRelease(board))return (ST.releases||[]).slice();
+ const flt=UI.kanSprint;let arr=(ST.tasks||[]);
+ if(board.filter&&board.filter.type==='role')arr=arr.filter(t=>kanClean(t.role)===board.filter.value);
+ return arr.filter(t=>(!flt||String(t.sprint)===String(flt)));
+}
+/* Column order = configured columns plus any status actually present among items (so nothing is hidden). */
+function kanEffectiveCols(board){
+ const cols=(board.cols||['To Do','В работе','Готово']).slice();
+ kanBoardItems(board).forEach(it=>{const s=(it.status==null?'':String(it.status)).trim();if(s&&cols.indexOf(s)<0)cols.push(s);});
+ return cols;
+}
+function kanColOf(board,it){const st=(it.status==null?'':String(it.status)).trim();const cols=board.cols||[];return cols.indexOf(st)>=0?st:(kanEffectiveCols(board).indexOf(st)>=0?st:cols[0]);}
+function kanTaskCard(t){
  const asg=kanClean(t.assignee)?esc(kanClean(t.assignee)):'—';
  const roleV=kanClean(t.role);const role=roleV?'<span class="kn-chip">'+esc(roleV)+'</span>':'';
  const sp=(t.sprint!=null&&t.sprint!=='')?'<span class="kn-chip">С'+esc(String(t.sprint))+'</span>':'';
@@ -1833,48 +1863,100 @@ function kanCard(t){
   +'<div class="kn-title">'+esc(t.title||'(без названия)')+'</div>'
   +'<div class="kn-meta"><span>'+asg+'</span>'+role+sp+'<span class="kn-chip">'+fmt(num(t.est),0)+' SP</span></div>'
   +'<div class="kn-move"><button data-move="prev" title="На шаг назад">◀</button><button data-move="next" title="На шаг вперёд">▶</button></div></div>';}
-/* Move a task to a new status + keep dates logical; propagates everywhere via views(). */
-function kanApplyMove(id,newStatus){
+function kanReleaseCard(r){
+ const range='Спринты '+esc(String(r.sfrom!=null?r.sfrom:'?'))+'–'+esc(String(r.sto!=null?r.sto:'?'));
+ return '<div class="kan-card" draggable="'+(PERM.canEdit?'true':'false')+'" data-id="'+esc(r.id||'')+'">'
+  +'<div class="kn-id">'+esc(r.id||'')+'</div>'
+  +'<div class="kn-title">'+esc(r.name||'(без названия)')+'</div>'
+  +'<div class="kn-meta"><span class="kn-chip">'+range+'</span></div>'
+  +'<div class="kn-move"><button data-move="prev" title="На шаг назад">◀</button><button data-move="next" title="На шаг вперёд">▶</button></div></div>';}
+/* Move a task/release to a new status; keeps task dates logical; propagates via views(). */
+function kanApplyMove(board,id,newStatus){
  if(!PERM.canEdit){toast('Только для редактора/администратора');return;}
- const t=(ST.tasks||[]).find(x=>x.id===id);if(!t)return;
- if(kanStatusCol(t.status)===newStatus)return;
- t.status=newStatus;const today=kanToday();
- if(newStatus==='В работе'){if(!t.started)t.started=today;t.done='';}
- else if(newStatus==='Готово'){if(!t.started)t.started=today;if(!t.done)t.done=today;}
- else {t.started='';t.done='';}
+ if(kanIsRelease(board)){const r=(ST.releases||[]).find(x=>x.id===id);if(!r||r.status===newStatus)return;
+  r.status=newStatus;save();views();activate('kanban');if(typeof auditClient==='function')auditClient('kanban_move','релиз '+id+' → '+newStatus);toast('«'+id+'» → '+newStatus);return;}
+ const t=(ST.tasks||[]).find(x=>x.id===id);if(!t||t.status===newStatus)return;
+ t.status=newStatus;const today=kanToday(),first=(board.cols&&board.cols[0])||'To Do';
+ if(newStatus==='Готово'){if(!t.started)t.started=today;if(!t.done)t.done=today;}
+ else if(newStatus===first){t.started='';t.done='';}
+ else {if(!t.started)t.started=today;t.done='';}
  save();views();activate('kanban');
  if(typeof auditClient==='function')auditClient('kanban_move',(t.id||'')+' → '+newStatus);
  toast('«'+(t.id||'')+'» → '+newStatus);}
-function wireKanbanDnD(board){let dragId=null;
+function wireKanbanDnD(board,def){let dragId=null;
  board.addEventListener('dragstart',e=>{const c=e.target.closest('.kan-card');if(!c||!PERM.canEdit){e.preventDefault();return;}
   dragId=c.dataset.id;c.classList.add('dragging');try{e.dataTransfer.setData('text/plain',dragId);e.dataTransfer.effectAllowed='move';}catch(_){}});
  board.addEventListener('dragend',()=>{board.querySelectorAll('.kan-card').forEach(x=>x.classList.remove('dragging'));board.querySelectorAll('.kan-col').forEach(x=>x.classList.remove('drop-hl'));});
  board.addEventListener('dragover',e=>{const col=e.target.closest('.kan-col');if(col&&PERM.canEdit){e.preventDefault();try{e.dataTransfer.dropEffect='move';}catch(_){}}});
  board.addEventListener('dragenter',e=>{const col=e.target.closest('.kan-col');if(col&&PERM.canEdit){board.querySelectorAll('.kan-col').forEach(x=>x.classList.remove('drop-hl'));col.classList.add('drop-hl');}});
  board.addEventListener('drop',e=>{const col=e.target.closest('.kan-col');if(!col||!PERM.canEdit)return;e.preventDefault();
-  let id=dragId;try{if(!id)id=e.dataTransfer.getData('text/plain');}catch(_){}dragId=null;if(id)kanApplyMove(id,col.dataset.status);});
+  let id=dragId;try{if(!id)id=e.dataTransfer.getData('text/plain');}catch(_){}dragId=null;if(id)kanApplyMove(def,id,col.dataset.status);});
  board.addEventListener('click',e=>{const b=e.target.closest('button[data-move]');if(!b)return;const c=b.closest('.kan-card');if(!c)return;
-  const t=(ST.tasks||[]).find(x=>x.id===c.dataset.id);if(!t)return;let i=KAN_ORDER.indexOf(kanStatusCol(t.status));
-  i=Math.max(0,Math.min(2,i+(b.dataset.move==='next'?1:-1)));kanApplyMove(c.dataset.id,KAN_ORDER[i]);});}
-function kanbanView(){const w=document.createElement('div');
+  const cols=kanEffectiveCols(def);const list=kanBoardItems(def);const it=list.find(x=>x.id===c.dataset.id);if(!it)return;
+  let i=cols.indexOf(kanColOf(def,it));i=Math.max(0,Math.min(cols.length-1,i+(b.dataset.move==='next'?1:-1)));kanApplyMove(def,c.dataset.id,cols[i]);});}
+/* ----- admin board management ----- */
+function kanNewBoard(){if(!PERM.canAdmin){toast('Только для администратора');return;}
+ const name=(prompt('Название новой доски:','Новая доска')||'').trim();if(!name)return;
+ const f=(prompt('Что показывать: роль ('+ROLES.join('/')+'), all — все задачи, release — релизы','all')||'').trim();
+ let filter,cols;const role=ROLES.find(r=>r.toLowerCase()===f.toLowerCase());
+ if(role){filter={type:'role',value:role};cols=['To Do','В работе','Готово'];}
+ else if(/^rel/i.test(f)){filter={type:'release'};cols=['Планируется','В работе','Готово','Задержка'];}
+ else {filter={type:'all'};cols=['To Do','В работе','Готово'];}
+ const id='b-'+Date.now().toString(36);kanBoards().push({id:id,name:name,filter:filter,cols:cols});UI.kanBoard=id;
+ save();views();activate('kanban');if(typeof auditClient==='function')auditClient('kanban_board_add',name);toast('Доска «'+name+'» создана');}
+function kanRenameBoard(board){if(!PERM.canAdmin){toast('Только для администратора');return;}
+ const name=(prompt('Новое название доски:',board.name||'')||'').trim();if(!name)return;board.name=name;
+ save();views();activate('kanban');if(typeof auditClient==='function')auditClient('kanban_board_rename',name);}
+function kanDeleteBoard(board){if(!PERM.canAdmin){toast('Только для администратора');return;}
+ const bs=kanBoards();if(bs.length<=1){toast('Нельзя удалить последнюю доску');return;}
+ if(!confirm('Удалить доску «'+(board.name||'')+'»? Задачи и их статусы не изменятся.'))return;
+ const i=bs.indexOf(board);bs.splice(i,1);UI.kanBoard=bs[0].id;
+ save();views();activate('kanban');if(typeof auditClient==='function')auditClient('kanban_board_del',board.name||'');toast('Доска удалена');}
+function kanAddColumn(board){if(!PERM.canAdmin){toast('Только для администратора');return;}
+ const st=(prompt('Название нового статуса/колонки:','Ревью')||'').trim();if(!st)return;
+ if((board.cols||[]).indexOf(st)>=0){toast('Такая колонка уже есть');return;}
+ (board.cols||(board.cols=[])).push(st);
+ save();views();activate('kanban');if(typeof auditClient==='function')auditClient('kanban_col_add',(board.name||'')+': '+st);toast('Колонка «'+st+'» добавлена');}
+function kanDelColumn(board,st){if(!PERM.canAdmin){toast('Только для администратора');return;}
+ if(kanBoardItems(board).some(it=>kanColOf(board,it)===st)){toast('Сначала перенесите карточки из «'+st+'»');return;}
+ const i=(board.cols||[]).indexOf(st);if(i<0)return;board.cols.splice(i,1);
+ save();views();activate('kanban');if(typeof auditClient==='function')auditClient('kanban_col_del',(board.name||'')+': '+st);toast('Колонка «'+st+'» удалена');}
+function kanbanView(){const w=document.createElement('div');const bs=kanBoards();const def=kanActiveBoard();
+ // board tabs
+ const tabs=document.createElement('div');tabs.className='kan-tabs';
+ bs.forEach(b=>{const t=document.createElement('button');t.className='kan-tab'+(b.id===def.id?' active':'');t.textContent=b.name;
+   t.onclick=()=>{UI.kanBoard=b.id;views();activate('kanban');};tabs.appendChild(t);});
+ if(PERM.canAdmin){const add=document.createElement('button');add.className='kan-tab';add.textContent='＋ Доска';add.title='Создать новую доску';add.onclick=kanNewBoard;tabs.appendChild(add);}
+ w.appendChild(tabs);
+ // tools: sprint filter + admin board actions + hint
  const tools=document.createElement('div');tools.className='kan-tools';
- const sel=document.createElement('select');sel.className='tsearch';
- const sprints=Array.from(new Set((ST.tasks||[]).map(t=>t.sprint).filter(x=>x!=null&&x!=='').map(String))).sort((a,b)=>num(a)-num(b));
- sel.innerHTML='<option value="">Все спринты</option>'+sprints.map(s=>'<option value="'+esc(s)+'"'+(String(UI.kanSprint||'')===s?' selected':'')+'>Спринт '+esc(s)+'</option>').join('');
+ if(!kanIsRelease(def)){const sel=document.createElement('select');sel.className='tsearch';
+   const sprints=Array.from(new Set((ST.tasks||[]).map(t=>t.sprint).filter(x=>x!=null&&x!=='').map(String))).sort((a,b)=>num(a)-num(b));
+   sel.innerHTML='<option value="">Все спринты</option>'+sprints.map(s=>'<option value="'+esc(s)+'"'+(String(UI.kanSprint||'')===s?' selected':'')+'>Спринт '+esc(s)+'</option>').join('');
+   sel.addEventListener('change',()=>{UI.kanSprint=sel.value;views();activate('kanban');});tools.appendChild(sel);}
+ if(PERM.canAdmin){
+   const ac=document.createElement('button');ac.className='btn';ac.textContent='＋ Колонка';ac.onclick=()=>kanAddColumn(def);tools.appendChild(ac);
+   const rn=document.createElement('button');rn.className='btn';rn.textContent='✎ Переименовать';rn.onclick=()=>kanRenameBoard(def);tools.appendChild(rn);
+   const dl=document.createElement('button');dl.className='btn danger';dl.textContent='🗑 Удалить доску';dl.onclick=()=>kanDeleteBoard(def);tools.appendChild(dl);
+ }
  const hint=document.createElement('span');hint.style.cssText='font-size:12px;color:var(--muted)';
- hint.textContent=PERM.canEdit?'Перетащите карточку между колонками — статус синхронно обновится в «Бэклоге», «Дорожной карте», Ганте и аналитике.':'Режим просмотра: перетаскивание недоступно.';
- tools.appendChild(sel);tools.appendChild(hint);w.appendChild(tools);
- function buildBoard(){const flt=UI.kanSprint;const b=document.createElement('div');b.className='kan-board';
-  KAN_COLS.forEach(function(cd){const st=cd[0],label=cd[1],color=cd[2];
-   const list=(ST.tasks||[]).filter(t=>kanStatusCol(t.status)===st&&(!flt||String(t.sprint)===String(flt)));
-   const col=document.createElement('div');col.className='kan-col';col.style.setProperty('--kc',color);col.dataset.status=st;
-   const sum=list.reduce((a,t)=>a+num(t.est),0);
-   let h='<div class="kc-head"><span class="kc-dot"></span><span class="kc-title">'+esc(label)+'</span><span class="kc-count">'+list.length+' · '+fmt(sum,0)+' SP</span></div><div class="kc-body">';
-   h+=list.length?list.map(kanCard).join(''):'<div class="kan-empty">Нет задач</div>';
+ hint.textContent=!PERM.canEdit?'Режим просмотра: перетаскивание недоступно.':kanIsRelease(def)?'Перетащите релиз между колонками статуса.':'Перетащите карточку между колонками — статус синхронно обновится в «Бэклоге», «Дорожной карте», Ганте и аналитике.';
+ tools.appendChild(hint);w.appendChild(tools);
+ // board
+ const scroll=document.createElement('div');scroll.className='kan-scroll';
+ const b=document.createElement('div');b.className='kan-board';const cols=kanEffectiveCols(def);
+ b.style.gridTemplateColumns='repeat('+cols.length+',minmax(200px,1fr))';
+ const items=kanBoardItems(def);const cardFn=kanIsRelease(def)?kanReleaseCard:kanTaskCard;
+ cols.forEach(function(st){const list=items.filter(it=>kanColOf(def,it)===st);
+   const col=document.createElement('div');col.className='kan-col';col.style.setProperty('--kc',kanColColor(st));col.dataset.status=st;
+   const sum=kanIsRelease(def)?null:list.reduce((a,t)=>a+num(t.est),0);
+   const cnt=list.length+(sum!=null?' · '+fmt(sum,0)+' SP':'');
+   const delBtn=(PERM.canAdmin&&(def.cols||[]).indexOf(st)>=0)?'<button class="kc-del" data-del="'+esc(st)+'" title="Удалить колонку">✕</button>':'';
+   let h='<div class="kc-head"><span class="kc-dot"></span><span class="kc-title">'+esc(st)+'</span><span class="kc-count">'+cnt+'</span>'+delBtn+'</div><div class="kc-body">';
+   h+=list.length?list.map(cardFn).join(''):'<div class="kan-empty">Нет карточек</div>';
    h+='</div>';col.innerHTML=h;b.appendChild(col);});
-  wireKanbanDnD(b);return b;}
- let board=buildBoard();w.appendChild(board);
- sel.addEventListener('change',()=>{UI.kanSprint=sel.value;const nb=buildBoard();board.replaceWith(nb);board=nb;});
+ b.addEventListener('click',e=>{const d=e.target.closest('button[data-del]');if(d){e.stopPropagation();kanDelColumn(def,d.dataset.del);}});
+ wireKanbanDnD(b,def);scroll.appendChild(b);w.appendChild(scroll);
  return w;}
 var MOSCOW_CATS=['Must','Should','Could',"Won't"];
 var MOSCOW_META={
@@ -2484,17 +2566,21 @@ function commit(){save();views();activate(CURV);toast('Сохранено');}
 function recomputeSoft(){/* light: refresh dashboard only, keep edit focus */ renderDash(compute());}
 /* ---------- sidebar navigation ---------- */
 const NAV=[
- {g:'Планирование',items:[['dash','Дашборд','📋'],['roadmap','Дорожная карта','🗺️'],['kanban','Kanban-доска','🗃️'],['quarters','Кварталы','🗓️'],['rice','RICE','🎯'],['moscow','MoSCoW','📌']]},
+ {g:'Планирование',items:[['dash','Дашборд','📋'],['roadmap','Дорожная карта','🗺️'],['kanban','Kanban-доска','🗃️'],['quarters','Кварталы','🗓️'],['rice','RICE','🎯'],['moscow','MoSCoW','📌'],['okr','OKR','🧭']]},
  {g:'Работа',items:[['backlog','Бэклог','🗂️'],['gantt','Гант','📊'],['deps','Зависимости','🔗'],['team','Команда','👥']]},
  {g:'Выпуск',items:[['releases','Релизы','🚀'],['milestones','Вехи','🏁'],['debt','Техдолг','🧱']]},
  {g:'Аналитика',items:[['analytics','Аналитика','📈'],['risks','Риски','⚠️'],['bugs','Баги','🐞']]},
  {g:'Церемонии',items:[['daily','Дэйли','☀️'],['grooming','Груминг','🧹'],['demo','Демо спринта','🎬'],['retro','Ретроспективы','🔄']]},
  {g:'Персонал',items:[['vacation','График отпусков','🏖️'],['birthdays','Дни рождения','🎂']]},
- {g:'Настройки',items:[['okr','OKR','🧭'],['budget','Бюджет','💰'],['calendar','Календарь','📅'],['checks','Проверки данных','🧪'],['params','Параметры','⚙️']]},
+ {g:'Настройки',items:[['budget','Бюджет','💰'],['calendar','Календарь','📅'],['checks','Проверки данных','🧪'],['params','Параметры','⚙️']]},
  {g:'Справка',items:[['faq','FAQ','❓'],['audit','Журнал событий','🧾']]},
 ];
-const APP_VERSION='1.20.0';const APP_DATE='2026-09-15';
+const APP_VERSION='1.21.0';const APP_DATE='2026-09-15';
 const CHANGELOG=[
+ {v:'1.21.0',date:'2026-09-15',items:[
+   'Kanban-доска разделена на доски по направлениям: «Все задачи», Backend, Frontend, Тестировщики, Аналитики и «Релизная доска» — переключение вкладками.',
+   'Администратор может создавать новые доски, переименовывать и удалять их, а также добавлять и удалять колонки-статусы.',
+   'OKR перенесён из раздела «Настройки» в раздел «Планирование».']},
  {v:'1.20.0',date:'2026-09-15',items:[
    'Приоритет из RICE/MoSCoW проставляется прямо в задачу (колонка «Приоритет» в Бэклоге) при сортировке.',
    'Груминг → готовность задачи: флаг «DoR» на задаче и синхронизация оценки одной кнопкой (isTaskReady учитывает флаг).',
