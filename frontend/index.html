@@ -99,6 +99,20 @@ details.faq-item[open]>summary::after{content:'\2212'}
 details.faq-item[open]>summary{border-bottom:1px solid var(--line)}
 .faq-a{padding:12px 14px;font-size:13px;color:var(--muted);line-height:1.65}
 .faq-empty{font-size:13px;color:var(--muted);font-style:italic;padding:8px 2px}
+.sup-sec{font-weight:700;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin:18px 0 10px}
+.sup-sec:first-child{margin-top:2px}
+.sup-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+.sup-card{display:flex;align-items:center;gap:14px;padding:14px;border:1px solid var(--line);border-radius:12px;background:var(--bg);text-decoration:none;color:inherit;transition:border-color .15s,box-shadow .15s,transform .15s}
+.sup-card:hover{border-color:var(--accent);box-shadow:0 4px 14px rgba(45,91,227,.12);transform:translateY(-1px)}
+.sup-ic{font-size:26px;flex:none;width:44px;height:44px;display:flex;align-items:center;justify-content:center;background:var(--tint,rgba(45,91,227,.08));border-radius:10px}
+.sup-b{flex:1;min-width:0}
+.sup-t{font-weight:600;font-size:14px;color:var(--ink);margin-bottom:2px}
+.sup-d{font-size:12px;color:var(--muted);line-height:1.5}
+.sup-dl{flex:none;display:flex;flex-direction:column;align-items:center;gap:6px}
+.sup-badge{font-size:10px;font-weight:700;color:var(--accent);background:rgba(45,91,227,.1);padding:2px 7px;border-radius:6px;letter-spacing:.03em}
+.sup-arrow{color:var(--accent);font-size:16px;font-weight:700}
+.sup-note{font-size:12.5px;color:var(--muted);line-height:1.6;margin-top:18px;padding:12px 14px;border:1px dashed var(--line);border-radius:10px}
+.sup-note code{background:var(--tint,rgba(45,91,227,.08));padding:1px 5px;border-radius:5px;font-size:12px}
 .grm-pick{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:12px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 12px;box-shadow:var(--shadow)}
 .grm-pick select{border:1px solid var(--line);background:var(--panel2);color:var(--ink);border-radius:8px;padding:8px 10px;font-family:inherit;font-size:13px;flex:1 1 300px;min-width:200px}
 body.ro .grm-pick .btn.primary{display:none}
@@ -347,7 +361,7 @@ body.noadmin #rst,body.noadmin #imp{display:none}
  </div>
 </div></header>
 <div class="shell"><aside class="side" id="side"><nav id="nav"></nav><div class="side-foot" id="sidefoot"></div></aside><div class="scrim" id="scrim"></div>
-<main id="main"><section class="view" id="v_dash"></section><section class="view" id="v_board"></section><section class="view" id="v_kanban"></section><section class="view" id="v_backlog"></section><section class="view" id="v_team"></section><section class="view" id="v_roadmap"></section><section class="view" id="v_quarters"></section><section class="view" id="v_rice"></section><section class="view" id="v_moscow"></section><section class="view" id="v_gantt"></section><section class="view" id="v_deps"></section><section class="view" id="v_releases"></section><section class="view" id="v_milestones"></section><section class="view" id="v_debt"></section><section class="view" id="v_okr"></section><section class="view" id="v_budget"></section><section class="view" id="v_analytics"></section><section class="view" id="v_risks"></section><section class="view" id="v_bugs"></section><section class="view" id="v_daily"></section><section class="view" id="v_grooming"></section><section class="view" id="v_demo"></section><section class="view" id="v_vacation"></section><section class="view" id="v_birthdays"></section><section class="view" id="v_retro"></section><section class="view" id="v_calendar"></section><section class="view" id="v_checks"></section><section class="view" id="v_params"></section><section class="view" id="v_faq"></section><section class="view" id="v_audit"></section></main></div>
+<main id="main"><section class="view" id="v_dash"></section><section class="view" id="v_board"></section><section class="view" id="v_kanban"></section><section class="view" id="v_backlog"></section><section class="view" id="v_team"></section><section class="view" id="v_roadmap"></section><section class="view" id="v_quarters"></section><section class="view" id="v_rice"></section><section class="view" id="v_moscow"></section><section class="view" id="v_gantt"></section><section class="view" id="v_deps"></section><section class="view" id="v_releases"></section><section class="view" id="v_milestones"></section><section class="view" id="v_debt"></section><section class="view" id="v_okr"></section><section class="view" id="v_budget"></section><section class="view" id="v_analytics"></section><section class="view" id="v_risks"></section><section class="view" id="v_bugs"></section><section class="view" id="v_daily"></section><section class="view" id="v_grooming"></section><section class="view" id="v_demo"></section><section class="view" id="v_vacation"></section><section class="view" id="v_birthdays"></section><section class="view" id="v_retro"></section><section class="view" id="v_calendar"></section><section class="view" id="v_checks"></section><section class="view" id="v_params"></section><section class="view" id="v_faq"></section><section class="view" id="v_support"></section><section class="view" id="v_audit"></section></main></div>
 <div class="palette" id="palette"><div class="pbox"><input class="pin" id="pin" placeholder="Поиск раздела или действия…" autocomplete="off"><div class="plist" id="plist"></div></div></div>
 <div class="role-pop" id="rolepop"></div>
 <div class="modal" id="accmodal"><div class="mbox">
@@ -1981,6 +1995,8 @@ function views(){
  setView('checks','Проверки данных','Автоматический контроль целостности данных с авто-исправлением типичных проблем.',checksView());
  // FAQ (Справка)
  setView('faq','FAQ — частые вопросы','Ответы на типичные вопросы о работе с приложением. Раскройте вопрос, чтобы увидеть ответ; ниже — таблица для редактирования.',faqView());
+ // Support (Справка) — центр загрузки документов и контакты поддержки
+ setView('support','Support — документация и поддержка','Все документы по приложению для скачивания, а также каналы поддержки. Руководство администратора здесь не размещается — оно доступно только администраторам.',supportView());
  // Audit log (Справка) — история изменений для всех; полный журнал — администратору
  setView('audit','Журнал событий','История изменений приложения. Для администратора также доступен полный журнал всех событий (отдельная база данных PostgreSQL).',auditView());
 }
@@ -2174,6 +2190,38 @@ function auditView(){const w=document.createElement('div');
  }
  rf.onclick=load;sel.onchange=load;usr.addEventListener('keydown',e=>{if(e.key==='Enter')load();});
  load();return w;}
+/* ---------- Support: центр загрузки документов и каналы поддержки ---------- */
+var SUPPORT_DOCS=[
+ {ic:'📘',t:'Руководство пользователя',d:'Полное описание всех разделов, страниц и кнопок приложения с логикой их работы.',f:'Руководство_пользователя_Планирование_спринта_PRO.docx',type:'DOCX'},
+ {ic:'🚀',t:'Инструкция по развёртыванию',d:'Пошаговый pipeline установки (раскатки) приложения и всех его частей.',f:'Инструкция_по_развёртыванию_Планирование_спринта_PRO.docx',type:'DOCX'},
+ {ic:'📄',t:'Описание приложения',d:'Обзор возможностей, архитектуры и стека приложения.',f:'Описание_Планирование_спринта_PRO.docx',type:'DOCX'},
+ {ic:'🖼️',t:'Иллюстрированное описание',d:'То же описание со скриншотами каждого раздела.',f:'Иллюстрированное_описание_Планирование_спринта_PRO.docx',type:'DOCX'},
+ {ic:'📊',t:'Презентация приложения',d:'Слайд-обзор приложения: возможности, разделы, архитектура.',f:'Презентация_приложения.pptx',type:'PPTX'},
+ {ic:'🎬',t:'Видео-обзор',d:'Короткий видео-тур по основным разделам приложения.',f:'Обзор_приложения.mp4',type:'MP4'},
+];
+var SUPPORT_LINKS=[
+ {ic:'🐙',t:'Репозиторий на GitHub',d:'Исходный код, история изменений и релизы.',url:'https://github.com/neoandrey1985/Planirovanie'},
+ {ic:'🐞',t:'Сообщить о проблеме',d:'Создать issue: баг, вопрос или предложение по улучшению.',url:'https://github.com/neoandrey1985/Planirovanie/issues/new'},
+ {ic:'❓',t:'FAQ — частые вопросы',d:'Ответы на типичные вопросы прямо в приложении.',goto:'faq'},
+];
+function supportView(){const w=document.createElement('div');
+ var h='<div class="sup-sec">Документы</div><div class="sup-grid">';
+ SUPPORT_DOCS.forEach(function(x){
+  h+='<a class="sup-card" href="docs/'+encodeURIComponent(x.f)+'" download="'+esc(x.f)+'">'+
+     '<div class="sup-ic">'+x.ic+'</div>'+
+     '<div class="sup-b"><div class="sup-t">'+esc(x.t)+'</div><div class="sup-d">'+esc(x.d)+'</div></div>'+
+     '<div class="sup-dl"><span class="sup-badge">'+esc(x.type)+'</span><span class="sup-arrow">⬇</span></div></a>';});
+ h+='</div><div class="sup-sec">Поддержка и ссылки</div><div class="sup-grid">';
+ SUPPORT_LINKS.forEach(function(x){
+  var attr=x.goto?('href="#" data-goto="'+x.goto+'"'):('href="'+x.url+'" target="_blank" rel="noopener"');
+  h+='<a class="sup-card" '+attr+'>'+
+     '<div class="sup-ic">'+x.ic+'</div>'+
+     '<div class="sup-b"><div class="sup-t">'+esc(x.t)+'</div><div class="sup-d">'+esc(x.d)+'</div></div>'+
+     '<div class="sup-dl"><span class="sup-arrow">'+(x.goto?'→':'↗')+'</span></div></a>';});
+ h+='</div><p class="sup-note">💡 Документы скачиваются с сервера приложения (папка <code>/docs</code>). <b>Руководство администратора</b> в этот раздел не входит — оно распространяется отдельно, только для администраторов.</p>';
+ w.innerHTML=h;
+ w.querySelectorAll('a[data-goto]').forEach(function(a){a.addEventListener('click',function(e){e.preventDefault();activate(a.getAttribute('data-goto'));});});
+ return w;}
 var FAQ_CATS=['Начало работы','Планирование','Данные и доступ','Экспорт и интерфейс'];
 function faqView(){const w=document.createElement('div');
  const items=ST.faq||[];
@@ -2982,10 +3030,13 @@ const NAV=[
  {g:'Церемонии',items:[['daily','Дэйли','☀️'],['grooming','Груминг','🧹'],['demo','Демо спринта','🎬'],['retro','Ретроспективы','🔄']]},
  {g:'Персонал',items:[['vacation','График отпусков','🏖️'],['birthdays','Дни рождения','🎂']]},
  {g:'Настройки',items:[['budget','Бюджет','💰'],['calendar','Календарь','📅'],['checks','Проверки данных','🧪'],['params','Параметры','⚙️']]},
- {g:'Справка',items:[['faq','FAQ','❓'],['audit','Журнал событий','🧾']]},
+ {g:'Справка',items:[['faq','FAQ','❓'],['support','Support','🛟'],['audit','Журнал событий','🧾']]},
 ];
-const APP_VERSION='1.27.0';const APP_DATE='2026-09-16';
+const APP_VERSION='1.28.0';const APP_DATE='2026-09-16';
 const CHANGELOG=[
+ {v:'1.28.0',date:'2026-09-16',items:[
+   'Раздел «Support» в справке: центр загрузки всех документов приложения (руководство пользователя, инструкция по развёртыванию, описания, презентация, видео-обзор) и каналы поддержки.',
+   'Документы отдаются сервером из папки /docs; руководство администратора в этот раздел не включено.']},
  {v:'1.27.0',date:'2026-09-16',items:[
    'Доска: живая совместная работа в реальном времени (WebSocket) — курсоры участников, присутствие «вживую» и мгновенная синхронизация изменений между всеми.',
    'Серверное хранение доски в PostgreSQL (миграция V4) — доска сохраняется в БД и общая для всех.',
@@ -3320,7 +3371,7 @@ startAnalytics();setInterval(startAnalytics,30000);
   'гантт':'gantt','гант':'gantt','зависимост':'deps','команд':'team','релиз':'releases','вех':'milestones',
   'техдолг':'debt','тех долг':'debt','аналитик':'analytics','риск':'risks','баг':'bugs','дефект':'bugs',
   'ретро':'retro','okr':'okr','окр':'okr','бюджет':'budget','календар':'calendar','параметр':'params',
-  'настройк':'params','faq':'faq','справк':'faq'};
+  'настройк':'params','faq':'faq','справк':'faq','support':'support','поддержк':'support','документ':'support','скачат':'support','руководств':'support'};
  function navLabel(id){return ID2LABEL[id]||id;}
  function attnText(C){const T=ST.ttmTarget||15,it=[];
   const blk=(ST.deps||[]).filter(d=>d.status==='Заблокировано'||d.status==='Просрочено').length;if(blk)it.push('⛔ Заблокировано зависимостей: '+blk);
