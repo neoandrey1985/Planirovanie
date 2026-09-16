@@ -395,7 +395,7 @@ body.noadmin #rst,body.noadmin #imp{display:none}
 </div></div>
 <div class="modal" id="pptxmodal"><div class="mbox">
  <h3>Отчёт-презентация по спринту</h3>
- <p class="mnote">Выберите спринт для отчёта. «Весь проект» — сводный отчёт по всем спринтам.</p>
+ <p class="mnote">Выберите спринт для отчёта. «Весь проект» — сводный отчёт по всем спринтам. Отчёт включает ключевые метрики и все диаграммы приложения (аналитика, дашборд, риски, Гант, Исикава и др.).</p>
  <label>Спринт</label><select id="pptx_sprint"></select>
  <div class="mrow"><button class="btn" id="pptx_cancel">Отмена</button><button class="btn primary" id="pptx_go">Сформировать</button></div>
 </div></div>
@@ -2910,6 +2910,18 @@ function loadPptxGen(){return new Promise((res,rej)=>{if(window.PptxGenJS)return
  let i=0;(function tryNext(){if(i>=urls.length)return rej(new Error('load'));
   const s=document.createElement('script');s.src=urls[i++];
   s.onload=()=>window.PptxGenJS?res(window.PptxGenJS):tryNext();s.onerror=tryNext;document.head.appendChild(s);})();});}
+/* pptxgenjs 3.12 добавляет в [Content_Types].xml фантомные Override для slideMaster2..N (файлы не пишутся) —
+   PowerPoint из-за этого просит «восстановить файл». Пересобираем пакет, убрав Override на несуществующие части. */
+async function writePptxFixed(p,fileName){
+ const Pptx=window.PptxGenJS;const JSZ=window.JSZip||(Pptx&&Pptx.JSZip);
+ if(!JSZ){await p.writeFile({fileName:fileName});return;}
+ const b64=await p.write('base64');const zip=await JSZ.loadAsync(b64,{base64:true});
+ let ct=await zip.file('[Content_Types].xml').async('string');
+ ct=ct.replace(/<Override\b[^>]*?PartName="([^"]+)"[^>]*?\/>/g,(m,pn)=>zip.file(pn.replace(/^\//,''))?m:'');
+ zip.file('[Content_Types].xml',ct);
+ const blob=await zip.generateAsync({type:'blob',mimeType:'application/vnd.openxmlformats-officedocument.presentationml.presentation'});
+ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=fileName;document.body.appendChild(a);a.click();
+ setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},1500);}
 function svgToPng(svg,w,h){return new Promise((res,rej)=>{svg.setAttribute('width',w);svg.setAttribute('height',h);
  const xml=new XMLSerializer().serializeToString(svg);const url='data:image/svg+xml;base64,'+btoa(unescape(encodeURIComponent(xml)));
  const im=new Image();im.onload=()=>{const c=document.createElement('canvas');c.width=w*2;c.height=h*2;const cx=c.getContext('2d');
@@ -2920,6 +2932,12 @@ function chartPng(kind,cats,series,opt){const box=document.createElement('div');
  return svgToPng(svg,640,290).finally(()=>box.remove());}
 function svgStrToPng(svgStr,w,h){const box=document.createElement('div');box.style.cssText='position:absolute;left:-9999px';box.innerHTML=svgStr;document.body.appendChild(box);
  const svg=box.querySelector('svg');if(!svg){box.remove();return Promise.resolve(null);}return svgToPng(svg,w,h).finally(()=>box.remove());}
+/* Render any function that draws an <svg> into a container → PNG data-url + aspect (для отчёта). */
+function elPng(fn){const box=document.createElement('div');box.style.cssText='position:absolute;left:-9999px;width:1040px';document.body.appendChild(box);
+ try{fn(box);}catch(e){box.remove();return Promise.resolve(null);}
+ const svg=box.querySelector('svg');if(!svg){box.remove();return Promise.resolve(null);}
+ const vb=(svg.getAttribute('viewBox')||'0 0 640 290').split(/\s+/).map(Number);const vw=vb[2]||640,vh=vb[3]||290;
+ return svgToPng(svg,vw,vh).then(d=>({d:d,aspect:vh/vw})).finally(()=>box.remove());}
 async function exportPptx(sprintSel){
  const spN=(sprintSel===undefined||sprintSel===''||sprintSel===null)?null:num(sprintSel);
  let Pptx;toast('Формирую отчёт-презентацию…');
@@ -2937,6 +2955,39 @@ async function exportPptx(sprintSel){
   if(mood.length)ch.mood=await chartPng('lines',mood.map(m=>'С'+m.sprint),[{color:RCOL.good,data:mood.map(m=>num(m.mood)),trend:true}],{});
   if(typeof MOSCOW_CATS!=='undefined')ch.moscow=await chartPng('bars',MOSCOW_CATS.slice(),[{color:RCOL.accent,data:MOSCOW_CATS.map(c=>(ST.moscow||[]).filter(x=>x.category===c).length)}]);
   if((ST.radar||[]).filter(x=>x.axis).length>=3)ch.radar=await svgStrToPng(radarSvg(ST.radar||[]),330,320);
+  // ---- Аналитика: все графики (сгорание, burn-up, CFD, cycle time, распределение, загрузка, дефекты) ----
+  const tasks=ST.tasks||[], sp=C.sp;
+  const scope=tasks.reduce((a,t)=>a+num(t.est),0);
+  const cats0=['С0'].concat(sp.map(x=>'С'+x.s));
+  {let cum=0;const doneCum=[0],rem=[scope];let stop=false;
+   sp.forEach(x=>{if(x.vel==null||stop){stop=true;doneCum.push(null);rem.push(null);}else{cum+=x.vel;doneCum.push(cum);rem.push(Math.max(0,scope-cum));}});
+   const ideal=cats0.map((c,i)=>scope*(1-i/(cats0.length-1)));
+   ch.bd=await chartPng('lines',cats0,[{color:RCOL.crit,data:rem,w:3},{color:RCOL.muted,data:ideal,dash:true,noPts:true}]);
+   ch.bu=await chartPng('lines',cats0,[{color:RCOL.good,data:doneCum,w:3},{color:RCOL.accent,data:cats0.map(()=>scope),dash:true,noPts:true}]);}
+  {const N=sp.length,todo=[],prog=[],done=[];
+   for(let s=1;s<=N;s++){const ts=tasks.filter(t=>+t.sprint===s);todo.push(ts.filter(t=>t.status==='To Do').length);prog.push(ts.filter(t=>t.status==='В работе').length);done.push(ts.filter(t=>t.status==='Готово').length);}
+   ch.cfd=await chartPng('bars',sp.map(x=>'С'+x.s),[{color:RCOL.accent,data:todo},{color:RCOL.warn,data:prog},{color:RCOL.good,data:done}]);}
+  {const ctv=tasks.filter(t=>t.started&&t.done).map(t=>({id:t.id,d:Math.max(0,Math.round((pd(t.done)-pd(t.started))/MS))}));
+   if(ctv.length){const ctAvg=ctv.reduce((a,b)=>a+b.d,0)/ctv.length;ch.ct=await chartPng('lines',ctv.map(x=>x.id),[{color:RCOL.accent,data:ctv.map(x=>x.d),w:2}],{target:ctAvg});}}
+  {const byType={};tasks.forEach(t=>{const k=t.type||'Задача';byType[k]=(byType[k]||0)+num(t.est);});
+   if(Object.keys(byType).length)ch.dt=await chartPng('bars',Object.keys(byType),[{color:RCOL.accent,data:Object.values(byType)}]);
+   const byRole={};tasks.forEach(t=>{const k=t.role||'—';byRole[k]=(byRole[k]||0)+num(t.est);});
+   if(Object.keys(byRole).length)ch.dr=await chartPng('bars',Object.keys(byRole),[{color:RCOL.good,data:Object.values(byRole)}]);}
+  try{const cs=sp[C.cur-1]||sp[0],focus=num(ST.params.focus)||0.8;const capRole={},demRole={};ROLES.forEach(r=>{capRole[r]=0;demRole[r]=0;});
+   const csHol=(ST.calendar||[]).map(h=>typeof h==='string'?h:h.date);
+   (ST.team||[]).forEach(m=>{if(capRole[m.role]!=null)capRole[m.role]+=Math.max(0,(cs.wd-num(m.absent)-vacDays(m.name,cs.a,cs.b,csHol)))*num(m.avail)*focus;});
+   tasks.filter(t=>+t.sprint===C.cur).forEach(t=>{if(demRole[t.role]!=null)demRole[t.role]+=num(t.est);});
+   ch.rl=await chartPng('bars',ROLES,[{color:RCOL.accent,data:ROLES.map(r=>Math.round(capRole[r]*10)/10)},{color:RCOL.warn,data:ROLES.map(r=>demRole[r])}]);}catch(e){}
+  if(C.quarters&&C.quarters.length)ch.cap=await chartPng('bars',C.quarters.map(q=>q.q),[{color:RCOL.accent,data:C.quarters.map(q=>q.cap)},{color:RCOL.warn,data:C.quarters.map(q=>q.plan)}]);
+  {const sev={Critical:0,Major:0,Minor:0};(ST.bugs||[]).forEach(b=>{if(sev[b.sev]!=null)sev[b.sev]++;});
+   ch.sev=await chartPng('bars',Object.keys(sev),[{color:RCOL.crit,data:Object.values(sev)}]);}
+  {const N=ST.params.sprints||11,cr=[],pdd=[];for(let s=1;s<=N;s++){cr.push((ST.techDebt||[]).filter(t=>+t.created===s).length);pdd.push((ST.techDebt||[]).filter(t=>+t.paid===s).length);}
+   if((ST.techDebt||[]).length)ch.debt=await chartPng('bars',Array.from({length:N},(_,i)=>'С'+(i+1)),[{color:RCOL.crit,data:cr},{color:RCOL.good,data:pdd}]);}
+  {const okr=(ST.okr||[]).filter(o=>o.kr);if(okr.length)ch.okr=await chartPng('bars',okr.map((o,i)=>String(o.kr||('KR'+(i+1))).slice(0,10)),[{color:RCOL.accent,data:okr.map(o=>num(o.target)?num(o.cur)/num(o.target):0)}],{pct:true});}
+  {const rc=(ST.rice||[]).map(r=>({n:String(r.name||r.task||r.id||'').slice(0,10),s:riceScore(r)})).sort((a,b)=>b.s-a.s).slice(0,8);
+   if(rc.length)ch.rice=await chartPng('bars',rc.map(x=>x.n),[{color:RCOL.accent,data:rc.map(x=>Math.round(x.s*10)/10)}]);}
+  try{ch.gantt=await elPng(box=>drawGantt(box,tasks,C));}catch(e){}
+  try{ch.ishk=await elPng(box=>drawIshikawa(box));}catch(e){}
  }catch(e){}
  finally{if(prevTheme)document.documentElement.setAttribute('data-theme',prevTheme);else document.documentElement.removeAttribute('data-theme');}
  const DARK='101A2B',ACC='2D5BE3',INK='16202E',BODY='47566B',WHITE='FFFFFF';
@@ -2946,6 +2997,23 @@ async function exportPptx(sprintSel){
   if(imgs.length===1){const w=11.4,h=w*RATIO;s.addImage({data:imgs[0].d,x:(13.33-w)/2,y:1.5,w:w,h:h});if(imgs[0].c)s.addText(imgs[0].c,{x:0.6,y:1.5+h+0.05,w:12.1,h:0.35,align:'center',italic:true,fontSize:11,color:'7A8AA0'});}
   else{const w=6.0,h=w*RATIO,y=2.0;imgs.forEach((im,i)=>{const x=i?6.9:0.5;s.addImage({data:im.d,x:x,y:y,w:w,h:h});if(im.c)s.addText(im.c,{x:x,y:y+h+0.05,w:w,h:0.35,align:'center',italic:true,fontSize:10.5,color:'7A8AA0'});});}
   return s;}
+ function imgSlide(title,im){if(!im||!im.d)return;const s=p.addSlide();s.background={color:WHITE};
+  s.addText(title,{x:0.6,y:0.35,w:12.1,h:0.7,fontSize:24,bold:true,color:INK,fontFace:'Calibri'});
+  const asp=im.aspect||0.5;let w=12.1,h=w*asp;if(h>5.7){h=5.7;w=h/asp;}if(w>12.1){w=12.1;h=w*asp;}
+  s.addImage({data:im.d,x:(13.33-w)/2,y:1.45,w:w,h:h});return s;}
+ function riskMatrixSlide(){const risks=ST.risks||[];if(!risks.length)return;
+  const ranked=risks.map(r=>({...r,score:num(r.p)*num(r.i)})).sort((a,b)=>b.score-a.score).map((r,i)=>({...r,rank:i+1}));
+  const pos={};ranked.forEach(r=>{const k=num(r.p)+'-'+num(r.i);(pos[k]=pos[k]||[]).push(r.rank);});
+  const s=p.addSlide();s.background={color:WHITE};
+  s.addText('Матрица рисков',{x:0.6,y:0.35,w:12,h:0.7,fontSize:24,bold:true,color:INK,fontFace:'Calibri'});
+  const head=[{text:'Влияние ↓ / Вероятность →',options:{bold:true,fill:{color:'EEF2FB'}}}];
+  for(let pc=1;pc<=5;pc++)head.push({text:String(pc),options:{bold:true,align:'center',fill:{color:'EEF2FB'}}});
+  const rows=[head];
+  [5,4,3,2,1].forEach(imp=>{const row=[{text:String(imp),options:{bold:true,align:'center',fill:{color:'EEF2FB'}}}];
+   for(let pc=1;pc<=5;pc++){const sc=pc*imp,fill=sc>=15?'F9D7D7':sc>=8?'FBEFCF':'D8EFE0';row.push({text:(pos[pc+'-'+imp]||[]).join(', '),options:{align:'center',fill:{color:fill}}});}
+   rows.push(row);});
+  s.addTable(rows,{x:1.0,y:1.5,w:9.5,colW:[3.1,1.28,1.28,1.28,1.28,1.28],rowH:0.72,fontSize:13,color:INK,fontFace:'Calibri',valign:'middle',border:{type:'solid',color:'FFFFFF',pt:2}});
+  s.addText('Число в ячейке — ранг риска по баллу (Вероятность × Влияние). Красная зона — критические риски.',{x:1.0,y:6.35,w:11,h:0.5,fontSize:12,italic:true,color:'7A8AA0',fontFace:'Calibri'});}
  // 1. Title
  (function(){const s=p.addSlide();s.background={color:DARK};
   s.addText(spN?('Отчёт по спринту #'+spN):'Отчёт по спринту (весь проект)',{x:0.7,y:1.5,w:12,h:1.0,fontSize:38,bold:true,color:WHITE,fontFace:'Calibri'});
@@ -3007,9 +3075,33 @@ async function exportPptx(sprintSel){
  const s5=[{d:ch.ttm,c:'Time to Market по задачам (цель ≤ '+T+' дн)'}];if(ch.mood)s5.push({d:ch.mood,c:'Настроение команды (1–5)'});
  chartSlide('Time to Market и настроение команды',s5);
  if(ch.moscow||ch.radar){const arr=[];if(ch.moscow)arr.push({d:ch.moscow,c:'MoSCoW: число фич по категориям'});if(ch.radar)arr.push({d:ch.radar,c:'Team Radar — самооценка команды'});chartSlide('Приоритеты и здоровье команды',arr);}
+ // 4+. Все графики аналитики и страниц приложения
+ (function(){const vels=C.vels||[];const mean=vels.length?vels.reduce((a,b)=>a+b,0)/vels.length:0;
+  const sd=vels.length>1?Math.sqrt(vels.reduce((a,b)=>a+(b-mean)*(b-mean),0)/(vels.length-1)):0;const cv=mean?sd/mean:0;
+  const doneTasks=(ST.tasks||[]).filter(t=>t.status==='Готово').length;const thr=C.closed?doneTasks/C.closed:0;
+  const fc=C.avgVel?C.remain/C.avgVel:null;const vmin=vels.length?Math.min.apply(null,vels):0,vmax=vels.length?Math.max.apply(null,vels):0;
+  const fcOpt=vmax?C.remain/vmax:null,fcPes=vmin?C.remain/vmin:null;
+  const s=p.addSlide();s.background={color:WHITE};
+  s.addText('Аналитика: предсказуемость и прогноз',{x:0.6,y:0.35,w:12,h:0.7,fontSize:24,bold:true,color:INK,fontFace:'Calibri'});
+  const rows=[['Показатель','Значение'],
+   ['Предсказуемость',pctf(1-Math.min(1,cv))+' (CV '+pctf(cv)+')'],
+   ['Throughput',fmt(thr,1)+' зад/спринт'],
+   ['Прогноз (Монте-Карло)',fc==null?'—':fmt(fc,1)+' спринтов'],
+   ['Диапазон прогноза',(fcOpt==null?'—':fmt(fcOpt,1))+'–'+(fcPes==null?'—':fmt(fcPes,1))+' спринтов'],
+   ['DRE (выявление дефектов)',pctf(C.dre)]];
+  s.addTable(rows,{x:0.6,y:1.35,w:8.6,colW:[4.3,4.3],fontSize:14,color:INK,fontFace:'Calibri',border:{type:'solid',color:'E1E8F5',pt:1},rowH:0.5,valign:'middle',fill:{color:'F4F7FF'}});})();
+ if(ch.bd||ch.bu)chartSlide('Аналитика: сгорание и burn-up',[ch.bd&&{d:ch.bd,c:'Сгорание (burndown) — осталось vs идеал'},ch.bu&&{d:ch.bu,c:'Burn-up — сделано vs scope'}].filter(Boolean));
+ if(ch.cfd||ch.ct)chartSlide('Аналитика: поток задач и cycle time',[ch.cfd&&{d:ch.cfd,c:'CFD — To Do / В работе / Готово'},ch.ct&&{d:ch.ct,c:'Cycle time по задачам (дн)'}].filter(Boolean));
+ if(ch.dt||ch.dr)chartSlide('Аналитика: распределение объёма',[ch.dt&&{d:ch.dt,c:'По типам задач (дн)'},ch.dr&&{d:ch.dr,c:'По ролям (дн)'}].filter(Boolean));
+ if(ch.rl||ch.cap)chartSlide('Аналитика: загрузка по ролям и кварталам',[ch.rl&&{d:ch.rl,c:'Ёмкость vs спрос по ролям (текущий спринт)'},ch.cap&&{d:ch.cap,c:'Ёмкость vs спрос по кварталам'}].filter(Boolean));
+ if(ch.sev||ch.debt)chartSlide('Дефекты и технический долг',[ch.sev&&{d:ch.sev,c:'Дефекты по серьёзности'},ch.debt&&{d:ch.debt,c:'Техдолг: создано (красный) / погашено (зелёный)'}].filter(Boolean));
+ if(ch.okr||ch.rice)chartSlide('Цели и приоритеты',[ch.okr&&{d:ch.okr,c:'OKR — прогресс Key Results'},ch.rice&&{d:ch.rice,c:'RICE — топ фич по баллу'}].filter(Boolean));
+ imgSlide('Диаграмма Ганта',ch.gantt);
+ imgSlide('Диаграмма Исикавы — причины срыва сроков спринта',ch.ishk);
+ riskMatrixSlide();
  const base=(P.name?String(P.name).replace(/[^\wа-яА-Я0-9]+/g,'_'):'проект');
  const fn='Отчёт_спринта_'+base+'_'+(spN?('C'+spN):'весь_проект')+'.pptx';
- try{await p.writeFile({fileName:fn});toast('Отчёт-презентация готов');if(typeof auditClient==='function')auditClient('export_pptx',spN?('Спринт '+spN):'весь проект');}
+ try{await writePptxFixed(p,fn);toast('Отчёт-презентация готов');if(typeof auditClient==='function')auditClient('export_pptx',spN?('Спринт '+spN):'весь проект');}
  catch(e){toast('Ошибка формирования файла');}
 }
 
@@ -3028,8 +3120,10 @@ const NAV=[
  {g:'Настройки',items:[['budget','Бюджет','💰'],['calendar','Календарь','📅'],['checks','Проверки данных','🧪'],['params','Параметры','⚙️']]},
  {g:'Справка',items:[['faq','FAQ','❓'],['support','Support','🛟'],['audit','Журнал событий','🧾']]},
 ];
-const APP_VERSION='1.28.0';const APP_DATE='2026-09-16';
+const APP_VERSION='1.29.0';const APP_DATE='2026-09-16';
 const CHANGELOG=[
+ {v:'1.29.0',date:'2026-09-16',items:[
+   'Отчёт-презентация по спринту (PPTX) теперь включает все диаграммы и графики приложения: сгорание, burn-up, CFD, cycle time, распределение объёма по типам и ролям, загрузку по ролям и кварталам, дефекты по серьёзности, тренд техдолга, прогресс OKR, топ RICE, диаграммы Ганта и Исикавы, матрицу рисков и метрики прогноза (предсказуемость, throughput, Монте-Карло, DRE).']},
  {v:'1.28.0',date:'2026-09-16',items:[
    'Раздел «Support» в справке: центр загрузки всех документов приложения (руководство пользователя, инструкция по развёртыванию, описания, презентация, видео-обзор) и каналы поддержки.',
    'Документы отдаются сервером из папки /docs; руководство администратора в этот раздел не включено.']},
