@@ -320,6 +320,13 @@ body.noadmin #rst,body.noadmin #imp{display:none}
 .brd-timer button{border:1px solid var(--line);background:var(--panel2);border-radius:7px;cursor:pointer;font-size:13px;padding:3px 8px;font-family:inherit;color:var(--ink)}
 .brd-hint{position:absolute;left:12px;bottom:10px;font-size:11.5px;color:var(--muted);background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:4px 9px;z-index:4;opacity:.9}
 .brd-empty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:14px;pointer-events:none}
+.brd-cursor{position:absolute;z-index:9;pointer-events:none;transform:translate(-2px,-2px);transition:left .05s linear,top .05s linear;will-change:left,top}
+.brd-cursor svg{display:block;filter:drop-shadow(0 1px 1px rgba(0,0,0,.3))}
+.brd-cursor .lbl{position:absolute;left:14px;top:12px;font-size:11px;font-weight:600;color:#fff;padding:1px 7px;border-radius:8px;white-space:nowrap}
+.brd-presence{position:absolute;right:12px;bottom:10px;display:flex;gap:5px;align-items:center;z-index:6}
+.brd-presence .pchip{display:flex;align-items:center;gap:5px;background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:2px 9px 2px 6px;font-size:11.5px;box-shadow:var(--shadow)}
+.brd-presence .pdot{width:9px;height:9px;border-radius:50%;flex:none}
+.brd-presence .plive{font-size:11px;color:var(--good);font-weight:700}
 </style>
 <header class="top"><div class="inner">
  <button class="btn iconbtn" id="menubtn" aria-label="Меню" title="Свернуть / развернуть меню">☰</button>
@@ -1717,7 +1724,8 @@ function brdRender(){
  BW.wrap.style.backgroundSize=(22*c.z)+'px '+(22*c.z)+'px';
  BW.wrap.style.backgroundPosition=c.x+'px '+c.y+'px';
  const z=document.getElementById('brd-zoom');if(z)z.textContent=Math.round(c.z*100)+'%';
- const em=BW.wrap.querySelector('.brd-empty');if(em)em.style.display=items.length?'none':'flex';}
+ const em=BW.wrap.querySelector('.brd-empty');if(em)em.style.display=items.length?'none':'flex';
+ if(typeof brdPositionCursors==='function')brdPositionCursors();}
 function brdRenderSel(){
  const c=brdCam(),hs=9/c.z;
  BW.sel.forEach(id=>{const it=brdItems().find(x=>x.id===id);if(!it)return;const b=brdBBox(it);
@@ -1727,9 +1735,9 @@ function brdRenderSel(){
    else if(it.t!=='pen'){const b=brdBBox(it);[['nw',b.x,b.y],['ne',b.x+b.w,b.y],['sw',b.x,b.y+b.h],['se',b.x+b.w,b.y+b.h]].forEach(h=>{const r=brdEl('rect',{x:h[1]-hs/2,y:h[2]-hs/2,width:hs,height:hs,rx:2/c.z,fill:'#fff',stroke:'#2D5BE3','stroke-width':1.5/c.z,'data-handle':h[0],'data-id':it.id});r.style.cursor='nwse-resize';BW.g.appendChild(r);});}}}
 /* ---- операции ---- */
 function brdAdd(it){brdItems().push(it);}
-function brdDelSel(){if(!PERM.canEdit||!BW.sel.length)return;ST.board.items=brdItems().filter(x=>BW.sel.indexOf(x.id)<0);BW.sel=[];brdSave();brdRender();}
+function brdDelSel(){if(!PERM.canEdit||!BW.sel.length)return;const ids=BW.sel.slice();ST.board.items=brdItems().filter(x=>BW.sel.indexOf(x.id)<0);BW.sel=[];brdSave();brdRender();if(typeof brdWSDelete==='function')brdWSDelete(ids);}
 function brdApplyColor(col){BW.color=col;document.querySelectorAll('.brd-sw').forEach(s=>s.classList.toggle('on',s.dataset.c===col));
- if(PERM.canEdit&&BW.sel.length){BW.sel.forEach(id=>{const it=brdItems().find(x=>x.id===id);if(!it)return;if(it.t==='sticky'||it.t==='rect'||it.t==='ellipse'||it.t==='diamond')it.fill=col;else if(it.t==='conn'||it.t==='pen')it.stroke=col;});brdSave();brdRender();}}
+ if(PERM.canEdit&&BW.sel.length){BW.sel.forEach(id=>{const it=brdItems().find(x=>x.id===id);if(!it)return;if(it.t==='sticky'||it.t==='rect'||it.t==='ellipse'||it.t==='diamond')it.fill=col;else if(it.t==='conn'||it.t==='pen')it.stroke=col;});brdSave();brdRender();if(typeof brdWSUpsert==='function')brdWSUpsert(BW.sel);}}
 function brdFit(){const items=brdItems();const r=BW.svg.getBoundingClientRect();if(!items.length){const c=brdCam();c.x=r.width/2;c.y=r.height/2;c.z=1;brdRender();return;}
  let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;items.forEach(it=>{const b=brdBBox(it);x0=Math.min(x0,b.x);y0=Math.min(y0,b.y-(it.t==='frame'?26:0));x1=Math.max(x1,b.x+b.w);y1=Math.max(y1,b.y+b.h);});
  const pad=60,bw=x1-x0+pad*2,bh=y1-y0+pad*2,c=brdCam();c.z=Math.min(2,Math.max(0.15,Math.min(r.width/bw,r.height/bh)));c.x=(r.width-(x1+x0)*c.z)/2;c.y=(r.height-(y1+y0)*c.z)/2;brdRender();brdSave();}
@@ -1741,14 +1749,14 @@ function brdEdit(it){if(!PERM.canEdit)return;if(it.t==='conn'||it.t==='pen'||it.
  ta.style.width=Math.max(60,(it.t==='text'?(it.w||240):b.w)*c.z)+'px';ta.style.minHeight=Math.max(24,(it.t==='frame'?22:b.h)*c.z)+'px';
  ta.style.fontSize=fs+'px';ta.style.background=(it.t==='sticky'?it.fill:(it.t==='frame'?'#EEF2F7':'var(--panel)'));ta.style.color='#1F2937';
  BW.wrap.appendChild(ta);ta.focus();ta.select();
- const commit=()=>{if(it.t==='frame')it.title=ta.value;else it.text=ta.value;ta.remove();brdSave();brdRender();};
+ const commit=()=>{if(it.t==='frame')it.title=ta.value;else it.text=ta.value;ta.remove();brdSave();brdRender();if(typeof brdWSUpsert==='function')brdWSUpsert([it.id]);};
  ta.addEventListener('blur',commit);ta.addEventListener('keydown',e=>{e.stopPropagation();if(e.key==='Escape'){ta.blur();}if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)){ta.blur();}});}
 /* ---- указатель ---- */
 function brdDown(e){
  if(e.button===2)return;BW.svg.setPointerCapture&&BW.svg.setPointerCapture(e.pointerId);
  const pt=brdToWorld(e.clientX,e.clientY),c=brdCam();
  const vote=e.target.closest&&e.target.closest('[data-vote]');
- if(vote&&BW.tool==='select'&&PERM.canEdit){const it=brdItems().find(x=>x.id===vote.getAttribute('data-vote'));if(it){it.votes=(num(it.votes)||0)+1;brdSave();brdRender();}return;}
+ if(vote&&BW.tool==='select'&&PERM.canEdit){const it=brdItems().find(x=>x.id===vote.getAttribute('data-vote'));if(it){it.votes=(num(it.votes)||0)+1;brdSave();brdRender();if(typeof brdWSUpsert==='function')brdWSUpsert([it.id]);}return;}
  const wantPan=(BW.tool==='hand'||e.button===1||BW.space);
  if(wantPan){BW.mode='pan';BW.pan={sx:e.clientX,sy:e.clientY,cx:c.x,cy:c.y};BW.svg.classList.add('panning');return;}
  if(!PERM.canEdit){BW.mode='pan';BW.pan={sx:e.clientX,sy:e.clientY,cx:c.x,cy:c.y};return;}
@@ -1761,8 +1769,8 @@ function brdDown(e){
    else{if(!e.shiftKey)BW.sel=[];BW.mode='marquee';BW.mq={sx:e.clientX,sy:e.clientY};BW._mqd=document.createElement('div');BW._mqd.style.cssText='position:absolute;border:1px solid #2D5BE3;background:rgba(45,91,227,.08);z-index:7;pointer-events:none';BW.wrap.appendChild(BW._mqd);brdRender();}
    return;}
  // инструменты создания
- if(BW.tool==='sticky'){const it={id:brdId(),t:'sticky',x:pt.x-80,y:pt.y-70,w:160,h:140,fill:BW.color,text:'',author:brdAuthor(),votes:0};brdAdd(it);BW.sel=[it.id];BW.tool='select';brdSave();brdRender();brdSetTool('select');brdEdit(it);return;}
- if(BW.tool==='text'){const it={id:brdId(),t:'text',x:pt.x,y:pt.y,w:260,text:'',size:20};brdAdd(it);BW.sel=[it.id];brdSave();brdRender();brdSetTool('select');brdEdit(it);return;}
+ if(BW.tool==='sticky'){const it={id:brdId(),t:'sticky',x:pt.x-80,y:pt.y-70,w:160,h:140,fill:BW.color,text:'',author:brdAuthor(),votes:0};brdAdd(it);BW.sel=[it.id];BW.tool='select';brdSave();brdRender();brdSetTool('select');brdWSUpsert([it.id]);brdEdit(it);return;}
+ if(BW.tool==='text'){const it={id:brdId(),t:'text',x:pt.x,y:pt.y,w:260,text:'',size:20};brdAdd(it);BW.sel=[it.id];brdSave();brdRender();brdSetTool('select');brdWSUpsert([it.id]);brdEdit(it);return;}
  if(BW.tool==='rect'||BW.tool==='ellipse'||BW.tool==='diamond'||BW.tool==='frame'){const it={id:brdId(),t:BW.tool,x:pt.x,y:pt.y,w:1,h:1};if(BW.tool!=='frame'){it.fill=BW.tool==='frame'?'none':(BW.color==='#1F2937'?'#FFFFFF':BW.color);it.stroke='#2D5BE3';}else it.title='Фрейм';brdAdd(it);BW.sel=[it.id];BW.mode='draw';BW.dw={id:it.id,ox:pt.x,oy:pt.y};return;}
  if(BW.tool==='conn'){const it={id:brdId(),t:'conn',x1:pt.x,y1:pt.y,x2:pt.x,y2:pt.y,stroke:'#334155'};brdAdd(it);BW.sel=[it.id];BW.mode='draw';BW.dw={id:it.id,conn:true};return;}
  if(BW.tool==='pen'){const it={id:brdId(),t:'pen',pts:[[pt.x,pt.y]],stroke:BW.color==='#FFFFFF'?'#1F2937':BW.color,width:3};brdAdd(it);BW.sel=[it.id];BW.mode='pen';BW.dw={id:it.id};return;}
@@ -1786,6 +1794,7 @@ function brdUp(e){
  else if(BW.mode==='move'||BW.mode==='resize'){brdSave();}
  else if(BW.mode==='marquee'){const wr=brdToWorld(BW.mq.sx,BW.mq.sy),wr2=brdToWorld(e.clientX,e.clientY);const rx0=Math.min(wr.x,wr2.x),ry0=Math.min(wr.y,wr2.y),rx1=Math.max(wr.x,wr2.x),ry1=Math.max(wr.y,wr2.y);
    brdItems().forEach(it=>{const b=brdBBox(it);if(b.x<rx1&&b.x+b.w>rx0&&b.y<ry1&&b.y+b.h>ry0)BW.sel.push(it.id);});BW._mqd&&BW._mqd.remove();BW._mqd=null;brdRender();}
+ if(BW.mode==='move'||BW.mode==='resize'||BW.mode==='draw'||BW.mode==='pen')brdWSUpsert(BW.sel);
  BW.mode=null;}
 /* ---- таймер фасилитации ---- */
 function brdTimerTick(){const b=document.getElementById('brd-timer');if(!b||BW.timer==null)return;BW.timer--;const mm=Math.floor(Math.max(0,BW.timer)/60),ss=Math.max(0,BW.timer)%60;b.querySelector('.tt').textContent=mm+':'+String(ss).padStart(2,'0');b.classList.toggle('warn',BW.timer<=10);if(BW.timer<=0){clearInterval(BW._ti);BW._ti=null;try{toast('⏱ Время вышло');}catch(e){}}}
@@ -1834,10 +1843,11 @@ function boardView(){
  const zl=document.createElement('span');zl.className='brd-zoom';zl.id='brd-zoom';zl.textContent='100%';zl.title='Сбросить масштаб';zl.onclick=()=>{const c=brdCam();c.z=1;brdRender();brdSave();};top.appendChild(zl);
  top.appendChild(mkbtn('+','Увеличить',()=>{const c=brdCam();c.z=Math.min(4,c.z*1.15);brdRender();brdSave();}));
  top.appendChild(mkbtn('⤢ По размеру','Показать всё',brdFit));
- if(!RO){const fi=document.createElement('input');fi.type='file';fi.accept='image/*';fi.style.display='none';fi.id='brd-file';fi.onchange=e=>{const f=e.target.files[0];if(!f)return;const rd=new FileReader();rd.onload=()=>{const im=new Image();im.onload=()=>{const c=brdCam(),r=svg.getBoundingClientRect();const cx=(r.width/2-c.x)/c.z,cy=(r.height/2-c.y)/c.z;const mw=320,sc=Math.min(1,mw/im.width);const it={id:brdId(),t:'image',x:cx-im.width*sc/2,y:cy-im.height*sc/2,w:im.width*sc,h:im.height*sc,src:rd.result};brdAdd(it);BW.sel=[it.id];brdSave();brdRender();};im.src=rd.result;};rd.readAsDataURL(f);e.target.value='';};wrap.appendChild(fi);
+ if(!RO){const fi=document.createElement('input');fi.type='file';fi.accept='image/*';fi.style.display='none';fi.id='brd-file';fi.onchange=e=>{const f=e.target.files[0];if(!f)return;const rd=new FileReader();rd.onload=()=>{const im=new Image();im.onload=()=>{const c=brdCam(),r=svg.getBoundingClientRect();const cx=(r.width/2-c.x)/c.z,cy=(r.height/2-c.y)/c.z;const mw=320,sc=Math.min(1,mw/im.width);const it={id:brdId(),t:'image',x:cx-im.width*sc/2,y:cy-im.height*sc/2,w:im.width*sc,h:im.height*sc,src:rd.result};brdAdd(it);BW.sel=[it.id];brdSave();brdRender();brdWSUpsert([it.id]);};im.src=rd.result;};rd.readAsDataURL(f);e.target.value='';};wrap.appendChild(fi);
    top.appendChild(mkbtn('🖼 Изобр.','Вставить изображение',()=>fi.click()));}
  top.appendChild(mkbtn('⤓ PNG','Экспорт в PNG',brdExportPNG));
  top.appendChild(mkbtn('⤓ PDF','Экспорт в PDF',brdExportPDF));
+ if(typeof AUTH!=='undefined'&&AUTH.token){top.appendChild(mkbtn('Slack','Отправить сводку доски в Slack',brdSlack));top.appendChild(mkbtn('Jira','Создать задачу в Jira из выделенного',brdJira));}
  top.appendChild(mkbtn('⏱','Таймер фасилитации',()=>{const m=prompt('Таймер на сколько минут?','5');const mn=parseFloat(m);if(mn>0)brdTimerStart(Math.round(mn*60));}));
  if(!RO)top.appendChild(mkbtn('🗑','Удалить выделенное (Del)',brdDelSel,'danger'));
  wrap.appendChild(top);
@@ -1853,11 +1863,59 @@ function boardView(){
  svg.addEventListener('pointerup',brdUp);
  svg.addEventListener('pointercancel',brdUp);
  svg.addEventListener('lostpointercapture',()=>{if(BW.mode==='pan')BW.svg.classList.remove('panning');});
+ svg.addEventListener('pointermove',e=>{const now=Date.now();if(now-BWS.lastCur<45)return;BWS.lastCur=now;if(!BWS.ws||BWS.ws.readyState!==1)return;const w=brdToWorld(e.clientX,e.clientY);brdWSSend({type:'cursor',x:Math.round(w.x),y:Math.round(w.y),name:brdAuthor()});});
+ brdClearCursors();if(brdServerMode()){brdWSConnect();}brdPresence();
  svg.addEventListener('wheel',e=>{e.preventDefault();const c=brdCam(),r=svg.getBoundingClientRect(),mx=e.clientX-r.left,my=e.clientY-r.top;const f=e.deltaY<0?1.1:1/1.1;const nz=Math.min(4,Math.max(0.15,c.z*f));const wx=(mx-c.x)/c.z,wy=(my-c.y)/c.z;c.z=nz;c.x=mx-wx*nz;c.y=my-wy*nz;brdRender();brdSave();},{passive:false});
  svg.addEventListener('dblclick',e=>{const node=e.target.closest&&e.target.closest('[data-id]');if(node){const it=brdItems().find(x=>x.id===node.getAttribute('data-id'));if(it)brdEdit(it);}});
  svg.addEventListener('contextmenu',e=>e.preventDefault());
  setTimeout(()=>brdRender(),0);
  return wrap;}
+/* ================= Доска: совместная работа в реальном времени (WebSocket) + интеграции ================= */
+var BWS={ws:null,id:null,peers:{},cursors:{},_els:{},lastCur:0};
+function brdServerMode(){return typeof SYNC!=='undefined'&&SYNC.on&&typeof AUTH!=='undefined'&&!!AUTH.token;}
+function brdWSUrl(){const proto=location.protocol==='https:'?'wss:':'ws:';const nm=encodeURIComponent(brdAuthor());const tk=(AUTH&&AUTH.token)?('&token='+encodeURIComponent(AUTH.token)):'';return proto+'//'+location.host+'/ws/board?name='+nm+tk;}
+function brdWSConnect(){if(!brdServerMode())return;if(BWS.ws&&(BWS.ws.readyState===0||BWS.ws.readyState===1))return;
+ try{const ws=new WebSocket(brdWSUrl());BWS.ws=ws;
+  ws.onopen=()=>{brdWSSend({type:'hello',name:brdAuthor()});brdPresence();};
+  ws.onmessage=e=>brdWSRecv(e.data);
+  ws.onclose=()=>{BWS.ws=null;BWS.id=null;BWS.peers={};brdClearCursors();brdPresence();if(typeof CURV!=='undefined'&&CURV==='board'&&brdServerMode())setTimeout(brdWSConnect,2500);};
+  ws.onerror=()=>{};}catch(e){}}
+function brdWSSend(o){if(BWS.ws&&BWS.ws.readyState===1){try{BWS.ws.send(JSON.stringify(o));}catch(e){}}}
+function brdWSUpsert(ids){if(!BWS.ws)return;(ids||BW.sel||[]).forEach(id=>{const it=brdItems().find(x=>x.id===id);if(it)brdWSSend({type:'op',op:'upsert',item:it});});}
+function brdWSDelete(ids){if(BWS.ws&&ids&&ids.length)brdWSSend({type:'op',op:'delete',ids:ids});}
+function brdWSRecv(data){let m;try{m=JSON.parse(data);}catch(e){return;}
+ if(m.type==='welcome'){BWS.id=m.id;BWS.peers={};(m.peers||[]).forEach(p=>BWS.peers[p.id]={name:p.name,color:p.color});brdPresence();return;}
+ if(m.type==='join'){BWS.peers[m.id]={name:m.name,color:m.color};brdPresence();return;}
+ if(m.type==='leave'){delete BWS.peers[m.id];brdRemoveCursor(m.id);brdPresence();return;}
+ if(m.from&&m.from===BWS.id)return;
+ if(m.type==='cursor'){brdPeerCursor(m.from,m.name||((BWS.peers[m.from]||{}).name)||'Гость',m.color||'#2D5BE3',m.x,m.y);return;}
+ if(m.type==='op'){brdApplyRemote(m);return;}}
+function brdApplyRemote(m){brdEnsure();
+ if(m.op==='upsert'&&m.item&&m.item.id){const arr=brdItems();const i=arr.findIndex(x=>x.id===m.item.id);if(i>=0)arr[i]=m.item;else arr.push(m.item);}
+ else if(m.op==='delete'&&m.ids){ST.board.items=brdItems().filter(x=>m.ids.indexOf(x.id)<0);BW.sel=(BW.sel||[]).filter(id=>m.ids.indexOf(id)<0);}
+ try{localStorage.setItem('sprintapp',JSON.stringify(ST));}catch(e){}
+ if(typeof CURV!=='undefined'&&CURV==='board')brdRender();}
+function brdCurLayer(){if(!BW.wrap)return null;let l=BW.wrap.querySelector('.brd-curlayer');if(!l){l=document.createElement('div');l.className='brd-curlayer';l.style.cssText='position:absolute;inset:0;pointer-events:none;z-index:9;overflow:hidden';BW.wrap.appendChild(l);}return l;}
+function brdPeerCursor(id,name,color,wx,wy){if(!id)return;BWS.cursors[id]={x:wx,y:wy,name:name,color:color};let el=BWS._els[id];const layer=brdCurLayer();if(!layer)return;
+ if(!el){el=document.createElement('div');el.className='brd-cursor';el.innerHTML='<svg width="20" height="20" viewBox="0 0 20 20"><path d="M2 2 L2 16 L6 12 L9 18 L11 17 L8 11 L14 11 Z" fill="'+esc(color)+'" stroke="#fff" stroke-width="1"/></svg><span class="lbl" style="background:'+esc(color)+'">'+esc(name||'')+'</span>';layer.appendChild(el);BWS._els[id]=el;}
+ brdPositionCursor(id);}
+function brdPositionCursor(id){const c=BWS.cursors[id],el=BWS._els[id];if(!c||!el)return;const cam=brdCam();el.style.left=(c.x*cam.z+cam.x)+'px';el.style.top=(c.y*cam.z+cam.y)+'px';}
+function brdPositionCursors(){for(const id in BWS._els)brdPositionCursor(id);}
+function brdRemoveCursor(id){const el=BWS._els[id];if(el)el.remove();delete BWS._els[id];delete BWS.cursors[id];}
+function brdClearCursors(){for(const id in BWS._els){const el=BWS._els[id];if(el)el.remove();}BWS._els={};}
+function brdPresence(){if(!BW.wrap)return;let p=BW.wrap.querySelector('.brd-presence');if(!p){p=document.createElement('div');p.className='brd-presence';BW.wrap.appendChild(p);}
+ if(!(brdServerMode()&&BWS.ws)){p.innerHTML='';return;}
+ let h='<span class="pchip"><span class="plive">● вживую</span> вы</span>';
+ Object.keys(BWS.peers||{}).forEach(id=>{const pp=BWS.peers[id];h+='<span class="pchip"><span class="pdot" style="background:'+esc(pp.color)+'"></span>'+esc(pp.name||'Гость')+'</span>';});
+ p.innerHTML=h;}
+/* интеграции Slack / Jira */
+async function brdSlack(){if(!(typeof AUTH!=='undefined'&&AUTH.token)){toast('Нужен вход на сервер');return;}
+ const items=brdItems();const st=items.filter(i=>i.t==='sticky'&&i.text).map(i=>'• '+i.text).slice(0,20);
+ const text='📋 Доска «'+((ST.params&&ST.params.name)||'Планирование')+'»: элементов '+items.length+(st.length?'\n'+st.join('\n'):'');
+ try{const r=await fetch('api/integrations/slack',{method:'POST',headers:hdrs(true),body:JSON.stringify({text:text})});const d=await r.json();toast(d.ok?'Отправлено в Slack':(d.error||'Slack не настроен'));}catch(e){toast('Ошибка сети');}}
+async function brdJira(){if(!(typeof AUTH!=='undefined'&&AUTH.token)){toast('Нужен вход на сервер');return;}
+ const sel=(BW.sel&&BW.sel.length)?brdItems().find(x=>x.id===BW.sel[0]):null;let summary=(sel&&(sel.text||sel.title))||prompt('Название задачи в Jira:','');if(!summary)return;
+ try{const r=await fetch('api/integrations/jira',{method:'POST',headers:hdrs(true),body:JSON.stringify({summary:summary,description:'Создано из доски «'+((ST.params&&ST.params.name)||'Планирование')+'».'})});const d=await r.json();toast(d.ok?('Создана задача '+(d.key||'')):(d.error||'Jira не настроена'));}catch(e){toast('Ошибка сети');}}
 /* глобальные горячие клавиши доски */
 document.addEventListener('keydown',e=>{if(typeof CURV==='undefined'||CURV!=='board')return;if(e.target&&/^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName))return;
  if(e.key===' ')BW.space=true;
@@ -2926,8 +2984,12 @@ const NAV=[
  {g:'Настройки',items:[['budget','Бюджет','💰'],['calendar','Календарь','📅'],['checks','Проверки данных','🧪'],['params','Параметры','⚙️']]},
  {g:'Справка',items:[['faq','FAQ','❓'],['audit','Журнал событий','🧾']]},
 ];
-const APP_VERSION='1.26.0';const APP_DATE='2026-09-16';
+const APP_VERSION='1.27.0';const APP_DATE='2026-09-16';
 const CHANGELOG=[
+ {v:'1.27.0',date:'2026-09-16',items:[
+   'Доска: живая совместная работа в реальном времени (WebSocket) — курсоры участников, присутствие «вживую» и мгновенная синхронизация изменений между всеми.',
+   'Серверное хранение доски в PostgreSQL (миграция V4) — доска сохраняется в БД и общая для всех.',
+   'Интеграции: отправка сводки доски в Slack и создание задачи в Jira (настраиваются переменными окружения на сервере).']},
  {v:'1.26.0',date:'2026-09-16',items:[
    'Новый раздел «Доска» — интерактивный бесконечный холст (как Miro): стикеры с автором и голосованием, текст, фигуры (прямоугольник/овал/ромб), стрелки-связи, карандаш, изображения, фреймы.',
    'Панорама и масштаб (бесконечный холст), выделение/перемещение/изменение размера, палитра цветов, автосохранение.',
@@ -3109,7 +3171,7 @@ views();activate('dash');
 
 /* ---------- server authentication + multi-user sync ---------- */
 const API='api/state';const AUTHAPI='api/auth';const AUDITAPI='api/audit';
-let SYNC={on:false,ver:0,editAt:0};
+var SYNC={on:false,ver:0,editAt:0};
 function hdrs(json){const h={};if(json)h['Content-Type']='application/json';if(AUTH.token)h['Authorization']='Bearer '+AUTH.token;return h;}
 /* record a client-side UI event to the server audit log (best-effort, non-blocking) */
 function auditClient(action,detail){if(!(AUTH.mode==='server'&&AUTH.token))return;

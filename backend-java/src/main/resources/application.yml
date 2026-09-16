@@ -34,3 +34,15 @@ app:
     url: ${AUDIT_DB_URL:jdbc:postgresql://localhost:5432/planirovanie_audit}
     username: ${AUDIT_DB_USER:${DB_USER:planirovanie}}
     password: ${AUDIT_DB_PASSWORD:${DB_PASSWORD:planirovanie}}
+  integrations:
+    # Optional outbound integrations. Left empty by default (feature stays off until configured).
+    slack:
+      webhook: ${SLACK_WEBHOOK_URL:}     # Incoming Webhook URL (simplest), or use token+channel below
+      token:   ${SLACK_BOT_TOKEN:}       # xoxb-… bot token (chat.postMessage)
+      channel: ${SLACK_CHANNEL:}         # #channel or channel id (when using a bot token)
+    jira:
+      base:      ${JIRA_BASE_URL:}       # https://your-domain.atlassian.net
+      email:     ${JIRA_EMAIL:}          # Atlassian account e-mail
+      token:     ${JIRA_API_TOKEN:}      # Atlassian API token (Basic auth)
+      project:   ${JIRA_PROJECT_KEY:}    # e.g. PLAN
+      issueType: ${JIRA_ISSUE_TYPE:Task}

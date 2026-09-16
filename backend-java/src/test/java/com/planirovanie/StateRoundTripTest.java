@@ -28,7 +28,10 @@ class StateRoundTripTest {
           "rice":[{"id":"F-01","name":"R","reach":5000,"impact":3,"conf":"100%","effort":40}],
           "calendar":[{"date":"2026-11-04","name":"Праздник"}],
           "boards":[{"id":"b-all","name":"Все задачи","filter":{"type":"all"},"cols":["To Do","В работе","Готово"]},
-                    {"id":"b-backend","name":"Backend","filter":{"type":"role","value":"Backend"},"cols":["To Do","В работе","Готово"]}]
+                    {"id":"b-backend","name":"Backend","filter":{"type":"role","value":"Backend"},"cols":["To Do","В работе","Готово"]}],
+          "board":{"cam":{"x":80,"y":80,"z":1.5},"items":[
+             {"id":"bi1","t":"sticky","x":10,"y":20,"w":160,"h":140,"fill":"#FFE066","text":"Идея","author":"A","votes":2},
+             {"id":"bi2","t":"conn","x1":0,"y1":0,"x2":90,"y2":0}]}
         }}""";
 
     /** Same state envelope with an explicit baseVersion for concurrency checks. */
@@ -64,7 +67,11 @@ class StateRoundTripTest {
            .andExpect(jsonPath("$.state.boards[0].filter.type").value("all"))
            .andExpect(jsonPath("$.state.boards[1].filter.type").value("role"))
            .andExpect(jsonPath("$.state.boards[1].filter.value").value("Backend"))
-           .andExpect(jsonPath("$.state.boards[1].cols[2]").value("Готово"));
+           .andExpect(jsonPath("$.state.boards[1].cols[2]").value("Готово"))
+           .andExpect(jsonPath("$.state.board.cam.z").value(1.5))
+           .andExpect(jsonPath("$.state.board.items[0].t").value("sticky"))
+           .andExpect(jsonPath("$.state.board.items[0].votes").value(2))
+           .andExpect(jsonPath("$.state.board.items[1].t").value("conn"));
 
         // second PUT bumps the version (no baseVersion => backward-compatible, always accepted)
         mvc.perform(put("/api/state").contentType(MediaType.APPLICATION_JSON).content(STATE))

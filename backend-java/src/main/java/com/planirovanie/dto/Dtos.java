@@ -54,6 +54,7 @@ public final class Dtos {
         public List<Dependency> deps;
         public List<Okr> okr;
         public List<Board> boards;
+        public com.fasterxml.jackson.databind.JsonNode board;
         public BudgetDto budget;
         public Integer ttmTarget;
     }

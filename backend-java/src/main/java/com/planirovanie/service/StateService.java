@@ -1,5 +1,7 @@
 package com.planirovanie.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.planirovanie.dto.Dtos.*;
 import com.planirovanie.entity.*;
 import com.planirovanie.repo.*;
@@ -39,20 +41,23 @@ public class StateService {
     private final DependencyRepo deps;
     private final OkrRepo okr;
     private final BoardRepo boards;
+    private final BoardDocRepo boardDoc;
+    private final ObjectMapper mapper = new ObjectMapper();
 
     public StateService(ParamRepo params, AppMetaRepo meta, DodRepo dod, TeamRepo team, TaskRepo tasks,
                         ReleaseRepo releases, MilestoneRepo milestones, TechDebtRepo techDebt, RiskRepo risks,
                         BugRepo bugs, HolidayRepo calendar, RetroRepo retro, MoodRepo mood, KudosRepo kudos,
                         ExperimentRepo experiments, RadarRepo radar, RiceRepo rice, MoscowRepo moscow,
                         FaqRepo faq, GroomingRepo grooming, DemoRepo demo, DailyRepo daily, VacationRepo vacation,
-                        BirthdayRepo birthdays, DependencyRepo deps, OkrRepo okr, BoardRepo boards) {
+                        BirthdayRepo birthdays, DependencyRepo deps, OkrRepo okr, BoardRepo boards,
+                        BoardDocRepo boardDoc) {
         this.params = params; this.meta = meta; this.dod = dod; this.team = team; this.tasks = tasks;
         this.releases = releases; this.milestones = milestones; this.techDebt = techDebt; this.risks = risks;
         this.bugs = bugs; this.calendar = calendar; this.retro = retro; this.mood = mood; this.kudos = kudos;
         this.experiments = experiments; this.radar = radar; this.rice = rice; this.moscow = moscow;
         this.faq = faq; this.grooming = grooming; this.demo = demo; this.daily = daily; this.vacation = vacation;
         this.birthdays = birthdays; this.deps = deps;
-        this.okr = okr; this.boards = boards;
+        this.okr = okr; this.boards = boards; this.boardDoc = boardDoc;
     }
 
     @Transactional(readOnly = true)
@@ -92,6 +97,11 @@ public class StateService {
         s.deps = deps.findAllByOrderByOrdAsc();
         s.okr = okr.findAllByOrderByOrdAsc();
         s.boards = boards.findAllByOrderByOrdAsc();
+        boardDoc.findById(1).ifPresent(bdoc -> {
+            if (bdoc.data != null && !bdoc.data.isBlank()) {
+                try { s.board = mapper.readTree(bdoc.data); } catch (Exception ignore) {}
+            }
+        });
         return s;
     }
 
@@ -177,6 +187,11 @@ public class StateService {
         deps.deleteAllInBatch();       if (s.deps != null)       deps.saveAll(s.deps);
         okr.deleteAllInBatch();        if (s.okr != null)        okr.saveAll(s.okr);
         boards.deleteAllInBatch();     if (s.boards != null)     boards.saveAll(s.boards);
+        if (s.board != null && !s.board.isNull()) {
+            BoardDoc bd = boardDoc.findById(1).orElseGet(() -> { BoardDoc nb = new BoardDoc(); nb.id = 1; return nb; });
+            try { bd.data = mapper.writeValueAsString(s.board); } catch (Exception e) { bd.data = null; }
+            boardDoc.save(bd);
+        }
 
         m.version = current + 1;
         meta.save(m);
