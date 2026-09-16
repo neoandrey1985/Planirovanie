@@ -1,6 +1,6 @@
 COMPOSE ?= docker compose
 
-.PHONY: help up up-d down clean logs ps build test test-java test-python seed
+.PHONY: help up up-d down clean logs ps build test test-java test-python test-frontend seed
 
 help:
 	@echo "Планирование спринтов — команды:"
@@ -11,9 +11,10 @@ help:
 	@echo "  make logs        - логи всех сервисов"
 	@echo "  make ps          - статус контейнеров"
 	@echo "  make build       - собрать образы без запуска"
-	@echo "  make test        - тесты Java (Spring Boot + H2) и Python"
-	@echo "  make test-java   - только Java-тесты"
-	@echo "  make test-python - только Python-тесты"
+	@echo "  make test          - полная регрессия: Java + Python + frontend (e2e)"
+	@echo "  make test-java     - только Java-тесты"
+	@echo "  make test-python   - только Python-тесты"
+	@echo "  make test-frontend - e2e-тесты frontend (Playwright, всё приложение)"
 	@echo "  make seed        - перегенерировать Flyway-миграцию из data/seed.json"
 
 up:
@@ -43,7 +44,10 @@ test-java:
 test-python:
 	python analytics-python/tests/test_compute.py
 
-test: test-java test-python
+test-frontend:
+	python tests/frontend/run_e2e.py
+
+test: test-java test-python test-frontend
 
 seed:
 	python scripts/gen_initsql.py

@@ -47,6 +47,21 @@ jobs:
           git diff --exit-code backend-java/src/main/resources/db/migration/V1__initial_schema_and_seed.sql \
             || (echo "::error::V1 migration устарела — запустите: python scripts/gen_initsql.py" && exit 1)
 
+  frontend-e2e:
+    name: Frontend — e2e/регрессия (Playwright)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install Playwright
+        run: |
+          pip install -r tests/frontend/requirements.txt
+          python -m playwright install --with-deps chromium
+      - name: Run full frontend regression suite
+        run: python tests/frontend/run_e2e.py
+
   e2e:
     name: Полный стек (docker compose)
     runs-on: ubuntu-latest

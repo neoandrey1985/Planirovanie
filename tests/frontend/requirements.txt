@@ -1,0 +1,3 @@
+# Frontend e2e/regression tests (Playwright).
+# Install:  pip install -r tests/frontend/requirements.txt && python -m playwright install --with-deps chromium
+playwright>=1.40
