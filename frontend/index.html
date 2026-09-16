@@ -361,7 +361,7 @@ body.noadmin #rst,body.noadmin #imp{display:none}
  </div>
 </div></header>
 <div class="shell"><aside class="side" id="side"><nav id="nav"></nav><div class="side-foot" id="sidefoot"></div></aside><div class="scrim" id="scrim"></div>
-<main id="main"><section class="view" id="v_dash"></section><section class="view" id="v_board"></section><section class="view" id="v_kanban"></section><section class="view" id="v_backlog"></section><section class="view" id="v_team"></section><section class="view" id="v_roadmap"></section><section class="view" id="v_quarters"></section><section class="view" id="v_rice"></section><section class="view" id="v_moscow"></section><section class="view" id="v_gantt"></section><section class="view" id="v_deps"></section><section class="view" id="v_releases"></section><section class="view" id="v_milestones"></section><section class="view" id="v_debt"></section><section class="view" id="v_okr"></section><section class="view" id="v_budget"></section><section class="view" id="v_analytics"></section><section class="view" id="v_risks"></section><section class="view" id="v_bugs"></section><section class="view" id="v_daily"></section><section class="view" id="v_grooming"></section><section class="view" id="v_demo"></section><section class="view" id="v_vacation"></section><section class="view" id="v_birthdays"></section><section class="view" id="v_retro"></section><section class="view" id="v_calendar"></section><section class="view" id="v_checks"></section><section class="view" id="v_params"></section><section class="view" id="v_faq"></section><section class="view" id="v_support"></section><section class="view" id="v_audit"></section></main></div>
+<main id="main"><section class="view" id="v_dash"></section><section class="view" id="v_board"></section><section class="view" id="v_kanban"></section><section class="view" id="v_backlog"></section><section class="view" id="v_team"></section><section class="view" id="v_roadmap"></section><section class="view" id="v_quarters"></section><section class="view" id="v_rice"></section><section class="view" id="v_moscow"></section><section class="view" id="v_gantt"></section><section class="view" id="v_deps"></section><section class="view" id="v_releases"></section><section class="view" id="v_milestones"></section><section class="view" id="v_debt"></section><section class="view" id="v_okr"></section><section class="view" id="v_budget"></section><section class="view" id="v_analytics"></section><section class="view" id="v_risks"></section><section class="view" id="v_bugs"></section><section class="view" id="v_daily"></section><section class="view" id="v_grooming"></section><section class="view" id="v_demo"></section><section class="view" id="v_vacation"></section><section class="view" id="v_birthdays"></section><section class="view" id="v_retro"></section><section class="view" id="v_calendar"></section><section class="view" id="v_checks"></section><section class="view" id="v_eda"></section><section class="view" id="v_params"></section><section class="view" id="v_faq"></section><section class="view" id="v_support"></section><section class="view" id="v_audit"></section></main></div>
 <div class="palette" id="palette"><div class="pbox"><input class="pin" id="pin" placeholder="Поиск раздела или действия…" autocomplete="off"><div class="plist" id="plist"></div></div></div>
 <div class="role-pop" id="rolepop"></div>
 <div class="modal" id="accmodal"><div class="mbox">
@@ -1634,6 +1634,131 @@ function importCSVTasks(text){const first=(String(text).split('\n')[0]||'');cons
      est:num(o.est),status:st,sprint:o.sprint?num(o.sprint):'',dep:(o.dep&&tks.some(x=>x.id===o.dep))?o.dep:'',started:'',done:'',priority:'',dor:'',added:true});n++;});
  if(!n){toast('Не удалось разобрать строки CSV');return;}
  save();views();activate('backlog');if(typeof auditClient==='function')auditClient('import_csv',n);toast('Импортировано из CSV: '+n+' задач');}
+/* ---------- EDA (разведочный анализ данных по всему приложению) ---------- */
+function edaFilled(v){return !(v===null||v===undefined||v===''||(typeof v==='string'&&v.trim()===''));}
+function edaStats(vals){const a=vals.map(Number).filter(v=>isFinite(v)).sort((x,y)=>x-y);const n=a.length;if(!n)return null;
+ const mean=a.reduce((x,y)=>x+y,0)/n;const med=n%2?a[(n-1)/2]:(a[n/2-1]+a[n/2])/2;
+ const sd=n>1?Math.sqrt(a.reduce((x,y)=>x+(y-mean)*(y-mean),0)/(n-1)):0;
+ return {n,min:a[0],max:a[n-1],mean,med,sd};}
+function edaCounts(arr,fn){const m={};(arr||[]).forEach(x=>{const k=fn(x);if(k==null||k==='')return;m[k]=(m[k]||0)+1;});return m;}
+function edaBarInto(box,counts,color){if(!box)return;const cats=Object.keys(counts);
+ if(!cats.length){box.innerHTML='<p style="color:var(--muted);font-size:13px;margin:6px 2px">Нет данных.</p>';return;}
+ bars(box,cats,[{color:color||col('--accent'),data:cats.map(k=>counts[k])}]);}
+function edaAnomalies(C){const out=[],T=ST.tasks||[];const tids=new Set(T.map(t=>String(t.id)));
+ const add=(lvl,msg)=>out.push({lvl,msg});
+ const noAss=T.filter(t=>!edaFilled(t.assignee)).length;if(noAss)add('warn',noAss+' задач(и) без исполнителя');
+ const noSp=T.filter(t=>t.sprint===''||t.sprint==null).length;if(noSp)add('warn',noSp+' задач(и) без спринта');
+ const noEst=T.filter(t=>!(num(t.est)>0)).length;if(noEst)add('info',noEst+' задач(и) с нулевой оценкой');
+ const seen={},dups=new Set();T.forEach(t=>{const id=String(t.id||'');if(!id)return;if(seen[id])dups.add(id);seen[id]=1;});
+ if(dups.size)add('crit',dups.size+' дублирующихся ID задач: '+[...dups].slice(0,5).join(', '));
+ const orphanDep=T.filter(t=>edaFilled(t.dep)&&!tids.has(String(t.dep))).length;if(orphanDep)add('crit',orphanDep+' ссылок task.dep на несуществующую задачу');
+ const depsOrphan=(ST.deps||[]).filter(d=>edaFilled(d.task)&&!tids.has(String(d.task))).length;if(depsOrphan)add('warn',depsOrphan+' записей «Зависимости» ссылаются на несуществующую задачу');
+ const bugsOrphan=(ST.bugs||[]).filter(b=>edaFilled(b.task)&&!tids.has(String(b.task))).length;if(bugsOrphan)add('warn',bugsOrphan+' багов ссылаются на несуществующую задачу');
+ const badRange=(ST.releases||[]).filter(r=>edaFilled(r.sfrom)&&edaFilled(r.sto)&&+r.sfrom>+r.sto).length;if(badRange)add('crit',badRange+' релизов с некорректным диапазоном спринтов (от > до)');
+ const moodBad=(ST.mood||[]).filter(m=>num(m.mood)&&(num(m.mood)<1||num(m.mood)>5)).length;if(moodBad)add('warn',moodBad+' записей настроения вне диапазона 1–5');
+ const riskBad=(ST.risks||[]).filter(r=>(num(r.p)&&(num(r.p)<1||num(r.p)>5))||(num(r.i)&&(num(r.i)<1||num(r.i)>5))).length;if(riskBad)add('warn',riskBad+' рисков с P/I вне диапазона 1–5');
+ const bugsNoCause=(ST.bugs||[]).filter(b=>b.status==='Закрыт'&&!edaFilled(b.cause)).length;if(bugsNoCause)add('info',bugsNoCause+' закрытых багов без указанной причины');
+ return out;}
+function edaView(){const w=document.createElement('div');const C=compute();
+ const DS=[
+  {k:'tasks',label:'Бэклог (задачи)',fields:['id','title','assignee','role','type','est','status','sprint','dep','started','done']},
+  {k:'team',label:'Команда',fields:['name','role','avail','absent']},
+  {k:'bugs',label:'Баги',fields:['id','desc','task','sprint','sev','status','cause']},
+  {k:'deps',label:'Зависимости',fields:['id','item','type','task','stream','dir','desc','sprint','status','owner','risk']},
+  {k:'releases',label:'Релизы',fields:['id','name','sfrom','sto','status']},
+  {k:'milestones',label:'Вехи',fields:['id','name','sprint','status','rel']},
+  {k:'techDebt',label:'Техдолг',fields:['id','desc','area','type','impact','est','status','created','paid']},
+  {k:'risks',label:'Риски',fields:['name','p','i','mit','owner','status']},
+  {k:'okr',label:'OKR',fields:['q','obj','kr','target','cur']},
+  {k:'rice',label:'RICE',fields:['id','task','name','reach','impact','conf','effort']},
+  {k:'moscow',label:'MoSCoW',fields:['id','task','name','category','note']},
+  {k:'retro',label:'Ретроспективы',fields:['sprint','format','well','improve','action','votes','owner','due','status']},
+  {k:'mood',label:'Настроение',fields:['id','sprint','mood','note']},
+  {k:'kudos',label:'Kudos',fields:['id','sprint','from','to','reason']},
+  {k:'experiments',label:'Эксперименты',fields:['id','sprint','hypothesis','action','metric','result','status']},
+  {k:'radar',label:'Team Radar',fields:['id','axis','score','prev']},
+  {k:'daily',label:'Дэйли',fields:['id','date','sprint','participant','yesterday','today','blocker']},
+  {k:'grooming',label:'Груминг',fields:['id','task','date','item','action','est','ready','owner','notes']},
+  {k:'demo',label:'Демо спринта',fields:['id','sprint','item','presenter','stakeholders','feedback','status']},
+  {k:'vacation',label:'График отпусков',fields:['id','member','type','from','to','days','status','notes']},
+  {k:'birthdays',label:'Дни рождения',fields:['id','member','date','role','notes']},
+  {k:'faq',label:'FAQ',fields:['id','category','q','a']},
+ ];
+ let totRows=0,totCells=0,totFilled=0,nonEmpty=0;
+ const rowsInfo=DS.map(d=>{const arr=(ST[d.k]||[]);const R=arr.length,F=d.fields.length;let filled=0;
+   arr.forEach(r=>d.fields.forEach(f=>{if(edaFilled(r[f]))filled++;}));
+   const cells=R*F;totRows+=R;totCells+=cells;totFilled+=filled;if(R)nonEmpty++;
+   return {label:d.label,R,F,comp:cells?filled/cells:0};});
+ const overallComp=totCells?totFilled/totCells:0;
+ const issues=edaAnomalies(C);
+ // numeric summaries
+ const numRows=[];const pushN=(name,vals)=>{const s=edaStats(vals);if(s)numRows.push([name,s.n,fmt(s.min,1),fmt(s.max,1),fmt(s.mean,1),fmt(s.med,1),fmt(s.sd,1)]);};
+ pushN('Оценка задач (SP)',(ST.tasks||[]).map(t=>num(t.est)).filter(v=>v>0));
+ pushN('Velocity спринтов (SP)',C.sp.map(x=>x.vel).filter(v=>v!=null));
+ pushN('Ёмкость спринтов (SP)',C.sp.map(x=>x.cap));
+ pushN('% выполнения спринтов',C.sp.map(x=>x.pct).filter(v=>v!=null).map(v=>v*100));
+ pushN('Доступность участника',(ST.team||[]).map(m=>num(m.avail)));
+ pushN('Балл риска (P×I)',(ST.risks||[]).map(r=>num(r.p)*num(r.i)).filter(v=>v>0));
+ if(typeof riceScore==='function')pushN('RICE score',(ST.rice||[]).map(r=>riceScore(r)).filter(v=>v>0));
+ pushN('Настроение (1–5)',(ST.mood||[]).map(m=>num(m.mood)).filter(v=>v>0));
+ pushN('Оценка техдолга (SP)',(ST.techDebt||[]).map(t=>num(t.est)).filter(v=>v>0));
+ // cross-tab sprint × status
+ const STatuses=['To Do','В работе','Готово'];const N=C.sp.length;
+ // build HTML
+ const compCol=c=>c>=.8?'var(--good)':c>=.6?'var(--warn)':'var(--crit)';
+ let h='<div class="grm-pick"><button class="btn" id="eda_print">🖨 Печать / PDF</button>'+
+   '<span style="font-size:12.5px;color:var(--muted);align-self:center;margin-left:auto">Снимок данных: '+new Date().toLocaleString('ru-RU')+'</span></div>';
+ h+='<div class="grid kpis" id="eda_kpi"></div>';
+ // datasets overview
+ h+='<div class="card" style="margin-top:14px"><p class="ctitle">Обзор датасетов и полнота данных</p>'+
+   '<div class="twrap scroll" style="border:none;max-height:44vh"><table class="cardt"><thead><tr><th>Датасет</th><th class="num">Записей</th><th class="num">Полей</th><th>Полнота</th></tr></thead><tbody>';
+ rowsInfo.forEach(r=>{h+='<tr><td>'+esc(r.label)+'</td><td class="num">'+r.R+'</td><td class="num">'+r.F+'</td>'+
+   '<td><div style="display:flex;align-items:center;gap:8px"><div style="flex:1;min-width:80px;height:8px;background:var(--line);border-radius:4px;overflow:hidden"><div style="height:100%;width:'+Math.round(r.comp*100)+'%;background:'+compCol(r.comp)+'"></div></div><span style="font-size:12px;color:var(--muted);min-width:34px">'+pctf(r.comp)+'</span></div></td></tr>';});
+ h+='</tbody></table></div></div>';
+ // numeric summary
+ h+='<div class="card" style="margin-top:14px"><p class="ctitle">Числовые показатели (сводная статистика)</p>'+
+   '<div class="twrap scroll" style="border:none;max-height:44vh"><table class="cardt"><thead><tr><th>Показатель</th><th class="num">n</th><th class="num">мин</th><th class="num">макс</th><th class="num">среднее</th><th class="num">медиана</th><th class="num">σ</th></tr></thead><tbody>';
+ if(numRows.length)numRows.forEach(r=>{h+='<tr><td>'+esc(r[0])+'</td>'+r.slice(1).map(v=>'<td class="num">'+v+'</td>').join('')+'</tr>';});
+ else h+='<tr><td colspan="7" style="color:var(--muted)">Нет числовых данных.</td></tr>';
+ h+='</tbody></table></div></div>';
+ // distributions
+ h+='<div class="grid2" style="margin-top:14px">'+
+   '<div class="card"><p class="ctitle">Задачи по статусу</p><div id="eda_c1"></div></div>'+
+   '<div class="card"><p class="ctitle">Задачи по типу</p><div id="eda_c2"></div></div>'+
+   '<div class="card"><p class="ctitle">Задачи по ролям</p><div id="eda_c3"></div></div>'+
+   '<div class="card"><p class="ctitle">Дефекты по серьёзности</p><div id="eda_c4"></div></div>'+
+   '<div class="card"><p class="ctitle">Зависимости по статусу</p><div id="eda_c5"></div></div>'+
+   '<div class="card"><p class="ctitle">Техдолг по влиянию</p><div id="eda_c6"></div></div>'+
+   '</div>';
+ // cross-tab
+ h+='<div class="card" style="margin-top:14px"><p class="ctitle">Кросс-таблица: задачи по спринтам × статус</p>'+
+   '<div class="twrap scroll" style="border:none;max-height:44vh"><table class="cardt"><thead><tr><th>Спринт</th>'+STatuses.map(s=>'<th class="num">'+esc(s)+'</th>').join('')+'<th class="num">Всего</th></tr></thead><tbody>';
+ for(let s=1;s<=N;s++){const ts=(ST.tasks||[]).filter(t=>+t.sprint===s);const cells=STatuses.map(st=>ts.filter(t=>t.status===st).length);
+   h+='<tr><td>С'+s+'</td>'+cells.map(c=>'<td class="num">'+(c||'')+'</td>').join('')+'<td class="num"><b>'+ts.length+'</b></td></tr>';}
+ h+='</tbody></table></div></div>';
+ // anomalies
+ h+='<div class="card" style="margin-top:14px"><p class="ctitle">Аномалии и качество данных ('+issues.length+')</p>';
+ if(!issues.length)h+='<p style="margin:0;color:var(--good);font-weight:600">✓ Явных аномалий не обнаружено.</p>';
+ else{h+='<div class="twrap scroll" style="border:none;max-height:40vh"><table class="cardt"><thead><tr><th>Уровень</th><th>Наблюдение</th></tr></thead><tbody>';
+   issues.forEach(i=>{const p=i.lvl==='crit'?'p-crit':i.lvl==='warn'?'p-warn':'p-neut';h+='<tr><td><span class="pill '+p+'">'+(i.lvl==='crit'?'критично':i.lvl==='warn'?'внимание':'инфо')+'</span></td><td>'+esc(i.msg)+'</td></tr>';});
+   h+='</tbody></table></div>';}
+ h+='<p style="font-size:12.5px;color:var(--muted);margin:10px 0 0">Подробные проверки целостности с авто-исправлением — в разделе «Проверки данных».</p></div>';
+ w.innerHTML=h;
+ w.querySelector('#eda_kpi').innerHTML=[
+  kpiCard('Датасетов',DS.length,nonEmpty+' с данными','neut'),
+  kpiCard('Всего записей',fmt(totRows,0),'по всем разделам','neut'),
+  kpiCard('Ячеек данных',fmt(totCells,0),'полей × записей','neut'),
+  kpiCard('Полнота данных',pctf(overallComp),'заполнено',overallComp>=.8?'good':overallComp>=.6?'warn':'crit'),
+  kpiCard('Аномалий',issues.length,'см. раздел ниже',issues.length===0?'good':issues.length<=5?'warn':'crit'),
+ ].join('');
+ edaBarInto(w.querySelector('#eda_c1'),edaCounts(ST.tasks,t=>t.status||'—'),col('--accent'));
+ edaBarInto(w.querySelector('#eda_c2'),edaCounts(ST.tasks,t=>t.type||'—'),col('--good'));
+ edaBarInto(w.querySelector('#eda_c3'),edaCounts(ST.tasks,t=>t.role||'—'),col('--accent'));
+ edaBarInto(w.querySelector('#eda_c4'),edaCounts(ST.bugs,b=>b.sev||'—'),col('--crit'));
+ edaBarInto(w.querySelector('#eda_c5'),edaCounts(ST.deps,d=>d.status||'—'),col('--warn'));
+ edaBarInto(w.querySelector('#eda_c6'),edaCounts(ST.techDebt,t=>t.impact||'—'),col('--warn'));
+ const pb=w.querySelector('#eda_print');if(pb)pb.onclick=()=>window.print();
+ return w;}
 function checksView(){const w=document.createElement('div');const issues=dataChecks(),fixable=issues.filter(i=>i.fix);
  const bar=document.createElement('div');bar.className='grm-pick';
  const b=document.createElement('button');b.className='btn primary';b.textContent='🧹 Исправить автоматически ('+fixable.length+')';
@@ -1993,6 +2118,8 @@ function views(){
  // Params
  renderParams();
  setView('checks','Проверки данных','Автоматический контроль целостности данных с авто-исправлением типичных проблем.',checksView());
+ // EDA report (Настройки) — разведочный анализ всех данных приложения
+ setView('eda','EDA отчёт — разведочный анализ данных','Автоматический разведочный анализ (EDA) всех данных приложения: объём и полнота датасетов, числовые сводки, распределения категорий, кросс-таблицы и аномалии.',edaView());
  // FAQ (Справка)
  setView('faq','FAQ — частые вопросы','Ответы на типичные вопросы о работе с приложением. Раскройте вопрос, чтобы увидеть ответ; ниже — таблица для редактирования.',faqView());
  // Support (Справка) — центр загрузки документов и контакты поддержки
@@ -3117,11 +3244,13 @@ const NAV=[
  {g:'Аналитика',items:[['analytics','Аналитика','📈'],['risks','Риски','⚠️'],['bugs','Баги','🐞']]},
  {g:'Церемонии',items:[['daily','Дэйли','☀️'],['grooming','Груминг','🧹'],['demo','Демо спринта','🎬'],['retro','Ретроспективы','🔄']]},
  {g:'Персонал',items:[['vacation','График отпусков','🏖️'],['birthdays','Дни рождения','🎂']]},
- {g:'Настройки',items:[['budget','Бюджет','💰'],['calendar','Календарь','📅'],['checks','Проверки данных','🧪'],['params','Параметры','⚙️']]},
+ {g:'Настройки',items:[['budget','Бюджет','💰'],['calendar','Календарь','📅'],['checks','Проверки данных','🧪'],['eda','EDA отчёт','🔬'],['params','Параметры','⚙️']]},
  {g:'Справка',items:[['faq','FAQ','❓'],['support','Support','🛟'],['audit','Журнал событий','🧾']]},
 ];
-const APP_VERSION='1.29.0';const APP_DATE='2026-09-16';
+const APP_VERSION='1.30.0';const APP_DATE='2026-09-16';
 const CHANGELOG=[
+ {v:'1.30.0',date:'2026-09-16',items:[
+   'Новый раздел «EDA отчёт» (Настройки): автоматический разведочный анализ всех данных приложения — объём и полнота датасетов, сводная числовая статистика (мин/макс/среднее/медиана/σ), распределения категорий, кросс-таблица «спринт × статус», аномалии и качество данных. Есть печать/PDF.']},
  {v:'1.29.0',date:'2026-09-16',items:[
    'Отчёт-презентация по спринту (PPTX) теперь включает все диаграммы и графики приложения: сгорание, burn-up, CFD, cycle time, распределение объёма по типам и ролям, загрузку по ролям и кварталам, дефекты по серьёзности, тренд техдолга, прогресс OKR, топ RICE, диаграммы Ганта и Исикавы, матрицу рисков и метрики прогноза (предсказуемость, throughput, Монте-Карло, DRE).']},
  {v:'1.28.0',date:'2026-09-16',items:[
@@ -3461,7 +3590,8 @@ startAnalytics();setInterval(startAnalytics,30000);
   'гантт':'gantt','гант':'gantt','зависимост':'deps','команд':'team','релиз':'releases','вех':'milestones',
   'техдолг':'debt','тех долг':'debt','аналитик':'analytics','риск':'risks','баг':'bugs','дефект':'bugs',
   'ретро':'retro','okr':'okr','окр':'okr','бюджет':'budget','календар':'calendar','параметр':'params',
-  'настройк':'params','faq':'faq','справк':'faq','support':'support','поддержк':'support','документ':'support','скачат':'support','руководств':'support'};
+  'настройк':'params','faq':'faq','справк':'faq','support':'support','поддержк':'support','документ':'support','скачат':'support','руководств':'support',
+  'eda':'eda','разведоч':'eda','анализ данн':'eda','полнот':'eda','датасет':'eda'};
  function navLabel(id){return ID2LABEL[id]||id;}
  function attnText(C){const T=ST.ttmTarget||15,it=[];
   const blk=(ST.deps||[]).filter(d=>d.status==='Заблокировано'||d.status==='Просрочено').length;if(blk)it.push('⛔ Заблокировано зависимостей: '+blk);
