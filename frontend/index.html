@@ -2874,20 +2874,26 @@ function demoView(){const w=document.createElement('div');
  w.appendChild(lg);return w;}
 function radarSvg(items){items=(items||[]).filter(x=>x.axis);const n=items.length;
  if(n<3)return '<p style="color:var(--muted);font-size:13px;margin:0">Добавьте минимум 3 оси для диаграммы.</p>';
- const cx=170,cy=165,R=118,max=5;
+ const W=500,H=360,cx=250,cy=178,R=120,max=5;
  const P=(i,val)=>{const a=-Math.PI/2+i*2*Math.PI/n,rr=R*Math.max(0,Math.min(1,num(val)/max));return [cx+rr*Math.cos(a),cy+rr*Math.sin(a)];};
+ // split a long axis label into up to two lines at the space nearest the middle
+ const wrapLbl=(s)=>{s=String(s);if(s.length<=15)return [s];const mid=s.length/2;let best=-1;
+   for(let i=0;i<s.length;i++){if(s[i]===' '&&(best<0||Math.abs(i-mid)<Math.abs(best-mid)))best=i;}
+   return best<0?[s]:[s.slice(0,best),s.slice(best+1)];};
  let g='';
  for(let k=1;k<=max;k++){const p=[];for(let i=0;i<n;i++){const a=-Math.PI/2+i*2*Math.PI/n,rr=R*k/max;p.push((cx+rr*Math.cos(a)).toFixed(1)+','+(cy+rr*Math.sin(a)).toFixed(1));}g+='<polygon points="'+p.join(' ')+'" fill="none" stroke="'+col('--line')+'" stroke-width="1"/>';}
  items.forEach((it,i)=>{const a=-Math.PI/2+i*2*Math.PI/n,ex=cx+R*Math.cos(a),ey=cy+R*Math.sin(a);
    g+='<line x1="'+cx+'" y1="'+cy+'" x2="'+ex.toFixed(1)+'" y2="'+ey.toFixed(1)+'" stroke="'+col('--line')+'"/>';
-   const lx=cx+(R+14)*Math.cos(a),ly=cy+(R+14)*Math.sin(a),anc=Math.abs(Math.cos(a))<0.3?'middle':(Math.cos(a)>0?'start':'end');
-   g+='<text x="'+lx.toFixed(1)+'" y="'+ly.toFixed(1)+'" font-size="11" fill="'+col('--muted')+'" text-anchor="'+anc+'" dominant-baseline="middle">'+esc(it.axis)+'</text>';});
+   const lx=cx+(R+12)*Math.cos(a),ly=cy+(R+12)*Math.sin(a),anc=Math.abs(Math.cos(a))<0.35?'middle':(Math.cos(a)>0?'start':'end');
+   const lines=wrapLbl(it.axis),ta=' font-size="10.5" fill="'+col('--muted')+'" text-anchor="'+anc+'" dominant-baseline="middle"';
+   if(lines.length===1)g+='<text x="'+lx.toFixed(1)+'" y="'+ly.toFixed(1)+'"'+ta+'>'+esc(lines[0])+'</text>';
+   else g+='<text x="'+lx.toFixed(1)+'" y="'+(ly-6).toFixed(1)+'"'+ta+'>'+esc(lines[0])+'</text><text x="'+lx.toFixed(1)+'" y="'+(ly+6).toFixed(1)+'"'+ta+'>'+esc(lines[1])+'</text>';});
  if(items.some(it=>num(it.prev)>0)){const pv=items.map((it,i)=>P(i,it.prev).map(x=>x.toFixed(1)).join(',')).join(' ');
    g+='<polygon points="'+pv+'" fill="none" stroke="'+col('--muted')+'" stroke-width="1.5" stroke-dasharray="4 3"/>';}
  const cur=items.map((it,i)=>P(i,it.score).map(x=>x.toFixed(1)).join(',')).join(' ');
  g+='<polygon points="'+cur+'" fill="'+col('--accent-soft')+'" stroke="'+col('--accent')+'" stroke-width="2"/>';
  items.forEach((it,i)=>{const p=P(i,it.score);g+='<circle cx="'+p[0].toFixed(1)+'" cy="'+p[1].toFixed(1)+'" r="3.2" fill="'+col('--accent')+'"/>';});
- return '<svg viewBox="0 0 340 330" style="max-width:340px;width:100%">'+g+'</svg>';}
+ return '<svg viewBox="0 0 '+W+' '+H+'" style="max-width:500px;width:100%" overflow="visible">'+g+'</svg>';}
 function retroView(){const w=document.createElement('div');
  (function(){const bar=document.createElement('div');bar.className='grm-pick';
   const b=document.createElement('button');b.className='btn primary';b.textContent='📋 Action items → в «Бэклог»';b.onclick=retroActionsToTasks;
@@ -3243,7 +3249,7 @@ async function exportPptx(sprintSel){
   const mood=(ST.mood||[]).slice().sort((a,b)=>num(a.sprint)-num(b.sprint));
   if(mood.length)ch.mood=await chartPng('lines',mood.map(m=>'С'+m.sprint),[{color:RCOL.good,data:mood.map(m=>num(m.mood)),trend:true}],{});
   if(typeof MOSCOW_CATS!=='undefined')ch.moscow=await chartPng('bars',MOSCOW_CATS.slice(),[{color:RCOL.accent,data:MOSCOW_CATS.map(c=>(ST.moscow||[]).filter(x=>x.category===c).length)}]);
-  if((ST.radar||[]).filter(x=>x.axis).length>=3)ch.radar=await svgStrToPng(radarSvg(ST.radar||[]),330,320);
+  if((ST.radar||[]).filter(x=>x.axis).length>=3)ch.radar=await svgStrToPng(radarSvg(ST.radar||[]),460,331);
   // ---- Аналитика: все графики (сгорание, burn-up, CFD, cycle time, распределение, загрузка, дефекты) ----
   const tasks=ST.tasks||[], sp=C.sp;
   const scope=tasks.reduce((a,t)=>a+num(t.est),0);
@@ -3409,8 +3415,10 @@ const NAV=[
  {g:'Настройки',items:[['budget','Бюджет','💰'],['calendar','Календарь','📅'],['checks','Проверки данных','🧪'],['eda','EDA отчёт','🔬'],['params','Параметры','⚙️']]},
  {g:'Справка',items:[['faq','FAQ','❓'],['support','Support','🛟'],['audit','Журнал событий','🧾']]},
 ];
-const APP_VERSION='1.33.0';const APP_DATE='2026-09-17';
+const APP_VERSION='1.33.1';const APP_DATE='2026-09-17';
 const CHANGELOG=[
+ {v:'1.33.1',date:'2026-09-17',items:[
+   'Радар-диаграммы (Agile-зрелость, Star Map, Team Radar): длинные подписи осей больше не обрезаются — переносятся на две строки, диаграмма стала шире.']},
  {v:'1.33.0',date:'2026-09-17',items:[
    'Новый раздел «Уровень Agile-зрелости» (Церемонии) с вкладками по Scrum, Kanban и SAFe: самооценка зрелости процессов по измерениям каждого фреймворка — профиль-радар, шкала уровней (Начальный…Оптимизирующий), оценка по критериям с прогрессом и рекомендации к следующему уровню; уровни редактируются и сохраняются на сервере.']},
  {v:'1.32.0',date:'2026-09-17',items:[
