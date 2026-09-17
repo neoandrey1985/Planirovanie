@@ -89,7 +89,7 @@ jobs:
           # public endpoints
           curl -fs http://localhost:8080/api/health | grep -q '"status"'
           curl -fs http://localhost:8080/analytics/health | grep -q '"status"'
-          curl -fs http://localhost:8080/ | grep -qi 'Планирование'
+          curl -fs http://localhost:8080/ | grep -qi 'Управление'
           # unauthenticated access to protected endpoints must be REJECTED (401)
           test "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8080/api/state)" = "401"
           test "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8080/analytics/metrics)" = "401"

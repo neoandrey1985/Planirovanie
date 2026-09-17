@@ -17,7 +17,7 @@ from . import compute as C
 AUTH_ENABLED = os.getenv("ANALYTICS_AUTH_ENABLED", "true").lower() in ("1", "true", "yes", "on")
 CORS_ORIGINS = [o.strip() for o in os.getenv("ANALYTICS_CORS_ORIGINS", "*").split(",") if o.strip()] or ["*"]
 
-app = FastAPI(title="Планирование — сервис аналитики", version="1.0.0")
+app = FastAPI(title="Управление кросс-функциональной командой — сервис аналитики", version="1.0.0")
 app.add_middleware(
     CORSMiddleware, allow_origins=CORS_ORIGINS, allow_methods=["GET"], allow_headers=["*"],
 )

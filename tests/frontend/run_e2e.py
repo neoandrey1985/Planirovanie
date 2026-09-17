@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""End-to-end / functional test suite for the Планирование спринтов frontend SPA.
+"""End-to-end / functional test suite for the Управление кросс-функциональной командой frontend SPA.
 
 Covers ALL application functionality:
   * Smoke-tests EVERY navigation section (auto-discovered from the app's NAV) — so
