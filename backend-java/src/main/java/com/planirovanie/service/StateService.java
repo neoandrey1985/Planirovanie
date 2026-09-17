@@ -28,6 +28,7 @@ public class StateService {
     private final RetroRepo retro;
     private final MoodRepo mood;
     private final SkillRepo skills;
+    private final AgileMaturityRepo agile;
     private final KudosRepo kudos;
     private final ExperimentRepo experiments;
     private final RadarRepo radar;
@@ -51,14 +52,14 @@ public class StateService {
                         ExperimentRepo experiments, RadarRepo radar, RiceRepo rice, MoscowRepo moscow,
                         FaqRepo faq, GroomingRepo grooming, DemoRepo demo, DailyRepo daily, VacationRepo vacation,
                         BirthdayRepo birthdays, DependencyRepo deps, OkrRepo okr, BoardRepo boards,
-                        BoardDocRepo boardDoc, SkillRepo skills) {
+                        BoardDocRepo boardDoc, SkillRepo skills, AgileMaturityRepo agile) {
         this.params = params; this.meta = meta; this.dod = dod; this.team = team; this.tasks = tasks;
         this.releases = releases; this.milestones = milestones; this.techDebt = techDebt; this.risks = risks;
         this.bugs = bugs; this.calendar = calendar; this.retro = retro; this.mood = mood; this.kudos = kudos;
         this.experiments = experiments; this.radar = radar; this.rice = rice; this.moscow = moscow;
         this.faq = faq; this.grooming = grooming; this.demo = demo; this.daily = daily; this.vacation = vacation;
         this.birthdays = birthdays; this.deps = deps;
-        this.okr = okr; this.boards = boards; this.boardDoc = boardDoc; this.skills = skills;
+        this.okr = okr; this.boards = boards; this.boardDoc = boardDoc; this.skills = skills; this.agile = agile;
     }
 
     @Transactional(readOnly = true)
@@ -85,6 +86,7 @@ public class StateService {
         s.retro = retro.findAllByOrderByOrdAsc();
         s.mood = mood.findAllByOrderByOrdAsc();
         s.skills = skills.findAllByOrderByOrdAsc();
+        s.agile = agile.findAllByOrderByOrdAsc();
         s.kudos = kudos.findAllByOrderByOrdAsc();
         s.experiments = experiments.findAllByOrderByOrdAsc();
         s.radar = radar.findAllByOrderByOrdAsc();
@@ -150,6 +152,7 @@ public class StateService {
         order(s.retro, (e, i) -> { e.id = null; e.ord = i; });
         order(s.mood, (e, i) -> { e.pk = null; e.ord = i; });
         order(s.skills, (e, i) -> { e.pk = null; e.ord = i; });
+        order(s.agile, (e, i) -> { e.pk = null; e.ord = i; });
         order(s.kudos, (e, i) -> { e.pk = null; e.ord = i; });
         order(s.experiments, (e, i) -> { e.pk = null; e.ord = i; });
         order(s.radar, (e, i) -> { e.pk = null; e.ord = i; });
@@ -177,6 +180,7 @@ public class StateService {
         retro.deleteAllInBatch();      if (s.retro != null)      retro.saveAll(s.retro);
         mood.deleteAllInBatch();       if (s.mood != null)       mood.saveAll(s.mood);
         skills.deleteAllInBatch();     if (s.skills != null)     skills.saveAll(s.skills);
+        agile.deleteAllInBatch();      if (s.agile != null)      agile.saveAll(s.agile);
         kudos.deleteAllInBatch();      if (s.kudos != null)      kudos.saveAll(s.kudos);
         experiments.deleteAllInBatch();if (s.experiments != null) experiments.saveAll(s.experiments);
         radar.deleteAllInBatch();      if (s.radar != null)      radar.saveAll(s.radar);

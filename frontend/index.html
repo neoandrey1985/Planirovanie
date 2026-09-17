@@ -122,6 +122,18 @@ details.faq-item[open]>summary{border-bottom:1px solid var(--line)}
 .sm-avg{text-align:center;font-size:12.5px;color:var(--muted);margin-top:4px}
 .sm-matrix .sm-cell{font-weight:600;color:#16202E;text-align:center}
 .sm-matrix th.num,.sm-matrix td.num{text-align:center}
+.agl-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}
+.agl-tab{display:inline-flex;align-items:center;gap:8px;padding:8px 16px;border:1px solid var(--line);border-radius:999px;background:var(--panel);color:var(--muted);font-weight:600;font-size:14px;cursor:pointer}
+.agl-tab:hover{border-color:var(--accent)}
+.agl-tab.active{background:var(--accent-soft);color:var(--accent);border-color:var(--accent)}
+.agl-badge{font-size:11px;font-weight:700;background:var(--accent);color:#fff;border-radius:999px;padding:1px 8px}
+.agl-tab:not(.active) .agl-badge{background:var(--muted)}
+.agl-scale{display:flex;flex-direction:column;gap:6px}
+.agl-lv{display:flex;gap:10px;align-items:flex-start;padding:7px 9px;border:1px solid var(--line);border-radius:9px}
+.agl-lv.cur{border-color:var(--accent);background:var(--accent-soft)}
+.agl-num{flex:none;width:24px;height:24px;border-radius:50%;background:var(--accent);color:#fff;font-weight:700;font-size:12.5px;display:flex;align-items:center;justify-content:center}
+.agl-nm{font-weight:600;font-size:13px;color:var(--ink)}
+.agl-desc{font-size:12px;color:var(--muted);line-height:1.45}
 .grm-pick{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:12px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 12px;box-shadow:var(--shadow)}
 .grm-pick select{border:1px solid var(--line);background:var(--panel2);color:var(--ink);border-radius:8px;padding:8px 10px;font-family:inherit;font-size:13px;flex:1 1 300px;min-width:200px}
 body.ro .grm-pick .btn.primary{display:none}
@@ -370,7 +382,7 @@ body.noadmin #rst,body.noadmin #imp{display:none}
  </div>
 </div></header>
 <div class="shell"><aside class="side" id="side"><nav id="nav"></nav><div class="side-foot" id="sidefoot"></div></aside><div class="scrim" id="scrim"></div>
-<main id="main"><section class="view" id="v_dash"></section><section class="view" id="v_board"></section><section class="view" id="v_kanban"></section><section class="view" id="v_backlog"></section><section class="view" id="v_team"></section><section class="view" id="v_starmap"></section><section class="view" id="v_roadmap"></section><section class="view" id="v_quarters"></section><section class="view" id="v_rice"></section><section class="view" id="v_moscow"></section><section class="view" id="v_gantt"></section><section class="view" id="v_deps"></section><section class="view" id="v_releases"></section><section class="view" id="v_milestones"></section><section class="view" id="v_debt"></section><section class="view" id="v_okr"></section><section class="view" id="v_budget"></section><section class="view" id="v_analytics"></section><section class="view" id="v_risks"></section><section class="view" id="v_bugs"></section><section class="view" id="v_daily"></section><section class="view" id="v_grooming"></section><section class="view" id="v_demo"></section><section class="view" id="v_vacation"></section><section class="view" id="v_birthdays"></section><section class="view" id="v_retro"></section><section class="view" id="v_calendar"></section><section class="view" id="v_checks"></section><section class="view" id="v_eda"></section><section class="view" id="v_params"></section><section class="view" id="v_faq"></section><section class="view" id="v_support"></section><section class="view" id="v_audit"></section></main></div>
+<main id="main"><section class="view" id="v_dash"></section><section class="view" id="v_board"></section><section class="view" id="v_kanban"></section><section class="view" id="v_backlog"></section><section class="view" id="v_team"></section><section class="view" id="v_starmap"></section><section class="view" id="v_roadmap"></section><section class="view" id="v_quarters"></section><section class="view" id="v_rice"></section><section class="view" id="v_moscow"></section><section class="view" id="v_gantt"></section><section class="view" id="v_deps"></section><section class="view" id="v_releases"></section><section class="view" id="v_milestones"></section><section class="view" id="v_debt"></section><section class="view" id="v_okr"></section><section class="view" id="v_budget"></section><section class="view" id="v_analytics"></section><section class="view" id="v_risks"></section><section class="view" id="v_bugs"></section><section class="view" id="v_daily"></section><section class="view" id="v_grooming"></section><section class="view" id="v_demo"></section><section class="view" id="v_vacation"></section><section class="view" id="v_birthdays"></section><section class="view" id="v_retro"></section><section class="view" id="v_agile"></section><section class="view" id="v_calendar"></section><section class="view" id="v_checks"></section><section class="view" id="v_eda"></section><section class="view" id="v_params"></section><section class="view" id="v_faq"></section><section class="view" id="v_support"></section><section class="view" id="v_audit"></section></main></div>
 <div class="palette" id="palette"><div class="pbox"><input class="pin" id="pin" placeholder="Поиск раздела или действия…" autocomplete="off"><div class="plist" id="plist"></div></div></div>
 <div class="role-pop" id="rolepop"></div>
 <div class="modal" id="accmodal"><div class="mbox">
@@ -1229,6 +1241,23 @@ function syncSkills(){if(!Array.isArray(ST.skills))ST.skills=[];const have=new S
    if(!have.has(k)){ST.skills.push({id:'SK-'+String(++seq).padStart(2,'0'),member:m.name,role:m.role,skill:sk,level:seedLevel(m.name,sk)});have.add(k);added++;}
    else{const r=ST.skills.find(s=>s.member===m.name&&s.skill===sk);if(r&&!r.role)r.role=m.role;}}));return added;}
 function skillColor(v){v=num(v);if(!v)return 'transparent';const t=(v-1)/4;const hue=Math.round(8+112*t);return 'hsl('+hue+',60%,'+(90-t*10)+'%)';}
+/* Agile maturity: assessment dimensions per framework (Scrum / Kanban / SAFe). */
+const AGILE_FW={
+ 'Scrum':['Роли (PO/SM/Команда)','Артефакты (бэклоги, инкремент)','События (планирование, дейли, ревью, ретро)','Definition of Done','Спринт-цель и фокус','Самоорганизация команды','Поставка ценности (инкремент)'],
+ 'Kanban':['Визуализация потока','Ограничение WIP','Управление потоком','Явные политики','Петли обратной связи (каденции)','Метрики потока (lead/cycle time)','Эволюционное улучшение'],
+ 'SAFe':['Team & Technical Agility','Agile Product Delivery','Enterprise Solution Delivery','Lean Portfolio Management','Organizational Agility','Continuous Learning Culture','Lean-Agile Leadership']};
+const AGILE_LEVELS=['—','Начальный','Развивающийся','Определённый','Управляемый','Оптимизирующий'];
+const AGILE_LEVEL_DESC=['','Практики применяются эпизодически и держатся на отдельных людях.','Практики осваиваются, но нестабильны и неполны.','Практики определены и применяются регулярно.','Практики измеряются и управляются по метрикам.','Практики непрерывно улучшаются на основе данных.'];
+const AGILE_RECO={
+ 'Scrum':'Закрепите роли и общий Definition of Done, стабилизируйте спринт-цель и все события, повышайте предсказуемость velocity и качество инкремента; используйте ретроспективы для системных улучшений.',
+ 'Kanban':'Визуализируйте весь поток, введите и соблюдайте WIP-лимиты, сделайте политики явными, наладьте каденции обратной связи и измеряйте lead/cycle time и throughput для эволюционных улучшений.',
+ 'SAFe':'Развивайте техническую agility команд (CI/CD, встроенное качество), синхронизируйте поставку через PI-планирование, внедряйте Lean-портфельное управление и культуру непрерывного обучения при поддержке Lean-Agile лидерства.'};
+function agileLevelName(v){v=Math.round(num(v));return AGILE_LEVELS[Math.max(0,Math.min(5,v))]||'—';}
+function seedAgileLevel(fw,dim){let h=0;const s=fw+'|'+dim;for(let i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))>>>0;return 2+(h%3);}
+function buildAgile(){const rows=[];let seq=0;Object.keys(AGILE_FW).forEach(fw=>AGILE_FW[fw].forEach(dim=>rows.push({id:'AM-'+String(++seq).padStart(2,'0'),framework:fw,dimension:dim,level:seedAgileLevel(fw,dim),note:''})));return rows;}
+/* Ensure ST.agile covers every framework × dimension; keeps existing levels. Returns #added. */
+function syncAgile(){if(!Array.isArray(ST.agile))ST.agile=[];const have=new Set(ST.agile.map(a=>a.framework+'|'+a.dimension));let seq=ST.agile.length,added=0;
+ Object.keys(AGILE_FW).forEach(fw=>AGILE_FW[fw].forEach(dim=>{const k=fw+'|'+dim;if(!have.has(k)){ST.agile.push({id:'AM-'+String(++seq).padStart(2,'0'),framework:fw,dimension:dim,level:seedAgileLevel(fw,dim),note:''});have.add(k);added++;}}));return added;}
 let ST=load();
 
 function load(){let d;try{const s=localStorage.getItem('sprintapp');d=s?JSON.parse(s):JSON.parse(JSON.stringify(SEED));}catch(e){d=JSON.parse(JSON.stringify(SEED));}return migrate(d);}
@@ -1379,6 +1408,7 @@ function migrate(d){
   {id:'RD-04',axis:'Инструменты',score:4,prev:4},
   {id:'RD-05',axis:'Нагрузка',score:3,prev:2}];
  if(!Array.isArray(d.skills))d.skills=buildSkills(d.team||[]);   // Star Map competencies
+ if(!Array.isArray(d.agile))d.agile=buildAgile();               // Agile maturity assessment
  // calendar: migrate array of date-strings -> [{date,name}]
  if(Array.isArray(d.calendar))d.calendar=d.calendar.map(h=>typeof h==='string'?{date:h,name:''}:h);
  else d.calendar=[];
@@ -1707,6 +1737,59 @@ function starmapView(){const w=document.createElement('div');const team=ST.team|
    {k:'level',label:'Уровень (1–5)',type:'num'}],{newId:'id',prefix:'SK-'}));
  w.appendChild(ed);
  return w;}
+/* ---------- Agile-зрелость: оценка по Scrum / Kanban / SAFe ---------- */
+function agileView(){const w=document.createElement('div');const agile=ST.agile||[];const FWS=Object.keys(AGILE_FW);
+ if(!UI.agileTab||FWS.indexOf(UI.agileTab)<0)UI.agileTab=FWS[0];
+ // toolbar
+ const bar=document.createElement('div');bar.className='grm-pick';
+ const sb=document.createElement('button');sb.className='btn primary';sb.textContent='🧭 Обновить измерения';
+ sb.onclick=()=>{if(!PERM.canEdit){toast('Только для редактора/администратора');return;}const n=syncAgile();save();views();activate('agile');if(typeof auditClient==='function')auditClient('agile_sync',n);toast(n?('Добавлено измерений: '+n):'Измерения уже актуальны');};
+ const info=document.createElement('span');info.style.cssText='font-size:12.5px;color:var(--muted);align-self:center;margin-left:auto';
+ const all=FWS.map(f=>{const r=agile.filter(a=>a.framework===f);const av=r.length?r.reduce((s,a)=>s+num(a.level),0)/r.length:0;return f+' '+fmt(av,1);}).join(' · ');
+ info.textContent=all;bar.appendChild(sb);bar.appendChild(info);w.appendChild(bar);
+ // tabs
+ const tabs=document.createElement('div');tabs.className='agl-tabs';
+ FWS.forEach(fw=>{const r=agile.filter(a=>a.framework===fw);const av=r.length?r.reduce((s,a)=>s+num(a.level),0)/r.length:0;
+   const t=document.createElement('button');t.className='agl-tab'+(fw===UI.agileTab?' active':'');
+   t.innerHTML='по '+esc(fw)+' <span class="agl-badge">'+fmt(av,1)+'</span>';
+   t.onclick=()=>{UI.agileTab=fw;views();activate('agile');};tabs.appendChild(t);});
+ w.appendChild(tabs);
+ const fw=UI.agileTab;const rows=agile.filter(a=>a.framework===fw);
+ const avg=rows.length?rows.reduce((s,a)=>s+num(a.level),0)/rows.length:0;
+ const weakest=rows.slice().sort((a,b)=>num(a.level)-num(b.level))[0];
+ // KPIs
+ const kp=document.createElement('div');kp.className='grid kpis';
+ kp.innerHTML=kpiCard('Уровень зрелости',agileLevelName(avg),fw+' · '+Math.round(avg)+'/5',avg>=4?'good':avg>=3?'warn':'crit')+
+   kpiCard('Средний балл',fmt(avg,1)+' / 5','по '+rows.length+' измерениям','neut')+
+   kpiCard('Измерений',rows.length,'критериев оценки','neut')+
+   kpiCard('Слабое место',weakest?esc(String(weakest.dimension).slice(0,20)):'—',weakest?('уровень '+num(weakest.level)):'','warn');
+ w.appendChild(kp);
+ // radar + level scale
+ const cols=document.createElement('div');cols.className='grid2';cols.style.marginTop='14px';
+ const radarItems=rows.map(a=>({axis:a.dimension,score:num(a.level),prev:0}));
+ const rc=document.createElement('div');rc.className='card';
+ rc.innerHTML='<p class="ctitle">Профиль зрелости · '+esc(fw)+'</p><div class="sm-radar">'+(radarItems.length>=3?radarSvg(radarItems):'<p style="color:var(--muted);font-size:13px">—</p>')+'</div>';
+ const lc=document.createElement('div');lc.className='card';let lh='<p class="ctitle">Шкала уровней зрелости</p><div class="agl-scale">';
+ for(let i=5;i>=1;i--){lh+='<div class="agl-lv'+(Math.round(avg)===i?' cur':'')+'"><span class="agl-num">'+i+'</span><div><div class="agl-nm">'+esc(AGILE_LEVELS[i])+'</div><div class="agl-desc">'+esc(AGILE_LEVEL_DESC[i])+'</div></div></div>';}
+ lh+='</div>';lc.innerHTML=lh;cols.appendChild(rc);cols.appendChild(lc);w.appendChild(cols);
+ // dimensions table
+ const card=document.createElement('div');card.className='card';card.style.marginTop='14px';
+ let h='<p class="ctitle">Оценка по измерениям · '+esc(fw)+'</p><div class="twrap scroll" style="border:none"><table class="cardt"><thead><tr><th>Измерение</th><th class="num">Уровень</th><th>Прогресс</th><th>Статус</th></tr></thead><tbody>';
+ rows.forEach(a=>{const v=num(a.level);h+='<tr><td>'+esc(a.dimension)+'</td><td class="num">'+v+'</td>'+
+   '<td><div style="height:8px;background:var(--line);border-radius:4px;overflow:hidden;min-width:90px"><div style="height:100%;width:'+(v/5*100)+'%;background:'+skillColor(v)+'"></div></div></td>'+
+   '<td><span class="pill '+(v>=4?'p-good':v>=3?'p-warn':'p-crit')+'">'+esc(agileLevelName(v))+'</span></td></tr>';});
+ h+='</tbody></table></div>';card.innerHTML=h;w.appendChild(card);
+ // recommendation
+ const rec=document.createElement('div');rec.className='card';rec.style.marginTop='14px';
+ rec.innerHTML='<p class="ctitle">Как поднять уровень зрелости ('+esc(fw)+' → '+esc(agileLevelName(Math.min(5,Math.floor(avg)+1)))+')</p>'+
+   '<p style="font-size:13px;color:var(--muted);line-height:1.7;margin:0">'+esc(AGILE_RECO[fw]||'')+'</p>';
+ w.appendChild(rec);
+ // editable
+ const ed=document.createElement('div');ed.style.marginTop='14px';
+ ed.appendChild(editable('agile',[{k:'framework',label:'Фреймворк',type:'select',opts:FWS},{k:'dimension',label:'Измерение',wide:true},
+   {k:'level',label:'Уровень (1–5)',type:'num'},{k:'note',label:'Комментарий',wide:true}],{newId:'id',prefix:'AM-'}));
+ w.appendChild(ed);
+ return w;}
 /* ---------- EDA (разведочный анализ данных по всему приложению) ---------- */
 function edaFilled(v){return !(v===null||v===undefined||v===''||(typeof v==='string'&&v.trim()===''));}
 function edaStats(vals){const a=vals.map(Number).filter(v=>isFinite(v)).sort((x,y)=>x-y);const n=a.length;if(!n)return null;
@@ -1737,6 +1820,7 @@ function edaView(){const w=document.createElement('div');const C=compute();
   {k:'tasks',label:'Бэклог (задачи)',fields:['id','title','assignee','role','type','est','status','sprint','dep','started','done']},
   {k:'team',label:'Команда',fields:['name','role','avail','absent']},
   {k:'skills',label:'Компетенции (Star Map)',fields:['id','member','role','skill','level']},
+  {k:'agile',label:'Agile-зрелость',fields:['id','framework','dimension','level','note']},
   {k:'bugs',label:'Баги',fields:['id','desc','task','sprint','sev','status','cause']},
   {k:'deps',label:'Зависимости',fields:['id','item','type','task','stream','dir','desc','sprint','status','owner','risk']},
   {k:'releases',label:'Релизы',fields:['id','name','sfrom','sto','status']},
@@ -2188,6 +2272,8 @@ function views(){
  setView('vacation','График отпусков','Отпуска, больничные, отгулы и командировки команды — для учёта доступности при планировании.',vacationView());
  setView('birthdays','Дни рождения','Дни рождения участников команды и ближайшие даты.',birthdaysView());
  setView('retro','Ретроспективы','Итоги спринтов и action items. Ниже — доля закрытых action items.',retroView());
+ // Agile maturity (Церемонии) — уровень зрелости по Scrum / Kanban / SAFe
+ setView('agile','Уровень Agile-зрелости','Самооценка зрелости процессов по трём фреймворкам — Scrum, Kanban и SAFe. Для каждого: профиль-радар по измерениям, шкала уровней, оценка по критериям и рекомендации к следующему уровню.',agileView());
  // Calendar (Календарь) — праздники/выходные, влияют на рабочие дни спринтов
  setView('calendar','Календарь','Праздники и нерабочие дни. Учитываются при расчёте рабочих дней и ёмкости спринтов.',
    editable('calendar',[{k:'date',label:'Дата',type:'date'},{k:'name',label:'Праздник / выходной',wide:true}]));
@@ -3318,13 +3404,15 @@ const NAV=[
  {g:'Работа',items:[['backlog','Бэклог','🗂️'],['gantt','Гант','📊'],['deps','Зависимости','🔗'],['team','Команда','👥'],['starmap','Star Map','⭐']]},
  {g:'Выпуск',items:[['releases','Релизы','🚀'],['milestones','Вехи','🏁'],['debt','Техдолг','🧱']]},
  {g:'Аналитика',items:[['analytics','Аналитика','📈'],['risks','Риски','⚠️'],['bugs','Баги','🐞']]},
- {g:'Церемонии',items:[['daily','Дэйли','☀️'],['grooming','Груминг','🧹'],['demo','Демо спринта','🎬'],['retro','Ретроспективы','🔄']]},
+ {g:'Церемонии',items:[['daily','Дэйли','☀️'],['grooming','Груминг','🧹'],['demo','Демо спринта','🎬'],['retro','Ретроспективы','🔄'],['agile','Agile-зрелость','🪜']]},
  {g:'Персонал',items:[['vacation','График отпусков','🏖️'],['birthdays','Дни рождения','🎂']]},
  {g:'Настройки',items:[['budget','Бюджет','💰'],['calendar','Календарь','📅'],['checks','Проверки данных','🧪'],['eda','EDA отчёт','🔬'],['params','Параметры','⚙️']]},
  {g:'Справка',items:[['faq','FAQ','❓'],['support','Support','🛟'],['audit','Журнал событий','🧾']]},
 ];
-const APP_VERSION='1.32.0';const APP_DATE='2026-09-17';
+const APP_VERSION='1.33.0';const APP_DATE='2026-09-17';
 const CHANGELOG=[
+ {v:'1.33.0',date:'2026-09-17',items:[
+   'Новый раздел «Уровень Agile-зрелости» (Церемонии) с вкладками по Scrum, Kanban и SAFe: самооценка зрелости процессов по измерениям каждого фреймворка — профиль-радар, шкала уровней (Начальный…Оптимизирующий), оценка по критериям с прогрессом и рекомендации к следующему уровню; уровни редактируются и сохраняются на сервере.']},
  {v:'1.32.0',date:'2026-09-17',items:[
    'Новый раздел «Star Map» (Работа): карта компетенций команды по ролям — радар-профиль каждого участника, матрица уровней (1–5) по направлениям с тепловой заливкой и редактируемая таблица навыков. Кнопка «Обновить компетенции по ролям» автоматически формирует набор навыков из ролей участников.']},
  {v:'1.31.0',date:'2026-09-17',items:[
@@ -3677,7 +3765,8 @@ startAnalytics();setInterval(startAnalytics,30000);
   'ретро':'retro','okr':'okr','окр':'okr','бюджет':'budget','календар':'calendar','параметр':'params',
   'настройк':'params','faq':'faq','справк':'faq','support':'support','поддержк':'support','документ':'support','скачат':'support','руководств':'support',
   'eda':'eda','разведоч':'eda','анализ данн':'eda','полнот':'eda','датасет':'eda',
-  'star map':'starmap','star':'starmap','компетен':'starmap','навык':'starmap','скилл':'starmap'};
+  'star map':'starmap','star':'starmap','компетен':'starmap','навык':'starmap','скилл':'starmap',
+  'зрелост':'agile','maturity':'agile','agile-зрел':'agile','safe':'agile'};
  function navLabel(id){return ID2LABEL[id]||id;}
  function attnText(C){const T=ST.ttmTarget||15,it=[];
   const blk=(ST.deps||[]).filter(d=>d.status==='Заблокировано'||d.status==='Просрочено').length;if(blk)it.push('⛔ Заблокировано зависимостей: '+blk);

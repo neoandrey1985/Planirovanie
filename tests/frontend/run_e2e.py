@@ -125,6 +125,25 @@ def main():
             assert same, 'syncSkills() added duplicates on a no-op run'
         case('starmap: competency radars + matrix render', t_starmap)
 
+        # ---- 4c. Agile maturity (Scrum / Kanban / SAFe) ----
+        def t_agile():
+            page.evaluate("()=>activate('agile')"); page.wait_for_timeout(200)
+            r = page.evaluate("""()=>{const v=document.getElementById('v_agile');
+              return {tabs:v.querySelectorAll('.agl-tab').length,
+                      radar:!!v.querySelector('.sm-radar svg'),
+                      scale:v.querySelectorAll('.agl-scale .agl-lv').length,
+                      frameworks:[...new Set((ST.agile||[]).map(a=>a.framework))],
+                      rows:(ST.agile||[]).length};}""")
+            assert r['tabs'] == 3, 'expected 3 framework tabs (Scrum/Kanban/SAFe)'
+            assert set(r['frameworks']) == {'Scrum', 'Kanban', 'SAFe'}, 'missing framework: ' + str(r['frameworks'])
+            assert r['radar'], 'maturity radar not rendered'
+            assert r['scale'] == 5, 'expected a 5-level maturity scale'
+            # switching to the Kanban tab re-renders its dimensions
+            sw = page.evaluate("""()=>{const t=[...document.querySelectorAll('#v_agile .agl-tab')].find(x=>x.textContent.includes('Kanban'));
+              t.click();return UI.agileTab;}""")
+            assert sw == 'Kanban', 'tab switch did not update UI.agileTab'
+        case('agile-maturity: Scrum/Kanban/SAFe tabs render', t_agile)
+
         # ---- 5. data quality checks engine ----
         def t_checks():
             ok = page.evaluate("()=>Array.isArray(dataChecks())")
