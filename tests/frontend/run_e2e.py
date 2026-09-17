@@ -109,6 +109,22 @@ def main():
             assert r['tables'] >= 2, 'EDA tables missing'
         case('EDA: report renders KPIs, charts and tables', t_eda)
 
+        # ---- 4b. Star Map (team competencies by role) ----
+        def t_starmap():
+            page.evaluate("()=>activate('starmap')"); page.wait_for_timeout(200)
+            r = page.evaluate("""()=>{const v=document.getElementById('v_starmap');
+              return {radars:v.querySelectorAll('.sm-card svg').length,
+                      matrices:v.querySelectorAll('table.sm-matrix').length,
+                      rows:(ST.skills||[]).length,
+                      team:(ST.team||[]).length};}""")
+            assert r['rows'] > 0, 'no competency rows seeded'
+            assert r['matrices'] >= 1, 'no competency matrix rendered'
+            assert r['team'] == 0 or r['radars'] >= 1, 'no member radars rendered'
+            # syncSkills() must be idempotent (no duplicate rows on a second run)
+            same = page.evaluate("()=>{const a=(ST.skills||[]).length;syncSkills();return (ST.skills||[]).length===a;}")
+            assert same, 'syncSkills() added duplicates on a no-op run'
+        case('starmap: competency radars + matrix render', t_starmap)
+
         # ---- 5. data quality checks engine ----
         def t_checks():
             ok = page.evaluate("()=>Array.isArray(dataChecks())")

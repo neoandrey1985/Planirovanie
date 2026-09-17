@@ -40,6 +40,7 @@ public final class Dtos {
         public List<Holiday> calendar;
         public List<Retro> retro;
         public List<Mood> mood;
+        public List<Skill> skills;
         public List<Kudos> kudos;
         public List<Experiment> experiments;
         public List<RadarAxis> radar;

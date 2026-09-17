@@ -23,6 +23,7 @@ class StateRoundTripTest {
           "budget":{"rate":8000,"total":8000000},
           "ttmTarget":15,
           "team":[{"name":"A","role":"Backend","avail":1,"absent":0}],
+          "skills":[{"id":"SK-01","member":"A","role":"Backend","skill":"API","level":4}],
           "tasks":[{"id":"T-01","title":"X","role":"Backend","type":"Задача","est":5,"status":"Готово","sprint":1,"release":"R-1","priority":"Must","dor":"Готова"}],
           "deps":[{"id":"D-01","item":"I","stream":"S","dir":"Мы зависим","status":"Заблокировано","task":"T-01"}],
           "rice":[{"id":"F-01","name":"R","reach":5000,"impact":3,"conf":"100%","effort":40}],
@@ -55,6 +56,9 @@ class StateRoundTripTest {
            .andExpect(jsonPath("$.state.params.start").value("2026-08-03"))
            .andExpect(jsonPath("$.state.budget.rate").value(8000.0))
            .andExpect(jsonPath("$.state.ttmTarget").value(15))
+           .andExpect(jsonPath("$.state.skills[0].member").value("A"))
+           .andExpect(jsonPath("$.state.skills[0].skill").value("API"))
+           .andExpect(jsonPath("$.state.skills[0].level").value(4))
            .andExpect(jsonPath("$.state.tasks[0].id").value("T-01"))
            .andExpect(jsonPath("$.state.tasks[0].release").value("R-1"))
            .andExpect(jsonPath("$.state.tasks[0].priority").value("Must"))
