@@ -52,9 +52,38 @@ app:
       webhook: ${SLACK_WEBHOOK_URL:}     # Incoming Webhook URL (simplest), or use token+channel below
       token:   ${SLACK_BOT_TOKEN:}       # xoxb-… bot token (chat.postMessage)
       channel: ${SLACK_CHANNEL:}         # #channel or channel id (when using a bot token)
+    # ---- Atlassian product suite (all Cloud REST; off until configured) ----
     jira:
       base:      ${JIRA_BASE_URL:}       # https://your-domain.atlassian.net
-      email:     ${JIRA_EMAIL:}          # Atlassian account e-mail
+      email:     ${JIRA_EMAIL:}          # Atlassian account e-mail (shared by Jira/JSM/JPD/Confluence/Compass)
       token:     ${JIRA_API_TOKEN:}      # Atlassian API token (Basic auth)
       project:   ${JIRA_PROJECT_KEY:}    # e.g. PLAN
       issueType: ${JIRA_ISSUE_TYPE:Task}
+    jsm:                                 # Jira Service Management
+      serviceDeskId: ${JSM_SERVICE_DESK_ID:}
+      requestTypeId: ${JSM_REQUEST_TYPE_ID:}
+    jpd:                                 # Jira Product Discovery
+      project:   ${JPD_PROJECT_KEY:}
+    confluence:
+      base:      ${CONFLUENCE_BASE_URL:${JIRA_BASE_URL:}}   # defaults to the Jira/Atlassian base
+      space:     ${CONFLUENCE_SPACE_KEY:}
+    compass:
+      cloudId:   ${COMPASS_CLOUD_ID:}
+    bitbucket:
+      workspace:   ${BITBUCKET_WORKSPACE:}
+      user:        ${BITBUCKET_USER:}
+      appPassword: ${BITBUCKET_APP_PASSWORD:}
+      repo:        ${BITBUCKET_REPO:}
+    trello:
+      key:   ${TRELLO_API_KEY:}
+      token: ${TRELLO_TOKEN:}
+      list:  ${TRELLO_LIST_ID:}
+    opsgenie:
+      apiKey: ${OPSGENIE_API_KEY:}
+    statuspage:
+      apiKey: ${STATUSPAGE_API_KEY:}
+      pageId: ${STATUSPAGE_PAGE_ID:}
+    bamboo:
+      base:  ${BAMBOO_BASE_URL:}
+      token: ${BAMBOO_TOKEN:}
+      plan:  ${BAMBOO_PLAN_KEY:}

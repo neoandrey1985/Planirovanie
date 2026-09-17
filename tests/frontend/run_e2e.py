@@ -144,6 +144,21 @@ def main():
             assert sw == 'Kanban', 'tab switch did not update UI.agileTab'
         case('agile-maturity: Scrum/Kanban/SAFe tabs render', t_agile)
 
+        # ---- 4d. Integrations (Atlassian suite catalog) ----
+        def t_integrations():
+            page.evaluate("()=>activate('integrations')"); page.wait_for_timeout(150)
+            r = page.evaluate("""()=>{const v=document.getElementById('v_integrations');
+              const names=[...v.querySelectorAll('.intg-name')].map(x=>x.textContent);
+              return {cards:v.querySelectorAll('.intg-card').length, names,
+                      badges:v.querySelectorAll('.intg-badge').length,
+                      catalog:(typeof ATL_PRODUCTS!=='undefined')?ATL_PRODUCTS.map(p=>p.k):[]};}""")
+            assert r['cards'] >= 10, 'expected the full Atlassian product catalog (>=10)'
+            for prod in ('Jira', 'Confluence', 'Bitbucket', 'Trello'):
+                assert any(prod in n for n in r['names']), 'missing product: ' + prod
+            for key in ('jira', 'jsm', 'confluence', 'bitbucket', 'trello', 'opsgenie', 'statuspage', 'bamboo'):
+                assert key in r['catalog'], 'catalog missing ' + key
+        case('integrations: Atlassian product catalog renders', t_integrations)
+
         # ---- 5. data quality checks engine ----
         def t_checks():
             ok = page.evaluate("()=>Array.isArray(dataChecks())")

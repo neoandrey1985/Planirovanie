@@ -138,6 +138,18 @@ details.faq-item[open]>summary{border-bottom:1px solid var(--line)}
 .about-ic{font-size:26px;flex:none;line-height:1.2}
 .about-h{font-weight:700;font-size:14px;color:var(--ink);margin-bottom:3px}
 .about-t{font-size:13px;color:var(--muted);line-height:1.65;margin:0}
+.intg-card{padding:14px}
+.intg-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px}
+.intg-name{font-weight:600;font-size:14.5px;color:var(--ink)}
+.intg-badge{font-size:11px;font-weight:700;padding:2px 9px;border-radius:999px;white-space:nowrap}
+.intg-badge.b-on{color:var(--good);background:var(--good-bg)}
+.intg-badge.b-off{color:var(--muted);background:var(--panel2)}
+.intg-badge.b-unk{color:var(--accent);background:var(--accent-soft)}
+.intg-desc{font-size:12.5px;color:var(--muted);line-height:1.55;margin:0 0 8px}
+.intg-env{font-size:11px;color:var(--muted);margin-bottom:10px}
+.intg-env code{background:var(--panel2);padding:1px 5px;border-radius:5px;font-size:10.5px;word-break:break-word}
+.intg-act{display:flex;align-items:center;gap:8px}
+.intg-note{font-size:11.5px;color:var(--muted);font-style:italic}
 .grm-pick{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:12px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 12px;box-shadow:var(--shadow)}
 .grm-pick select{border:1px solid var(--line);background:var(--panel2);color:var(--ink);border-radius:8px;padding:8px 10px;font-family:inherit;font-size:13px;flex:1 1 300px;min-width:200px}
 body.ro .grm-pick .btn.primary{display:none}
@@ -386,7 +398,7 @@ body.noadmin #rst,body.noadmin #imp{display:none}
  </div>
 </div></header>
 <div class="shell"><aside class="side" id="side"><nav id="nav"></nav><div class="side-foot" id="sidefoot"></div></aside><div class="scrim" id="scrim"></div>
-<main id="main"><section class="view" id="v_dash"></section><section class="view" id="v_board"></section><section class="view" id="v_kanban"></section><section class="view" id="v_backlog"></section><section class="view" id="v_team"></section><section class="view" id="v_starmap"></section><section class="view" id="v_roadmap"></section><section class="view" id="v_quarters"></section><section class="view" id="v_rice"></section><section class="view" id="v_moscow"></section><section class="view" id="v_gantt"></section><section class="view" id="v_deps"></section><section class="view" id="v_releases"></section><section class="view" id="v_milestones"></section><section class="view" id="v_debt"></section><section class="view" id="v_okr"></section><section class="view" id="v_budget"></section><section class="view" id="v_analytics"></section><section class="view" id="v_risks"></section><section class="view" id="v_bugs"></section><section class="view" id="v_daily"></section><section class="view" id="v_grooming"></section><section class="view" id="v_demo"></section><section class="view" id="v_vacation"></section><section class="view" id="v_birthdays"></section><section class="view" id="v_retro"></section><section class="view" id="v_agile"></section><section class="view" id="v_calendar"></section><section class="view" id="v_checks"></section><section class="view" id="v_eda"></section><section class="view" id="v_params"></section><section class="view" id="v_faq"></section><section class="view" id="v_support"></section><section class="view" id="v_audit"></section></main></div>
+<main id="main"><section class="view" id="v_dash"></section><section class="view" id="v_board"></section><section class="view" id="v_kanban"></section><section class="view" id="v_backlog"></section><section class="view" id="v_team"></section><section class="view" id="v_starmap"></section><section class="view" id="v_roadmap"></section><section class="view" id="v_quarters"></section><section class="view" id="v_rice"></section><section class="view" id="v_moscow"></section><section class="view" id="v_gantt"></section><section class="view" id="v_deps"></section><section class="view" id="v_releases"></section><section class="view" id="v_milestones"></section><section class="view" id="v_debt"></section><section class="view" id="v_okr"></section><section class="view" id="v_budget"></section><section class="view" id="v_analytics"></section><section class="view" id="v_risks"></section><section class="view" id="v_bugs"></section><section class="view" id="v_daily"></section><section class="view" id="v_grooming"></section><section class="view" id="v_demo"></section><section class="view" id="v_vacation"></section><section class="view" id="v_birthdays"></section><section class="view" id="v_retro"></section><section class="view" id="v_agile"></section><section class="view" id="v_calendar"></section><section class="view" id="v_checks"></section><section class="view" id="v_eda"></section><section class="view" id="v_integrations"></section><section class="view" id="v_params"></section><section class="view" id="v_faq"></section><section class="view" id="v_support"></section><section class="view" id="v_audit"></section></main></div>
 <div class="palette" id="palette"><div class="pbox"><input class="pin" id="pin" placeholder="Поиск раздела или действия…" autocomplete="off"><div class="plist" id="plist"></div></div></div>
 <div class="role-pop" id="rolepop"></div>
 <div class="modal" id="accmodal"><div class="mbox">
@@ -1698,6 +1710,54 @@ function importCSVTasks(text){const first=(String(text).split('\n')[0]||'');cons
      est:num(o.est),status:st,sprint:o.sprint?num(o.sprint):'',dep:(o.dep&&tks.some(x=>x.id===o.dep))?o.dep:'',started:'',done:'',priority:'',dor:'',added:true});n++;});
  if(!n){toast('Не удалось разобрать строки CSV');return;}
  save();views();activate('backlog');if(typeof auditClient==='function')auditClient('import_csv',n);toast('Импортировано из CSV: '+n+' задач');}
+/* ---------- Интеграции: все продукты Atlassian ---------- */
+var ATL_PRODUCTS=[
+ {k:'jira',name:'Jira',desc:'Создание задач в проекте Jira Cloud (двусторонняя связь с бэклогом).',env:'JIRA_BASE_URL, JIRA_EMAIL, JIRA_API_TOKEN, JIRA_PROJECT_KEY'},
+ {k:'jsm',name:'Jira Service Management',desc:'Создание клиентских запросов и инцидентов (Service Desk).',env:'JSM_SERVICE_DESK_ID, JSM_REQUEST_TYPE_ID + Jira base/email/token'},
+ {k:'jpd',name:'Jira Product Discovery',desc:'Проект для сбора и приоритизации идей продукта.',env:'JPD_PROJECT_KEY + Jira base/email/token',status:true},
+ {k:'confluence',name:'Confluence',desc:'Публикация страниц (сводки и отчёты) в пространстве.',env:'CONFLUENCE_BASE_URL, CONFLUENCE_SPACE_KEY + Atlassian email/token'},
+ {k:'compass',name:'Compass',desc:'Каталог компонентов и здоровье сервисов команды.',env:'COMPASS_CLOUD_ID + Atlassian email/token',status:true},
+ {k:'bitbucket',name:'Bitbucket',desc:'Создание issue в репозитории; связь кода и задач.',env:'BITBUCKET_WORKSPACE, BITBUCKET_USER, BITBUCKET_APP_PASSWORD, BITBUCKET_REPO'},
+ {k:'trello',name:'Trello',desc:'Создание карточек на доске Trello.',env:'TRELLO_API_KEY, TRELLO_TOKEN, TRELLO_LIST_ID'},
+ {k:'opsgenie',name:'Opsgenie',desc:'Создание алертов для дежурной смены (on-call).',env:'OPSGENIE_API_KEY'},
+ {k:'statuspage',name:'Statuspage',desc:'Создание инцидентов на статус-странице.',env:'STATUSPAGE_API_KEY, STATUSPAGE_PAGE_ID'},
+ {k:'bamboo',name:'Bamboo',desc:'Запуск сборки плана CI/CD.',env:'BAMBOO_BASE_URL, BAMBOO_TOKEN, BAMBOO_PLAN_KEY'},
+];
+function integrationsView(){const w=document.createElement('div');
+ const grid=document.createElement('div');grid.className='sup-grid';grid.style.marginTop='6px';
+ ATL_PRODUCTS.forEach(p=>{const card=document.createElement('div');card.className='card intg-card';
+   card.innerHTML='<div class="intg-head"><span class="intg-name">'+esc(p.name)+'</span><span class="intg-badge b-unk" id="intg_'+p.k+'">…</span></div>'+
+     '<p class="intg-desc">'+esc(p.desc)+'</p>'+
+     '<div class="intg-env">ENV: <code>'+esc(p.env)+'</code></div>'+
+     (p.status?'<div class="intg-act"><span class="intg-note">Статус-интеграция</span></div>'
+              :'<div class="intg-act"><button class="btn intg-test" data-k="'+p.k+'" disabled>Проверить</button></div>');
+   grid.appendChild(card);});
+ w.appendChild(grid);
+ const sl=document.createElement('p');sl.style.cssText='font-size:12.5px;color:var(--muted);margin-top:14px';
+ sl.innerHTML='Действия (создание задач, страниц, карточек, алертов, сборок) выполняются на сервере. Также поддерживается отправка сводок в <b>Slack</b> (SLACK_WEBHOOK_URL или SLACK_BOT_TOKEN+SLACK_CHANNEL).';
+ w.appendChild(sl);
+ const setBadge=(k,st)=>{const e=w.querySelector('#intg_'+k);if(!e)return;
+   e.textContent=st==='on'?'Подключено':st==='off'?'Не настроено':'—';
+   e.className='intg-badge '+(st==='on'?'b-on':st==='off'?'b-off':'b-unk');};
+ const server=(typeof AUTH!=='undefined'&&AUTH.mode==='server'&&AUTH.token);
+ if(server){
+   fetch('api/integrations/status',{headers:{'Authorization':'Bearer '+AUTH.token}}).then(r=>r.ok?r.json():null).then(d=>{
+     const a=(d&&d.atlassian)||{};ATL_PRODUCTS.forEach(p=>{const on=!!a[p.k];setBadge(p.k,on?'on':'off');
+       const b=w.querySelector('.intg-test[data-k="'+p.k+'"]');if(b&&on)b.disabled=false;});
+   }).catch(()=>ATL_PRODUCTS.forEach(p=>setBadge(p.k,'unk')));
+ } else {
+   ATL_PRODUCTS.forEach(p=>setBadge(p.k,'unk'));
+   const hint=document.createElement('p');hint.style.cssText='font-size:12.5px;color:var(--warn);margin-top:8px';
+   hint.textContent='Статус подключений и проверка доступны в серверном режиме (после входа). В локальном режиме показан только каталог интеграций и требуемые переменные окружения.';
+   w.appendChild(hint);
+ }
+ w.addEventListener('click',e=>{const b=e.target.closest('.intg-test');if(!b||b.disabled)return;const k=b.dataset.k;
+   b.disabled=true;b.textContent='…';
+   fetch('api/integrations/atlassian/'+k,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+AUTH.token},
+     body:JSON.stringify({title:'Проверка интеграции из приложения',body:'Тестовое сообщение от «Управление кросс-функциональной командой».'})})
+    .then(r=>r.json()).then(d=>{toast(d&&d.ok?('Отправлено: '+k):('Ошибка: '+((d&&d.error)||'нет ответа')));b.disabled=false;b.textContent='Проверить';})
+    .catch(()=>{toast('Нет связи с сервером');b.disabled=false;b.textContent='Проверить';});});
+ return w;}
 /* ---------- Star Map: компетенции команды по ролям ---------- */
 function starmapView(){const w=document.createElement('div');const team=ST.team||[];const skills=ST.skills||[];
  // toolbar
@@ -2286,6 +2346,8 @@ function views(){
  setView('checks','Проверки данных','Автоматический контроль целостности данных с авто-исправлением типичных проблем.',checksView());
  // EDA report (Настройки) — разведочный анализ всех данных приложения
  setView('eda','EDA отчёт — разведочный анализ данных','Автоматический разведочный анализ (EDA) всех данных приложения: объём и полнота датасетов, числовые сводки, распределения категорий, кросс-таблицы и аномалии.',edaView());
+ // Integrations (Настройки) — интеграция со всеми продуктами Atlassian
+ setView('integrations','Интеграции — Atlassian','Интеграция со всеми продуктами Atlassian: Jira, Jira Service Management, Jira Product Discovery, Confluence, Compass, Bitbucket, Trello, Opsgenie, Statuspage и Bamboo. Подключения настраиваются на сервере переменными окружения.',integrationsView());
  // FAQ (Справка)
  setView('faq','FAQ — частые вопросы','Ответы на типичные вопросы о работе с приложением. Раскройте вопрос, чтобы увидеть ответ; ниже — таблица для редактирования.',faqView());
  // Support (Справка) — центр загрузки документов и контакты поддержки
@@ -3417,12 +3479,14 @@ const NAV=[
  {g:'Аналитика',items:[['analytics','Аналитика','📈'],['risks','Риски','⚠️'],['bugs','Баги','🐞']]},
  {g:'Церемонии',items:[['daily','Дэйли','☀️'],['grooming','Груминг','🧹'],['demo','Демо спринта','🎬'],['retro','Ретроспективы','🔄'],['agile','Agile-зрелость','🪜']]},
  {g:'Персонал',items:[['vacation','График отпусков','🏖️'],['birthdays','Дни рождения','🎂']]},
- {g:'Настройки',items:[['budget','Бюджет','💰'],['calendar','Календарь','📅'],['checks','Проверки данных','🧪'],['eda','EDA отчёт','🔬'],['params','Параметры','⚙️']]},
+ {g:'Настройки',items:[['budget','Бюджет','💰'],['calendar','Календарь','📅'],['checks','Проверки данных','🧪'],['eda','EDA отчёт','🔬'],['integrations','Интеграции','🔌'],['params','Параметры','⚙️']]},
  {g:'Справка',items:[['faq','FAQ','❓'],['support','Support','🛟'],['audit','Журнал событий','🧾']]},
 ];
-const APP_VERSION='1.34.0';const APP_DATE='2026-09-17';
+const APP_VERSION='1.35.0';const APP_DATE='2026-09-17';
 const APP_ABOUT='Кросс-функциональная команда — это группа специалистов из разных областей (разработчиков, дизайнеров, маркетологов, аналитиков, менеджеров и других), которые объединяются для работы над одним конкретным проектом или задачей. Ключевая идея в том, чтобы собрать внутри команды всех необходимых экспертов, чтобы она могла самостоятельно пройти путь от идеи до результата, не передавая задачу последовательно из одного отдела в другой.';
 const CHANGELOG=[
+ {v:'1.35.0',date:'2026-09-17',items:[
+   'Новый раздел «Интеграции» (Настройки): интеграция со всеми продуктами Atlassian — Jira, Jira Service Management, Jira Product Discovery, Confluence, Compass, Bitbucket, Trello, Opsgenie, Statuspage и Bamboo. Статус подключений и проверка выполняются на сервере; ключи задаются переменными окружения.']},
  {v:'1.34.0',date:'2026-09-17',items:[
    'Приложение переименовано в «Управление кросс-функциональной командой».',
    'На дашборде добавлено описание концепции кросс-функциональной команды.']},
@@ -3783,7 +3847,8 @@ startAnalytics();setInterval(startAnalytics,30000);
   'настройк':'params','faq':'faq','справк':'faq','support':'support','поддержк':'support','документ':'support','скачат':'support','руководств':'support',
   'eda':'eda','разведоч':'eda','анализ данн':'eda','полнот':'eda','датасет':'eda',
   'star map':'starmap','star':'starmap','компетен':'starmap','навык':'starmap','скилл':'starmap',
-  'зрелост':'agile','maturity':'agile','agile-зрел':'agile','safe':'agile'};
+  'зрелост':'agile','maturity':'agile','agile-зрел':'agile','safe':'agile',
+  'интеграц':'integrations','atlassian':'integrations','jira':'integrations','confluence':'integrations','trello':'integrations','bitbucket':'integrations','opsgenie':'integrations'};
  function navLabel(id){return ID2LABEL[id]||id;}
  function attnText(C){const T=ST.ttmTarget||15,it=[];
   const blk=(ST.deps||[]).filter(d=>d.status==='Заблокировано'||d.status==='Просрочено').length;if(blk)it.push('⛔ Заблокировано зависимостей: '+blk);

@@ -29,4 +29,14 @@ public class IntegrationsController {
     public Map<String, Object> jira(@RequestBody Map<String, String> body) {
         return svc.createJira(body.get("summary"), body.getOrDefault("description", ""));
     }
+
+    /** Generic Atlassian action: /api/integrations/atlassian/{product} with {title, body}.
+     *  product ∈ jira | jsm | confluence | bitbucket | trello | opsgenie | statuspage | bamboo. */
+    @PostMapping("/atlassian/{product}")
+    public Map<String, Object> atlassian(@PathVariable String product, @RequestBody(required = false) Map<String, String> body) {
+        Map<String, String> b = body == null ? Map.of() : body;
+        String title = b.getOrDefault("title", b.get("summary"));
+        String text = b.getOrDefault("body", b.getOrDefault("description", ""));
+        return svc.atlassian(product, title, text);
+    }
 }
