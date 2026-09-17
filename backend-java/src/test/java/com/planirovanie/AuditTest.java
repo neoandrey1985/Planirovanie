@@ -20,6 +20,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @TestPropertySource(properties = {
         "app.auth.enabled=true",
+        "app.auth.seed-defaults=true",   // logs in as the demo admin/editor/viewer accounts
         "app.audit.enabled=true",
         "app.audit.url=jdbc:h2:mem:auditlog;MODE=PostgreSQL;DB_CLOSE_DELAY=-1",
         "app.audit.username=sa",

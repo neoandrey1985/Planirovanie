@@ -1,0 +1,29 @@
+version: 2
+updates:
+  - package-ecosystem: "maven"
+    directory: "/backend-java"
+    schedule: { interval: "weekly" }
+    open-pull-requests-limit: 5
+    labels: ["dependencies", "security"]
+
+  - package-ecosystem: "pip"
+    directory: "/analytics-python"
+    schedule: { interval: "weekly" }
+    open-pull-requests-limit: 5
+    labels: ["dependencies", "security"]
+
+  - package-ecosystem: "docker"
+    directory: "/backend-java"
+    schedule: { interval: "weekly" }
+
+  - package-ecosystem: "docker"
+    directory: "/analytics-python"
+    schedule: { interval: "weekly" }
+
+  - package-ecosystem: "docker"
+    directory: "/frontend"
+    schedule: { interval: "weekly" }
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule: { interval: "weekly" }

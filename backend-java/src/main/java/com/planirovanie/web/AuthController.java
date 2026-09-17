@@ -41,7 +41,16 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginReq req, HttpServletRequest http) {
         String attempted = req == null ? null : req.username();
+        String key = (attempted == null ? "?" : attempted.trim().toLowerCase()) + "|" + http.getRemoteAddr();
+        // Brute-force lockout: reject early after too many recent failures.
+        if (auth.isLocked(key)) {
+            audit("login_locked", attempted, null, http, "Вход временно заблокирован (много неудачных попыток)");
+            return ResponseEntity.status(429)
+                    .header("Retry-After", String.valueOf(auth.lockoutSeconds()))
+                    .body(Map.of("error", "too_many_attempts"));
+        }
         Optional<UserSession> s = auth.login(attempted, req == null ? null : req.password());
+        auth.noteLogin(key, s.isPresent());
         if (s.isEmpty()) {
             audit("login_failed", attempted, null, http, "Неудачная попытка входа");
             return ResponseEntity.status(401).body(Map.of("error", "invalid_credentials"));

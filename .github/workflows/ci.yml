@@ -65,6 +65,8 @@ jobs:
   e2e:
     name: Полный стек (docker compose)
     runs-on: ubuntu-latest
+    env:
+      AUTH_SEED_DEFAULTS: "true"   # demo users for the smoke test (admin/admin123)
     steps:
       - uses: actions/checkout@v4
       - name: Build & start stack
@@ -84,14 +86,25 @@ jobs:
       - name: Smoke test the whole stack via nginx
         run: |
           set -e
-          echo "== /api/health =="; curl -fs http://localhost:8080/api/health; echo
-          echo "== /analytics/health =="; curl -fs http://localhost:8080/analytics/health; echo
-          echo "== /api/state =="; curl -fs http://localhost:8080/api/state | head -c 300; echo
-          echo "== /analytics/metrics =="; curl -fs http://localhost:8080/analytics/metrics | head -c 300; echo
-          curl -fs http://localhost:8080/api/state | grep -q '"version"'
-          curl -fs http://localhost:8080/analytics/metrics | grep -q 'avgVelocity'
-          curl -fs http://localhost:8080/analytics/rice | grep -q 'F-02'
+          # public endpoints
+          curl -fs http://localhost:8080/api/health | grep -q '"status"'
+          curl -fs http://localhost:8080/analytics/health | grep -q '"status"'
           curl -fs http://localhost:8080/ | grep -qi 'Планирование'
+          # unauthenticated access to protected endpoints must be REJECTED (401)
+          test "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8080/api/state)" = "401"
+          test "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8080/analytics/metrics)" = "401"
+          # log in and use the bearer token
+          TOKEN=$(curl -fs -X POST http://localhost:8080/api/auth/login \
+            -H 'Content-Type: application/json' \
+            -d '{"username":"admin","password":"admin123"}' | grep -oE '"token":"[^"]+"' | cut -d'"' -f4)
+          test -n "$TOKEN"
+          AUTH="Authorization: Bearer $TOKEN"
+          curl -fs -H "$AUTH" http://localhost:8080/api/state | grep -q '"version"'
+          curl -fs -H "$AUTH" http://localhost:8080/analytics/metrics | grep -q 'avgVelocity'
+          curl -fs -H "$AUTH" http://localhost:8080/analytics/rice | grep -q 'F-02'
+          # security headers present
+          curl -sI http://localhost:8080/ | grep -qi 'X-Frame-Options: DENY'
+          curl -sI http://localhost:8080/ | grep -qi 'Content-Security-Policy'
       - name: Dump logs on failure
         if: failure()
         run: docker compose logs

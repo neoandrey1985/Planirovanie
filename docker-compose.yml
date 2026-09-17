@@ -4,7 +4,8 @@ services:
     environment:
       POSTGRES_DB: planirovanie
       POSTGRES_USER: planirovanie
-      POSTGRES_PASSWORD: planirovanie
+      # DB is only reachable on the internal docker network (no published port).
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-planirovanie}
     volumes:
       - pgdata:/var/lib/postgresql/data
     # Schema + seed are applied by Flyway from the Java service on startup (not by Postgres init).
@@ -19,24 +20,31 @@ services:
     environment:
       DB_URL: jdbc:postgresql://db:5432/planirovanie
       DB_USER: planirovanie
-      DB_PASSWORD: planirovanie
-      TEAM_TOKEN: ${TEAM_TOKEN:-}
+      DB_PASSWORD: ${DB_PASSWORD:-planirovanie}
       JPA_DDL_AUTO: none
+      # Security: no weak demo users by default. On a fresh DB an "admin" is created with
+      # APP_ADMIN_PASSWORD (or a random password printed in `docker compose logs api`).
+      # Set AUTH_SEED_DEFAULTS=true ONLY for a throwaway local demo.
+      AUTH_SEED_DEFAULTS: ${AUTH_SEED_DEFAULTS:-false}
+      APP_ADMIN_PASSWORD: ${APP_ADMIN_PASSWORD:-}
+      APP_ALLOWED_ORIGINS: ${APP_ALLOWED_ORIGINS:-*}
+      APP_WS_ALLOWED_ORIGINS: ${APP_WS_ALLOWED_ORIGINS:-*}
     depends_on:
       db:
         condition: service_healthy
-    ports:
-      - "8081:8080"   # direct access to the Java API (optional)
+    # No published port: the Java API is reached only through nginx (web) on the internal network.
 
   analytics:
     build: ./analytics-python
     environment:
-      DB_URL_PY: postgresql+psycopg2://planirovanie:planirovanie@db:5432/planirovanie
+      DB_URL_PY: postgresql+psycopg2://planirovanie:${DB_PASSWORD:-planirovanie}@db:5432/planirovanie
+      # Analytics data endpoints require the same bearer session token as the Java API.
+      ANALYTICS_AUTH_ENABLED: ${ANALYTICS_AUTH_ENABLED:-true}
+      ANALYTICS_CORS_ORIGINS: ${APP_ALLOWED_ORIGINS:-*}
     depends_on:
       db:
         condition: service_healthy
-    ports:
-      - "8000:8000"   # direct access to the Python analytics API (optional)
+    # No published port: analytics is reached only through nginx (web) on the internal network.
 
   web:
     build: ./frontend
@@ -44,7 +52,7 @@ services:
       - api
       - analytics
     ports:
-      - "8080:80"     # open http://localhost:8080
+      - "8080:80"     # the only publicly exposed port — open http://localhost:8080
 
 volumes:
   pgdata:

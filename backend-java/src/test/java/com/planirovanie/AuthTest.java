@@ -18,6 +18,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @TestPropertySource(properties = {
         "app.auth.enabled=true",
+        "app.auth.seed-defaults=true",   // this test logs in as the demo admin/editor/viewer accounts
+        "app.auth.max-attempts=4",       // low threshold so the brute-force test is fast
+        "app.auth.lockout-seconds=60",
         "spring.datasource.url=jdbc:h2:mem:planirovanie_auth;MODE=PostgreSQL;DB_CLOSE_DELAY=-1"
 })
 class AuthTest {
@@ -90,5 +93,18 @@ class AuthTest {
            .andExpect(status().isNoContent());
         mvc.perform(get("/api/state").header("Authorization", "Bearer " + kate))
            .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void throttlesBruteForceLogin() throws Exception {
+        String bad = "{\"username\":\"nobody\",\"password\":\"x\"}";
+        // first max-attempts (4) failures return 401
+        for (int i = 0; i < 4; i++)
+            mvc.perform(post("/api/auth/login").contentType(MediaType.APPLICATION_JSON).content(bad))
+               .andExpect(status().isUnauthorized());
+        // subsequent attempts are locked out (429), even with correct-looking input
+        mvc.perform(post("/api/auth/login").contentType(MediaType.APPLICATION_JSON).content(bad))
+           .andExpect(status().isTooManyRequests())
+           .andExpect(header().exists("Retry-After"));
     }
 }

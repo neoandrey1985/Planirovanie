@@ -3247,8 +3247,12 @@ const NAV=[
  {g:'Настройки',items:[['budget','Бюджет','💰'],['calendar','Календарь','📅'],['checks','Проверки данных','🧪'],['eda','EDA отчёт','🔬'],['params','Параметры','⚙️']]},
  {g:'Справка',items:[['faq','FAQ','❓'],['support','Support','🛟'],['audit','Журнал событий','🧾']]},
 ];
-const APP_VERSION='1.30.0';const APP_DATE='2026-09-16';
+const APP_VERSION='1.31.0';const APP_DATE='2026-09-17';
 const CHANGELOG=[
+ {v:'1.31.0',date:'2026-09-17',items:[
+   'Усиление безопасности: демо-пользователи со слабыми паролями больше не создаются по умолчанию (первичный admin — из APP_ADMIN_PASSWORD или со случайным паролем в логе); защита от перебора пароля (блокировка после серии неудач).',
+   'Сервис аналитики теперь требует тот же токен авторизации, что и основной API; доска (WebSocket) закрыта для анонимных подключений.',
+   'Добавлены заголовки безопасности (CSP, X-Frame-Options, nosniff и др.); порты api/analytics больше не публикуются наружу — доступ только через nginx.']},
  {v:'1.30.0',date:'2026-09-16',items:[
    'Новый раздел «EDA отчёт» (Настройки): автоматический разведочный анализ всех данных приложения — объём и полнота датасетов, сводная числовая статистика (мин/макс/среднее/медиана/σ), распределения категорий, кросс-таблица «спринт × статус», аномалии и качество данных. Есть печать/PDF.']},
  {v:'1.29.0',date:'2026-09-16',items:[
@@ -3571,7 +3575,10 @@ async function startAnalytics(){
   const h=await fetch('analytics/health',{cache:'no-store'});
   if(!h.ok)throw 0;const hd=await h.json();
   if(hd.status!=='ok'){set('🐍 аналитика: БД','p-warn');return;}
-  const m=await (await fetch('analytics/metrics',{cache:'no-store'})).json();
+  const ah=(typeof AUTH!=='undefined'&&AUTH.token)?{'Authorization':'Bearer '+AUTH.token}:{};
+  const mr=await fetch('analytics/metrics',{cache:'no-store',headers:ah});
+  if(mr.status===401){set('🐍 аналитика: вход','p-warn');return;}
+  const m=await mr.json();
   set('🐍 аналитика ✓','p-good');
   const e=document.getElementById('anst');
   if(e)e.title=`Сервис аналитики (Python): velocity ${m.avgVelocity}, health ${Math.round(m.health*100)}%, прогноз ${m.forecastSprints} спр., предсказуемость ${Math.round(m.predictability*100)}%`;

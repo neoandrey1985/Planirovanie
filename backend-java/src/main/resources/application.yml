@@ -25,8 +25,20 @@ app:
     enabled: ${AUTH_ENABLED:true}
     # Bearer-token session lifetime, hours.
     session-hours: ${AUTH_SESSION_HOURS:12}
-    # Seed demo users (admin/editor/viewer) on first startup; turn off for real deployments.
-    seed-defaults: ${AUTH_SEED_DEFAULTS:true}
+    # DEMO ONLY: seed weak demo users (admin/editor/viewer). Off by default (secure).
+    seed-defaults: ${AUTH_SEED_DEFAULTS:false}
+    # On a fresh DB (demo seeding off) a single "admin" is created with this password;
+    # if blank, a strong random password is generated and printed once in the startup log.
+    admin-password: ${APP_ADMIN_PASSWORD:}
+    # Login brute-force lockout: after N failures per (user|ip), block for M seconds.
+    max-attempts: ${AUTH_MAX_ATTEMPTS:8}
+    lockout-seconds: ${AUTH_LOCKOUT_SECONDS:300}
+  # CORS allow-list for /api/** (comma-separated). Restrict to your web origin(s) in production.
+  cors:
+    allowed-origins: ${APP_ALLOWED_ORIGINS:*}
+  # Allowed Origin patterns for the /ws/board collaboration socket (comma-separated).
+  ws:
+    allowed-origins: ${APP_WS_ALLOWED_ORIGINS:*}
   audit:
     # Event/audit logging into a SEPARATE PostgreSQL database. If that DB is unreachable,
     # logging self-disables and the app keeps running. Create it once: CREATE DATABASE planirovanie_audit;
