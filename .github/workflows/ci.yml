@@ -12,7 +12,7 @@ jobs:
     name: Java API — сборка и тесты
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
@@ -29,7 +29,7 @@ jobs:
     name: Python — проверка аналитики
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
@@ -51,7 +51,7 @@ jobs:
     name: Frontend — e2e/регрессия (Playwright)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
@@ -68,7 +68,7 @@ jobs:
     env:
       AUTH_SEED_DEFAULTS: "true"   # demo users for the smoke test (admin/admin123)
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Build & start stack
         run: docker compose up -d --build
       - name: Wait for services
