@@ -182,6 +182,23 @@ def main():
             assert r['matches'] == ['Гант'], 'filter did not narrow to the match: ' + str(r['matches'])
         case('sidebar: collapse/pin/filter smart nav', t_nav)
 
+        # ---- 4f. Top toolbar: data actions consolidated into one menu ----
+        def t_toolbar():
+            r = page.evaluate("""()=>{
+              const visible=[...document.querySelector('.tools').children].map(c=>c.id);
+              document.getElementById('datamenu').click();
+              const opened=document.getElementById('dmenu').classList.contains('open');
+              const items=[...document.querySelectorAll('#datapop .btn')].map(b=>b.id);
+              document.body.click();
+              const closed=!document.getElementById('dmenu').classList.contains('open');
+              return {visible,opened,items,closed};}""")
+            assert 'dmenu' in r['visible'], 'data menu button not in toolbar'
+            for old in ('xls', 'pptxbtn', 'exp', 'imp', 'impcsv', 'rst'):
+                assert old not in r['visible'], old + ' should be inside the menu, not the top bar'
+                assert old in r['items'], 'menu missing action ' + old
+            assert r['opened'] and r['closed'], 'menu open/close broken'
+        case('toolbar: data actions grouped in «Данные» menu', t_toolbar)
+
         # ---- 5. data quality checks engine ----
         def t_checks():
             ok = page.evaluate("()=>Array.isArray(dataChecks())")

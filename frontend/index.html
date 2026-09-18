@@ -17,6 +17,17 @@ header.top{position:sticky;top:0;z-index:30;background:color-mix(in srgb,var(--b
 .brand{font-weight:700;font-size:16px;display:flex;align-items:center;gap:9px;white-space:nowrap}
 .brand .dot{width:11px;height:11px;border-radius:3px;background:var(--accent);box-shadow:0 0 0 4px var(--accent-soft)}
 .tools{display:flex;gap:6px;margin-left:auto;flex-wrap:wrap;justify-content:flex-end}
+.dmenu{position:relative}
+.dmenu-pop{position:absolute;top:calc(100% + 6px);right:0;min-width:240px;background:var(--panel);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);padding:6px;display:none;flex-direction:column;gap:1px;z-index:60}
+.dmenu.open .dmenu-pop{display:flex}
+.dmenu-pop .btn{width:100%;justify-content:flex-start;text-align:left;background:none;border:1px solid transparent;color:var(--ink);padding:9px 11px;border-radius:8px;font-weight:500;font-size:13.5px}
+.dmenu-pop .btn:hover{background:var(--panel2)}
+.dmenu-pop .btn.primary{color:var(--accent)}
+.dmenu-pop .btn.danger{color:var(--crit)}
+.dmenu-pop .btn.danger:hover{background:var(--crit-bg)}
+.dmenu-sep{height:1px;background:var(--line);margin:4px 6px}
+.dmenu .cv{font-size:10px;color:var(--muted);transition:transform .15s;display:inline-block}
+.dmenu.open .cv{transform:rotate(180deg)}
 .btn{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:8px;padding:7px 11px;cursor:pointer;font-size:13px;font-family:inherit}
 .btn:hover{border-color:var(--accent);color:var(--accent)}
 .btn.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
@@ -404,17 +415,24 @@ body.noadmin #rst,body.noadmin #imp{display:none}
  <div class="brand"><span class="dot"></span>Управление кросс-функциональной командой</div>
  <button class="btn iconbtn" id="palettebtn" title="Поиск и переход (Ctrl+K)">🔎</button>
  <div class="tools">
-  <button class="btn primary" id="xls">Excel</button>
-  <button class="btn" id="pptxbtn" title="Отчёт-презентация по спринту (PPTX)">📊 Отчёт</button>
-  <button class="btn" id="exp">JSON</button>
-  <button class="btn" id="imp">Импорт</button>
-  <button class="btn" id="impcsv" title="Импорт задач из CSV / Jira в Бэклог">CSV</button>
-  <button class="btn danger" id="rst">Сброс</button>
+  <div class="dmenu" id="dmenu">
+   <button class="btn" id="datamenu" title="Данные: экспорт, импорт, отчёт, сброс" aria-haspopup="true" aria-expanded="false">🗂 Данные <span class="cv">▾</span></button>
+   <div class="dmenu-pop" id="datapop" role="menu">
+    <button class="btn primary" id="xls">📗 Экспорт в Excel</button>
+    <button class="btn" id="pptxbtn" title="Отчёт-презентация по спринту (PPTX)">📊 Отчёт по спринту (PPTX)</button>
+    <button class="btn" id="exp">🧾 Экспорт в JSON</button>
+    <div class="dmenu-sep"></div>
+    <button class="btn" id="imp">📥 Импорт из JSON</button>
+    <button class="btn" id="impcsv" title="Импорт задач из CSV / Jira в Бэклог">📥 Импорт из CSV / Jira</button>
+    <div class="dmenu-sep"></div>
+    <button class="btn danger" id="rst">🗑 Сброс данных</button>
+   </div>
+  </div>
   <span id="syncst" class="pill p-neut" style="align-self:center;white-space:nowrap">⚪ локально</span>
   <span id="anst" class="pill p-neut" style="align-self:center;white-space:nowrap" title="Сервис аналитики (Python)">🐍 аналитика</span>
   <button class="btn" id="tourbtn" title="Видеообзор приложения">▶ Обзор</button>
   <button class="btn" id="rolebtn" title="Режим доступа">👁 Просмотр</button>
-  <button class="btn" id="themebtn" aria-label="Тема">◐</button>
+  <button class="btn iconbtn" id="themebtn" aria-label="Тема" title="Светлая / тёмная тема">◐</button>
  </div>
 </div></header>
 <div class="shell"><aside class="side" id="side"><nav id="nav"></nav><div class="side-foot" id="sidefoot"></div></aside><div class="scrim" id="scrim"></div>
@@ -3508,9 +3526,11 @@ const NAV=[
  {g:'Настройки',items:[['budget','Бюджет','💰'],['calendar','Календарь','📅'],['checks','Проверки данных','🧪'],['eda','EDA отчёт','🔬'],['integrations','Интеграции','🔌'],['params','Параметры','⚙️']]},
  {g:'Справка',items:[['faq','FAQ','❓'],['support','Support','🛟'],['audit','Журнал событий','🧾']]},
 ];
-const APP_VERSION='1.37.0';const APP_DATE='2026-09-18';
+const APP_VERSION='1.38.0';const APP_DATE='2026-09-18';
 const APP_ABOUT='Кросс-функциональная команда — это группа специалистов из разных областей (разработчиков, дизайнеров, маркетологов, аналитиков, менеджеров и других), которые объединяются для работы над одним конкретным проектом или задачей. Ключевая идея в том, чтобы собрать внутри команды всех необходимых экспертов, чтобы она могла самостоятельно пройти путь от идеи до результата, не передавая задачу последовательно из одного отдела в другой.';
 const CHANGELOG=[
+ {v:'1.38.0',date:'2026-09-18',items:[
+   'Верхняя панель разгружена: действия с данными (Excel, Отчёт, экспорт/импорт JSON, импорт CSV, Сброс) собраны в одно меню «🗂 Данные». Слева остаются поиск и название, справа — статусы, «Обзор», роль и тема.']},
  {v:'1.37.0',date:'2026-09-18',items:[
    'Эргономичное меню: группы сворачиваются (по умолчанию открыта только активная), быстрый поиск по разделам, блоки «⭐ Избранное» (закрепление разделов) и «🕘 Недавние», липкие заголовки и компактная плотность. Состояние сохраняется между сессиями.']},
  {v:'1.36.0',date:'2026-09-17',items:[
@@ -3691,6 +3711,13 @@ document.getElementById('pptxbtn').onclick=openPptxModal;
 document.getElementById('pptx_cancel').onclick=closePptxModal;
 document.getElementById('pptx_go').onclick=()=>{const v=document.getElementById('pptx_sprint').value;closePptxModal();exportPptx(v);};
 document.getElementById('pptxmodal').addEventListener('click',e=>{if(e.target.id==='pptxmodal')closePptxModal();});
+/* "Данные" dropdown menu (groups Excel/Отчёт/JSON/Импорт/CSV/Сброс) */
+(function(){const dm=document.getElementById('dmenu'),btn=document.getElementById('datamenu'),pop=document.getElementById('datapop');
+ const setOpen=o=>{dm.classList.toggle('open',o);btn.setAttribute('aria-expanded',o?'true':'false');};
+ btn.onclick=e=>{e.stopPropagation();setOpen(!dm.classList.contains('open'));};
+ pop.addEventListener('click',()=>setTimeout(()=>setOpen(false),0));   // close after an action is chosen
+ document.addEventListener('click',e=>{if(!dm.contains(e.target))setOpen(false);});
+ document.addEventListener('keydown',e=>{if(e.key==='Escape')setOpen(false);});})();
 document.getElementById('exp').onclick=()=>{const b=new Blob([JSON.stringify(ST,null,1)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='planirovanie_data.json';a.click();toast('Экспортировано');auditClient('export_json');};
 document.getElementById('imp').onclick=()=>{if(!PERM.canAdmin){toast('Только для администратора');return;}document.getElementById('file').click();};
 document.getElementById('file').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{ST=JSON.parse(r.result);save();views();activate(CURV);toast('Импортировано');auditClient('import_json',f.name);}catch(err){toast('Ошибка файла');}};r.readAsText(f);};
