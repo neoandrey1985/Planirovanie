@@ -529,6 +529,7 @@ const SEED={
   {
    "name": "Морозов И.",
    "role": "QA",
+   "scrum": "Да",
    "avail": 1,
    "absent": 0
   },
@@ -1244,7 +1245,10 @@ const ROLE_SKILLS={
  'QA':['Ручное тест-ние','Автотесты','API-тесты','Нагрузочное','Баг-репорты','CI/CD'],
  'DevOps':['CI/CD','Контейнеры','Мониторинг','Облако','Сеть','Безопасность'],
  'Analyst':['Требования','Анализ данных','SQL','Документация','Коммуникация','Моделирование'],
- 'Designer':['UI-дизайн','UX-исследования','Прототипы','Дизайн-система','Графика','Взаимодействие']};
+ 'Designer':['UI-дизайн','UX-исследования','Прототипы','Дизайн-система','Графика','Взаимодействие'],
+ 'Product Owner':['Управление продуктом','Приоритизация бэклога','Работа со стейкхолдерами','Требования','Дорожная карта','Оценка ценности'],
+ 'ИТ-Лидер':['Техническое лидерство','Архитектура решений','Наставничество','Принятие решений','Управление рисками','Коммуникация'],
+ 'Scrum Master':['Фасилитация','Устранение препятствий','Agile-практики','Коучинг команды','Метрики потока','Улучшение процессов']};
 const ROLE_SKILLS_FALLBACK=['Планирование','Коммуникация','Качество','Скорость','Автономность','Взаимопомощь'];
 function skillsFor(role){return ROLE_SKILLS[role]||ROLE_SKILLS_FALLBACK;}
 /* Deterministic seed level 2..5 so radars are informative before manual tuning. */
@@ -1592,7 +1596,7 @@ function cell(coll,ri,c,v){const cls=c.type==='num'?'num':(c.wide?'wide':'');con
 function genId(rows,k,pref){let mx=0;rows.forEach(r=>{const m=String(r[k]||'').match(/(\d+)/);if(m)mx=Math.max(mx,+m[1]);});return (pref||'')+String(mx+1).padStart(2,'0');}
 
 /* ---------- views ---------- */
-const ROLES=['Backend','Frontend','QA','DevOps','Analyst','Designer'];
+const ROLES=['Backend','Frontend','QA','DevOps','Analyst','Designer','Product Owner','ИТ-Лидер'];
 const STAT_TASK=['To Do','В работе','Готово'];
 const STAT_MS=['Планируется','В работе','Готово','Задержка'];
 function sprintOpts(){return Array.from({length:ST.params.sprints||11},(_,i)=>i+1);}
@@ -1770,10 +1774,11 @@ function starmapView(){const w=document.createElement('div');const team=ST.team|
  const roles=[...new Set(team.map(m=>m.role).filter(Boolean))];
  const levels=skills.map(s=>num(s.level)).filter(v=>v>0);const avg=levels.length?levels.reduce((a,b)=>a+b,0)/levels.length:0;
  const distinct=new Set(skills.map(s=>s.skill)).size;
+ const sm=team.filter(m=>m.scrum==='Да').length;
  const kp=document.createElement('div');kp.className='grid kpis';
  kp.innerHTML=kpiCard('Участников',team.length,'в команде','neut')+kpiCard('Ролей',roles.length,'направлений','neut')+
    kpiCard('Средний уровень',fmt(avg,1)+' / 5','по всем навыкам',avg>=3.5?'good':avg>=2.5?'warn':'crit')+
-   kpiCard('Компетенций',distinct,'уникальных','neut');
+   kpiCard('Скрам-мастеров',sm,'доп. роль',sm?'good':'neut');
  w.appendChild(kp);
  // radar per member (the "star map")
  if(!team.length){const e=document.createElement('p');e.className='faq-empty';e.textContent='Добавьте участников в разделе «Команда».';w.appendChild(e);}
@@ -1781,7 +1786,7 @@ function starmapView(){const w=document.createElement('div');const team=ST.team|
    team.forEach(m=>{const items=skills.filter(s=>s.member===m.name).map(s=>({axis:s.skill,score:num(s.level),prev:0}));
      const avgm=items.length?items.reduce((a,x)=>a+num(x.score),0)/items.length:0;
      const card=document.createElement('div');card.className='card sm-card';
-     card.innerHTML='<div class="sm-head"><span class="sm-name">'+esc(m.name)+'</span><span class="sm-role">'+esc(m.role||'—')+'</span></div>'+
+     card.innerHTML='<div class="sm-head"><span class="sm-name">'+esc(m.name)+'</span><span class="sm-role">'+esc(m.role||'—')+(m.scrum==='Да'?' · <b>SM</b>':'')+'</span></div>'+
        '<div class="sm-radar">'+(items.length>=3?radarSvg(items):'<p style="color:var(--muted);font-size:13px;margin:8px 2px">Нет компетенций — нажмите «Обновить компетенции по ролям».</p>')+'</div>'+
        (items.length?'<div class="sm-avg">Средний уровень: <b>'+fmt(avgm,1)+'</b> / 5</div>':'');
      grid.appendChild(card);});
@@ -2292,8 +2297,9 @@ function views(){
  // Backlog (с авто-сортировкой по приоритету и авто-набором спринта)
  setView('backlog','Бэклог','Задачи проекта — источник данных для плана, velocity, релизов и метрик. Кнопки выше: сортировка по приоритету (RICE/MoSCoW) и авто-набор спринта по ёмкости.',backlogView());
  // Team
- setView('team','Команда','Состав команды и доступность — из этого считается ёмкость спринтов.',
+ setView('team','Команда','Состав команды и доступность — из этого считается ёмкость спринтов. Роль — основная (в т.ч. Product Owner, ИТ-Лидер); «Скрам-мастер» — дополнительная роль, её можно назначить любому участнику.',
    editable('team',[{k:'name',label:'Участник',wide:true},{k:'role',label:'Роль',type:'select',opts:ROLES},
+    {k:'scrum',label:'Скрам-мастер',type:'select',opts:['','Да']},
     {k:'avail',label:'Доступность',type:'num',def:1},{k:'absent',label:'Отсутствия (дн)',type:'num',def:0}]));
  // Star Map (Работа) — компетенции команды по ролям (радары + матрица)
  setView('starmap','Star Map — компетенции команды','Карта компетенций участников по их ролям: радар-профиль каждого, матрица уровней по направлениям и редактируемая таблица навыков (1–5).',starmapView());
@@ -3482,9 +3488,12 @@ const NAV=[
  {g:'Настройки',items:[['budget','Бюджет','💰'],['calendar','Календарь','📅'],['checks','Проверки данных','🧪'],['eda','EDA отчёт','🔬'],['integrations','Интеграции','🔌'],['params','Параметры','⚙️']]},
  {g:'Справка',items:[['faq','FAQ','❓'],['support','Support','🛟'],['audit','Журнал событий','🧾']]},
 ];
-const APP_VERSION='1.35.0';const APP_DATE='2026-09-17';
+const APP_VERSION='1.36.0';const APP_DATE='2026-09-17';
 const APP_ABOUT='Кросс-функциональная команда — это группа специалистов из разных областей (разработчиков, дизайнеров, маркетологов, аналитиков, менеджеров и других), которые объединяются для работы над одним конкретным проектом или задачей. Ключевая идея в том, чтобы собрать внутри команды всех необходимых экспертов, чтобы она могла самостоятельно пройти путь от идеи до результата, не передавая задачу последовательно из одного отдела в другой.';
 const CHANGELOG=[
+ {v:'1.36.0',date:'2026-09-17',items:[
+   'Добавлены роли «Product Owner» и «ИТ-Лидер» (с наборами компетенций в Star Map).',
+   'Роль «Скрам-мастер» — дополнительная: назначается любому участнику команды отдельным полем в разделе «Команда»; отражается в Star Map.']},
  {v:'1.35.0',date:'2026-09-17',items:[
    'Новый раздел «Интеграции» (Настройки): интеграция со всеми продуктами Atlassian — Jira, Jira Service Management, Jira Product Discovery, Confluence, Compass, Bitbucket, Trello, Opsgenie, Statuspage и Bamboo. Статус подключений и проверка выполняются на сервере; ключи задаются переменными окружения.']},
  {v:'1.34.0',date:'2026-09-17',items:[
