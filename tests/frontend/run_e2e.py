@@ -159,6 +159,29 @@ def main():
                 assert key in r['catalog'], 'catalog missing ' + key
         case('integrations: Atlassian product catalog renders', t_integrations)
 
+        # ---- 4e. Smart sidebar (collapse / pin / filter / recent) ----
+        def t_nav():
+            page.evaluate("()=>{try{localStorage.removeItem('navui');}catch(e){}}")
+            r = page.evaluate("""()=>{
+              const nav=document.getElementById('nav');
+              const hasSearch=!!document.getElementById('navsearch');
+              togglePin('backlog');
+              const fav=[...nav.querySelectorAll('.nav-smart .nav-h-t')].some(x=>x.textContent.includes('Избранное'));
+              const pinned=!!nav.querySelector('.nav-pin.on[data-pin="backlog"]');
+              toggleGroup('Выпуск');
+              const grp=[...nav.querySelectorAll('.nav-group:not(.nav-smart)')].find(g=>g.querySelector('.nav-h-t').textContent==='Выпуск');
+              const toggled=!grp.classList.contains('collapsed');
+              navFilter('гант');
+              const matches=[...nav.querySelectorAll('.nav-row')].filter(x=>x.style.display!=='none').map(x=>x.querySelector('.nav-lbl').textContent);
+              navFilter('');
+              togglePin('backlog');  // cleanup
+              return {hasSearch,fav,pinned,toggled,matches};}""")
+            assert r['hasSearch'], 'nav search box missing'
+            assert r['fav'] and r['pinned'], 'pin → favorites did not work'
+            assert r['toggled'], 'group collapse toggle did not work'
+            assert r['matches'] == ['Гант'], 'filter did not narrow to the match: ' + str(r['matches'])
+        case('sidebar: collapse/pin/filter smart nav', t_nav)
+
         # ---- 5. data quality checks engine ----
         def t_checks():
             ok = page.evaluate("()=>Array.isArray(dataChecks())")

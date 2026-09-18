@@ -218,11 +218,31 @@ button:focus-visible,input:focus-visible,select:focus-visible,.nav-item:focus-vi
 .side-foot .sf-name{font-weight:600;color:var(--ink)}
 .side-foot .sf-ver{font-variant-numeric:tabular-nums}
 main{flex:1;min-width:0;max-width:1240px;margin:0;padding:20px 22px 60px}
-.nav-group{margin-bottom:9px}
-.nav-h{font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700;padding:9px 10px 4px}
-.nav-item{display:flex;align-items:center;gap:9px;width:100%;background:none;border:none;color:var(--muted);padding:7px 10px;border-radius:8px;font-size:13.5px;cursor:pointer;font-family:inherit;text-align:left}
+.nav-search-wrap{padding:2px 8px 8px}
+.nav-search{width:100%;box-sizing:border-box;padding:7px 10px;border:1px solid var(--line);border-radius:8px;background:var(--panel2);color:var(--ink);font-size:13px;font-family:inherit}
+.nav-search:focus{outline:none;border-color:var(--accent);background:var(--panel)}
+.nav-group{margin-bottom:3px}
+.nav-h{display:flex;align-items:center;justify-content:space-between;gap:6px;width:100%;background:var(--panel);border:none;cursor:pointer;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700;padding:8px 10px 4px;font-family:inherit;text-align:left;position:sticky;top:0;z-index:2}
+.nav-h:hover{color:var(--ink)}
+.nav-h-static{cursor:default}
+.nav-chev{font-size:10px;transition:transform .15s;color:var(--muted);flex:none}
+.nav-group.collapsed .nav-chev{transform:rotate(-90deg)}
+.nav-group.collapsed .nav-items{display:none}
+.nav-h-static .nav-chev{display:none}
+.nav-items{display:flex;flex-direction:column;gap:1px}
+.nav-row{display:flex;align-items:center;position:relative}
+.nav-item{flex:1;min-width:0;display:flex;align-items:center;gap:9px;background:none;border:none;color:var(--muted);padding:6px 10px;border-radius:8px;font-size:13.5px;cursor:pointer;font-family:inherit;text-align:left}
+.nav-lbl{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .nav-item:hover{color:var(--ink);background:var(--panel2)}
 .nav-item.active{color:var(--accent);background:var(--accent-soft);font-weight:600}
+.nav-pin{flex:none;opacity:0;background:none;border:none;color:var(--muted);cursor:pointer;font-size:13px;line-height:1;padding:5px 8px;border-radius:6px;transition:opacity .12s}
+.nav-row:hover .nav-pin,.nav-pin.on{opacity:1}
+.nav-pin:not(.on){opacity:0}
+.nav-row:hover .nav-pin:not(.on){opacity:.55}
+.nav-pin:hover{color:var(--accent)}
+.nav-pin.on{color:var(--warn)}
+#nav.filtering .nav-group .nav-items{display:flex}
+#nav.filtering .nav-chev{visibility:hidden}
 .nav-ic{width:18px;text-align:center;font-size:14px;flex:none}
 .iconbtn{padding:7px 10px;font-size:15px;line-height:1}
 #menubtn{display:inline-flex}
@@ -3488,9 +3508,11 @@ const NAV=[
  {g:'Настройки',items:[['budget','Бюджет','💰'],['calendar','Календарь','📅'],['checks','Проверки данных','🧪'],['eda','EDA отчёт','🔬'],['integrations','Интеграции','🔌'],['params','Параметры','⚙️']]},
  {g:'Справка',items:[['faq','FAQ','❓'],['support','Support','🛟'],['audit','Журнал событий','🧾']]},
 ];
-const APP_VERSION='1.36.0';const APP_DATE='2026-09-17';
+const APP_VERSION='1.37.0';const APP_DATE='2026-09-18';
 const APP_ABOUT='Кросс-функциональная команда — это группа специалистов из разных областей (разработчиков, дизайнеров, маркетологов, аналитиков, менеджеров и других), которые объединяются для работы над одним конкретным проектом или задачей. Ключевая идея в том, чтобы собрать внутри команды всех необходимых экспертов, чтобы она могла самостоятельно пройти путь от идеи до результата, не передавая задачу последовательно из одного отдела в другой.';
 const CHANGELOG=[
+ {v:'1.37.0',date:'2026-09-18',items:[
+   'Эргономичное меню: группы сворачиваются (по умолчанию открыта только активная), быстрый поиск по разделам, блоки «⭐ Избранное» (закрепление разделов) и «🕘 Недавние», липкие заголовки и компактная плотность. Состояние сохраняется между сессиями.']},
  {v:'1.36.0',date:'2026-09-17',items:[
    'Добавлены роли «Product Owner» и «ИТ-Лидер» (с наборами компетенций в Star Map).',
    'Роль «Скрам-мастер» — дополнительная: назначается любому участнику команды отдельным полем в разделе «Команда»; отражается в Star Map.']},
@@ -3583,18 +3605,49 @@ function changelogNode(){const host=document.createElement('div');host.className
  h+='</div></details>';host.innerHTML=h;
  const d=host.querySelector('details');if(d)d.addEventListener('toggle',()=>{try{localStorage.setItem('changelog_open',d.open?'1':'0');}catch(e){}});
  return host;}
-function buildNav(){let h='';NAV.forEach(g=>{h+=`<div class="nav-group"><div class="nav-h">${g.g}</div>`;
-  g.items.forEach(it=>h+=`<button class="nav-item" data-v="${it[0]}"><span class="nav-ic">${it[2]}</span><span>${it[1]}</span></button>`);
-  h+='</div>';});document.getElementById('nav').innerHTML=h;
+/* ---------- smart sidebar: collapsible groups + favorites + recent + filter ---------- */
+const ID2ITEM={},ID2GROUP={};NAV.forEach(g=>g.items.forEach(it=>{ID2ITEM[it[0]]=it;ID2GROUP[it[0]]=g.g;}));
+var _navFirstRun=!lsGet('navui');
+var NAVUI=(function(){try{const o=JSON.parse(lsGet('navui')||'{}');return {collapsed:o.collapsed||{},pins:Array.isArray(o.pins)?o.pins:[],recent:Array.isArray(o.recent)?o.recent:[]};}catch(e){return {collapsed:{},pins:[],recent:[]};}})();
+if(_navFirstRun)NAV.forEach(g=>{NAVUI.collapsed[g.g]=true;});   // first run: compact — only the active group is open
+var _navQ='';
+function saveNavUI(){lsSet('navui',JSON.stringify(NAVUI));}
+function pushRecent(id){if(!ID2ITEM[id])return;NAVUI.recent=[id].concat(NAVUI.recent.filter(x=>x!==id)).slice(0,8);saveNavUI();}
+function togglePin(id){if(!ID2ITEM[id])return;const i=NAVUI.pins.indexOf(id);if(i>=0)NAVUI.pins.splice(i,1);else NAVUI.pins.push(id);saveNavUI();buildNav();}
+function toggleGroup(g){NAVUI.collapsed[g]=!NAVUI.collapsed[g];saveNavUI();buildNav();}
+function navRow(it,pinned){return `<div class="nav-row">`
+  +`<button class="nav-item${it[0]===CURV?' active':''}" data-v="${it[0]}"><span class="nav-ic">${it[2]}</span><span class="nav-lbl">${esc(it[1])}</span></button>`
+  +`<button class="nav-pin${pinned?' on':''}" data-pin="${it[0]}" title="${pinned?'Убрать из избранного':'В избранное'}" aria-label="Избранное">${pinned?'★':'☆'}</button></div>`;}
+function buildNav(){
+ const pinSet=new Set(NAVUI.pins.filter(id=>ID2ITEM[id]));const pins=[...pinSet];
+ const recent=NAVUI.recent.filter(id=>ID2ITEM[id]&&!pinSet.has(id)).slice(0,4);
+ let h='<div class="nav-search-wrap"><input id="navsearch" class="nav-search" type="search" placeholder="Поиск раздела…  ⌘K" autocomplete="off"></div>';
+ const smart=(title,ids)=>{let s=`<div class="nav-group nav-smart"><div class="nav-h nav-h-static"><span class="nav-h-t">${title}</span></div><div class="nav-items">`;ids.forEach(id=>s+=navRow(ID2ITEM[id],pinSet.has(id)));return s+'</div></div>';};
+ if(pins.length)h+=smart('⭐ Избранное',pins);
+ if(recent.length)h+=smart('🕘 Недавние',recent);
+ NAV.forEach(g=>{const activeG=ID2GROUP[CURV]===g.g;const collapsed=!activeG&&!!NAVUI.collapsed[g.g];
+   h+=`<div class="nav-group${collapsed?' collapsed':''}"><button class="nav-h" data-grp="${esc(g.g)}"><span class="nav-h-t">${esc(g.g)}</span><span class="nav-chev">▾</span></button><div class="nav-items">`;
+   g.items.forEach(it=>h+=navRow(it,pinSet.has(it[0])));h+='</div></div>';});
+ const nav=document.getElementById('nav');nav.innerHTML=h;
+ if(_navQ){const s=document.getElementById('navsearch');if(s){s.value=_navQ;navFilter(_navQ);}}
  const sf=document.getElementById('sidefoot');
  if(sf)sf.innerHTML=`<div class="sf-name">Управление кросс-функциональной командой</div><div class="sf-ver">v${APP_VERSION} · ${APP_DATE}</div>`;}
+function navFilter(q){_navQ=(q||'').trim();const ql=_navQ.toLowerCase();const nav=document.getElementById('nav');nav.classList.toggle('filtering',!!ql);
+ nav.querySelectorAll('.nav-group').forEach(grp=>{let any=false;
+   grp.querySelectorAll('.nav-row').forEach(row=>{const lbl=(row.querySelector('.nav-lbl').textContent||'').toLowerCase();const show=!ql||lbl.includes(ql);row.style.display=show?'':'none';if(show)any=true;});
+   grp.style.display=(ql&&!any)?'none':'';});}
 function closeDrawer(){document.getElementById('side').classList.remove('open');document.getElementById('scrim').classList.remove('show');}
-function activate(id){CURV=id;
- document.querySelectorAll('.nav-item').forEach(b=>b.classList.toggle('active',b.dataset.v===id));
+function activate(id){CURV=id;_navQ='';pushRecent(id);
  document.querySelectorAll('.view').forEach(s=>s.classList.toggle('active',s.id==='v_'+id));
+ buildNav();
  closeDrawer();window.scrollTo(0,0);if(typeof applyPerms==='function')applyPerms();}
 buildNav();
-document.getElementById('nav').addEventListener('click',e=>{const b=e.target.closest('.nav-item');if(b){activate(b.dataset.v);if(typeof auditClient==='function')auditClient('open_section',b.dataset.v);}});
+document.getElementById('nav').addEventListener('click',e=>{
+ const pin=e.target.closest('.nav-pin');if(pin){e.stopPropagation();togglePin(pin.dataset.pin);return;}
+ const hd=e.target.closest('.nav-h[data-grp]');if(hd){toggleGroup(hd.dataset.grp);return;}
+ const b=e.target.closest('.nav-item');if(b){activate(b.dataset.v);if(typeof auditClient==='function')auditClient('open_section',b.dataset.v);}});
+document.getElementById('nav').addEventListener('input',e=>{if(e.target.id==='navsearch')navFilter(e.target.value);});
+document.getElementById('nav').addEventListener('keydown',e=>{if(e.target.id==='navsearch'&&e.key==='Escape'){e.target.value='';navFilter('');}});
 document.getElementById('menubtn').onclick=()=>{const shell=document.querySelector('.shell'),side=document.getElementById('side');
  if(window.matchMedia('(max-width:900px)').matches){side.classList.toggle('open');document.getElementById('scrim').classList.toggle('show',side.classList.contains('open'));}
  else{shell.classList.toggle('nav-collapsed');try{localStorage.setItem('nav_collapsed',shell.classList.contains('nav-collapsed')?'1':'0');}catch(e){}}};
