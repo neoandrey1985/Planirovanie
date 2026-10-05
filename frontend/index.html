@@ -437,7 +437,7 @@ body.noadmin #rst,body.noadmin #imp{display:none}
  </div>
 </div></header>
 <div class="shell"><aside class="side" id="side"><nav id="nav"></nav><div class="side-foot" id="sidefoot"></div></aside><div class="scrim" id="scrim"></div>
-<main id="main"><section class="view" id="v_dash"></section><section class="view" id="v_board"></section><section class="view" id="v_kanban"></section><section class="view" id="v_backlog"></section><section class="view" id="v_team"></section><section class="view" id="v_starmap"></section><section class="view" id="v_roadmap"></section><section class="view" id="v_quarters"></section><section class="view" id="v_rice"></section><section class="view" id="v_moscow"></section><section class="view" id="v_gantt"></section><section class="view" id="v_deps"></section><section class="view" id="v_releases"></section><section class="view" id="v_milestones"></section><section class="view" id="v_debt"></section><section class="view" id="v_okr"></section><section class="view" id="v_budget"></section><section class="view" id="v_analytics"></section><section class="view" id="v_risks"></section><section class="view" id="v_bugs"></section><section class="view" id="v_daily"></section><section class="view" id="v_grooming"></section><section class="view" id="v_demo"></section><section class="view" id="v_vacation"></section><section class="view" id="v_birthdays"></section><section class="view" id="v_retro"></section><section class="view" id="v_agile"></section><section class="view" id="v_calendar"></section><section class="view" id="v_checks"></section><section class="view" id="v_eda"></section><section class="view" id="v_integrations"></section><section class="view" id="v_params"></section><section class="view" id="v_faq"></section><section class="view" id="v_support"></section><section class="view" id="v_audit"></section></main></div>
+<main id="main"><section class="view" id="v_dash"></section><section class="view" id="v_board"></section><section class="view" id="v_kanban"></section><section class="view" id="v_backlog"></section><section class="view" id="v_team"></section><section class="view" id="v_starmap"></section><section class="view" id="v_roadmap"></section><section class="view" id="v_quarters"></section><section class="view" id="v_rice"></section><section class="view" id="v_wsjf"></section><section class="view" id="v_moscow"></section><section class="view" id="v_sprintGoals"></section><section class="view" id="v_gantt"></section><section class="view" id="v_deps"></section><section class="view" id="v_releases"></section><section class="view" id="v_milestones"></section><section class="view" id="v_debt"></section><section class="view" id="v_okr"></section><section class="view" id="v_budget"></section><section class="view" id="v_analytics"></section><section class="view" id="v_risks"></section><section class="view" id="v_bugs"></section><section class="view" id="v_daily"></section><section class="view" id="v_grooming"></section><section class="view" id="v_demo"></section><section class="view" id="v_vacation"></section><section class="view" id="v_birthdays"></section><section class="view" id="v_retro"></section><section class="view" id="v_agile"></section><section class="view" id="v_calendar"></section><section class="view" id="v_checks"></section><section class="view" id="v_eda"></section><section class="view" id="v_integrations"></section><section class="view" id="v_params"></section><section class="view" id="v_faq"></section><section class="view" id="v_support"></section><section class="view" id="v_audit"></section></main></div>
 <div class="palette" id="palette"><div class="pbox"><input class="pin" id="pin" placeholder="Поиск раздела или действия…" autocomplete="off"><div class="plist" id="plist"></div></div></div>
 <div class="role-pop" id="rolepop"></div>
 <div class="modal" id="accmodal"><div class="mbox">
@@ -1400,6 +1400,19 @@ function migrate(d){
   {id:'MS-10',name:'Экспорт отчётов',category:'Could',note:'Удобно, но не критично'},
   {id:'MS-11',name:'Программа лояльности / бонусы',category:"Won't",note:'Отдельная инициатива на следующий квартал'},
   {id:'MS-12',name:'Офлайн-режим приложения',category:"Won't",note:'Вне scope текущего релиза'}];
+ if(!Array.isArray(d.sprintGoals))d.sprintGoals=[
+  {id:'SG-01',sprint:1,goal:'Каркас каталога и карточка товара готовы к демо',status:'Достигнута'},
+  {id:'SG-02',sprint:2,goal:'Корзина и черновик оформления заказа работают сквозным сценарием',status:'Достигнута'},
+  {id:'SG-03',sprint:3,goal:'Оплата картой (MVP) проходит тестовую транзакцию',status:'В работе'},
+  {id:'SG-04',sprint:4,goal:'Уведомления и история заказов доступны пользователю',status:'Запланирована'},
+  {id:'SG-05',sprint:5,goal:'Личный кабинет с управлением подпиской',status:'Запланирована'}];
+ if(!Array.isArray(d.wsjf))d.wsjf=[
+  {id:'W-01',task:'T-01',name:'MVP оформления заказа',bv:9,tc:8,rr:5,jobSize:8},
+  {id:'W-02',task:'T-03',name:'Оплата картой',bv:10,tc:9,rr:8,jobSize:5},
+  {id:'W-03',name:'Промокоды и скидки',bv:5,tc:3,rr:2,jobSize:3},
+  {id:'W-04',name:'Уведомления (e-mail/push)',bv:4,tc:5,rr:2,jobSize:3},
+  {id:'W-05',name:'История заказов',bv:4,tc:2,rr:1,jobSize:2},
+  {id:'W-06',name:'Личный кабинет',bv:6,tc:4,rr:3,jobSize:5}];
  if(!Array.isArray(d.faq))d.faq=[
   {id:'Q-01',category:'Начало работы',q:'С чего начать работу в приложении?',a:'Заполните «Параметры» (даты старта, число спринтов, focus factor), затем «Команду» и «Бэклог». Дорожная карта, ёмкость, velocity, релизы и метрики считаются автоматически из этих данных.'},
   {id:'Q-02',category:'Начало работы',q:'Нужен ли интернет или сервер?',a:'Нет. Приложение работает локально в браузере, данные хранятся в localStorage. Если поднят backend (Java + Python), состояние дополнительно синхронизируется через /api/state — индикатор в шапке показывает статус.'},
@@ -1585,6 +1598,8 @@ function lines(box,cats,series,opt){opt=opt||{};const W=640,H=290,ml=42,mr=10,mt
 
 /* ---------- editable table ---------- */
 function statusPill(s){const m={'Готово':'p-good','Закрыт':'p-good','Сделано':'p-good','В работе':'p-warn','To Do':'p-neut','Не начали':'p-neut','Открыт':'p-warn','Планируется':'p-neut','Задержка':'p-crit'};return `<span class="pill ${m[s]||'p-neut'}">${s||''}</span>`;}
+function goalPill(s){const m={'Достигнута':'p-good','В работе':'p-warn','Запланирована':'p-neut','Не достигнута':'p-crit','Отменена':'p-crit'};return `<span class="pill ${m[s]||'p-neut'}">${s||'—'}</span>`;}
+const GOAL_STATUS=['Запланирована','В работе','Достигнута','Не достигнута','Отменена'];
 const UI={search:{},sort:{}};
 function editable(coll,cols,opts){opts=opts||{};const rows=ST[coll]||(ST[coll]=[]);
  const wrap=document.createElement('div');
@@ -1642,6 +1657,8 @@ function sprintOpts(){return Array.from({length:ST.params.sprints||11},(_,i)=>i+
 /* ================= Автоматизации (приоритет, авто-набор, конвертации, линтер) ================= */
 function moscowRankOf(id){const m=(ST.moscow||[]).find(x=>x.task===id);if(!m)return 2.5;const r={'Must':0,'Should':1,'Could':2,"Won't":3}[m.category];return r==null?2.5:r;}
 function riceScoreOf(id){const r=(ST.rice||[]).find(x=>x.task===id);return r?riceScore(r):0;}
+function wsjfCoD(r){return num(r.bv)+num(r.tc)+num(r.rr);}
+function wsjfScore(r){const js=num(r.jobSize);return js>0?wsjfCoD(r)/js:0;}
 function cmpPriority(a,b){const ma=moscowRankOf(a.id),mb=moscowRankOf(b.id);if(ma!==mb)return ma-mb;const ra=riceScoreOf(a.id),rb=riceScoreOf(b.id);if(ra!==rb)return rb-ra;return num(a.est)-num(b.est);}
 function isTaskReady(id){const t=(ST.tasks||[]).find(x=>x.id===id);if(t&&t.dor==='Готова')return true;return (ST.grooming||[]).some(g=>g.task===id&&g.ready==='Готово к спринту');}
 function todayISO(){return (ST.params&&ST.params.today)||new Date().toISOString().slice(0,10);}
@@ -1730,6 +1747,38 @@ function groomUngroomed(){const arr=ST.grooming||(ST.grooming=[]);let n=0;
    arr.push({id:genId(arr,'id','GR-'),task:t.id,date:todayISO(),item:t.title||t.id,action:'Оценка',est:num(t.est),ready:'Требует доработки',owner:t.assignee||'',notes:'Авто: не разобрано'});n++;});
  if(n){save();views();}return n;}
 function doneSprintForReport(C){for(let i=(C.sp||[]).length-1;i>=0;i--){const s=C.sp[i];const tk=(ST.tasks||[]).filter(t=>+t.sprint===+s.s);if(tk.length&&tk.every(t=>t.status==='Готово'))return s.s;}return null;}
+/* ---- v1.39: прогноз риска срыва спринта + авто-перенос незавершённых задач ---- */
+// Эвристический прогноз: перегрузка + отставание по времени + открытые дефекты + заблокированные зависимости.
+function sprintRisk(C){C=C||compute();const cur=C.cur,sp=C.curSp;if(!sp)return null;
+ const tasks=(ST.tasks||[]).filter(t=>+t.sprint===cur);
+ const plan=tasks.reduce((x,t)=>x+num(t.est),0);
+ const done=tasks.filter(t=>t.status==='Готово').reduce((x,t)=>x+num(t.est),0);
+ const remainSp=Math.max(0,plan-done);
+ const total=(sp.b-sp.a)||MS,elapsed=Math.min(total,Math.max(0,(pd(ST.params.today)-sp.a)));
+ const timePct=total?elapsed/total:0, workPct=plan?done/plan:1;
+ const overcommit=sp.cap?plan/sp.cap:(plan?2:0);
+ const openBugs=(ST.bugs||[]).filter(b=>+b.sprint===cur&&b.status!=='Закрыт').length;
+ const blocked=(ST.deps||[]).filter(dp=>+dp.sprint===cur&&dp.status==='Заблокировано').length;
+ let score=0;const reasons=[];
+ if(overcommit>1.05){const a=Math.min(35,Math.round((overcommit-1)*100));score+=a;reasons.push('Перегрузка: план '+Math.round(overcommit*100)+'% ёмкости спринта');}
+ const lag=timePct-workPct;
+ if(sp.status==='Активный'&&lag>0.12){score+=Math.min(40,Math.round(lag*120));reasons.push('Отставание: выполнено '+Math.round(workPct*100)+'% работы при '+Math.round(timePct*100)+'% прошедшего времени');}
+ if(openBugs>0){score+=Math.min(20,openBugs*5);reasons.push(openBugs+' открытых дефектов в спринте');}
+ if(blocked>0){score+=Math.min(25,blocked*10);reasons.push(blocked+' заблокированных зависимостей');}
+ if(plan===0){score=0;reasons.length=0;reasons.push('В спринте нет запланированных задач');}
+ score=Math.min(100,Math.max(0,score));
+ const level=score>=60?'Высокий':score>=30?'Средний':'Низкий';
+ const colr=score>=60?'--crit':score>=30?'--warn':'--good';
+ return {cur,score,level,color:colr,reasons,plan,done,remainSp,cap:sp.cap,timePct,workPct,status:sp.status,openBugs,blocked};}
+function carryoverSprint(N){if(!PERM.canEdit){toast('Только для редактора/администратора');return;}
+ const C=compute();N=num(N)|| (doneSprintForReport(C)||C.cur);
+ const from=C.sp.find(x=>+x.s===N);if(!from){toast('Нет спринта #'+N);return;}
+ const dst=N+1;if(dst>(ST.params.sprints||N)){toast('Спринт #'+N+' последний — переносить некуда');return;}
+ const carry=(ST.tasks||[]).filter(t=>+t.sprint===N&&t.status!=='Готово');
+ if(!carry.length){toast('В спринте #'+N+' нет незавершённых задач');return;}
+ carry.forEach(t=>{t.sprint=dst;t.carried=(num(t.carried)||0)+1;});
+ save();views();activate('roadmap');if(typeof auditClient==='function')auditClient('sprint_carryover','Спринт '+N+'→'+dst+': '+carry.length);
+ toast('Перенесено из спринта #'+N+' в #'+dst+': '+carry.length+' задач ('+fmt(carry.reduce((a,t)=>a+num(t.est),0),1)+' SP)');}
 function detectDelim(line){const cands=[',',';','\t'];let best=',',n=-1;cands.forEach(d=>{const c=line.split(d).length;if(c>n){n=c;best=d;}});return best;}
 function parseCSV(text,delim){const rows=[];let i=0,f='',row=[],q=false;text=String(text).replace(/\r\n/g,'\n').replace(/\r/g,'\n');
  while(i<text.length){const c=text[i];
@@ -2046,9 +2095,10 @@ function backlogView(){const w=document.createElement('div');const C=compute();
  const fs=document.createElement('select');fs.className='tsearch';fs.style.cssText='flex:0 0 auto;min-width:150px';
  fs.innerHTML=sprintOpts().map(s=>'<option value="'+s+'"'+(s===C.cur?' selected':'')+'>Спринт #'+s+'</option>').join('');
  const fb=document.createElement('button');fb.className='btn primary';fb.textContent='⚙ Авто-набор спринта';fb.onclick=()=>autoFillSprint(fs.value);
+ const cb=document.createElement('button');cb.className='btn';cb.textContent='↪ Перенести незавершённые';cb.title='Перенести незавершённые задачи выбранного спринта в следующий';cb.onclick=()=>carryoverSprint(fs.value);
  const cnt=document.createElement('span');cnt.style.cssText='font-size:12.5px;color:var(--muted);align-self:center;margin-left:auto';
  cnt.textContent='Готовы к спринту (по грумингу): '+(ST.tasks||[]).filter(t=>isTaskReady(t.id)).length;
- bar.appendChild(sb);bar.appendChild(fs);bar.appendChild(fb);bar.appendChild(cnt);w.appendChild(bar);
+ bar.appendChild(sb);bar.appendChild(fs);bar.appendChild(fb);bar.appendChild(cb);bar.appendChild(cnt);w.appendChild(bar);
  w.appendChild(editable('tasks',[
     {k:'id',label:'ID'},{k:'title',label:'Задача',wide:true},{k:'assignee',label:'Исполнитель'},
     {k:'role',label:'Роль',type:'select',opts:ROLES},{k:'type',label:'Тип',type:'select',opts:['История','Задача','Тех.долг']},
@@ -2349,7 +2399,9 @@ function views(){
  // Quarters (Кварталы) + quarterly roadmap
  renderQuarters(C);
  setView('rice','RICE','Приоритизация фич по методологии RICE = (Reach × Impact × Confidence) / Effort.',riceView());
+ setView('wsjf','WSJF — приоритизация (SAFe)','Weighted Shortest Job First = Cost of Delay (Business Value + Time Criticality + Risk Reduction) / Job Size. Чем выше балл — тем раньше берём в работу.',wsjfView());
  setView('moscow','MoSCoW — приоритизация','Метод MoSCoW: Must / Should / Could / Won\'t have — что обязательно, желательно, возможно и что сознательно откладываем.',moscowView());
+ setView('sprintGoals','Цели спринтов','Sprint Goal по каждому спринту — единое обязательство команды о создаваемой ценности. Столбец «% факт» считается автоматически по готовности задач спринта.',sprintGoalsView());
  // Gantt
  renderGantt(C);
  setView('deps','Зависимости от других стримов','Межстримовые зависимости задач, историй и фич. Маркеры ◆ отражены на диаграмме Ганта.',depsView());
@@ -2433,8 +2485,10 @@ function attnBand(C){const it=[],T=ST.ttmTarget||15;
  if(!it.length)it.push(['good','analytics','✓ Критичных сигналов нет']);
  return '<div class="attn">'+it.map(x=>`<a class="a-${x[0]}" data-goto="${x[1]}">${esc(x[2])}</a>`).join('')+'</div>';}
 function renderDash(C){const v=document.getElementById('v_dash');const T=ST.ttmTarget||15;
+ const risk=sprintRisk(C);
  const cards=[
   kpiCard('Health-index',pctf(C.health),'сводный статус',C.health>=.8?'good':C.health>=.6?'warn':'crit',{goto:'analytics'}),
+  kpiCard('Риск срыва спринта',risk?risk.level:'—',risk?('индекс '+risk.score+'/100'):'нет данных',risk?(risk.score>=60?'crit':risk.score>=30?'warn':'good'):'neut',{goto:'roadmap'}),
   kpiCard('Текущий спринт','#'+C.cur,C.curSp?fmtd(C.curSp.a)+'–'+fmtd(C.curSp.b):'','neut',{goto:'roadmap'}),
   kpiCard('Загрузка',pctf(C.curSp?(C.curSp.plan/C.curSp.cap):0),`ёмкость ${fmt(C.curSp?C.curSp.cap:0,1)} · план ${fmt(C.curSp?C.curSp.plan:0,1)}`,(C.curSp&&C.curSp.plan/C.curSp.cap>1)?'crit':'good',{goto:'gantt',spark:'sp_load'}),
   kpiCard('Ср. velocity',fmt(C.avgVel,1)+' <small>дн</small>','закрытых: '+C.closed,'neut',{goto:'analytics',spark:'sp_vel'}),
@@ -2444,9 +2498,14 @@ function renderDash(C){const v=document.getElementById('v_dash');const T=ST.ttmT
   kpiCard('Остаток',fmt(C.remain,1)+' <small>дн</small>','незакрытые спринты','neut',{goto:'roadmap'}),
  ];
  const doneSp=doneSprintForReport(C);
+ const curGoal=(ST.sprintGoals||[]).find(g=>+g.sprint===C.cur);
+ const goalBand=curGoal?`<div class="card" style="border-left:4px solid var(--accent);margin-top:12px;display:flex;gap:10px;align-items:center;flex-wrap:wrap"><span style="font-size:13.5px">🎯 <b>Цель спринта #${C.cur}:</b> ${esc(curGoal.goal||'—')}</span><span style="margin-left:auto">${goalPill(curGoal.status)}</span></div>`:'';
+ const riskBand=(risk&&risk.score>=30&&risk.reasons.length)?`<div class="card" style="border-left:4px solid var(--${risk.color.replace('--','')});margin-top:12px"><p class="ctitle" style="color:var(${risk.color});margin:0 0 6px">⚠ Риск срыва спринта #${risk.cur}: ${risk.level} (${risk.score}/100)</p><ul style="margin:0 0 0 18px;font-size:13px;color:var(--muted);line-height:1.7">${risk.reasons.map(r=>'<li>'+esc(r)+'</li>').join('')}</ul></div>`:'';
  v.innerHTML=`<h1>Дашборд</h1><p class="lede">Цель: <b>${esc(ST.params.goal||'—')}</b>. Всё пересчитывается при изменении данных.</p>
  <div class="card about-card"><span class="about-ic">👥</span><div><div class="about-h">Кросс-функциональная команда</div><p class="about-t">${APP_ABOUT}</p></div></div>
  ${attnBand(C)}
+ ${goalBand}
+ ${riskBand}
  ${doneSp?`<div class="card" style="border-left:4px solid var(--good);margin-top:12px;display:flex;gap:12px;align-items:center;flex-wrap:wrap"><span style="font-size:13.5px">🏁 Спринт #${doneSp} завершён — все задачи в статусе «Готово». Сформировать отчёт по спринту?</span><button class="btn primary" style="margin-left:auto" onclick="openPptxModalFor(${doneSp})">📊 Сформировать отчёт</button></div>`:''}
  <div class="grid kpis" id="dk"></div>
  <div class="cols two" style="margin-top:14px">
@@ -2873,6 +2932,57 @@ function riceView(){const w=document.createElement('div');
   +'<b>Effort</b> — трудозатраты команды, человеко-дни.<br>'
   +'Приоритет: <b>Высокий</b> ≥ 60% макс. балла · <b>Средний</b> ≥ 30% · иначе <b>Низкий</b>.</p>';
  w.appendChild(lg);return w;}
+function wsjfView(){const w=document.createElement('div');
+ w.appendChild(backlogPickerBar('wsjf','+ В WSJF','Не добавлено',(t,arr)=>({id:genId(arr,'id','W-'),task:t.id,name:t.title||t.id,bv:5,tc:3,rr:2,jobSize:num(t.est)||3})));
+ w.appendChild(editable('wsjf',[{k:'id',label:'ID'},{k:'task',label:'Задача (Бэклог)',type:'dep'},{k:'name',label:'Фича / инициатива',wide:true},
+   {k:'bv',label:'Business Value',type:'num'},{k:'tc',label:'Time Criticality',type:'num'},{k:'rr',label:'Risk Reduction',type:'num'},
+   {k:'jobSize',label:'Job Size',type:'num'}],{newId:'id',prefix:'W-'}));
+ const items=(ST.wsjf||[]).map(r=>({r,score:wsjfScore(r),cod:wsjfCoD(r)}));
+ const mx=items.reduce((a,b)=>Math.max(a,b.score),0)||1;
+ const ranked=items.slice().sort((a,b)=>b.score-a.score);
+ const prio=s=>s>=0.6*mx?['Высокий','p-good']:s>=0.3*mx?['Средний','p-warn']:['Низкий','p-crit'];
+ const card=document.createElement('div');card.className='card';card.style.marginTop='14px';
+ let h='<p class="ctitle">Ранжирование по WSJF (авто)</p><div class="twrap" style="border:none"><table><tr><th class="num">Ранг</th><th>ID</th><th>Фича</th><th class="num">BV</th><th class="num">TC</th><th class="num">RR</th><th class="num">CoD</th><th class="num">Job Size</th><th class="num">WSJF</th><th>Приоритет</th></tr>';
+ ranked.forEach((x,i)=>{const r=x.r,p=prio(x.score);
+   h+=`<tr><td class="num">${i+1}</td><td>${esc(r.id)}</td><td>${esc(r.name)}</td><td class="num">${num(r.bv)}</td><td class="num">${num(r.tc)}</td><td class="num">${num(r.rr)}</td><td class="num">${x.cod}</td><td class="num">${fmt(num(r.jobSize),1)}</td><td class="num"><b>${fmt(x.score,2)}</b></td><td><span class="pill ${p[1]}">${p[0]}</span></td></tr>`;});
+ h+='</table></div>';card.innerHTML=h;w.appendChild(card);
+ const cbox=document.createElement('div');const cc=document.createElement('div');cc.className='card';cc.style.marginTop='14px';
+ cc.innerHTML='<p class="ctitle">WSJF score по фичам</p>';cc.appendChild(cbox);w.appendChild(cc);
+ bars(cbox,ranked.map(x=>x.r.id),[{color:col('--accent'),data:ranked.map(x=>Math.round(x.score*100)/100)}]);
+ const lg=document.createElement('div');lg.className='card';lg.style.marginTop='14px';
+ lg.innerHTML='<p class="ctitle">Методология WSJF (SAFe)</p><p style="font-size:13px;color:var(--muted);line-height:1.7;margin:0">'
+  +'<b>WSJF = Cost of Delay / Job Size</b>, где <b>Cost of Delay = Business Value + Time Criticality + Risk Reduction/Opportunity Enablement</b>.<br>'
+  +'<b>Business Value</b> — ценность для бизнеса и пользователей.<br>'
+  +'<b>Time Criticality</b> — насколько ценность падает со временем (дедлайны, окна рынка).<br>'
+  +'<b>Risk Reduction</b> — снижение риска или открытие новых возможностей.<br>'
+  +'<b>Job Size</b> — относительный объём работы (аналог Effort).<br>'
+  +'Оценки удобно давать по шкале Фибоначчи (1, 2, 3, 5, 8, 13). Чем выше WSJF — тем раньше берём в работу: максимальная отдача на единицу усилий.</p>';
+ w.appendChild(lg);return w;}
+function goalAchievement(sprint){const tk=(ST.tasks||[]).filter(t=>+t.sprint===+sprint);if(!tk.length)return null;
+ const done=tk.filter(t=>t.status==='Готово').length;return {total:tk.length,done,pct:done/tk.length};}
+function sprintGoalsView(){const w=document.createElement('div');
+ w.appendChild(editable('sprintGoals',[{k:'id',label:'ID'},{k:'sprint',label:'Спринт',type:'num'},
+   {k:'goal',label:'Цель спринта',wide:true},{k:'status',label:'Статус',type:'select',opts:GOAL_STATUS.slice()}],{newId:'id',prefix:'SG-'}));
+ const g=(ST.sprintGoals||[]).slice().sort((a,b)=>num(a.sprint)-num(b.sprint));
+ const ach=g.filter(x=>x.status==='Достигнута').length;
+ const inw=g.filter(x=>x.status==='В работе').length;
+ const kp=document.createElement('div');kp.className='grid kpis';kp.style.marginTop='14px';
+ kp.innerHTML=kpiCard('Целей задано',g.length,'по спринтам','neut')
+  +kpiCard('Достигнуто',ach,g.length?pctf(ach/g.length):'—',ach?'good':'neut')
+  +kpiCard('В работе',inw,'текущие спринты',inw?'warn':'neut')
+  +kpiCard('Покрытие спринтов',pctf((ST.params.sprints||g.length)?g.length/(ST.params.sprints||g.length):0),'из '+(ST.params.sprints||g.length)+' спринтов','neut');
+ w.appendChild(kp);
+ const card=document.createElement('div');card.className='card';card.style.marginTop='14px';
+ let h='<p class="ctitle">Цели по спринтам и их выполнение (авто)</p><div class="twrap" style="border:none"><table><tr><th>Спринт</th><th>Цель</th><th>Статус</th><th class="num">Задач</th><th class="num">Готово</th><th class="num">% факт</th></tr>';
+ g.forEach(x=>{const a=goalAchievement(x.sprint);
+   h+=`<tr><td>С${esc(String(x.sprint))}</td><td>${esc(x.goal||'—')}</td><td>${goalPill(x.status)}</td><td class="num">${a?a.total:'—'}</td><td class="num">${a?a.done:'—'}</td><td class="num">${a?pctf(a.pct):'—'}</td></tr>`;});
+ h+='</table></div>';card.innerHTML=h;w.appendChild(card);
+ const lg=document.createElement('div');lg.className='card';lg.style.marginTop='14px';
+ lg.innerHTML='<p class="ctitle">Цель спринта (Sprint Goal)</p><p style="font-size:13px;color:var(--muted);line-height:1.7;margin:0">'
+  +'<b>Sprint Goal</b> — единая формулировка того, зачем команда берёт спринт: ценность, которую обязуется создать. Это обязательство, а не список задач.<br>'
+  +'Хорошая цель <b>одна на спринт</b>, понятна заказчику и помогает принимать решения при изменении плана (что можно отбросить, а что — нельзя).<br>'
+  +'Столбец <b>% факт</b> считается автоматически как доля задач спринта в статусе «Готово» — быстрый индикатор достижения цели.</p>';
+ w.appendChild(lg);return w;}
 function dailyView(){const w=document.createElement('div');
  (function(){const bar=document.createElement('div');bar.className='grm-pick';
   const b=document.createElement('button');b.className='btn primary';b.textContent='⛔ Блокеры → в «Зависимости»';b.onclick=dailyBlockersToDeps;
@@ -3297,7 +3407,10 @@ function exportXlsx(){const C=compute();const s=[];
  s.push({name:'Календарь',aoa:[['Дата','Праздник / выходной']].concat((ST.calendar||[]).map(h=>[typeof h==='string'?h:h.date,typeof h==='string'?'':h.name]))});
  {const im=(ST.rice||[]).map(r=>riceScore(r));const rmx=im.reduce((a,b)=>Math.max(a,b),0)||1;
   s.push({name:'RICE',aoa:[['ID','Задача (Бэклог)','Фича','Reach','Impact','Confidence','Effort','RICE score','Приоритет']].concat((ST.rice||[]).map(r=>{const sc=riceScore(r);return [r.id,r.task,r.name,num(r.reach),num(r.impact),riceConf(r.conf),num(r.effort),Math.round(sc*10)/10,sc>=0.6*rmx?'Высокий':sc>=0.3*rmx?'Средний':'Низкий'];}))});}
+ {const im=(ST.wsjf||[]).map(r=>wsjfScore(r));const wmx=im.reduce((a,b)=>Math.max(a,b),0)||1;
+  s.push({name:'WSJF',aoa:[['ID','Задача (Бэклог)','Фича','Business Value','Time Criticality','Risk Reduction','Cost of Delay','Job Size','WSJF score','Приоритет']].concat((ST.wsjf||[]).map(r=>{const sc=wsjfScore(r);return [r.id,r.task,r.name,num(r.bv),num(r.tc),num(r.rr),wsjfCoD(r),num(r.jobSize),Math.round(sc*100)/100,sc>=0.6*wmx?'Высокий':sc>=0.3*wmx?'Средний':'Низкий'];}))});}
  s.push({name:'MoSCoW',aoa:[['ID','Задача (Бэклог)','Фича / требование','Категория','Приоритет','Обоснование']].concat((ST.moscow||[]).map(m=>[m.id,m.task,m.name,m.category,(MOSCOW_META[m.category]||{}).ru||'',m.note]))});
+ s.push({name:'Цели спринтов',aoa:[['ID','Спринт','Цель спринта','Статус','Задач','Готово','% факт']].concat((ST.sprintGoals||[]).slice().sort((a,b)=>num(a.sprint)-num(b.sprint)).map(g=>{const a=goalAchievement(g.sprint);return [g.id,num(g.sprint),g.goal,g.status,a?a.total:'',a?a.done:'',a?a.pct:''];}))});
  s.push({name:'Зависимости',aoa:[['ID','Элемент','Тип','Задача','Внешний стрим','Направление','Что именно','Спринт','Статус','Владелец','Риск']].concat((ST.deps||[]).map(d=>[d.id,d.item,d.type,d.task,d.stream,d.dir,d.desc,num(d.sprint),d.status,d.owner,d.risk]))});
  s.push({name:'FAQ',aoa:[['ID','Категория','Вопрос','Ответ']].concat((ST.faq||[]).map(f=>[f.id,f.category,f.q,f.a]))});
  s.push({name:'Груминг',aoa:[['ID','Задача (Бэклог)','Дата','Элемент бэклога','Действие','Оценка (SP)','Готовность','Ответственный','Комментарий']].concat((ST.grooming||[]).map(g=>[g.id,g.task,g.date,g.item,g.action,num(g.est),g.ready,g.owner,g.notes]))});
@@ -3518,7 +3631,7 @@ function commit(){save();views();activate(CURV);toast('Сохранено');}
 function recomputeSoft(){/* light: refresh dashboard only, keep edit focus */ renderDash(compute());}
 /* ---------- sidebar navigation ---------- */
 const NAV=[
- {g:'Планирование',items:[['dash','Дашборд','📋'],['board','Доска','🧩'],['roadmap','Дорожная карта','🗺️'],['kanban','Kanban-доска','🗃️'],['quarters','Кварталы','🗓️'],['rice','RICE','🎯'],['moscow','MoSCoW','📌'],['okr','OKR','🧭']]},
+ {g:'Планирование',items:[['dash','Дашборд','📋'],['board','Доска','🧩'],['roadmap','Дорожная карта','🗺️'],['kanban','Kanban-доска','🗃️'],['quarters','Кварталы','🗓️'],['sprintGoals','Цели спринтов','🎯'],['rice','RICE','📊'],['wsjf','WSJF','⚖️'],['moscow','MoSCoW','📌'],['okr','OKR','🧭']]},
  {g:'Работа',items:[['backlog','Бэклог','🗂️'],['gantt','Гант','📊'],['deps','Зависимости','🔗'],['team','Команда','👥'],['starmap','Star Map','⭐']]},
  {g:'Выпуск',items:[['releases','Релизы','🚀'],['milestones','Вехи','🏁'],['debt','Техдолг','🧱']]},
  {g:'Аналитика',items:[['analytics','Аналитика','📈'],['risks','Риски','⚠️'],['bugs','Баги','🐞']]},
@@ -3527,9 +3640,15 @@ const NAV=[
  {g:'Настройки',items:[['budget','Бюджет','💰'],['calendar','Календарь','📅'],['checks','Проверки данных','🧪'],['eda','EDA отчёт','🔬'],['integrations','Интеграции','🔌'],['params','Параметры','⚙️']]},
  {g:'Справка',items:[['faq','FAQ','❓'],['support','Support','🛟'],['audit','Журнал событий','🧾']]},
 ];
-const APP_VERSION='1.38.0';const APP_DATE='2026-09-18';
+const APP_VERSION='1.39.0';const APP_DATE='2026-10-05';
 const APP_ABOUT='Кросс-функциональная команда — это группа специалистов из разных областей (разработчиков, дизайнеров, маркетологов, аналитиков, менеджеров и других), которые объединяются для работы над одним конкретным проектом или задачей. Ключевая идея в том, чтобы собрать внутри команды всех необходимых экспертов, чтобы она могла самостоятельно пройти путь от идеи до результата, не передавая задачу последовательно из одного отдела в другой.';
 const CHANGELOG=[
+ {v:'1.39.0',date:'2026-10-05',items:[
+   'Новый раздел «Цели спринтов» (Планирование): Sprint Goal по каждому спринту со статусом и авто-расчётом «% факт» по готовности задач; текущая цель и её статус выведены на дашборд.',
+   'Новый раздел «WSJF» (Планирование): приоритизация по методологии SAFe — Cost of Delay (Business Value + Time Criticality + Risk Reduction) / Job Size, с авто-рангом, приоритетом и диаграммой.',
+   'Дашборд: карточка «Риск срыва спринта» и предупреждающий блок с причинами (перегрузка, отставание по времени, открытые дефекты, заблокированные зависимости).',
+   'Авто-перенос незавершённых задач: из завершаемого спринта в следующий одной кнопкой (Дорожная карта) и командой ассистента; переносы учитываются в поле «carried».',
+   'Серверное хранение целей спринтов и WSJF в PostgreSQL (миграция V8).']},
  {v:'1.38.0',date:'2026-09-18',items:[
    'Верхняя панель разгружена: действия с данными (Excel, Отчёт, экспорт/импорт JSON, импорт CSV, Сброс) собраны в одно меню «🗂 Данные». Слева остаются поиск и название, справа — статусы, «Обзор», роль и тема.',
    'Исправлено: пункт «Экспорт в Excel» в меню «Данные» был не виден (синий текст на синем фоне) — теперь отображается как обычный пункт меню.']},
@@ -3967,6 +4086,8 @@ startAnalytics();setInterval(startAnalytics,30000);
   if(/(создай|добавь|нов(ая|ую)).{0,8}задач/.test(s)){if(!canDo)return {t:'Создание задач доступно редактору/администратору.'};let title=q.replace(/.*?задач[а-яё]*/i,'').replace(/^[\s:—–-]+/,'').trim()||'Новая задача';const tks=ST.tasks||(ST.tasks=[]);const id=genId(tks,'id','T-');tks.push({id:id,title:title,assignee:'',role:'',type:'Задача',est:0,status:'To Do',sprint:'',dep:'',started:'',done:'',added:true});save();views();activate('backlog');return {t:'Создал задачу '+id+': «'+title+'».',goto:'backlog'};}
   if(/(добав|занеси|разбери|отправ).{0,16}груминг|груминг.{0,16}(незаполн|незакрыт|не разобр|все)/.test(s)){if(!canDo)return {t:'Действие доступно редактору/администратору.'};const n=groomUngroomed();return {t:n?('Добавлено в груминг: '+n+' задач(и) без разбора.'):'Все задачи уже есть в груминге.',goto:'grooming'};}
   if(/(синхрон|обнов).{0,16}(готовн|dor|dod задач)/.test(s)){if(!canDo)return {t:'Действие доступно редактору/администратору.'};const n=syncReadiness();save();views();activate('backlog');return {t:'Готовность (DoR) синхронизирована с задачами: '+n+' изменений.',goto:'backlog'};}
+  if(/(перенеси|перенос|carry).{0,20}(незаверш|неготов|остав|хвост)/.test(s)||/(перенеси|перенос).{0,10}спринт(?!.*t-?\d)/.test(s)){if(!canDo)return {t:'Действие доступно редактору/администратору.'};const m=s.match(/спринт[а-я]*\s*#?(\d+)/);carryoverSprint(m?+m[1]:null);return {t:'Переношу незавершённые задачи'+(m?' из спринта #'+m[1]:'')+' в следующий спринт.',goto:'roadmap'};}
+  if(/(риск.*срыв|срыв.*спринт|прогноз.*спринт|успе.*спринт|спринт.*успе)/.test(s)){const r=sprintRisk(C);if(!r)return {t:'Недостаточно данных для прогноза.'};return {t:'Риск срыва спринта #'+r.cur+': '+r.level+' ('+r.score+'/100).'+(r.reasons.length?'\n• '+r.reasons.join('\n• '):''),goto:'dash'};}
   // navigation (requires a verb)
   if(/(открой|откр\b|покажи|перейд|переключ|запусти|show|go to)/.test(s)){
    for(const k in SYN){if(s.indexOf(k)>=0){activate(SYN[k]);return {t:'Открыл раздел «'+navLabel(SYN[k])+'».'};}}}
@@ -4013,6 +4134,8 @@ const TOUR=[
  {v:'roadmap',h:'Дорожная карта',p:'Спринты рассчитываются автоматически из параметров и состава команды: даты, рабочие дни, ёмкость, план, velocity и процент выполнения.',d:9000},
  {v:'quarters',h:'Кварталы',p:'Агрегация спринтов по кварталам и квартальный roadmap на шкале дат.',d:7000},
  {v:'rice',h:'RICE — приоритизация',p:'Оценка фич по методологии RICE = (Reach × Impact × Confidence) / Effort с авто-рангом, приоритетом и диаграммой.',d:9000},
+ {v:'wsjf',h:'WSJF — приоритизация (SAFe)',p:'Weighted Shortest Job First = Cost of Delay (Business Value + Time Criticality + Risk Reduction) / Job Size с авто-рангом и диаграммой.',d:9000},
+ {v:'sprintGoals',h:'Цели спринтов',p:'Sprint Goal по каждому спринту со статусом и авто-расчётом «% факт» по готовности задач спринта.',d:8000},
  {v:'backlog',h:'Бэклог',p:'Редактируемые задачи — источник данных для всех метрик. Есть поиск, сортировка по колонкам, строка итогов и отмена удаления.',d:9000},
  {v:'gantt',h:'Диаграмма Ганта',p:'Задачи на шкале дат по спринтам. Красная рамка — критический путь, ромб ◆ — внешняя зависимость от другого стрима.',d:9000},
  {v:'deps',h:'Зависимости',p:'Межстримовые зависимости задач, историй и фич: направление, статус с RAG-подсветкой, риск и отдельный список для эскалации.',d:9000},

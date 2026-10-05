@@ -25,6 +25,8 @@ class StateRoundTripTest {
           "team":[{"name":"A","role":"Backend","scrum":"Да","avail":1,"absent":0}],
           "skills":[{"id":"SK-01","member":"A","role":"Backend","skill":"API","level":4}],
           "agile":[{"id":"AM-01","framework":"Scrum","dimension":"Definition of Done","level":3,"note":"n"}],
+          "sprintGoals":[{"id":"SG-01","sprint":1,"goal":"Запустить MVP","status":"Достигнута"}],
+          "wsjf":[{"id":"W-01","task":"T-01","name":"X","bv":8,"tc":5,"rr":3,"jobSize":4}],
           "tasks":[{"id":"T-01","title":"X","role":"Backend","type":"Задача","est":5,"status":"Готово","sprint":1,"release":"R-1","priority":"Must","dor":"Готова"}],
           "deps":[{"id":"D-01","item":"I","stream":"S","dir":"Мы зависим","status":"Заблокировано","task":"T-01"}],
           "rice":[{"id":"F-01","name":"R","reach":5000,"impact":3,"conf":"100%","effort":40}],
@@ -64,6 +66,13 @@ class StateRoundTripTest {
            .andExpect(jsonPath("$.state.agile[0].framework").value("Scrum"))
            .andExpect(jsonPath("$.state.agile[0].dimension").value("Definition of Done"))
            .andExpect(jsonPath("$.state.agile[0].level").value(3))
+           .andExpect(jsonPath("$.state.sprintGoals[0].id").value("SG-01"))
+           .andExpect(jsonPath("$.state.sprintGoals[0].sprint").value(1))
+           .andExpect(jsonPath("$.state.sprintGoals[0].goal").value("Запустить MVP"))
+           .andExpect(jsonPath("$.state.sprintGoals[0].status").value("Достигнута"))
+           .andExpect(jsonPath("$.state.wsjf[0].id").value("W-01"))
+           .andExpect(jsonPath("$.state.wsjf[0].bv").value(8))
+           .andExpect(jsonPath("$.state.wsjf[0].jobSize").value(4.0))
            .andExpect(jsonPath("$.state.tasks[0].id").value("T-01"))
            .andExpect(jsonPath("$.state.tasks[0].release").value("R-1"))
            .andExpect(jsonPath("$.state.tasks[0].priority").value("Must"))

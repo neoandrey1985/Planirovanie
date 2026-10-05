@@ -313,6 +313,69 @@ def main():
             assert not miss, 'PPTX would prompt "repair": dangling overrides ' + str(miss)
         case('report: PPTX builds with all slides and no corruption', t_pptx)
 
+        # ---- 13. WSJF scoring + ranking ----
+        def t_wsjf():
+            r = page.evaluate("""()=>{
+              const sc=wsjfScore({bv:10,tc:9,rr:8,jobSize:5});      // CoD 27 / 5 = 5.4
+              const cod=wsjfCoD({bv:10,tc:9,rr:8});
+              const zero=wsjfScore({bv:5,tc:5,rr:5,jobSize:0});      // guard: no divide-by-zero
+              activate('wsjf');const v=document.getElementById('v_wsjf');
+              return {sc,cod,zero,rows:v.querySelectorAll('table tr').length,chart:!!v.querySelector('svg')};}""")
+            assert abs(r['sc'] - 5.4) < 1e-9, 'wsjfScore wrong: ' + str(r['sc'])
+            assert r['cod'] == 27, 'wsjfCoD wrong: ' + str(r['cod'])
+            assert r['zero'] == 0, 'wsjfScore must guard jobSize=0'
+            assert r['rows'] > 2 and r['chart'], 'WSJF view did not render table+chart'
+        case('wsjf: score, Cost of Delay and ranking render', t_wsjf)
+
+        # ---- 14. Sprint goals + auto achievement % ----
+        def t_goals():
+            r = page.evaluate("""()=>{
+              activate('sprintGoals');const v=document.getElementById('v_sprintGoals');
+              const g=(ST.sprintGoals||[]);
+              const sp=g.length?g[0].sprint:1;
+              const a=goalAchievement(sp);
+              return {hasGoals:g.length>0, kpis:v.querySelectorAll('.kpi').length,
+                      pill:/pill/.test(v.innerHTML), ach: a?(a.pct>=0&&a.pct<=1):true};}""")
+            assert r['hasGoals'], 'no sprint goals seeded'
+            assert r['kpis'] >= 4 and r['pill'], 'sprint goals view missing KPIs/pills'
+            assert r['ach'], 'goalAchievement pct out of range'
+        case('goals: per-sprint goal + auto achievement %', t_goals)
+
+        # ---- 15. Sprint risk forecast ----
+        def t_risk():
+            r = page.evaluate("""()=>{const C=compute();const risk=sprintRisk(C);
+              return {ok:!!risk, score:risk.score, level:risk.level,
+                      inRange:risk.score>=0&&risk.score<=100,
+                      levelOk:['Низкий','Средний','Высокий'].includes(risk.level),
+                      dash:/Риск срыва спринта/.test((()=>{activate('dash');return document.getElementById('v_dash').innerHTML;})())};}""")
+            assert r['ok'] and r['inRange'], 'sprintRisk out of range: ' + str(r.get('score'))
+            assert r['levelOk'], 'sprintRisk level invalid: ' + str(r.get('level'))
+            assert r['dash'], 'risk KPI not shown on dashboard'
+        case('risk: sprint risk forecast computes and shows on dashboard', t_risk)
+
+        # ---- 16. Carryover of unfinished tasks ----
+        def t_carry():
+            r = page.evaluate("""()=>{
+              const snap=JSON.stringify(ST.tasks), perm=JSON.stringify(PERM);
+              PERM.canEdit=true;
+              const _s=window.save,_v=window.views,_a=window.activate,_t=window.toast;
+              window.save=()=>{};window.views=()=>{};window.activate=()=>{};window.toast=()=>{};
+              const C=compute(),N=C.cur;
+              const before=(ST.tasks||[]).filter(t=>+t.sprint===N&&t.status!=='Готово').length;
+              const nextBefore=(ST.tasks||[]).filter(t=>+t.sprint===N+1).length;
+              carryoverSprint(N);
+              const afterN=(ST.tasks||[]).filter(t=>+t.sprint===N&&t.status!=='Готово').length;
+              const nextAfter=(ST.tasks||[]).filter(t=>+t.sprint===N+1).length;
+              const carried=(ST.tasks||[]).filter(t=>num(t.carried)>0).length;
+              window.save=_s;window.views=_v;window.activate=_a;window.toast=_t;
+              ST.tasks=JSON.parse(snap);Object.assign(PERM,JSON.parse(perm));
+              return {before,nextBefore,afterN,nextAfter,carried};}""")
+            if r['before'] > 0:
+                assert r['afterN'] == 0, 'unfinished tasks remained in source sprint'
+                assert r['nextAfter'] == r['nextBefore'] + r['before'], 'carryover count mismatch'
+                assert r['carried'] >= r['before'], 'carried flag not set'
+        case('carryover: unfinished tasks move to next sprint', t_carry)
+
         br.close()
     httpd.shutdown()
 

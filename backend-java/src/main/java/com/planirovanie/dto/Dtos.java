@@ -42,6 +42,8 @@ public final class Dtos {
         public List<Mood> mood;
         public List<Skill> skills;
         public List<AgileMaturity> agile;
+        public List<SprintGoal> sprintGoals;
+        public List<Wsjf> wsjf;
         public List<Kudos> kudos;
         public List<Experiment> experiments;
         public List<RadarAxis> radar;
