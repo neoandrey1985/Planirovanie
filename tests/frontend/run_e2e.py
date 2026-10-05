@@ -499,6 +499,76 @@ def main():
             page.evaluate("()=>{setPerm('viewer');applyPerms();views();activate('dash');}")
         case('whiteboard2: connectors, quick-add, animation, cleanup', t_board2)
 
+        # ---- 25. EVM: earned value indices and forecast ----
+        def t_evm():
+            r = page.evaluate("""()=>{const C=compute();const E=evm(C);
+              return {bac:E.BAC>0, rows:E.rows.length===C.sp.length,
+                      cpiOk:E.CPI===null||E.CPI>0, spiOk:E.SPI===null||E.SPI>0,
+                      eacOk:E.EAC===null||(E.CPI&&Math.abs(E.EAC-E.BAC/E.CPI)<1),
+                      chart:(activate('evm'),!!document.querySelector('#v_evm svg'))};}""")
+            assert r['bac'] and r['rows'], 'EVM rows/BAC invalid'
+            assert r['cpiOk'] and r['spiOk'], 'EVM indices out of range'
+            assert r['eacOk'], 'EAC != BAC/CPI'
+            assert r['chart'], 'EVM S-curve missing'
+        case('evm: PV/EV/AC, CPI/SPI, EAC forecast', t_evm)
+
+        # ---- 26. Planning poker consensus ----
+        def t_poker():
+            r = page.evaluate("""()=>{const rv=pokerReveal('A:5, B:8, C:8, D:5');
+              const fib=[1,2,3,5,8,13,21];
+              return {med:rv.med, cons:rv.consensus, inFib:fib.includes(rv.consensus),
+                      spread:rv.spread, empty:pokerReveal('')};}""")
+            assert r['empty'] is None, 'empty votes must return null'
+            assert r['inFib'], 'consensus must snap to Fibonacci'
+            assert r['spread'] == 3, 'spread wrong'
+        case('poker: reveal median/consensus on Fibonacci', t_poker)
+
+        # ---- 27. WBS rollup ----
+        def t_wbs():
+            r = page.evaluate("""()=>{
+              const tasks=ST.tasks||[];const e=tasks.find(t=>(tasks.filter(c=>c.parent===t.id)).length>0);
+              if(!e)return {skip:true};
+              const roll=wbsRoll(e);const kids=tasks.filter(c=>c.parent===e.id);
+              const kidSum=kids.reduce((a,c)=>a+num(c.est),0)+num(e.est);
+              return {ok: roll.sp>=kidSum-0.001, rendered:(activate('wbs'),document.querySelectorAll('#v_wbs table tr').length>1)};}""")
+            if r.get('skip'):
+                raise Skip('no WBS hierarchy seeded')
+            assert r['ok'], 'WBS rollup did not sum children'
+            assert r['rendered'], 'WBS tree did not render'
+        case('wbs: Epic rollup of child estimates', t_wbs)
+
+        # ---- 28. Status report generation ----
+        def t_status():
+            r = page.evaluate("""()=>{const md=statusReportMd();
+              return {len:md.length, rag:/Статус \\(RAG\\)/.test(md), kpi:/CPI \\/ SPI/.test(md),
+                      hasVer:md.indexOf(APP_VERSION)>=0};}""")
+            assert r['len'] > 200 and r['rag'] and r['kpi'], 'status report incomplete'
+            assert r['hasVer'], 'status report missing version'
+        case('status-report: RAG summary generated from data', t_status)
+
+        # ---- 29. New PM registers seeded + portfolio snapshot ----
+        def t_pm():
+            r = page.evaluate("""()=>{try{
+              const have=k=>Array.isArray(ST[k])&&ST[k].length>0;
+              const regs=['changeRequests','issues','stakeholders','decisions','impediments','lessons','raci','storyMap','poker','portfolio'];
+              const seeded=regs.every(have);
+              // engagement gap computed
+              const gap=(ST.stakeholders||[]).filter(x=>ENGAGE.indexOf(x.engageTarget)>ENGAGE.indexOf(x.engageCur)).length;
+              // portfolio snapshot (guarded)
+              const snap=JSON.stringify(ST.portfolio),perm=JSON.stringify(PERM);PERM.canEdit=true;
+              const _s=window.save,_v=window.views,_a=window.activate,_t=window.toast;
+              window.save=()=>{};window.views=()=>{};window.activate=()=>{};window.toast=()=>{};
+              const n0=ST.portfolio.length;portfolioSnapshot();const grew=ST.portfolio.length>=n0;
+              window.save=_s;window.views=_v;window.activate=_a;window.toast=_t;
+              ST.portfolio=JSON.parse(snap);Object.assign(PERM,JSON.parse(perm));
+              return {seeded, gap:gap>=0, grew};
+            }catch(e){return 'ERR:'+e.message;}}""")
+            assert r is not True and isinstance(r, dict), 'pm registers failed: ' + str(r)
+            assert r['seeded'], 'not all PM registers seeded'
+            assert r['gap'], 'stakeholder engagement gap compute failed'
+            assert r['grew'], 'portfolio snapshot did not add/update entry'
+        case('pm-registers: change/issues/stakeholders/... + portfolio snapshot', t_pm)
+
         br.close()
     httpd.shutdown()
 

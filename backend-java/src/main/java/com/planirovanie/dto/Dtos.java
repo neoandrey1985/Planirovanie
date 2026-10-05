@@ -59,6 +59,16 @@ public final class Dtos {
         public List<Birthday> birthdays;
         public List<Dependency> deps;
         public List<Okr> okr;
+        public List<ChangeRequest> changeRequests;
+        public List<Issue> issues;
+        public List<Stakeholder> stakeholders;
+        public List<Decision> decisions;
+        public List<Impediment> impediments;
+        public List<Lesson> lessons;
+        public List<Raci> raci;
+        public List<StoryMapItem> storyMap;
+        public List<PokerRound> poker;
+        public List<PortfolioProject> portfolio;
         public List<Board> boards;
         public com.fasterxml.jackson.databind.JsonNode board;
         public BudgetDto budget;

@@ -19,6 +19,16 @@ public class StateService {
     private final DodRepo dod;
     private final DorItemRepo dorItems;
     private final ScopeLogRepo scopeLog;
+    private final ChangeRequestRepo changeRequests;
+    private final IssueRepo issues;
+    private final StakeholderRepo stakeholders;
+    private final DecisionRepo decisions;
+    private final ImpedimentRepo impediments;
+    private final LessonRepo lessons;
+    private final RaciRepo raci;
+    private final StoryMapItemRepo storyMap;
+    private final PokerRoundRepo poker;
+    private final PortfolioProjectRepo portfolio;
     private final TeamRepo team;
     private final TaskRepo tasks;
     private final ReleaseRepo releases;
@@ -58,7 +68,11 @@ public class StateService {
                         BirthdayRepo birthdays, DependencyRepo deps, OkrRepo okr, BoardRepo boards,
                         BoardDocRepo boardDoc, SkillRepo skills, AgileMaturityRepo agile,
                         SprintGoalRepo sprintGoals, WsjfRepo wsjf,
-                        DorItemRepo dorItems, ScopeLogRepo scopeLog) {
+                        DorItemRepo dorItems, ScopeLogRepo scopeLog,
+                        ChangeRequestRepo changeRequests, IssueRepo issues, StakeholderRepo stakeholders,
+                        DecisionRepo decisions, ImpedimentRepo impediments, LessonRepo lessons,
+                        RaciRepo raci, StoryMapItemRepo storyMap, PokerRoundRepo poker,
+                        PortfolioProjectRepo portfolio) {
         this.params = params; this.meta = meta; this.dod = dod; this.team = team; this.tasks = tasks;
         this.releases = releases; this.milestones = milestones; this.techDebt = techDebt; this.risks = risks;
         this.bugs = bugs; this.calendar = calendar; this.retro = retro; this.mood = mood; this.kudos = kudos;
@@ -68,6 +82,9 @@ public class StateService {
         this.okr = okr; this.boards = boards; this.boardDoc = boardDoc; this.skills = skills; this.agile = agile;
         this.sprintGoals = sprintGoals; this.wsjf = wsjf;
         this.dorItems = dorItems; this.scopeLog = scopeLog;
+        this.changeRequests = changeRequests; this.issues = issues; this.stakeholders = stakeholders;
+        this.decisions = decisions; this.impediments = impediments; this.lessons = lessons;
+        this.raci = raci; this.storyMap = storyMap; this.poker = poker; this.portfolio = portfolio;
     }
 
     @Transactional(readOnly = true)
@@ -112,6 +129,16 @@ public class StateService {
         s.birthdays = birthdays.findAllByOrderByOrdAsc();
         s.deps = deps.findAllByOrderByOrdAsc();
         s.okr = okr.findAllByOrderByOrdAsc();
+        s.changeRequests = changeRequests.findAllByOrderByOrdAsc();
+        s.issues = issues.findAllByOrderByOrdAsc();
+        s.stakeholders = stakeholders.findAllByOrderByOrdAsc();
+        s.decisions = decisions.findAllByOrderByOrdAsc();
+        s.impediments = impediments.findAllByOrderByOrdAsc();
+        s.lessons = lessons.findAllByOrderByOrdAsc();
+        s.raci = raci.findAllByOrderByOrdAsc();
+        s.storyMap = storyMap.findAllByOrderByOrdAsc();
+        s.poker = poker.findAllByOrderByOrdAsc();
+        s.portfolio = portfolio.findAllByOrderByOrdAsc();
         s.boards = boards.findAllByOrderByOrdAsc();
         boardDoc.findById(1).ifPresent(bdoc -> {
             if (bdoc.data != null && !bdoc.data.isBlank()) {
@@ -182,6 +209,16 @@ public class StateService {
         order(s.birthdays, (e, i) -> { e.pk = null; e.ord = i; });
         order(s.deps, (e, i) -> { e.pk = null; e.ord = i; });
         order(s.okr, (e, i) -> { e.id = null; e.ord = i; });
+        order(s.changeRequests, (e, i) -> { e.pk = null; e.ord = i; });
+        order(s.issues, (e, i) -> { e.pk = null; e.ord = i; });
+        order(s.stakeholders, (e, i) -> { e.pk = null; e.ord = i; });
+        order(s.decisions, (e, i) -> { e.pk = null; e.ord = i; });
+        order(s.impediments, (e, i) -> { e.pk = null; e.ord = i; });
+        order(s.lessons, (e, i) -> { e.pk = null; e.ord = i; });
+        order(s.raci, (e, i) -> { e.pk = null; e.ord = i; });
+        order(s.storyMap, (e, i) -> { e.pk = null; e.ord = i; });
+        order(s.poker, (e, i) -> { e.pk = null; e.ord = i; });
+        order(s.portfolio, (e, i) -> { e.pk = null; e.ord = i; });
         order(s.boards, (e, i) -> { e.pk = null; e.ord = i; });
 
         dod.deleteAllInBatch();        if (s.dod != null)        dod.saveAll(s.dod);
@@ -214,6 +251,16 @@ public class StateService {
         birthdays.deleteAllInBatch();  if (s.birthdays != null)  birthdays.saveAll(s.birthdays);
         deps.deleteAllInBatch();       if (s.deps != null)       deps.saveAll(s.deps);
         okr.deleteAllInBatch();        if (s.okr != null)        okr.saveAll(s.okr);
+        changeRequests.deleteAllInBatch(); if (s.changeRequests != null) changeRequests.saveAll(s.changeRequests);
+        issues.deleteAllInBatch();     if (s.issues != null)     issues.saveAll(s.issues);
+        stakeholders.deleteAllInBatch(); if (s.stakeholders != null) stakeholders.saveAll(s.stakeholders);
+        decisions.deleteAllInBatch();  if (s.decisions != null)  decisions.saveAll(s.decisions);
+        impediments.deleteAllInBatch(); if (s.impediments != null) impediments.saveAll(s.impediments);
+        lessons.deleteAllInBatch();    if (s.lessons != null)    lessons.saveAll(s.lessons);
+        raci.deleteAllInBatch();       if (s.raci != null)       raci.saveAll(s.raci);
+        storyMap.deleteAllInBatch();   if (s.storyMap != null)   storyMap.saveAll(s.storyMap);
+        poker.deleteAllInBatch();      if (s.poker != null)      poker.saveAll(s.poker);
+        portfolio.deleteAllInBatch();  if (s.portfolio != null)  portfolio.saveAll(s.portfolio);
         boards.deleteAllInBatch();     if (s.boards != null)     boards.saveAll(s.boards);
         if (s.board != null && !s.board.isNull()) {
             BoardDoc bd = boardDoc.findById(1).orElseGet(() -> { BoardDoc nb = new BoardDoc(); nb.id = 1; return nb; });

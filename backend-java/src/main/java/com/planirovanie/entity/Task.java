@@ -27,5 +27,6 @@ public class Task {
     public String dor;
     public Integer carried;   // how many times this task was carried over to a later sprint
     public String okr;        // linked OKR key-result (traceability)
+    public String parent;     // WBS parent task id (Epic -> Feature -> Story -> Task)
     @JsonIgnore public Integer ord;
 }

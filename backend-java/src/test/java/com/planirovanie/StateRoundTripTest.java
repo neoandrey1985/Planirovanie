@@ -27,7 +27,17 @@ class StateRoundTripTest {
           "agile":[{"id":"AM-01","framework":"Scrum","dimension":"Definition of Done","level":3,"note":"n"}],
           "sprintGoals":[{"id":"SG-01","sprint":1,"goal":"Запустить MVP","status":"Достигнута"}],
           "wsjf":[{"id":"W-01","task":"T-01","name":"X","bv":8,"tc":5,"rr":3,"jobSize":4}],
-          "tasks":[{"id":"T-01","title":"X","role":"Backend","type":"Задача","est":5,"status":"Готово","sprint":1,"release":"R-1","priority":"Must","dor":"Готова","carried":2,"okr":"KR-1"}],
+          "tasks":[{"id":"T-01","title":"X","role":"Backend","type":"Задача","est":5,"status":"Готово","sprint":1,"release":"R-1","priority":"Must","dor":"Готова","carried":2,"okr":"KR-1","parent":"E-1"}],
+          "changeRequests":[{"id":"CR-01","date":"2026-09-10","title":"Добавить SSO","type":"Scope","impact":"+8 SP","requester":"PO","status":"Предложен","note":"n"}],
+          "issues":[{"id":"IS-01","date":"2026-09-10","title":"Падение оплаты","priority":"High","owner":"DevOps","status":"Открыта","due":"2026-09-20","resolution":""}],
+          "stakeholders":[{"id":"SH-01","name":"Заказчик","role":"Спонсор","power":5,"interest":4,"engageCur":"Нейтральный","engageTarget":"Поддерживающий","strategy":"Регулярные демо"}],
+          "decisions":[{"id":"DC-01","date":"2026-09-10","title":"Выбор БД","context":"c","options":"PG/Mongo","decision":"PostgreSQL","rationale":"ACID","owner":"Архитектор","status":"Принято"}],
+          "impediments":[{"id":"IM-01","date":"2026-09-10","title":"Нет доступа к API","owner":"PO","severity":"High","status":"Открыт","sprint":3,"resolved":""}],
+          "lessons":[{"id":"LE-01","date":"2026-09-10","sprint":2,"category":"Процесс","context":"c","lesson":"Оценивать спайки","recommendation":"Добавлять буфер"}],
+          "raci":[{"id":"RA-01","activity":"Релиз","r":"DevOps","a":"ИТ-Лидер","c":"QA","i":"PO"}],
+          "storyMap":[{"id":"SM-01","activity":"Оформление заказа","release":"R-1","story":"Выбор доставки","task":"T-01"}],
+          "poker":[{"id":"PK-01","task":"T-01","title":"X","votes":"Иванов:5, Петров:8","result":"5","status":"Завершён"}],
+          "portfolio":[{"id":"PO-01","name":"Маркетплейс","status":"Жёлтый","health":0.62,"velocity":34,"budget":8000000,"spent":3200000,"progress":0.45,"owner":"PMO","note":"n"}],
           "dorItems":[{"crit":"Критерии приёмки описаны","done":true}],
           "scopeLog":[{"id":"SC-01","date":"2026-09-10","sprint":3,"kind":"Добавлено","item":"T-09","detail":"добавлена в активный спринт"}],
           "deps":[{"id":"D-01","item":"I","stream":"S","dir":"Мы зависим","status":"Заблокировано","task":"T-01"}],
@@ -81,6 +91,19 @@ class StateRoundTripTest {
            .andExpect(jsonPath("$.state.tasks[0].dor").value("Готова"))
            .andExpect(jsonPath("$.state.tasks[0].carried").value(2))
            .andExpect(jsonPath("$.state.tasks[0].okr").value("KR-1"))
+           .andExpect(jsonPath("$.state.tasks[0].parent").value("E-1"))
+           .andExpect(jsonPath("$.state.changeRequests[0].type").value("Scope"))
+           .andExpect(jsonPath("$.state.issues[0].priority").value("High"))
+           .andExpect(jsonPath("$.state.stakeholders[0].power").value(5))
+           .andExpect(jsonPath("$.state.stakeholders[0].engageCur").value("Нейтральный"))
+           .andExpect(jsonPath("$.state.decisions[0].decision").value("PostgreSQL"))
+           .andExpect(jsonPath("$.state.impediments[0].severity").value("High"))
+           .andExpect(jsonPath("$.state.lessons[0].lesson").value("Оценивать спайки"))
+           .andExpect(jsonPath("$.state.raci[0].r").value("DevOps"))
+           .andExpect(jsonPath("$.state.raci[0].a").value("ИТ-Лидер"))
+           .andExpect(jsonPath("$.state.storyMap[0].release").value("R-1"))
+           .andExpect(jsonPath("$.state.poker[0].result").value("5"))
+           .andExpect(jsonPath("$.state.portfolio[0].health").value(0.62))
            .andExpect(jsonPath("$.state.dorItems[0].crit").value("Критерии приёмки описаны"))
            .andExpect(jsonPath("$.state.dorItems[0].done").value(true))
            .andExpect(jsonPath("$.state.scopeLog[0].id").value("SC-01"))

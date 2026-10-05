@@ -476,7 +476,7 @@ body.noadmin #rst,body.noadmin #imp{display:none}
  </div>
 </div></header>
 <div class="shell"><aside class="side" id="side"><nav id="nav"></nav><div class="side-foot" id="sidefoot"></div></aside><div class="scrim" id="scrim"></div>
-<main id="main"><section class="view" id="v_dash"></section><section class="view" id="v_board"></section><section class="view" id="v_kanban"></section><section class="view" id="v_backlog"></section><section class="view" id="v_team"></section><section class="view" id="v_starmap"></section><section class="view" id="v_roadmap"></section><section class="view" id="v_quarters"></section><section class="view" id="v_rice"></section><section class="view" id="v_wsjf"></section><section class="view" id="v_moscow"></section><section class="view" id="v_sprintGoals"></section><section class="view" id="v_gantt"></section><section class="view" id="v_deps"></section><section class="view" id="v_piboard"></section><section class="view" id="v_releases"></section><section class="view" id="v_milestones"></section><section class="view" id="v_debt"></section><section class="view" id="v_okr"></section><section class="view" id="v_budget"></section><section class="view" id="v_analytics"></section><section class="view" id="v_risks"></section><section class="view" id="v_bugs"></section><section class="view" id="v_daily"></section><section class="view" id="v_grooming"></section><section class="view" id="v_demo"></section><section class="view" id="v_vacation"></section><section class="view" id="v_birthdays"></section><section class="view" id="v_retro"></section><section class="view" id="v_agile"></section><section class="view" id="v_calendar"></section><section class="view" id="v_scope"></section><section class="view" id="v_checks"></section><section class="view" id="v_eda"></section><section class="view" id="v_integrations"></section><section class="view" id="v_params"></section><section class="view" id="v_faq"></section><section class="view" id="v_support"></section><section class="view" id="v_audit"></section></main></div>
+<main id="main"><section class="view" id="v_dash"></section><section class="view" id="v_board"></section><section class="view" id="v_kanban"></section><section class="view" id="v_backlog"></section><section class="view" id="v_team"></section><section class="view" id="v_starmap"></section><section class="view" id="v_roadmap"></section><section class="view" id="v_quarters"></section><section class="view" id="v_rice"></section><section class="view" id="v_wsjf"></section><section class="view" id="v_moscow"></section><section class="view" id="v_sprintGoals"></section><section class="view" id="v_gantt"></section><section class="view" id="v_deps"></section><section class="view" id="v_piboard"></section><section class="view" id="v_releases"></section><section class="view" id="v_milestones"></section><section class="view" id="v_debt"></section><section class="view" id="v_okr"></section><section class="view" id="v_budget"></section><section class="view" id="v_analytics"></section><section class="view" id="v_risks"></section><section class="view" id="v_bugs"></section><section class="view" id="v_daily"></section><section class="view" id="v_grooming"></section><section class="view" id="v_demo"></section><section class="view" id="v_vacation"></section><section class="view" id="v_birthdays"></section><section class="view" id="v_retro"></section><section class="view" id="v_agile"></section><section class="view" id="v_calendar"></section><section class="view" id="v_scope"></section><section class="view" id="v_checks"></section><section class="view" id="v_eda"></section><section class="view" id="v_integrations"></section><section class="view" id="v_params"></section><section class="view" id="v_faq"></section><section class="view" id="v_support"></section><section class="view" id="v_audit"></section><section class="view" id="v_evm"></section><section class="view" id="v_changes"></section><section class="view" id="v_issues"></section><section class="view" id="v_stakeholders"></section><section class="view" id="v_statusreport"></section><section class="view" id="v_decisions"></section><section class="view" id="v_wbs"></section><section class="view" id="v_storymap"></section><section class="view" id="v_impediments"></section><section class="view" id="v_poker"></section><section class="view" id="v_lessons"></section><section class="view" id="v_raci"></section><section class="view" id="v_portfolio"></section></main></div>
 <div class="palette" id="palette"><div class="pbox"><input class="pin" id="pin" placeholder="Поиск раздела или действия…" autocomplete="off"><div class="plist" id="plist"></div></div></div>
 <div class="role-pop" id="rolepop"></div>
 <div class="modal" id="accmodal"><div class="mbox">
@@ -1470,6 +1470,56 @@ function migrate(d){
  (function(){const okr=d.okr||[];const krOf=i=>okr[i]&&okr[i].kr;const T=d.tasks||[];
   const setK=(tid,kr)=>{const t=T.find(x=>x.id===tid);if(t&&kr&&t.okr==null)t.okr=kr;};
   setK('T-01',krOf(0));setK('T-02',krOf(0));setK('T-03',krOf(1));setK('T-12',krOf(2));})();
+ // v1.42: иерархия работ (эпики + связи «родитель»)
+ (function(){const T=d.tasks||[];const have=id=>T.some(t=>t.id===id);
+  if(!have('E-1'))T.push({id:'E-1',title:'Эпик: Оформление и оплата заказа',assignee:'',role:'',type:'Эпик',est:0,status:'В работе',sprint:'',dep:'',started:'',done:'',priority:'Must'});
+  if(!have('E-2'))T.push({id:'E-2',title:'Эпик: Каталог и личный кабинет',assignee:'',role:'',type:'Эпик',est:0,status:'To Do',sprint:'',dep:'',started:'',done:'',priority:'Should'});
+  const setP=(tid,pid)=>{const t=T.find(x=>x.id===tid);if(t&&t.parent==null)t.parent=pid;};
+  setP('T-01','E-1');setP('T-02','E-1');setP('T-03','E-1');setP('T-05','E-2');setP('T-07','E-2');})();
+ if(!Array.isArray(d.changeRequests))d.changeRequests=[
+  {id:'CR-01',date:'2026-08-30',title:'Добавить вход через SSO (OAuth2)',type:'Scope',impact:'+8 SP, +1 спринт',requester:'Product Owner',status:'Одобрен',note:'Включено в релиз R-2'},
+  {id:'CR-02',date:'2026-09-08',title:'Поддержка оплаты в рассрочку',type:'Scope',impact:'+13 SP',requester:'Коммерция',status:'Отложен',note:'Вернуться после MVP'},
+  {id:'CR-03',date:'2026-09-14',title:'Сдвиг даты релиза на 2 недели',type:'Срок',impact:'−1 риск, −ценность',requester:'Спонсор',status:'Предложен',note:'Нужно решение CCB'}];
+ if(!Array.isArray(d.issues))d.issues=[
+  {id:'IS-01',date:'2026-09-05',title:'Платёжный шлюз возвращает таймауты в песочнице',priority:'High',owner:'Кузнецов Д.',status:'В работе',due:'2026-09-20',resolution:'Эскалировано провайдеру'},
+  {id:'IS-02',date:'2026-09-09',title:'Расхождение остатков каталога с 1С',priority:'Medium',owner:'Орлова Е.',status:'Открыта',due:'2026-09-25',resolution:''},
+  {id:'IS-03',date:'2026-08-28',title:'Падение сборки CI на флейки-тестах',priority:'Low',owner:'DevOps',status:'Решена',due:'2026-09-02',resolution:'Карантин флейки-тестов'}];
+ if(!Array.isArray(d.stakeholders))d.stakeholders=[
+  {id:'SH-01',name:'Директор по продукту',role:'Спонсор',power:5,interest:5,engageCur:'Поддерживающий',engageTarget:'Лидер',strategy:'Еженедельный статус + демо'},
+  {id:'SH-02',name:'Финансовый директор',role:'Бюджет',power:5,interest:2,engageCur:'Нейтральный',engageTarget:'Поддерживающий',strategy:'Держать удовлетворённым: отчёт по бюджету'},
+  {id:'SH-03',name:'Служба поддержки',role:'Операции',power:2,interest:4,engageCur:'Поддерживающий',engageTarget:'Поддерживающий',strategy:'Информировать о релизах'},
+  {id:'SH-04',name:'Отдел безопасности',role:'Compliance',power:4,interest:3,engageCur:'Сопротивляется',engageTarget:'Нейтральный',strategy:'Ранние ревью, PCI DSS'},
+  {id:'SH-05',name:'Маркетинг',role:'Go-to-market',power:3,interest:5,engageCur:'Поддерживающий',engageTarget:'Лидер',strategy:'Совместное планирование запуска'}];
+ if(!Array.isArray(d.decisions))d.decisions=[
+  {id:'DC-01',date:'2026-08-12',title:'PostgreSQL как основная СУБД',context:'Нужны транзакции и отчётность',options:'PostgreSQL / MongoDB',decision:'PostgreSQL',rationale:'ACID, зрелость, SQL-аналитика',owner:'Архитектор',status:'Принято'},
+  {id:'DC-02',date:'2026-08-20',title:'Двухнедельные спринты',context:'Баланс обратной связи и накладных',options:'1 / 2 / 3 недели',decision:'2 недели',rationale:'Оптимальный ритм для команды',owner:'Scrum-мастер',status:'Принято'},
+  {id:'DC-03',date:'2026-09-10',title:'Платёжный провайдер',context:'Выбор интеграции оплаты',options:'Провайдер A / B',decision:'Провайдер A (пилот)',rationale:'Быстрее интеграция, тест-режим',owner:'Product Owner',status:'Пересмотрено'}];
+ if(!Array.isArray(d.impediments))d.impediments=[
+  {id:'IM-01',date:'2026-09-08',title:'Нет ключей от платёжного провайдера',owner:'Product Owner',severity:'High',status:'В работе',sprint:3,resolved:''},
+  {id:'IM-02',date:'2026-09-12',title:'Стенд нестабилен (падает ночью)',owner:'DevOps',severity:'Medium',status:'Открыт',sprint:3,resolved:''}];
+ if(!Array.isArray(d.lessons))d.lessons=[
+  {id:'LE-01',date:'2026-08-29',sprint:2,category:'Процесс',context:'Недооценили интеграцию оплаты',lesson:'Для внешних интеграций нужен спайк',recommendation:'Добавлять исследовательскую задачу и буфер'},
+  {id:'LE-02',date:'2026-09-12',sprint:3,category:'Качество',context:'Флейки-тесты роняли CI',lesson:'Нестабильные тесты дороже, чем кажется',recommendation:'Карантин флейки-тестов и починка по SLA'}];
+ if(!Array.isArray(d.raci))d.raci=[
+  {id:'RA-01',activity:'Планирование спринта',r:'Команда',a:'Scrum-мастер',c:'Product Owner',i:'Стейкхолдеры'},
+  {id:'RA-02',activity:'Приоритизация бэклога',r:'Product Owner',a:'Product Owner',c:'Команда',i:'ИТ-Лидер'},
+  {id:'RA-03',activity:'Релиз в прод',r:'DevOps',a:'ИТ-Лидер',c:'QA',i:'Поддержка, PO'},
+  {id:'RA-04',activity:'Приёмка на демо',r:'Product Owner',a:'Product Owner',c:'Команда',i:'Заказчик'}];
+ if(!Array.isArray(d.storyMap))d.storyMap=[
+  {id:'SM-01',activity:'Выбор товара',release:'R-1',story:'Каталог и карточка товара',task:''},
+  {id:'SM-02',activity:'Корзина',release:'R-1',story:'Добавление и редактирование корзины',task:'T-02'},
+  {id:'SM-03',activity:'Оформление',release:'R-1',story:'Оформление заказа (MVP)',task:'T-01'},
+  {id:'SM-04',activity:'Оплата',release:'R-1',story:'Оплата картой',task:'T-03'},
+  {id:'SM-05',activity:'Оформление',release:'R-2',story:'Промокоды и скидки',task:''},
+  {id:'SM-06',activity:'Оплата',release:'R-2',story:'Оплата в рассрочку',task:''},
+  {id:'SM-07',activity:'После покупки',release:'R-2',story:'История заказов и уведомления',task:''}];
+ if(!Array.isArray(d.poker))d.poker=[
+  {id:'PK-01',task:'T-03',title:'Оплата картой',votes:'Иванов:5, Петрова:8, Кузнецов:8, Орлова:5',result:'8',status:'Завершён'},
+  {id:'PK-02',task:'',title:'Промокоды и скидки',votes:'Иванов:3, Петрова:5, Кузнецов:8',result:'',status:'Открыт'}];
+ if(!Array.isArray(d.portfolio))d.portfolio=[
+  {id:'PO-01',name:'Маркетплейс (текущий)',status:'Жёлтый',health:0.62,velocity:34,budget:8000000,spent:3200000,progress:0.45,owner:'PMO',note:'Активный проект'},
+  {id:'PO-02',name:'Мобильное приложение',status:'Зелёный',health:0.82,velocity:28,budget:5000000,spent:1500000,progress:0.30,owner:'Mobile Lead',note:'По плану'},
+  {id:'PO-03',name:'Миграция в облако',status:'Красный',health:0.48,velocity:18,budget:6000000,spent:4800000,progress:0.70,owner:'Platform',note:'Перерасход, риск сроков'}];
  if(!Array.isArray(d.faq))d.faq=[
   {id:'Q-01',category:'Начало работы',q:'С чего начать работу в приложении?',a:'Заполните «Параметры» (даты старта, число спринтов, focus factor), затем «Команду» и «Бэклог». Дорожная карта, ёмкость, velocity, релизы и метрики считаются автоматически из этих данных.'},
   {id:'Q-02',category:'Начало работы',q:'Нужен ли интернет или сервер?',a:'Нет. Приложение работает локально в браузере, данные хранятся в localStorage. Если поднят backend (Java + Python), состояние дополнительно синхронизируется через /api/state — индикатор в шапке показывает статус.'},
@@ -2247,11 +2297,11 @@ function backlogView(){const w=document.createElement('div');const C=compute();
  bar.appendChild(sb);bar.appendChild(fs);bar.appendChild(fb);bar.appendChild(cb);bar.appendChild(cnt);w.appendChild(bar);
  w.appendChild(editable('tasks',[
     {k:'id',label:'ID'},{k:'title',label:'Задача',wide:true},{k:'assignee',label:'Исполнитель'},
-    {k:'role',label:'Роль',type:'select',opts:ROLES},{k:'type',label:'Тип',type:'select',opts:['История','Задача','Тех.долг']},
+    {k:'role',label:'Роль',type:'select',opts:ROLES},{k:'type',label:'Тип',type:'select',opts:['Эпик','Фича','История','Задача','Тех.долг']},
     {k:'est',label:'Оценка',type:'num'},{k:'priority',label:'Приоритет'},{k:'dor',label:'DoR',type:'select',opts:['','Готова']},
     {k:'status',label:'Статус',type:'select',opts:STAT_TASK},
     {k:'sprint',label:'Спринт',type:'num'},{k:'release',label:'Релиз',type:'select',opts:[''].concat((ST.releases||[]).map(r=>r.id))},
-    {k:'dep',label:'Зависит от',type:'dep'},{k:'okr',label:'OKR (Key Result)',type:'select',opts:[''].concat(krList())},
+    {k:'parent',label:'Родитель (WBS)',type:'dep'},{k:'dep',label:'Зависит от',type:'dep'},{k:'okr',label:'OKR (Key Result)',type:'select',opts:[''].concat(krList())},
     {k:'started',label:'В работу',type:'date'},{k:'done',label:'Готово',type:'date'}
    ],{newId:'id',prefix:'T-'}));
  return w;}
@@ -2660,9 +2710,7 @@ function views(){
  setView('backlog','Бэклог','Задачи проекта — источник данных для плана, velocity, релизов и метрик. Кнопки выше: сортировка по приоритету (RICE/MoSCoW) и авто-набор спринта по ёмкости.',backlogView());
  // Team
  setView('team','Команда','Состав команды и доступность — из этого считается ёмкость спринтов. Роль — основная (в т.ч. Product Owner, ИТ-Лидер); «Скрам-мастер» — дополнительная роль, её можно назначить любому участнику.',
-   editable('team',[{k:'name',label:'Участник',wide:true},{k:'role',label:'Роль',type:'select',opts:ROLES},
-    {k:'scrum',label:'Скрам-мастер',type:'select',opts:['','Да']},
-    {k:'avail',label:'Доступность',type:'num',def:1},{k:'absent',label:'Отсутствия (дн)',type:'num',def:0}]));
+   teamView());
  // Star Map (Работа) — компетенции команды по ролям (радары + матрица)
  setView('starmap','Star Map — компетенции команды','Карта компетенций участников по их ролям: радар-профиль каждого, матрица уровней по направлениям и редактируемая таблица навыков (1–5).',starmapView());
  // Roadmap (Дорожная карта): computed roadmap + editable эпики per sprint + chart
@@ -2715,6 +2763,19 @@ function views(){
  // Params
  renderParams();
  setView('scope','Контроль scope','Лог изменений состава спринтов/релизов (scope creep): добавления, переносы и удаления задач с базовым срезом для сравнения.',scopeView());
+ setView('evm','EVM — освоенный объём','Earned Value Management: PV/EV/AC, индексы CPI/SPI, прогноз EAC/ETC/VAC, S-кривая и отклонение от базового плана.',evmView());
+ setView('changes','Запросы на изменение','Управление изменениями (CCB): формальный реестр запросов на изменение scope/сроков/стоимости/качества с оценкой влияния и решением.',changeView());
+ setView('issues','Журнал проблем','Реестр реализовавшихся проблем (в отличие от рисков): приоритет, владелец, срок и решение.',issuesView());
+ setView('stakeholders','Стейкхолдеры','Реестр стейкхолдеров с матрицей «Влияние/Интерес» и уровнями вовлечённости (текущий/целевой) и стратегией.',stakeholdersView());
+ setView('statusreport','Статус-отчёт','Автоматический статус-отчёт (RAG) из текущих данных проекта с экспортом в Markdown и отправкой в Slack.',statusReportView());
+ setView('decisions','Журнал решений','Ключевые проектные и архитектурные решения (ADR): контекст, варианты, решение, обоснование и владелец.',decisionsView());
+ setView('wbs','Иерархия работ (WBS)','Структура декомпозиции: Эпик → Фича → История → Задача по полю «Родитель» с суммированием объёма и прогресса.',wbsView());
+ setView('storymap','Story Map','Карта пользовательских историй: активности (шаги пути) по горизонтали, релизы по вертикали — для выделения MVP и срезов ценности.',storyMapView());
+ setView('impediments','Импедименты','Журнал препятствий со «старением» и владельцем; пополняется из блокеров «Дэйли».',impedimentsView());
+ setView('poker','Planning Poker','Совместная оценка в Story Points: голоса участников, медиана, разброс и консенсус по Фибоначчи с применением оценки к задаче.',pokerView());
+ setView('lessons','Уроки','Реестр извлечённых уроков (lessons learned): ситуация, урок и рекомендация; пополняется из ретроспектив.',lessonsView());
+ setView('raci','RACI','Матрица ответственности: для каждой активности — Responsible / Accountable / Consulted / Informed.',raciView());
+ setView('portfolio','Портфель','Портфельный обзор нескольких проектов: статус RAG, health, velocity, бюджет и прогресс; снимок текущего проекта одной кнопкой.',portfolioView());
  setView('checks','Проверки данных','Автоматический контроль целостности данных с авто-исправлением типичных проблем.',checksView());
  // EDA report (Настройки) — разведочный анализ всех данных приложения
  setView('eda','EDA отчёт — разведочный анализ данных','Автоматический разведочный анализ (EDA) всех данных приложения: объём и полнота датасетов, числовые сводки, распределения категорий, кросс-таблицы и аномалии.',edaView());
@@ -3388,6 +3449,342 @@ function scopeDiff(){if(!PERM.canEdit){toast('Только для редакто
  Object.keys(base.map).forEach(id=>{if(now[id]==null){logScope('Убрано',id,'Снята со спринта '+base.map[id]+' после базового среза',base.map[id]);n++;}});
  if(!n){toast('Отличий от базового среза нет');return;}
  save();views();activate('scope');toast('Записано изменений состава: '+n);}
+/* ================= v1.42: пакеты проектного управления ================= */
+function downloadText(name,text,mime){const blob=new Blob([text],{type:mime||'text/plain;charset=utf-8'});
+ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},800);}
+/* ---- A1/A4: Earned Value Management + базовый план ---- */
+function evm(C){const sp=C.sp;const scope=(ST.tasks||[]).reduce((a,t)=>a+num(t.est),0)||1;
+ const BAC=sp.reduce((a,x)=>a+(x.cost||0),0)||1;
+ let cumPlan=0,cumDone=0,cumCost=0;const rows=[];
+ sp.forEach(x=>{cumPlan+=x.plan;const closed=x.status==='Закрыт';if(x.vel!=null)cumDone+=x.vel;if(closed)cumCost+=(x.cost||0);
+   rows.push({s:x.s,PV:BAC*cumPlan/scope,EV:closed?BAC*cumDone/scope:null,AC:closed?cumCost:null});});
+ let cur=null;for(let i=rows.length-1;i>=0;i--){if(rows[i].AC!=null){cur=rows[i];break;}}
+ cur=cur||{PV:0,EV:0,AC:0};
+ const CPI=cur.AC?cur.EV/cur.AC:null,SPI=cur.PV?cur.EV/cur.PV:null;
+ const EAC=CPI?BAC/CPI:null,ETC=EAC!=null?EAC-cur.AC:null,VAC=EAC!=null?BAC-EAC:null;
+ return {rows,BAC,scope,cur,CPI,SPI,EAC,ETC,VAC,CV:cur.EV-cur.AC,SV:cur.EV-cur.PV};}
+function scheduleBaseline(){if(!PERM.canEdit){toast('Только для редактора/администратора');return;}
+ const C=compute();const base={date:todayISO(),sp:C.sp.map(x=>({s:x.s,end:fmtd(x.b),plan:x.plan}))};
+ try{localStorage.setItem('schedBase',JSON.stringify(base));}catch(e){}views();activate('evm');toast('Базовый план зафиксирован: '+base.sp.length+' спринтов');}
+function evmView(){const w=document.createElement('div');const C=compute();const E=evm(C);
+ const money=v=>v==null?'—':fmt(v,0)+' ₽';
+ const kp=document.createElement('div');kp.className='grid kpis';
+ kp.innerHTML=kpiCard('CPI',E.CPI==null?'—':fmt(E.CPI,2),'индекс стоимости',E.CPI==null?'neut':E.CPI>=1?'good':E.CPI>=0.9?'warn':'crit')
+  +kpiCard('SPI',E.SPI==null?'—':fmt(E.SPI,2),'индекс сроков',E.SPI==null?'neut':E.SPI>=1?'good':E.SPI>=0.9?'warn':'crit')
+  +kpiCard('EAC',money(E.EAC),'прогноз по завершении',E.EAC!=null&&E.EAC>E.BAC?'crit':'neut')
+  +kpiCard('VAC',money(E.VAC),'отклонение бюджета',E.VAC==null?'neut':E.VAC>=0?'good':'crit');
+ w.appendChild(kp);
+ const kp2=document.createElement('div');kp2.className='grid kpis';kp2.style.marginTop='12px';
+ kp2.innerHTML=kpiCard('BAC',money(E.BAC),'бюджет по плану','neut')
+  +kpiCard('EV (освоено)',money(E.cur.EV),'ценность выполненного','neut')
+  +kpiCard('CV',money(E.CV),'стоимостное отклонение',E.CV>=0?'good':'crit')
+  +kpiCard('SV',money(E.SV),'отклонение по срокам',E.SV>=0?'good':'crit');
+ w.appendChild(kp2);
+ const cc=document.createElement('div');cc.className='card';cc.style.marginTop='14px';
+ cc.innerHTML='<p class="ctitle">S-кривая: PV / EV / AC по спринтам (₽)</p><div id="evm_c"></div><div class="legend"><span><i style="background:var(--accent)"></i>PV (план)</span><span><i style="background:var(--good)"></i>EV (освоено)</span><span><i style="background:var(--crit)"></i>AC (факт)</span></div>';
+ w.appendChild(cc);
+ const bbar=document.createElement('div');bbar.className='grm-pick';bbar.style.marginTop='14px';
+ const bb=document.createElement('button');bb.className='btn';bb.textContent='📌 Зафиксировать базовый план';bb.onclick=scheduleBaseline;
+ let sb=null;try{sb=JSON.parse(localStorage.getItem('schedBase')||'null');}catch(e){}
+ const bc=document.createElement('span');bc.style.cssText='font-size:12.5px;color:var(--muted);align-self:center;margin-left:auto';bc.textContent=sb?('Базовый план от '+(sb.date||'—')):'Базовый план не зафиксирован';
+ bbar.appendChild(bb);bbar.appendChild(bc);w.appendChild(bbar);
+ if(sb){const vc=document.createElement('div');vc.className='card';vc.style.marginTop='14px';
+   let vh='<p class="ctitle">Отклонение от базового плана (срок/объём)</p><div class="twrap" style="border:none"><table><tr><th>Спринт</th><th>Базовая дата</th><th>Текущая дата</th><th class="num">План (баз.)</th><th class="num">Факт (vel)</th><th class="num">Δ срок, дн</th></tr>';
+   C.sp.forEach((x,i)=>{const b=sb.sp[i];const bd=b?b.end:'';const dsh=b?Math.round((x.b-pd(b.end.split('.').reverse().join('-')))/MS):'';
+     vh+=`<tr><td>С${x.s}</td><td>${bd||'—'}</td><td>${fmtd(x.b)}</td><td class="num">${b?fmt(b.plan,1):'—'}</td><td class="num">${x.vel==null?'—':fmt(x.vel,1)}</td><td class="num">${dsh===''?'—':dsh}</td></tr>`;});
+   vh+='</table></div>';vc.innerHTML=vh;w.appendChild(vc);}
+ const lg=document.createElement('div');lg.className='card';lg.style.marginTop='14px';
+ lg.innerHTML='<p class="ctitle">Методика освоенного объёма (EVM)</p><p style="font-size:13px;color:var(--muted);line-height:1.7;margin:0">'
+  +'<b>PV</b> — плановая стоимость запланированных работ; <b>EV</b> — освоенный объём (BAC × % выполнения); <b>AC</b> — фактические затраты.<br>'
+  +'<b>CPI = EV/AC</b> (эффективность затрат), <b>SPI = EV/PV</b> (эффективность сроков); &lt; 1 — перерасход/отставание.<br>'
+  +'<b>EAC = BAC/CPI</b> — прогноз итоговой стоимости; <b>ETC = EAC − AC</b> — осталось потратить; <b>VAC = BAC − EAC</b> — отклонение бюджета.<br>'
+  +'<b>CV = EV − AC</b>, <b>SV = EV − PV</b> — стоимостное и временное отклонения в деньгах.</p>';
+ w.appendChild(lg);
+ setTimeout(()=>{lines(document.getElementById('evm_c'),['С0'].concat(C.sp.map(x=>'С'+x.s)),[
+   {color:col('--accent'),data:[0].concat(E.rows.map(r=>r.PV)),w:3},
+   {color:col('--good'),data:[0].concat(E.rows.map(r=>r.EV)),w:3},
+   {color:col('--crit'),data:[0].concat(E.rows.map(r=>r.AC)),w:3}]);},0);
+ return w;}
+/* ---- A2: управление изменениями (CCB) ---- */
+function changeView(){const w=document.createElement('div');
+ w.appendChild(editable('changeRequests',[{k:'id',label:'ID'},{k:'date',label:'Дата',type:'date'},{k:'title',label:'Запрос на изменение',wide:true},
+   {k:'type',label:'Тип',type:'select',opts:['Scope','Срок','Стоимость','Качество']},{k:'impact',label:'Влияние'},{k:'requester',label:'Инициатор'},
+   {k:'status',label:'Статус',type:'select',opts:['Предложен','Одобрен','Отклонён','Отложен','Внедрён']},{k:'note',label:'Решение / комментарий',wide:true}],{newId:'id',prefix:'CR-'}));
+ const cr=ST.changeRequests||[];const by=s=>cr.filter(x=>x.status===s).length;
+ const kp=document.createElement('div');kp.className='grid kpis';kp.style.marginTop='14px';
+ kp.innerHTML=kpiCard('Запросов',cr.length,'всего','neut')+kpiCard('Предложено',by('Предложен'),'ждут решения',by('Предложен')?'warn':'neut')
+  +kpiCard('Одобрено',by('Одобрен')+by('Внедрён'),'приняты в работу','good')+kpiCard('Отклонено',by('Отклонён'),'не приняты','neut');
+ w.appendChild(kp);
+ const lg=document.createElement('div');lg.className='card';lg.style.marginTop='14px';
+ lg.innerHTML='<p class="ctitle">Управление изменениями (Change Control Board)</p><p style="font-size:13px;color:var(--muted);line-height:1.7;margin:0">'
+  +'Формальный контроль изменений: каждое предложение фиксируется с типом (scope/срок/стоимость/качество), оценкой влияния и инициатором, проходит решение CCB (одобрить / отклонить / отложить) и только затем внедряется. Это превращает пассивный «Контроль scope» в управляемый процесс и защищает базовый план.</p>';
+ w.appendChild(lg);return w;}
+/* ---- A3: журнал проблем (issue log) ---- */
+function issuesView(){const w=document.createElement('div');const today=todayISO();
+ w.appendChild(editable('issues',[{k:'id',label:'ID'},{k:'date',label:'Дата',type:'date'},{k:'title',label:'Проблема',wide:true},
+   {k:'priority',label:'Приоритет',type:'select',opts:['Critical','High','Medium','Low']},{k:'owner',label:'Владелец'},
+   {k:'status',label:'Статус',type:'select',opts:['Открыта','В работе','Решена','Закрыта']},{k:'due',label:'Срок',type:'date'},{k:'resolution',label:'Решение',wide:true}],{newId:'id',prefix:'IS-'}));
+ const is=ST.issues||[];const open=is.filter(x=>x.status!=='Решена'&&x.status!=='Закрыта');
+ const over=open.filter(x=>x.due&&String(x.due)<today).length;
+ const kp=document.createElement('div');kp.className='grid kpis';kp.style.marginTop='14px';
+ kp.innerHTML=kpiCard('Проблем',is.length,'в журнале','neut')+kpiCard('Открыто',open.length,'в работе',open.length?'warn':'good')
+  +kpiCard('Просрочено',over,'по сроку',over?'crit':'good')+kpiCard('Critical/High',open.filter(x=>x.priority==='Critical'||x.priority==='High').length,'высокий приоритет',open.some(x=>x.priority==='Critical')?'crit':'neut');
+ w.appendChild(kp);
+ const cc=document.createElement('div');cc.className='card';cc.style.marginTop='14px';cc.innerHTML='<p class="ctitle">Проблемы по статусам</p><div id="iss_c"></div>';w.appendChild(cc);
+ const st=['Открыта','В работе','Решена','Закрыта'];
+ setTimeout(()=>bars(document.getElementById('iss_c'),st,[{color:col('--accent'),data:st.map(s=>is.filter(x=>x.status===s).length)}]),0);
+ const lg=document.createElement('div');lg.className='card';lg.style.marginTop='14px';
+ lg.innerHTML='<p class="ctitle">Журнал проблем (Issue Log)</p><p style="font-size:13px;color:var(--muted);line-height:1.7;margin:0">'
+  +'Проблемы — это <b>уже случившиеся</b> препятствия (в отличие от рисков — потенциальных). Каждая получает владельца, приоритет, срок и решение. Пара «Риски + Проблемы» — базовый инструмент контроля: риск при реализации становится проблемой.</p>';
+ w.appendChild(lg);return w;}
+/* ---- B1: реестр стейкхолдеров + матрица «Влияние/Интерес» ---- */
+var ENGAGE=['Противник','Сопротивляется','Нейтральный','Поддерживающий','Лидер'];
+function stakeholdersView(){const w=document.createElement('div');
+ w.appendChild(editable('stakeholders',[{k:'id',label:'ID'},{k:'name',label:'Стейкхолдер',wide:true},{k:'role',label:'Роль'},
+   {k:'power',label:'Влияние (1-5)',type:'num'},{k:'interest',label:'Интерес (1-5)',type:'num'},
+   {k:'engageCur',label:'Вовлечённость',type:'select',opts:ENGAGE.slice()},{k:'engageTarget',label:'Целевая',type:'select',opts:ENGAGE.slice()},{k:'strategy',label:'Стратегия',wide:true}],{newId:'id',prefix:'SH-'}));
+ const sh=ST.stakeholders||[];
+ const gap=sh.filter(x=>ENGAGE.indexOf(x.engageTarget)>ENGAGE.indexOf(x.engageCur)).length;
+ const kp=document.createElement('div');kp.className='grid kpis';kp.style.marginTop='14px';
+ kp.innerHTML=kpiCard('Стейкхолдеров',sh.length,'в реестре','neut')
+  +kpiCard('Ключевые',sh.filter(x=>num(x.power)>=4).length,'высокое влияние','warn')
+  +kpiCard('Разрыв вовлечённости',gap,'нужны действия',gap?'crit':'good')
+  +kpiCard('Чемпионы',sh.filter(x=>x.engageCur==='Лидер'||x.engageCur==='Поддерживающий').length,'на нашей стороне','good');
+ w.appendChild(kp);
+ const grid=document.createElement('div');grid.className='card';grid.style.marginTop='14px';
+ let mh='<p class="ctitle">Матрица «Влияние (↓) / Интерес (→)»</p><div class="twrap" style="border:none"><table class="matrix"><tr><th>Вл ↓ / Инт →</th>';
+ for(let x=1;x<=5;x++)mh+='<th>'+x+'</th>';mh+='</tr>';
+ const strat=(p,i)=>p>=3&&i>=3?'mx-r':p>=3?'mx-y':i>=3?'mx-y':'mx-g';
+ for(let p=5;p>=1;p--){mh+='<tr><th>'+p+'</th>';for(let i=1;i<=5;i++){const ids=sh.filter(s=>num(s.power)===p&&num(s.interest)===i).map(s=>esc((s.name||s.id||'').slice(0,10)));mh+='<td class="'+strat(p,i)+'">'+ids.join('<br>')+'</td>';}mh+='</tr>';}
+ mh+='</table></div><p style="font-size:12px;color:var(--muted);margin:8px 0 0">Верхний-правый угол (высокое влияние + интерес) — <b>управлять плотно</b>; высокое влияние — <b>держать удовлетворёнными</b>; высокий интерес — <b>информировать</b>; иначе — <b>наблюдать</b>.</p>';
+ grid.innerHTML=mh;w.appendChild(grid);
+ const lg=document.createElement('div');lg.className='card';lg.style.marginTop='14px';
+ lg.innerHTML='<p class="ctitle">Управление стейкхолдерами</p><p style="font-size:13px;color:var(--muted);line-height:1.7;margin:0">'
+  +'Реестр фиксирует влияние и интерес каждого стейкхолдера, текущий и целевой уровень вовлечённости (Противник…Лидер) и стратегию работы. «Разрыв вовлечённости» — где целевой уровень выше текущего — список приоритетов для коммуникаций.</p>';
+ w.appendChild(lg);return w;}
+/* ---- B2: статус-отчёт ---- */
+function statusReportMd(){const C=compute();const E=evm(C);const risk=sprintRisk(C);const goal=(ST.sprintGoals||[]).find(g=>+g.sprint===C.cur);
+ const rag=C.health>=.8?'🟢 Зелёный':C.health>=.6?'🟡 Жёлтый':'🔴 Красный';
+ const L=[];L.push('# Статус-отчёт — '+(ST.params.name||'Проект'));
+ L.push('');L.push('**Дата:** '+todayISO()+'  ·  **Статус (RAG):** '+rag+'  ·  **Спринт:** #'+C.cur);
+ L.push('');L.push('## Ключевые показатели');
+ L.push('- Health-index: '+pctf(C.health));
+ L.push('- Velocity (средняя): '+fmt(C.avgVel,1)+' SP/спринт');
+ L.push('- Выполнение текущего спринта: '+(C.curSp&&C.curSp.pct!=null?pctf(C.curSp.pct):'—'));
+ L.push('- CPI / SPI: '+(E.CPI==null?'—':fmt(E.CPI,2))+' / '+(E.SPI==null?'—':fmt(E.SPI,2)));
+ L.push('- Открыто дефектов: '+C.bugsOpen+' (DRE '+pctf(C.dre)+')');
+ L.push('- Остаток бэклога: '+fmt(C.remain,0)+' SP');
+ if(goal){L.push('');L.push('## Цель спринта #'+C.cur);L.push('- '+(goal.goal||'—')+' ('+(goal.status||'—')+')');}
+ if(risk&&risk.reasons.length){L.push('');L.push('## Риск срыва спринта: '+risk.level+' ('+risk.score+'/100)');risk.reasons.forEach(r=>L.push('- '+r));}
+ const blk=(ST.deps||[]).filter(d=>d.status==='Заблокировано'||d.status==='Просрочено');
+ const iss=(ST.issues||[]).filter(x=>x.status!=='Решена'&&x.status!=='Закрыта');
+ if(blk.length||iss.length){L.push('');L.push('## Требует внимания / эскалация');
+   blk.forEach(d=>L.push('- ⛔ '+(d.item||d.desc||'')+' — '+(d.stream||'')));
+   iss.slice(0,8).forEach(x=>L.push('- ❗ '+(x.title||'')+' ('+(x.priority||'')+', '+(x.owner||'')+')'));}
+ const done=(ST.tasks||[]).filter(t=>+t.sprint===C.cur&&t.status==='Готово');
+ L.push('');L.push('## Сделано в спринте #'+C.cur);if(done.length)done.slice(0,12).forEach(t=>L.push('- ✅ '+(t.title||t.id)));else L.push('- —');
+ L.push('');L.push('_Сгенерировано приложением «Управление кросс-функциональной командой» v'+APP_VERSION+'_');
+ return L.join('\n');}
+function statusReportView(){const w=document.createElement('div');const md=statusReportMd();
+ const bar=document.createElement('div');bar.className='grm-pick';
+ const d1=document.createElement('button');d1.className='btn primary';d1.textContent='⤓ Скачать .md';d1.onclick=()=>downloadText('Статус-отчёт_'+todayISO()+'.md',statusReportMd(),'text/markdown;charset=utf-8');
+ const d2=document.createElement('button');d2.className='btn';d2.textContent='📣 В Slack';d2.title='Отправить сводку в Slack (нужен серверный режим)';d2.onclick=()=>{if(typeof apiPost==='function')apiPost('/api/integrations/slack',{text:statusReportMd()}).then(r=>toast(r&&r.ok?'Отправлено в Slack':'Slack не настроен'));};
+ const c=document.createElement('span');c.style.cssText='font-size:12.5px;color:var(--muted);align-self:center;margin-left:auto';c.textContent='Отчёт формируется автоматически из текущих данных проекта.';
+ bar.appendChild(d1);bar.appendChild(d2);bar.appendChild(c);w.appendChild(bar);
+ const card=document.createElement('div');card.className='card';card.style.marginTop='14px';
+ const pre=document.createElement('pre');pre.style.cssText='white-space:pre-wrap;font-family:Segoe UI,Calibri,sans-serif;font-size:13.5px;line-height:1.6;margin:0;color:var(--ink)';pre.textContent=md;
+ card.appendChild(pre);w.appendChild(card);return w;}
+/* ---- B3: журнал решений (ADR) ---- */
+function decisionsView(){const w=document.createElement('div');
+ w.appendChild(editable('decisions',[{k:'id',label:'ID'},{k:'date',label:'Дата',type:'date'},{k:'title',label:'Решение',wide:true},
+   {k:'context',label:'Контекст',wide:true},{k:'options',label:'Варианты',wide:true},{k:'decision',label:'Что решили',wide:true},
+   {k:'rationale',label:'Обоснование',wide:true},{k:'owner',label:'Владелец'},{k:'status',label:'Статус',type:'select',opts:['Предложено','Принято','Пересмотрено','Отменено']}],{newId:'id',prefix:'DC-'}));
+ const dc=ST.decisions||[];
+ const kp=document.createElement('div');kp.className='grid kpis';kp.style.marginTop='14px';
+ kp.innerHTML=kpiCard('Решений',dc.length,'в журнале','neut')+kpiCard('Принято',dc.filter(x=>x.status==='Принято').length,'действуют','good')
+  +kpiCard('Пересмотрено',dc.filter(x=>x.status==='Пересмотрено').length,'изменены','warn')+kpiCard('Отменено',dc.filter(x=>x.status==='Отменено').length,'недействительны','neut');
+ w.appendChild(kp);
+ const lg=document.createElement('div');lg.className='card';lg.style.marginTop='14px';
+ lg.innerHTML='<p class="ctitle">Журнал решений (ADR)</p><p style="font-size:13px;color:var(--muted);line-height:1.7;margin:0">'
+  +'Фиксируются ключевые проектные и архитектурные решения: контекст, рассмотренные варианты, принятое решение, обоснование и владелец. Это сохраняет «почему мы так сделали», ускоряет онбординг и предотвращает повторное обсуждение закрытых вопросов.</p>';
+ w.appendChild(lg);return w;}
+/* ---- C1: иерархия работ (WBS) ---- */
+function wbsChildren(id){return (ST.tasks||[]).filter(t=>t.parent===id);}
+function wbsRoll(t,seen){seen=seen||new Set();if(seen.has(t.id))return {sp:0,done:0};seen.add(t.id);
+ let sp=num(t.est),done=t.status==='Готово'?num(t.est):0;wbsChildren(t.id).forEach(c=>{const r=wbsRoll(c,seen);sp+=r.sp;done+=r.done;});return {sp,done};}
+function wbsView(){const w=document.createElement('div');const tasks=ST.tasks||[];
+ const roots=tasks.filter(t=>!t.parent||!tasks.some(x=>x.id===t.parent));
+ const card=document.createElement('div');card.className='card';
+ let h='<p class="ctitle">Иерархия работ: Эпик → Фича → История → Задача (с роллапом)</p><div class="twrap" style="border:none"><table><tr><th>Элемент</th><th>Тип</th><th class="num">Оценка (роллап)</th><th class="num">Готово</th><th class="num">% готовности</th><th>Статус</th></tr>';
+ const seen=new Set();
+ const row=(t,depth)=>{if(seen.has(t.id))return;seen.add(t.id);const r=wbsRoll(t);const pad=depth*22;
+   h+=`<tr><td style="padding-left:${8+pad}px">${depth?'└ ':''}<b>${esc(t.id)}</b> ${esc((t.title||'').slice(0,46))}</td><td>${esc(t.type||'')}</td><td class="num">${fmt(r.sp,1)}</td><td class="num">${fmt(r.done,1)}</td><td class="num">${r.sp?pctf(r.done/r.sp):'—'}</td><td>${statusPill(t.status)}</td></tr>`;
+   wbsChildren(t.id).forEach(c=>row(c,depth+1));};
+ roots.forEach(t=>row(t,0));
+ h+='</table></div>';card.innerHTML=h;w.appendChild(card);
+ const kp=document.createElement('div');kp.className='grid kpis';kp.style.marginTop='14px';
+ const withParent=tasks.filter(t=>t.parent&&tasks.some(x=>x.id===t.parent)).length;
+ kp.innerHTML=kpiCard('Элементов',tasks.length,'в структуре','neut')+kpiCard('Верхнего уровня',roots.length,'эпиков/корней','neut')
+  +kpiCard('Со связью «родитель»',withParent,'в иерархии',withParent?'good':'warn')+kpiCard('Глубина',String(Math.max(1,wbsDepth(roots,tasks))),'уровней','neut');
+ w.appendChild(kp);
+ const lg=document.createElement('div');lg.className='card';lg.style.marginTop='14px';
+ lg.innerHTML='<p class="ctitle">Структура декомпозиции работ (WBS)</p><p style="font-size:13px;color:var(--muted);line-height:1.7;margin:0">'
+  +'Иерархия строится по полю «Родитель» у задач (в «Бэклоге»): Эпик → Фича → История → Задача. Оценка и выполнение суммируются снизу вверх (роллап), поэтому у эпика виден совокупный объём и прогресс всех вложенных элементов.</p>';
+ w.appendChild(lg);return w;}
+function wbsDepth(roots,tasks){let max=1;const go=(t,d,seen)=>{if(seen.has(t.id))return;seen.add(t.id);max=Math.max(max,d);wbsChildren(t.id).forEach(c=>go(c,d+1,seen));};roots.forEach(t=>go(t,1,new Set()));return max;}
+/* ---- C2: story map ---- */
+function storyMapView(){const w=document.createElement('div');
+ w.appendChild(editable('storyMap',[{k:'id',label:'ID'},{k:'activity',label:'Активность (шаг пути)'},{k:'release',label:'Релиз',type:'select',opts:[''].concat((ST.releases||[]).map(r=>r.id))},{k:'story',label:'История',wide:true},{k:'task',label:'Задача (Бэклог)',type:'dep'}],{newId:'id',prefix:'SM-'}));
+ const sm=ST.storyMap||[];
+ const acts=Array.from(new Set(sm.map(x=>x.activity).filter(Boolean)));
+ const rels=Array.from(new Set(sm.map(x=>x.release||'').filter(x=>x!=='')));
+ const bands=rels.length?rels:[''];
+ const card=document.createElement('div');card.className='card';card.style.marginTop='14px';
+ if(!acts.length){card.innerHTML='<p style="margin:0;color:var(--muted)">Добавьте истории с «Активностью» и «Релизом» — здесь появится карта.</p>';}
+ else{let h='<p class="ctitle">Карта историй: активности (столбцы) × релизы (строки)</p><div class="twrap"><table class="pi-board"><tr><th>Релиз \\ Активность</th>';
+   acts.forEach(a=>h+='<th>'+esc(a)+'</th>');h+='</tr>';
+   bands.forEach(rel=>{h+='<tr><td style="font-weight:600">'+esc(rel||'Без релиза')+'</td>';
+     acts.forEach(a=>{const cell=sm.filter(x=>x.activity===a&&(x.release||'')===rel);
+       h+='<td class="pi-cell">'+cell.map(x=>'<span class="pi-chip p-good" title="'+esc(x.story||'')+'">'+esc((x.story||'').slice(0,20))+'</span>').join('')+'</td>';});
+     h+='</tr>';});
+   h+='</table></div>';card.innerHTML=h;}
+ w.appendChild(card);
+ const lg=document.createElement('div');lg.className='card';lg.style.marginTop='14px';
+ lg.innerHTML='<p class="ctitle">Story Mapping</p><p style="font-size:13px;color:var(--muted);line-height:1.7;margin:0">'
+  +'Карта историй раскладывает бэклог в двух измерениях: по горизонтали — шаги пользовательского пути (активности), по вертикали — релизы. Это помогает увидеть сквозной сценарий, выделить MVP (верхняя полоса) и спланировать последующие релизы «срезами» ценности.</p>';
+ w.appendChild(lg);return w;}
+/* ---- C3: импедименты ---- */
+function impedimentsFromDaily(){if(!PERM.canEdit){toast('Только для редактора/администратора');return;}
+ const arr=ST.impediments||(ST.impediments=[]);let n=0;
+ (ST.daily||[]).forEach(d=>{const bl=(d.blocker||'').trim();if(!bl||arr.some(x=>(x.title||'').trim()===bl))return;
+   arr.push({id:genId(arr,'id','IM-'),date:d.date||todayISO(),title:bl,owner:d.participant||'',severity:'Medium',status:'Открыт',sprint:num(d.sprint),resolved:''});n++;});
+ if(!n){toast('Новых блокеров из дэйли нет');return;}save();views();activate('impediments');if(typeof auditClient==='function')auditClient('impediments_from_daily',n);toast('Добавлено импедиментов: '+n);}
+function impedimentsView(){const w=document.createElement('div');const today=appTodayDate();
+ (function(){const bar=document.createElement('div');bar.className='grm-pick';
+  const b=document.createElement('button');b.className='btn primary';b.textContent='⛔ Из блокеров дэйли';b.onclick=impedimentsFromDaily;
+  const c=document.createElement('span');c.style.cssText='font-size:12.5px;color:var(--muted);align-self:center;margin-left:auto';c.textContent='Блокеров в дэйли: '+(ST.daily||[]).filter(x=>(x.blocker||'').trim()).length;
+  bar.appendChild(b);bar.appendChild(c);w.appendChild(bar);})();
+ w.appendChild(editable('impediments',[{k:'id',label:'ID'},{k:'date',label:'Возник',type:'date'},{k:'title',label:'Импедимент',wide:true},{k:'owner',label:'Владелец'},
+   {k:'severity',label:'Серьёзность',type:'select',opts:['High','Medium','Low']},{k:'status',label:'Статус',type:'select',opts:['Открыт','В работе','Снят']},{k:'sprint',label:'Спринт',type:'num'},{k:'resolved',label:'Снят',type:'date'}],{newId:'id',prefix:'IM-'}));
+ const im=ST.impediments||[];const open=im.filter(x=>x.status!=='Снят');
+ const ageOf=x=>x.date?Math.round((today-appDateOf(x.date))/86400000):0;
+ const aged=open.filter(x=>ageOf(x)>5).length;
+ const kp=document.createElement('div');kp.className='grid kpis';kp.style.marginTop='14px';
+ kp.innerHTML=kpiCard('Импедиментов',im.length,'в журнале','neut')+kpiCard('Открыто',open.length,'блокируют',open.length?'warn':'good')
+  +kpiCard('Залежались',aged,'> 5 дней',aged?'crit':'good')+kpiCard('High',open.filter(x=>x.severity==='High').length,'высокая серьёзность',open.some(x=>x.severity==='High')?'crit':'neut');
+ w.appendChild(kp);
+ const lg=document.createElement('div');lg.className='card';lg.style.marginTop='14px';
+ lg.innerHTML='<p class="ctitle">Журнал импедиментов</p><p style="font-size:13px;color:var(--muted);line-height:1.7;margin:0">'
+  +'Импедименты — препятствия, которые Scrum-мастер устраняет. У каждого есть владелец, серьёзность и «возраст»; залежавшиеся (&gt; 5 дней) требуют эскалации. Блокеры из «Дэйли» переносятся сюда одной кнопкой.</p>';
+ w.appendChild(lg);return w;}
+function appDateOf(dstr){const p=String(dstr||'').split('-');return new Date(+p[0]||2026,(+p[1]||1)-1,+p[2]||1);}
+/* ---- C4: planning poker ---- */
+function pokerReveal(votesStr){const vals=String(votesStr||'').split(',').map(s=>{const m=s.split(':');return num(m[m.length-1]);}).filter(v=>v>0);
+ if(!vals.length)return null;vals.sort((a,b)=>a-b);const med=vals[Math.floor(vals.length/2)];const avg=vals.reduce((a,b)=>a+b,0)/vals.length;
+ const FIB=[1,2,3,5,8,13,21];const cons=FIB.reduce((p,c)=>Math.abs(c-med)<Math.abs(p-med)?c:p,FIB[0]);
+ return {min:vals[0],max:vals[vals.length-1],med,avg:Math.round(avg*10)/10,consensus:cons,spread:vals[vals.length-1]-vals[0]};}
+function pokerApply(id){if(!PERM.canEdit)return;const r=(ST.poker||[]).find(x=>x.id===id);if(!r)return;const rv=pokerReveal(r.votes);if(!rv){toast('Нет голосов');return;}
+ r.result=String(rv.consensus);r.status='Завершён';
+ if(r.task){const t=(ST.tasks||[]).find(x=>x.id===r.task);if(t)t.est=rv.consensus;}
+ save();views();activate('poker');if(typeof auditClient==='function')auditClient('poker_apply',(r.task||'')+'='+rv.consensus);toast('Оценка '+rv.consensus+' SP применена'+(r.task?(' к '+r.task):''));}
+function pokerView(){const w=document.createElement('div');
+ w.appendChild(backlogPickerBar('poker','+ В покер','Не оценивалось',(t,arr)=>({id:genId(arr,'id','PK-'),task:t.id,title:t.title||t.id,votes:'',result:'',status:'Открыт'})));
+ w.appendChild(editable('poker',[{k:'id',label:'ID'},{k:'task',label:'Задача (Бэклог)',type:'dep'},{k:'title',label:'История',wide:true},
+   {k:'votes',label:'Голоса (Имя:SP, …)',wide:true},{k:'result',label:'Итог (SP)'},{k:'status',label:'Статус',type:'select',opts:['Открыт','Завершён']}],{newId:'id',prefix:'PK-'}));
+ const pk=ST.poker||[];
+ const card=document.createElement('div');card.className='card';card.style.marginTop='14px';
+ let h='<p class="ctitle">Раунды оценки (раскрытие и консенсус по Фибоначчи)</p><div class="twrap" style="border:none"><table><tr><th>ID</th><th>История</th><th>Голоса</th><th class="num">Мин–Макс</th><th class="num">Медиана</th><th class="num">Консенсус</th><th>Разброс</th><th></th></tr>';
+ pk.forEach(r=>{const rv=pokerReveal(r.votes);const spread=rv?(rv.spread>=8?'<span class="pill p-crit">большой</span>':rv.spread>=5?'<span class="pill p-warn">средний</span>':'<span class="pill p-good">согласие</span>'):'—';
+   h+=`<tr><td>${esc(r.id)}</td><td>${esc((r.title||'').slice(0,34))}</td><td style="font-size:12px;color:var(--muted)">${esc(r.votes||'')}</td><td class="num">${rv?rv.min+'–'+rv.max:'—'}</td><td class="num">${rv?rv.med:'—'}</td><td class="num"><b>${rv?rv.consensus:'—'}</b></td><td>${spread}</td><td>${(PERM.canEdit&&rv)?'<button class="btn" data-poker="'+esc(r.id)+'">Применить</button>':''}</td></tr>`;});
+ h+='</table></div>';card.innerHTML=h;
+ card.addEventListener('click',e=>{const b=e.target.closest('[data-poker]');if(b)pokerApply(b.getAttribute('data-poker'));});
+ w.appendChild(card);
+ const lg=document.createElement('div');lg.className='card';lg.style.marginTop='14px';
+ lg.innerHTML='<p class="ctitle">Planning Poker</p><p style="font-size:13px;color:var(--muted);line-height:1.7;margin:0">'
+  +'Совместная оценка в Story Points: добавьте историю из «Бэклога», впишите голоса участников в формате «Имя:оценка» через запятую. Система покажет медиану, разброс и консенсус по шкале Фибоначчи (1,2,3,5,8,13,21); большой разброс — повод обсудить понимание задачи. «Применить» записывает согласованную оценку в задачу.</p>';
+ w.appendChild(lg);return w;}
+/* ---- C5: уроки (lessons learned) ---- */
+function lessonsFromRetro(){if(!PERM.canEdit){toast('Только для редактора/администратора');return;}
+ const arr=ST.lessons||(ST.lessons=[]);let n=0;
+ (ST.retro||[]).forEach(r=>{const imp=(r.improve||'').trim();if(!imp||arr.some(x=>(x.context||'').trim()===imp))return;
+   arr.push({id:genId(arr,'id','LE-'),date:todayISO(),sprint:num(r.sprint),category:'Процесс',context:imp,lesson:(r.action||'').trim()||'—',recommendation:'Учесть в следующем спринте'});n++;});
+ if(!n){toast('Новых уроков из ретро нет');return;}save();views();activate('lessons');if(typeof auditClient==='function')auditClient('lessons_from_retro',n);toast('Добавлено уроков: '+n);}
+function lessonsView(){const w=document.createElement('div');
+ (function(){const bar=document.createElement('div');bar.className='grm-pick';
+  const b=document.createElement('button');b.className='btn primary';b.textContent='🔄 Из ретроспектив';b.onclick=lessonsFromRetro;
+  const c=document.createElement('span');c.style.cssText='font-size:12.5px;color:var(--muted);align-self:center;margin-left:auto';c.textContent='Пунктов «что улучшить» в ретро: '+(ST.retro||[]).filter(x=>(x.improve||'').trim()).length;
+  bar.appendChild(b);bar.appendChild(c);w.appendChild(bar);})();
+ w.appendChild(editable('lessons',[{k:'id',label:'ID'},{k:'date',label:'Дата',type:'date'},{k:'sprint',label:'Спринт',type:'num'},
+   {k:'category',label:'Категория',type:'select',opts:['Процесс','Технологии','Люди','Коммуникации','Качество']},{k:'context',label:'Ситуация',wide:true},{k:'lesson',label:'Урок',wide:true},{k:'recommendation',label:'Рекомендация',wide:true}],{newId:'id',prefix:'LE-'}));
+ const le=ST.lessons||[];const byCat=c=>le.filter(x=>x.category===c).length;
+ const kp=document.createElement('div');kp.className='grid kpis';kp.style.marginTop='14px';
+ kp.innerHTML=kpiCard('Уроков',le.length,'в базе знаний','neut')+kpiCard('Процесс',byCat('Процесс'),'категория','neut')+kpiCard('Технологии',byCat('Технологии'),'категория','neut')+kpiCard('Качество',byCat('Качество'),'категория','neut');
+ w.appendChild(kp);
+ const lg=document.createElement('div');lg.className='card';lg.style.marginTop='14px';
+ lg.innerHTML='<p class="ctitle">Реестр извлечённых уроков</p><p style="font-size:13px;color:var(--muted);line-height:1.7;margin:0">'
+  +'База знаний команды: что произошло, какой урок извлекли и что рекомендуем делать иначе. Пополняется из ретроспектив одной кнопкой. В отличие от action items (разовые задачи) — это долговременные правила, которые снижают повторение ошибок.</p>';
+ w.appendChild(lg);return w;}
+/* ---- D1: RACI ---- */
+function raciView(){const w=document.createElement('div');
+ w.appendChild(editable('raci',[{k:'id',label:'ID'},{k:'activity',label:'Активность / результат',wide:true},
+   {k:'r',label:'R — Исполнитель'},{k:'a',label:'A — Ответственный'},{k:'c',label:'C — Консультант'},{k:'i',label:'I — Информируется'}],{newId:'id',prefix:'RA-'}));
+ const ra=ST.raci||[];
+ const noA=ra.filter(x=>!(x.a||'').trim()).length;const multiA=ra.filter(x=>(x.a||'').indexOf(',')>=0).length;
+ const kp=document.createElement('div');kp.className='grid kpis';kp.style.marginTop='14px';
+ kp.innerHTML=kpiCard('Активностей',ra.length,'в матрице','neut')+kpiCard('Без Accountable',noA,'нужен ровно один',noA?'crit':'good')+kpiCard('Несколько A',multiA,'должен быть один',multiA?'warn':'good')+kpiCard('Полных строк',ra.filter(x=>(x.r||'').trim()&&(x.a||'').trim()).length,'есть R и A','neut');
+ w.appendChild(kp);
+ const lg=document.createElement('div');lg.className='card';lg.style.marginTop='14px';
+ lg.innerHTML='<p class="ctitle">Матрица ответственности (RACI)</p><p style="font-size:13px;color:var(--muted);line-height:1.7;margin:0">'
+  +'Для каждой активности распределяются роли: <b>R</b> (Responsible) — кто выполняет, <b>A</b> (Accountable) — кто отвечает за результат (ровно один!), <b>C</b> (Consulted) — с кем советуются, <b>I</b> (Informed) — кого информируют. Правило здоровья: у каждой строки один и только один <b>A</b>.</p>';
+ w.appendChild(lg);return w;}
+/* ---- E1: портфель ---- */
+function portfolioSnapshot(){if(!PERM.canEdit){toast('Только для редактора/администратора');return;}
+ const C=compute();const arr=ST.portfolio||(ST.portfolio=[]);
+ const rag=C.health>=.8?'Зелёный':C.health>=.6?'Жёлтый':'Красный';
+ const progress=C.remain!=null?1-Math.min(1,C.remain/((ST.tasks||[]).reduce((a,t)=>a+num(t.est),0)||1)):0;
+ const name=ST.params.name||'Текущий проект';
+ const ex=arr.find(x=>x.name===name);
+ const data={name:name,status:rag,health:Math.round(C.health*100)/100,velocity:Math.round(C.avgVel*10)/10,budget:C.budget,spent:C.spent,progress:Math.round(progress*100)/100,owner:'PMO',note:'Снимок '+todayISO()};
+ if(ex)Object.assign(ex,data);else arr.push(Object.assign({id:genId(arr,'id','PO-')},data));
+ save();views();activate('portfolio');toast('Снимок текущего проекта добавлен в портфель');}
+function portfolioView(){const w=document.createElement('div');
+ (function(){const bar=document.createElement('div');bar.className='grm-pick';
+  const b=document.createElement('button');b.className='btn primary';b.textContent='📸 Снимок текущего проекта';b.title='Добавить/обновить текущий проект в портфеле';b.onclick=portfolioSnapshot;
+  const c=document.createElement('span');c.style.cssText='font-size:12.5px;color:var(--muted);align-self:center;margin-left:auto';c.textContent='Проектов в портфеле: '+((ST.portfolio||[]).length);
+  bar.appendChild(b);bar.appendChild(c);w.appendChild(bar);})();
+ w.appendChild(editable('portfolio',[{k:'id',label:'ID'},{k:'name',label:'Проект / инициатива',wide:true},{k:'status',label:'RAG',type:'select',opts:['Зелёный','Жёлтый','Красный']},
+   {k:'health',label:'Health (0-1)',type:'num'},{k:'velocity',label:'Velocity',type:'num'},{k:'budget',label:'Бюджет',type:'num'},{k:'spent',label:'Потрачено',type:'num'},{k:'progress',label:'Прогресс (0-1)',type:'num'},{k:'owner',label:'Владелец'},{k:'note',label:'Комментарий',wide:true}],{newId:'id',prefix:'PO-'}));
+ const po=ST.portfolio||[];
+ const avgH=po.length?po.reduce((a,x)=>a+num(x.health),0)/po.length:0;
+ const budget=po.reduce((a,x)=>a+num(x.budget),0),spent=po.reduce((a,x)=>a+num(x.spent),0);
+ const red=po.filter(x=>x.status==='Красный').length;
+ const kp=document.createElement('div');kp.className='grid kpis';kp.style.marginTop='14px';
+ kp.innerHTML=kpiCard('Проектов',po.length,'в портфеле','neut')+kpiCard('Средний health',pctf(avgH),'по портфелю',avgH>=.8?'good':avgH>=.6?'warn':'crit')
+  +kpiCard('Бюджет портфеля',fmt(budget,0)+' <small>₽</small>','потрачено '+pctf(budget?spent/budget:0),'neut')+kpiCard('Красные',red,'требуют внимания',red?'crit':'good');
+ w.appendChild(kp);
+ const cc=document.createElement('div');cc.className='card';cc.style.marginTop='14px';cc.innerHTML='<p class="ctitle">Health по проектам портфеля</p><div id="pf_c"></div>';w.appendChild(cc);
+ setTimeout(()=>bars(document.getElementById('pf_c'),po.map(x=>String(x.name||x.id).slice(0,12)),[{color:col('--good'),data:po.map(x=>num(x.health))}],{pct:true}),0);
+ const lg=document.createElement('div');lg.className='card';lg.style.marginTop='14px';
+ lg.innerHTML='<p class="ctitle">Портфельный обзор</p><p style="font-size:13px;color:var(--muted);line-height:1.7;margin:0">'
+  +'Сводка по нескольким проектам/инициативам: статус RAG, health, velocity, бюджет и прогресс. Кнопка «Снимок текущего проекта» автоматически добавляет метрики активного проекта; остальные проекты можно вести вручную. Даёт PMO обзор здоровья всего портфеля и распределения бюджета.</p>';
+ w.appendChild(lg);return w;}
+/* ---- D2: команда + загрузка по участникам ---- */
+function teamView(){const w=document.createElement('div');const C=compute();
+ w.appendChild(editable('team',[{k:'name',label:'Участник',wide:true},{k:'role',label:'Роль',type:'select',opts:ROLES},
+   {k:'scrum',label:'Скрам-мастер',type:'select',opts:['','Да']},
+   {k:'avail',label:'Доступность',type:'num',def:1},{k:'absent',label:'Отсутствия (дн)',type:'num',def:0}]));
+ const team=ST.team||[];const focus=num(ST.params.focus)||0.8;const hol=(ST.calendar||[]).map(h=>typeof h==='string'?h:h.date);
+ const demand=team.map(m=>({name:m.name,sp:(ST.tasks||[]).filter(t=>t.assignee===m.name&&t.status!=='Готово').reduce((a,t)=>a+num(t.est),0)}));
+ const cap=team.map(m=>{let c=0;C.sp.filter(x=>x.status!=='Закрыт').forEach(x=>{c+=Math.max(0,(x.wd-num(m.absent)-vacDays(m.name,x.a,x.b,hol)))*num(m.avail)*focus;});return {name:m.name,cap:Math.round(c*10)/10};});
+ const over=demand.filter((d,i)=>cap[i]&&d.sp>cap[i].cap).length;
+ const kp=document.createElement('div');kp.className='grid kpis';kp.style.marginTop='14px';
+ kp.innerHTML=kpiCard('Участников',team.length,'в команде','neut')+kpiCard('Перегружены',over,'спрос > ёмкости',over?'crit':'good')
+  +kpiCard('Скрам-мастеров',team.filter(m=>m.scrum==='Да').length,'доп. роль','neut')+kpiCard('Незакрытых SP',fmt(demand.reduce((a,d)=>a+d.sp,0),0),'назначено команде','neut');
+ w.appendChild(kp);
+ const card=document.createElement('div');card.className='card';card.style.marginTop='14px';card.innerHTML='<p class="ctitle">Загрузка по участникам: ёмкость (остаток проекта) vs спрос (незакрытые задачи)</p><div id="team_load"></div><div class="legend"><span><i style="background:var(--accent)"></i>Ёмкость</span><span><i style="background:var(--warn)"></i>Спрос</span></div>';
+ w.appendChild(card);
+ setTimeout(()=>bars(document.getElementById('team_load'),team.map(m=>String(m.name||'').slice(0,12)),[{color:col('--accent'),data:cap.map(c=>c.cap)},{color:col('--warn'),data:demand.map(d=>d.sp)}]),0);
+ return w;}
 function dailyView(){const w=document.createElement('div');
  (function(){const bar=document.createElement('div');bar.className='grm-pick';
   const b=document.createElement('button');b.className='btn primary';b.textContent='⛔ Блокеры → в «Зависимости»';b.onclick=dailyBlockersToDeps;
@@ -3688,7 +4085,22 @@ function renderOKR(C){const v=document.getElementById('v_okr');
    th+=`<tr><td>${esc(kr)}</td><td class="num">${ts.length}</td><td class="num">${dn}</td><td class="num">${ts.length?pctf(dn/ts.length):'—'}</td><td style="font-size:12px;color:var(--muted)">${ts.map(t=>esc(t.id)).join(', ')||'—'}</td></tr>`;});
  const orphan=tasks.filter(t=>!t.okr&&t.type!=='Тех.долг');
  if(orphan.length)th+=`<tr><td><i>Без привязки к OKR</i></td><td class="num">${orphan.length}</td><td class="num">—</td><td class="num">—</td><td style="font-size:12px;color:var(--muted)">${orphan.slice(0,12).map(t=>esc(t.id)).join(', ')}${orphan.length>12?' …':''}</td></tr>`;
- th+='</table></div>';tc.innerHTML=th;v.appendChild(tc);}
+ th+='</table></div>';tc.innerHTML=th;v.appendChild(tc);
+ // D3: реализация ценности (benefits realization) + Cost of Delay доставленного
+ const avgProg=okr.length?okr.reduce((a,o)=>a+(num(o.target)?Math.min(1,num(o.cur)/num(o.target)):0),0)/okr.length:0;
+ const doneTasks=new Set((ST.tasks||[]).filter(t=>t.status==='Готово').map(t=>t.id));
+ const codDone=(ST.wsjf||[]).filter(r=>r.task&&doneTasks.has(r.task)).reduce((a,r)=>a+wsjfCoD(r),0);
+ const codTotal=(ST.wsjf||[]).reduce((a,r)=>a+wsjfCoD(r),0)||1;
+ const bc=document.createElement('div');bc.className='grid kpis';bc.style.marginTop='14px';
+ bc.innerHTML=kpiCard('Реализация целей',pctf(avgProg),'средний прогресс OKR',avgProg>=.7?'good':avgProg>=.4?'warn':'crit')
+  +kpiCard('Ценность доставлена',pctf(codDone/codTotal),'Cost of Delay закрытого',codDone/codTotal>=.5?'good':'warn')
+  +kpiCard('CoD закрыто',fmt(codDone,0),'из '+fmt(codTotal,0)+' всего','neut')
+  +kpiCard('KR в зоне риска',okr.filter(o=>num(o.target)&&num(o.cur)/num(o.target)<0.4).length,'прогресс < 40%','warn');
+ v.appendChild(bc);
+ const bl=document.createElement('div');bl.className='card';bl.style.marginTop='14px';
+ bl.innerHTML='<p class="ctitle">Реализация ценности (benefits realization)</p><p style="font-size:13px;color:var(--muted);line-height:1.7;margin:0">'
+  +'Связывает цели с поставленной ценностью: средний прогресс Key Results и доля закрытого <b>Cost of Delay</b> (из WSJF по выполненным задачам). Показывает не только «сколько сделали», но и «сколько ценности реально доставили».</p>';
+ v.appendChild(bl);}
 /* ---------- Бюджет ---------- */
 function renderBudget(C){const v=document.getElementById('v_budget');const B=ST.budget;
  v.innerHTML=`<h1>Бюджет</h1><p class="lede">Стоимость = ёмкость спринта × ставка. Накопленный расход и остаток бюджета.</p>
@@ -4110,18 +4522,34 @@ function commit(){save();views();activate(CURV);toast('Сохранено');}
 function recomputeSoft(){/* light: refresh dashboard only, keep edit focus */ renderDash(compute());}
 /* ---------- sidebar navigation ---------- */
 const NAV=[
- {g:'Планирование',items:[['dash','Дашборд','📋'],['board','Доска','🧩'],['roadmap','Дорожная карта','🗺️'],['kanban','Kanban-доска','🗃️'],['quarters','Кварталы','🗓️'],['sprintGoals','Цели спринтов','🎯'],['rice','RICE','📊'],['wsjf','WSJF','⚖️'],['moscow','MoSCoW','📌'],['okr','OKR','🧭']]},
- {g:'Работа',items:[['backlog','Бэклог','🗂️'],['gantt','Гант','📊'],['deps','Зависимости','🔗'],['piboard','Программная доска','🧭'],['team','Команда','👥'],['starmap','Star Map','⭐']]},
- {g:'Выпуск',items:[['releases','Релизы','🚀'],['milestones','Вехи','🏁'],['debt','Техдолг','🧱']]},
- {g:'Аналитика',items:[['analytics','Аналитика','📈'],['risks','Риски','⚠️'],['bugs','Баги','🐞']]},
- {g:'Церемонии',items:[['daily','Дэйли','☀️'],['grooming','Груминг','🧹'],['demo','Демо спринта','🎬'],['retro','Ретроспективы','🔄'],['agile','Agile-зрелость','🪜']]},
+ {g:'Планирование',items:[['dash','Дашборд','📋'],['board','Доска','🧩'],['roadmap','Дорожная карта','🗺️'],['kanban','Kanban-доска','🗃️'],['quarters','Кварталы','🗓️'],['sprintGoals','Цели спринтов','🎯'],['storymap','Story Map','🗺'],['rice','RICE','📊'],['wsjf','WSJF','⚖️'],['moscow','MoSCoW','📌'],['okr','OKR','🧭'],['portfolio','Портфель','🗂']]},
+ {g:'Работа',items:[['backlog','Бэклог','🗂️'],['wbs','Иерархия работ','🌳'],['gantt','Гант','📊'],['deps','Зависимости','🔗'],['piboard','Программная доска','🧭'],['team','Команда','👥'],['raci','RACI','👔'],['starmap','Star Map','⭐'],['stakeholders','Стейкхолдеры','🤝']]},
+ {g:'Выпуск',items:[['releases','Релизы','🚀'],['milestones','Вехи','🏁'],['debt','Техдолг','🧱'],['changes','Изменения','🔀']]},
+ {g:'Аналитика',items:[['analytics','Аналитика','📈'],['evm','EVM','💹'],['risks','Риски','⚠️'],['issues','Проблемы','🚧'],['bugs','Баги','🐞']]},
+ {g:'Церемонии',items:[['daily','Дэйли','☀️'],['grooming','Груминг','🧹'],['poker','Planning Poker','🃏'],['demo','Демо спринта','🎬'],['retro','Ретроспективы','🔄'],['impediments','Импедименты','⛔'],['lessons','Уроки','📚'],['agile','Agile-зрелость','🪜']]},
  {g:'Персонал',items:[['vacation','График отпусков','🏖️'],['birthdays','Дни рождения','🎂']]},
- {g:'Настройки',items:[['budget','Бюджет','💰'],['calendar','Календарь','📅'],['scope','Контроль scope','📐'],['checks','Проверки данных','🧪'],['eda','EDA отчёт','🔬'],['integrations','Интеграции','🔌'],['params','Параметры','⚙️']]},
- {g:'Справка',items:[['faq','FAQ','❓'],['support','Support','🛟'],['audit','Журнал событий','🧾']]},
+ {g:'Настройки',items:[['budget','Бюджет','💰'],['calendar','Календарь','📅'],['scope','Контроль scope','📐'],['decisions','Журнал решений','🧠'],['checks','Проверки данных','🧪'],['eda','EDA отчёт','🔬'],['integrations','Интеграции','🔌'],['params','Параметры','⚙️']]},
+ {g:'Справка',items:[['faq','FAQ','❓'],['statusreport','Статус-отчёт','📰'],['support','Support','🛟'],['audit','Журнал событий','🧾']]},
 ];
-const APP_VERSION='1.41.0';const APP_DATE='2026-10-06';
+const APP_VERSION='1.42.0';const APP_DATE='2026-10-06';
 const APP_ABOUT='Кросс-функциональная команда — это группа специалистов из разных областей (разработчиков, дизайнеров, маркетологов, аналитиков, менеджеров и других), которые объединяются для работы над одним конкретным проектом или задачей. Ключевая идея в том, чтобы собрать внутри команды всех необходимых экспертов, чтобы она могла самостоятельно пройти путь от идеи до результата, не передавая задачу последовательно из одного отдела в другой.';
 const CHANGELOG=[
+ {v:'1.42.0',date:'2026-10-06',items:[
+   'Классическое управление: раздел «EVM» (освоенный объём) — PV/EV/AC, CPI/SPI, прогноз EAC/ETC/VAC, S-кривая и отклонение от базового плана.',
+   'Раздел «Запросы на изменение» (CCB) — формальный контроль изменений scope/сроков/стоимости/качества.',
+   'Раздел «Журнал проблем» (issue log) — реализовавшиеся проблемы с приоритетом, владельцем и сроком.',
+   'Раздел «Стейкхолдеры» — реестр с матрицей «Влияние/Интерес» и уровнями вовлечённости (текущий/целевой).',
+   'Раздел «Статус-отчёт» — авто-отчёт RAG из данных проекта с экспортом в Markdown и отправкой в Slack.',
+   'Раздел «Журнал решений» (ADR) — ключевые решения: контекст, варианты, обоснование.',
+   'Раздел «Иерархия работ» (WBS) — Эпик → Фича → История → Задача по полю «Родитель» с роллапом объёма и прогресса.',
+   'Раздел «Story Map» — карта историй: активности × релизы для выделения MVP и срезов ценности.',
+   'Раздел «Импедименты» — журнал препятствий со «старением»; пополняется из блокеров «Дэйли».',
+   'Раздел «Planning Poker» — совместная оценка: голоса, медиана, разброс, консенсус по Фибоначчи с применением к задаче.',
+   'Раздел «Уроки» (lessons learned) — база знаний; пополняется из ретроспектив.',
+   'Раздел «RACI» — матрица ответственности (Responsible/Accountable/Consulted/Informed) с контролем «ровно один A».',
+   'Раздел «Портфель» — обзор нескольких проектов (RAG, health, бюджет) со снимком текущего проекта.',
+   '«Команда»: гистограмма загрузки по участникам (ёмкость vs спрос). «OKR»: реализация ценности (benefits + Cost of Delay доставленного).',
+   'Серверное хранение всех новых реестров и иерархии работ в PostgreSQL (миграция V10).']},
  {v:'1.41.0',date:'2026-10-06',items:[
    'Доска: эмодзи-стикеры (палитра 😀) и анимация элементов (пульс, подпрыгивание, вращение, парение, мигание) — кнопка «✨ Анимация».',
    'Доска: быстрое построение схем без перетаскивания — у выделенной фигуры появляются кнопки «+» (вверх/вниз/влево/вправо): дубль фигуры со стрелкой-связью одним кликом.',
@@ -4589,6 +5017,19 @@ startAnalytics();setInterval(startAnalytics,30000);
   if(/(синхрониз|подтяни|sync).{0,10}(jira|джир|задач.*jira)/.test(s)||/jira.*синхрон/.test(s)){if(!canDo)return {t:'Действие доступно редактору/администратору.'};jiraSync();return {t:'Синхронизирую статусы задач из Jira.',goto:'integrations'};}
   if(/(прогноз.*дат|когда.*релиз|дата.*заверш|монте.?карло.*дат)/.test(s)){const mc=mcReleaseForecast(C);if(!mc)return {t:'Недостаточно данных velocity для прогноза даты.'};return {t:'Прогноз завершения: P50 ≈ '+fmtd(mc.p50date)+' (~'+mc.p50+' спр.), P85 ≈ '+fmtd(mc.p85date)+' (~'+mc.p85+' спр.).',goto:'analytics'};}
   if(/(scope|скоуп|состав.*измен|измен.*состав|раздувани)/.test(s)){const log=ST.scopeLog||[];return {t:'Контроль scope: записей '+log.length+' (добавлено '+log.filter(x=>x.kind==='Добавлено').length+', перенесено '+log.filter(x=>x.kind==='Перенесено').length+').',goto:'scope'};}
+  if(/(evm|освоен.*объ|cpi|spi|eac)/.test(s)){const E=evm(C);return {t:'EVM: CPI '+(E.CPI==null?'—':fmt(E.CPI,2))+', SPI '+(E.SPI==null?'—':fmt(E.SPI,2))+', прогноз EAC '+(E.EAC==null?'—':fmt(E.EAC,0)+' ₽')+'.',goto:'evm'};}
+  if(/(статус.?отч[её]т|status report|отчёт.*статус)/.test(s)){return {t:'Статус-отчёт сформирован из текущих данных — см. раздел, можно скачать .md или отправить в Slack.',goto:'statusreport'};}
+  if(/(проблем.*журнал|журнал проблем|issue ?log|реестр проблем)/.test(s)){const op=(ST.issues||[]).filter(x=>x.status!=='Решена'&&x.status!=='Закрыта').length;return {t:'Журнал проблем: всего '+(ST.issues||[]).length+', открыто '+op+'.',goto:'issues'};}
+  if(/(стейкхолдер|заинтересован.*стор)/.test(s)){return {t:'Стейкхолдеров в реестре: '+((ST.stakeholders||[]).length)+'. Матрица «Влияние/Интерес» — в разделе.',goto:'stakeholders'};}
+  if(/(запрос.*измен|change request|ccb)/.test(s)){const cr=ST.changeRequests||[];return {t:'Запросы на изменение: '+cr.length+' (ждут решения '+cr.filter(x=>x.status==='Предложен').length+').',goto:'changes'};}
+  if(/(импедимент|препятстви)/.test(s)){const op=(ST.impediments||[]).filter(x=>x.status!=='Снят').length;return {t:'Импедиментов открыто: '+op+'.',goto:'impediments'};}
+  if(/(портфел|portfolio)/.test(s)){return {t:'Проектов в портфеле: '+((ST.portfolio||[]).length)+'.',goto:'portfolio'};}
+  if(/(покер|planning poker|оцен.*покер)/.test(s)){return {t:'Planning Poker: раундов '+((ST.poker||[]).length)+'.',goto:'poker'};}
+  if(/(story ?map|карта историй)/.test(s))return {t:'Карта историй (Story Map) — активности × релизы.',goto:'storymap'};
+  if(/(иерархи.*работ|wbs|декомпозиц)/.test(s))return {t:'Иерархия работ (WBS): Эпик → Фича → История → Задача с роллапом.',goto:'wbs'};
+  if(/(решени.*журнал|журнал решений|adr)/.test(s))return {t:'Журнал решений (ADR): '+((ST.decisions||[]).length)+' записей.',goto:'decisions'};
+  if(/(урок|lessons|извлеч.*урок)/.test(s))return {t:'Реестр уроков: '+((ST.lessons||[]).length)+' записей.',goto:'lessons'};
+  if(/(raci|матрица ответствен)/.test(s))return {t:'RACI: '+((ST.raci||[]).length)+' активностей.',goto:'raci'};
   // navigation (requires a verb)
   if(/(открой|откр\b|покажи|перейд|переключ|запусти|show|go to)/.test(s)){
    for(const k in SYN){if(s.indexOf(k)>=0){activate(SYN[k]);return {t:'Открыл раздел «'+navLabel(SYN[k])+'».'};}}}
