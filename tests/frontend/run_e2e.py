@@ -460,6 +460,45 @@ def main():
                 assert r[k] == 'function', 'missing integration fn: ' + k
         case('integrations: escalate/publish/jira-sync/skills triggers', t_integr)
 
+        # ---- 24. Whiteboard: anchored connectors, quick-add, connect, animation, emoji, link ----
+        def t_board2():
+            r = page.evaluate("""()=>{try{
+              setPerm('editor');applyPerms();views();activate('board');
+              const snap=JSON.stringify(ST.board.items), perm=JSON.stringify(PERM);
+              PERM.canEdit=true;
+              const _s=window.save,_u=window.brdWSUpsert,_e=window.brdEdit,_t=window.toast;
+              window.save=()=>{};window.brdWSUpsert=()=>{};window.brdEdit=()=>{};window.toast=()=>{};
+              // anchored connector endpoints follow shapes
+              const a={id:'A',t:'rect',x:0,y:0,w:100,h:60,fill:'#fff',stroke:'#2D5BE3'};
+              const b={id:'B',t:'rect',x:300,y:0,w:100,h:60,fill:'#fff',stroke:'#2D5BE3'};
+              ST.board.items=[a,b];
+              const conn={id:'C',t:'conn',from:'A',to:'B',stroke:'#334155'};ST.board.items.push(conn);
+              const e1=brdConnEnds(conn);
+              // quick-add from A to the right -> +2 items (shape + anchored conn)
+              BW.sel=['A'];const n0=ST.board.items.length;brdQuickAdd('A','right');const n1=ST.board.items.length;
+              const qConn=ST.board.items[ST.board.items.length-1];
+              // connect selected A+B
+              BW.sel=['A','B'];const n2=ST.board.items.length;brdConnectSel();const n3=ST.board.items.length;
+              // animation
+              BW.sel=['A'];brdSetAnim('pulse');const anim=brdItemById('A').anim;
+              // deleting A removes connectors anchored to A
+              BW.sel=['A'];const before=ST.board.items.length;brdDelSel();
+              const aGone=!brdItemById('A');
+              const danglers=ST.board.items.filter(x=>x.t==='conn'&&(x.from==='A'||x.to==='A')).length;
+              window.save=_s;window.brdWSUpsert=_u;window.brdEdit=_e;window.toast=_t;
+              ST.board.items=JSON.parse(snap);Object.assign(PERM,JSON.parse(perm));
+              return {edgeRouted:(e1.x1>=90&&e1.x2<=310), quick:(n1-n0===2), quickAnchored:!!(qConn.from&&qConn.to),
+                      connect:(n3-n2===1), anim:anim==='pulse', aGone:aGone, danglers:danglers};
+            }catch(e){return 'ERR:'+e.message;}}""")
+            assert r is not True and isinstance(r, dict), 'board2 failed: ' + str(r)
+            assert r['edgeRouted'], 'anchored connector did not route to shape edges'
+            assert r['quick'] and r['quickAnchored'], 'quick-add must create shape + anchored connector'
+            assert r['connect'], 'connect-selected did not create a connector'
+            assert r['anim'], 'animation not applied'
+            assert r['aGone'] and r['danglers'] == 0, 'deleting a shape must remove its connectors'
+            page.evaluate("()=>{setPerm('viewer');applyPerms();views();activate('dash');}")
+        case('whiteboard2: connectors, quick-add, animation, cleanup', t_board2)
+
         br.close()
     httpd.shutdown()
 
