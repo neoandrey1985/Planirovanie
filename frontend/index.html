@@ -22,7 +22,8 @@ header.top{position:sticky;top:0;z-index:30;background:color-mix(in srgb,var(--b
 .dmenu.open .dmenu-pop{display:flex}
 .dmenu-pop .btn{width:100%;justify-content:flex-start;text-align:left;background:none;border:1px solid transparent;color:var(--ink);padding:9px 11px;border-radius:8px;font-weight:500;font-size:13.5px}
 .dmenu-pop .btn:hover{background:var(--panel2)}
-.dmenu-pop .btn.primary{color:var(--accent)}
+.dmenu-pop .btn.primary{color:var(--accent);background:none;border-color:transparent}
+.dmenu-pop .btn.primary:hover{background:var(--panel2)}
 .dmenu-pop .btn.danger{color:var(--crit)}
 .dmenu-pop .btn.danger:hover{background:var(--crit-bg)}
 .dmenu-sep{height:1px;background:var(--line);margin:4px 6px}
@@ -3530,7 +3531,8 @@ const APP_VERSION='1.38.0';const APP_DATE='2026-09-18';
 const APP_ABOUT='Кросс-функциональная команда — это группа специалистов из разных областей (разработчиков, дизайнеров, маркетологов, аналитиков, менеджеров и других), которые объединяются для работы над одним конкретным проектом или задачей. Ключевая идея в том, чтобы собрать внутри команды всех необходимых экспертов, чтобы она могла самостоятельно пройти путь от идеи до результата, не передавая задачу последовательно из одного отдела в другой.';
 const CHANGELOG=[
  {v:'1.38.0',date:'2026-09-18',items:[
-   'Верхняя панель разгружена: действия с данными (Excel, Отчёт, экспорт/импорт JSON, импорт CSV, Сброс) собраны в одно меню «🗂 Данные». Слева остаются поиск и название, справа — статусы, «Обзор», роль и тема.']},
+   'Верхняя панель разгружена: действия с данными (Excel, Отчёт, экспорт/импорт JSON, импорт CSV, Сброс) собраны в одно меню «🗂 Данные». Слева остаются поиск и название, справа — статусы, «Обзор», роль и тема.',
+   'Исправлено: пункт «Экспорт в Excel» в меню «Данные» был не виден (синий текст на синем фоне) — теперь отображается как обычный пункт меню.']},
  {v:'1.37.0',date:'2026-09-18',items:[
    'Эргономичное меню: группы сворачиваются (по умолчанию открыта только активная), быстрый поиск по разделам, блоки «⭐ Избранное» (закрепление разделов) и «🕘 Недавние», липкие заголовки и компактная плотность. Состояние сохраняется между сессиями.']},
  {v:'1.36.0',date:'2026-09-17',items:[
