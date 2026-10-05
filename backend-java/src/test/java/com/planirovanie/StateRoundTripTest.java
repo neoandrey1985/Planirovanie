@@ -27,11 +27,13 @@ class StateRoundTripTest {
           "agile":[{"id":"AM-01","framework":"Scrum","dimension":"Definition of Done","level":3,"note":"n"}],
           "sprintGoals":[{"id":"SG-01","sprint":1,"goal":"Запустить MVP","status":"Достигнута"}],
           "wsjf":[{"id":"W-01","task":"T-01","name":"X","bv":8,"tc":5,"rr":3,"jobSize":4}],
-          "tasks":[{"id":"T-01","title":"X","role":"Backend","type":"Задача","est":5,"status":"Готово","sprint":1,"release":"R-1","priority":"Must","dor":"Готова"}],
+          "tasks":[{"id":"T-01","title":"X","role":"Backend","type":"Задача","est":5,"status":"Готово","sprint":1,"release":"R-1","priority":"Must","dor":"Готова","carried":2,"okr":"KR-1"}],
+          "dorItems":[{"crit":"Критерии приёмки описаны","done":true}],
+          "scopeLog":[{"id":"SC-01","date":"2026-09-10","sprint":3,"kind":"Добавлено","item":"T-09","detail":"добавлена в активный спринт"}],
           "deps":[{"id":"D-01","item":"I","stream":"S","dir":"Мы зависим","status":"Заблокировано","task":"T-01"}],
           "rice":[{"id":"F-01","name":"R","reach":5000,"impact":3,"conf":"100%","effort":40}],
           "calendar":[{"date":"2026-11-04","name":"Праздник"}],
-          "boards":[{"id":"b-all","name":"Все задачи","filter":{"type":"all"},"cols":["To Do","В работе","Готово"]},
+          "boards":[{"id":"b-all","name":"Все задачи","filter":{"type":"all"},"cols":["To Do","В работе","Готово"],"wip":{"В работе":3}},
                     {"id":"b-backend","name":"Backend","filter":{"type":"role","value":"Backend"},"cols":["To Do","В работе","Готово"]}],
           "board":{"cam":{"x":80,"y":80,"z":1.5},"items":[
              {"id":"bi1","t":"sticky","x":10,"y":20,"w":160,"h":140,"fill":"#FFE066","text":"Идея","author":"A","votes":2},
@@ -77,12 +79,19 @@ class StateRoundTripTest {
            .andExpect(jsonPath("$.state.tasks[0].release").value("R-1"))
            .andExpect(jsonPath("$.state.tasks[0].priority").value("Must"))
            .andExpect(jsonPath("$.state.tasks[0].dor").value("Готова"))
+           .andExpect(jsonPath("$.state.tasks[0].carried").value(2))
+           .andExpect(jsonPath("$.state.tasks[0].okr").value("KR-1"))
+           .andExpect(jsonPath("$.state.dorItems[0].crit").value("Критерии приёмки описаны"))
+           .andExpect(jsonPath("$.state.dorItems[0].done").value(true))
+           .andExpect(jsonPath("$.state.scopeLog[0].id").value("SC-01"))
+           .andExpect(jsonPath("$.state.scopeLog[0].kind").value("Добавлено"))
            .andExpect(jsonPath("$.state.deps[0].id").value("D-01"))
            .andExpect(jsonPath("$.state.deps[0].desc").doesNotExist())
            .andExpect(jsonPath("$.state.rice[0].id").value("F-01"))
            .andExpect(jsonPath("$.state.calendar[0].date").value("2026-11-04"))
            .andExpect(jsonPath("$.state.boards[0].id").value("b-all"))
            .andExpect(jsonPath("$.state.boards[0].filter.type").value("all"))
+           .andExpect(jsonPath("$.state.boards[0].wip['В работе']").value(3))
            .andExpect(jsonPath("$.state.boards[1].filter.type").value("role"))
            .andExpect(jsonPath("$.state.boards[1].filter.value").value("Backend"))
            .andExpect(jsonPath("$.state.boards[1].cols[2]").value("Готово"))

@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * A Kanban board definition, matching the front-end shape
@@ -22,5 +23,8 @@ public class Board {
     @Convert(converter = ColsConverter.class)
     @Column(columnDefinition = "text")
     public List<String> cols;
+    @Convert(converter = WipConverter.class)
+    @Column(columnDefinition = "text")
+    public Map<String, Integer> wip;   // per-column WIP limits
     @JsonIgnore public Integer ord;
 }

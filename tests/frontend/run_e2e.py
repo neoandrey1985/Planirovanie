@@ -376,6 +376,90 @@ def main():
                 assert r['carried'] >= r['before'], 'carried flag not set'
         case('carryover: unfinished tasks move to next sprint', t_carry)
 
+        # ---- 17. WIP limits: badge + data-check warning ----
+        def t_wip():
+            r = page.evaluate("""()=>{
+              const b=(ST.boards||[]).find(x=>x.id==='b-all')||ST.boards[0];
+              const before=JSON.stringify(b.wip||{});
+              b.wip={'В работе':1};
+              const warn=dataChecks().filter(i=>/WIP/.test(i.msg)).length;
+              const cnt=kanColCount(b,'В работе');
+              b.wip=JSON.parse(before);
+              return {warn,cnt,hasEditor:typeof kanEditWip==='function'};}""")
+            assert r['hasEditor'], 'kanEditWip missing'
+            assert r['cnt'] >= 0, 'kanColCount failed'
+            assert r['warn'] >= 1, 'WIP over-limit not flagged by dataChecks'
+        case('wip: per-column limits flagged when exceeded', t_wip)
+
+        # ---- 18. Fuzzy duplicate task detection ----
+        def t_dup():
+            r = page.evaluate("""()=>{
+              return {same:titleSim('Оплата картой','оплата  картой!'),
+                      diff:titleSim('Оплата картой','Экспорт отчётов'),
+                      norm:normTitle('  Привет,  МИР! ')};}""")
+            assert r['same'] >= 0.9, 'identical titles should score ~1'
+            assert r['diff'] < 0.4, 'different titles should score low'
+            assert r['norm'] == 'привет мир', 'normTitle wrong: ' + str(r['norm'])
+        case('duplicates: fuzzy title similarity', t_dup)
+
+        # ---- 19. OKR -> task traceability ----
+        def t_okr_trace():
+            r = page.evaluate("""()=>{
+              activate('okr');const v=document.getElementById('v_okr');
+              return {krs:krList().length, linked:(ST.tasks||[]).filter(t=>t.okr).length,
+                      hasCoverage:/Прослеживаемость/.test(v.innerHTML), kpis:v.querySelectorAll('.kpi').length};}""")
+            assert r['krs'] > 0 and r['linked'] > 0, 'no OKR links seeded'
+            assert r['hasCoverage'] and r['kpis'] >= 4, 'OKR coverage block missing'
+        case('okr: Key Result -> task traceability', t_okr_trace)
+
+        # ---- 20. Scope-creep log + baseline diff ----
+        def t_scope():
+            r = page.evaluate("""()=>{
+              const n0=(ST.scopeLog||[]).length;
+              logScope('Добавлено','T-TEST','проверка',3,'');
+              const n1=(ST.scopeLog||[]).length;
+              ST.scopeLog=ST.scopeLog.filter(x=>x.item!=='T-TEST');
+              activate('scope');const v=document.getElementById('v_scope');
+              return {grew:n1>n0, view:v.children.length>0, kpis:v.querySelectorAll('.kpi').length,
+                      hasBaseline:typeof scopeBaseline==='function'&&typeof scopeDiff==='function'};}""")
+            assert r['grew'], 'logScope did not append'
+            assert r['view'] and r['kpis'] >= 4, 'scope view incomplete'
+            assert r['hasBaseline'], 'scope baseline/diff missing'
+        case('scope: creep log and baseline tools', t_scope)
+
+        # ---- 21. Monte-Carlo release date + flow efficiency + bug SLA ----
+        def t_forecast():
+            r = page.evaluate("""()=>{const C=compute();const mc=mcReleaseForecast(C);
+              const fe=flowEfficiency();const sla=bugSLA();
+              return {mcOk:!!mc, p50le85: mc?mc.p50<=mc.p85:true, hist:mc?mc.hist.length:0,
+                      feRange: fe.eff>=0&&fe.eff<=1, slaTotal: sla.total, slaShape: sla.rows.every(x=>'open'in x&&'target'in x)};}""")
+            assert r['mcOk'] and r['p50le85'] and r['hist'] > 0, 'Monte-Carlo forecast invalid'
+            assert r['feRange'], 'flow efficiency out of range'
+            assert r['slaTotal'] == 3 and r['slaShape'], 'bug SLA shape wrong'
+        case('forecast: Monte-Carlo dates, flow efficiency, bug SLA', t_forecast)
+
+        # ---- 22. Release confidence + PI board ----
+        def t_release_pi():
+            r = page.evaluate("""()=>{const C=compute();
+              const rel=(ST.releases||[])[0];const conf=rel?releaseConfidence(rel,releaseComp(rel),C):null;
+              activate('piboard');const pv=document.getElementById('v_piboard');
+              activate('releases');const rv=document.getElementById('v_releases');
+              return {conf:!!conf, confLabel: conf?conf.label:'', pi: pv.children.length>0,
+                      piBoard: !!pv.querySelector('.pi-board')|| /Нет межстримовых/.test(pv.innerHTML),
+                      burnup: !!rv.querySelector('#rel_bu')};}""")
+            assert r['conf'] and r['confLabel'], 'release confidence missing'
+            assert r['pi'] and r['piBoard'], 'PI program board did not render'
+            assert r['burnup'], 'release burn-up chart missing'
+        case('release+pi: confidence, burn-up, program board', t_release_pi)
+
+        # ---- 23. Integration action triggers exist ----
+        def t_integr():
+            r = page.evaluate("""()=>({esc:typeof escalateBlockers,pub:typeof publishSprintReport,
+              jira:typeof jiraSync,skills:typeof skillsFromActivity,api:typeof apiPost})""")
+            for k in ('esc', 'pub', 'jira', 'skills', 'api'):
+                assert r[k] == 'function', 'missing integration fn: ' + k
+        case('integrations: escalate/publish/jira-sync/skills triggers', t_integr)
+
         br.close()
     httpd.shutdown()
 

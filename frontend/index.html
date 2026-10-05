@@ -72,6 +72,14 @@ h1{font-size:23px;margin:4px 0 4px;letter-spacing:-.01em}
 .kan-col .kc-dot{width:9px;height:9px;border-radius:50%;background:var(--kc);flex:none}
 .kan-col .kc-title{font-weight:700;font-size:13.5px}
 .kan-col .kc-count{margin-left:auto;font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.kan-col .kc-wip{margin-left:auto;font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:999px;background:var(--good-bg);color:var(--good);letter-spacing:.02em}
+.kan-col .kc-wip.over{background:var(--crit-bg);color:var(--crit)}
+.kan-col .kc-wip+.kc-count{margin-left:8px}
+table.pi-board td.pi-cell{vertical-align:top;min-width:120px;padding:6px}
+table.pi-board .pi-chip{display:inline-block;margin:2px;padding:2px 7px;border-radius:7px;font-size:11px;font-weight:600;white-space:nowrap}
+table.pi-board .pi-chip.p-good{background:var(--good-bg);color:var(--good)}
+table.pi-board .pi-chip.p-warn{background:var(--warn-bg);color:var(--warn)}
+table.pi-board .pi-chip.p-crit{background:var(--crit-bg);color:var(--crit)}
 .kan-col .kc-body{padding:10px;display:flex;flex-direction:column;gap:9px;flex:1;min-height:60px;border-top:1px solid var(--line);border-radius:0 0 14px 14px}
 .kan-col.drop-hl .kc-body{background:var(--accent-soft);outline:2px dashed var(--accent);outline-offset:-6px}
 .kan-card{border:1px solid var(--line);border-left:3px solid var(--kc);border-radius:10px;padding:9px 11px;background:var(--bg);cursor:grab}
@@ -437,7 +445,7 @@ body.noadmin #rst,body.noadmin #imp{display:none}
  </div>
 </div></header>
 <div class="shell"><aside class="side" id="side"><nav id="nav"></nav><div class="side-foot" id="sidefoot"></div></aside><div class="scrim" id="scrim"></div>
-<main id="main"><section class="view" id="v_dash"></section><section class="view" id="v_board"></section><section class="view" id="v_kanban"></section><section class="view" id="v_backlog"></section><section class="view" id="v_team"></section><section class="view" id="v_starmap"></section><section class="view" id="v_roadmap"></section><section class="view" id="v_quarters"></section><section class="view" id="v_rice"></section><section class="view" id="v_wsjf"></section><section class="view" id="v_moscow"></section><section class="view" id="v_sprintGoals"></section><section class="view" id="v_gantt"></section><section class="view" id="v_deps"></section><section class="view" id="v_releases"></section><section class="view" id="v_milestones"></section><section class="view" id="v_debt"></section><section class="view" id="v_okr"></section><section class="view" id="v_budget"></section><section class="view" id="v_analytics"></section><section class="view" id="v_risks"></section><section class="view" id="v_bugs"></section><section class="view" id="v_daily"></section><section class="view" id="v_grooming"></section><section class="view" id="v_demo"></section><section class="view" id="v_vacation"></section><section class="view" id="v_birthdays"></section><section class="view" id="v_retro"></section><section class="view" id="v_agile"></section><section class="view" id="v_calendar"></section><section class="view" id="v_checks"></section><section class="view" id="v_eda"></section><section class="view" id="v_integrations"></section><section class="view" id="v_params"></section><section class="view" id="v_faq"></section><section class="view" id="v_support"></section><section class="view" id="v_audit"></section></main></div>
+<main id="main"><section class="view" id="v_dash"></section><section class="view" id="v_board"></section><section class="view" id="v_kanban"></section><section class="view" id="v_backlog"></section><section class="view" id="v_team"></section><section class="view" id="v_starmap"></section><section class="view" id="v_roadmap"></section><section class="view" id="v_quarters"></section><section class="view" id="v_rice"></section><section class="view" id="v_wsjf"></section><section class="view" id="v_moscow"></section><section class="view" id="v_sprintGoals"></section><section class="view" id="v_gantt"></section><section class="view" id="v_deps"></section><section class="view" id="v_piboard"></section><section class="view" id="v_releases"></section><section class="view" id="v_milestones"></section><section class="view" id="v_debt"></section><section class="view" id="v_okr"></section><section class="view" id="v_budget"></section><section class="view" id="v_analytics"></section><section class="view" id="v_risks"></section><section class="view" id="v_bugs"></section><section class="view" id="v_daily"></section><section class="view" id="v_grooming"></section><section class="view" id="v_demo"></section><section class="view" id="v_vacation"></section><section class="view" id="v_birthdays"></section><section class="view" id="v_retro"></section><section class="view" id="v_agile"></section><section class="view" id="v_calendar"></section><section class="view" id="v_scope"></section><section class="view" id="v_checks"></section><section class="view" id="v_eda"></section><section class="view" id="v_integrations"></section><section class="view" id="v_params"></section><section class="view" id="v_faq"></section><section class="view" id="v_support"></section><section class="view" id="v_audit"></section></main></div>
 <div class="palette" id="palette"><div class="pbox"><input class="pin" id="pin" placeholder="Поиск раздела или действия…" autocomplete="off"><div class="plist" id="plist"></div></div></div>
 <div class="role-pop" id="rolepop"></div>
 <div class="modal" id="accmodal"><div class="mbox">
@@ -1413,6 +1421,21 @@ function migrate(d){
   {id:'W-04',name:'Уведомления (e-mail/push)',bv:4,tc:5,rr:2,jobSize:3},
   {id:'W-05',name:'История заказов',bv:4,tc:2,rr:1,jobSize:2},
   {id:'W-06',name:'Личный кабинет',bv:6,tc:4,rr:3,jobSize:5}];
+ if(!Array.isArray(d.dorItems))d.dorItems=[
+  {crit:'Критерии приёмки сформулированы',done:true},
+  {crit:'Зависимости выявлены и разблокированы',done:true},
+  {crit:'Оценка (story points) проставлена',done:true},
+  {crit:'Макеты / API-контракт приложены (если нужно)',done:false},
+  {crit:'Задача помещается в один спринт',done:true}];
+ if(!Array.isArray(d.scopeLog))d.scopeLog=[
+  {id:'SC-01',date:'2026-08-29',sprint:2,kind:'Добавлено',item:'T-07',detail:'Срочный запрос заказчика добавлен в активный спринт'},
+  {id:'SC-02',date:'2026-09-05',sprint:3,kind:'Перенесено',item:'T-08',detail:'Не поместилось по ёмкости — перенос в следующий спринт'}];
+ // WIP-лимиты по колонкам Kanban (практика Kanban; 0/нет — без лимита)
+ if(Array.isArray(d.boards))d.boards.forEach(b=>{if(!b.wip||typeof b.wip!=='object')b.wip={};});
+ // связь OKR → задачи (прослеживаемость): привяжем демонстрационные задачи к Key Results
+ (function(){const okr=d.okr||[];const krOf=i=>okr[i]&&okr[i].kr;const T=d.tasks||[];
+  const setK=(tid,kr)=>{const t=T.find(x=>x.id===tid);if(t&&kr&&t.okr==null)t.okr=kr;};
+  setK('T-01',krOf(0));setK('T-02',krOf(0));setK('T-03',krOf(1));setK('T-12',krOf(2));})();
  if(!Array.isArray(d.faq))d.faq=[
   {id:'Q-01',category:'Начало работы',q:'С чего начать работу в приложении?',a:'Заполните «Параметры» (даты старта, число спринтов, focus factor), затем «Команду» и «Бэклог». Дорожная карта, ёмкость, velocity, релизы и метрики считаются автоматически из этих данных.'},
   {id:'Q-02',category:'Начало работы',q:'Нужен ли интернет или сервер?',a:'Нет. Приложение работает локально в браузере, данные хранятся в localStorage. Если поднят backend (Java + Python), состояние дополнительно синхронизируется через /api/state — индикатор в шапке показывает статус.'},
@@ -1721,7 +1744,22 @@ function dataChecks(){const issues=[],tasks=ST.tasks||[],ids={};
  const Nsp=(ST.params&&ST.params.sprints)||0;
  if(Nsp&&rr.length){const gaps=[];for(let s=1;s<=Nsp;s++){if(!rr.some(r=>s>=+r.sfrom&&s<=+r.sto))gaps.push(s);}
    if(gaps.length)issues.push({lvl:'info',msg:'Спринты вне релизов: '+gaps.join(', '),fix:null});}
+ // 3.7 нечёткий поиск дубликатов задач по названию
+ for(let i=0;i<tasks.length;i++)for(let j=i+1;j<tasks.length;j++){
+   const sim=titleSim(tasks[i].title,tasks[j].title);
+   if(sim>=0.82)issues.push({lvl:'info',msg:'Возможный дубликат: '+tasks[i].id+' и '+tasks[j].id+' («'+String(tasks[i].title||'').slice(0,40)+'» ≈ «'+String(tasks[j].title||'').slice(0,40)+'», '+Math.round(sim*100)+'%)',fix:null});}
+ // 3.6/4.5 превышение WIP-лимитов на досках
+ (ST.boards||[]).forEach(bd=>{const wip=bd.wip||{};Object.keys(wip).forEach(colName=>{const lim=num(wip[colName]);if(!lim)return;
+   const cnt=kanColCount(bd,colName);if(cnt>lim)issues.push({lvl:'warn',msg:'WIP превышен: доска «'+(bd.name||bd.id)+'», колонка «'+colName+'» — '+cnt+' > лимит '+lim,fix:null});});});
  return issues;}
+// нормализованная схожесть названий (Jaccard по словам + защита от коротких строк)
+function titleSim(a,b){a=normTitle(a);b=normTitle(b);if(!a||!b)return 0;if(a===b)return 1;
+ const sa=new Set(a.split(' ').filter(Boolean)),sb=new Set(b.split(' ').filter(Boolean));
+ if(sa.size<2||sb.size<2)return a===b?1:0;let inter=0;sa.forEach(w=>{if(sb.has(w))inter++;});
+ return inter/(sa.size+sb.size-inter);}
+function normTitle(s){return String(s||'').toLowerCase().replace(/ё/g,'е').replace(/[^a-zа-я0-9 ]/g,' ').replace(/\s+/g,' ').trim();}
+// число задач в колонке доски (по текущему статусу/маппингу Kanban)
+function kanColCount(def,colName){try{return kanBoardItems(def).filter(t=>kanColOf(def,t)===colName).length;}catch(e){return 0;}}
 /* ---- v1.20: приоритет→в задачу, DoR-синхронизация, циклы зависимостей, груминг-команда, CSV/Jira ---- */
 function priorityOf(id){const m=(ST.moscow||[]).find(x=>x.task===id);if(m&&m.category)return m.category;const r=riceScoreOf(id);if(r>0)return 'RICE '+Math.round(r);return '';}
 function applyPriorities(){let n=0;(ST.tasks||[]).forEach(t=>{const p=priorityOf(t.id);if(p&&t.priority!==p){t.priority=p;n++;}});return n;}
@@ -1776,9 +1814,77 @@ function carryoverSprint(N){if(!PERM.canEdit){toast('Только для ред�
  const dst=N+1;if(dst>(ST.params.sprints||N)){toast('Спринт #'+N+' последний — переносить некуда');return;}
  const carry=(ST.tasks||[]).filter(t=>+t.sprint===N&&t.status!=='Готово');
  if(!carry.length){toast('В спринте #'+N+' нет незавершённых задач');return;}
- carry.forEach(t=>{t.sprint=dst;t.carried=(num(t.carried)||0)+1;});
+ carry.forEach(t=>{t.sprint=dst;t.carried=(num(t.carried)||0)+1;logScope('Перенесено',t.id,'Из спринта #'+N+' в #'+dst,dst,t.release);});
  save();views();activate('roadmap');if(typeof auditClient==='function')auditClient('sprint_carryover','Спринт '+N+'→'+dst+': '+carry.length);
  toast('Перенесено из спринта #'+N+' в #'+dst+': '+carry.length+' задач ('+fmt(carry.reduce((a,t)=>a+num(t.est),0),1)+' SP)');}
+/* ---- v1.40: scope-лог, эскалация, публикация отчёта, Jira-синхронизация, Star Map по активности ---- */
+function logScope(kind,item,detail,sprint,release){const arr=ST.scopeLog||(ST.scopeLog=[]);
+ arr.push({id:genId(arr,'id','SC-'),date:todayISO(),sprint:num(sprint)||'',release:release||'',kind:kind,item:item||'',detail:detail||''});}
+// 3.3 Авто-эскалация залежавшихся блокеров/багов → Opsgenie (алерт) + Slack (сводка)
+async function escalateBlockers(){if(!PERM.canEdit){toast('Только для редактора/администратора');return;}
+ const blocked=(ST.deps||[]).filter(d=>d.status==='Заблокировано'||d.status==='Просрочено');
+ const critBugs=(ST.bugs||[]).filter(b=>b.status!=='Закрыт'&&(b.sev==='Critical'||b.sev==='High'));
+ if(!blocked.length&&!critBugs.length){toast('Нет залежавшихся блокеров и критичных дефектов для эскалации');return;}
+ const lines=[].concat(
+   blocked.map(d=>'⛔ '+(d.id||'')+' '+(d.item||d.desc||'')+' — '+(d.stream||'')+' ('+d.status+')'),
+   critBugs.map(b=>'🐞 '+(b.id||'')+' '+(b.desc||'')+' — '+(b.sev||'')));
+ const title='Эскалация: '+blocked.length+' блокеров, '+critBugs.length+' критичных дефектов';
+ const body=lines.join('\n');
+ try{
+  const a=await apiPost('/api/integrations/atlassian/opsgenie',{title:title,body:body});
+  const s=await apiPost('/api/integrations/slack',{text:'*'+title+'*\n'+body});
+  const okA=a&&a.ok, okS=s&&s.ok;
+  if(typeof auditClient==='function')auditClient('escalate_blockers',blocked.length+'/'+critBugs.length);
+  toast((okA||okS)?('Эскалировано: Opsgenie '+(okA?'✓':'—')+', Slack '+(okS?'✓':'—')):
+    ('Интеграции не настроены (Opsgenie/Slack). Пунктов к эскалации: '+lines.length));
+ }catch(e){toast('Не удалось эскалировать: '+e);}}
+// 3.4 Авто-публикация отчёта по спринту → Confluence (страница) + Slack (сводка)
+async function publishSprintReport(sprint){if(!PERM.canEdit){toast('Только для редактора/администратора');return;}
+ const C=compute();const N=num(sprint)||doneSprintForReport(C)||C.cur;const sp=C.sp.find(x=>+x.s===N);
+ const tasks=(ST.tasks||[]).filter(t=>+t.sprint===N);const done=tasks.filter(t=>t.status==='Готово');
+ const goal=(ST.sprintGoals||[]).find(g=>+g.sprint===N);
+ const bugs=(ST.bugs||[]).filter(b=>+b.sprint===N);
+ const lines=[
+   'Цель спринта: '+((goal&&goal.goal)||'—')+' ('+((goal&&goal.status)||'—')+')',
+   'Ёмкость: '+fmt(sp?sp.cap:0,1)+' SP · План: '+fmt(sp?sp.plan:0,1)+' SP · Velocity: '+(sp&&sp.vel!=null?fmt(sp.vel,1):'—')+' SP',
+   'Задач: '+tasks.length+', выполнено: '+done.length+' ('+pctf(tasks.length?done.length/tasks.length:0)+')',
+   'Дефекты в спринте: '+bugs.length+' (открыто: '+bugs.filter(b=>b.status!=='Закрыт').length+')'];
+ const title='Отчёт по спринту #'+N+' — '+(ST.params.name||'Проект');
+ const body=lines.join('\n');
+ try{
+  const c=await apiPost('/api/integrations/atlassian/confluence',{title:title,body:body});
+  const s=await apiPost('/api/integrations/slack',{text:'*'+title+'*\n'+body});
+  if(typeof auditClient==='function')auditClient('publish_sprint_report','спринт '+N);
+  toast((c&&c.ok)||(s&&s.ok)?('Опубликовано: Confluence '+((c&&c.ok)?'✓':'—')+', Slack '+((s&&s.ok)?'✓':'—')):
+    'Интеграции не настроены (Confluence/Slack). Отчёт по спринту #'+N+' готов к отправке.');
+ }catch(e){toast('Не удалось опубликовать: '+e);}}
+// 3.5 Двусторонняя синхронизация с Jira: подтянуть статусы задач из Jira-проекта
+var JIRA_STATUS_MAP={'to do':'To Do','open':'To Do','backlog':'To Do','in progress':'В работе','in review':'В работе','in development':'В работе','done':'Готово','closed':'Готово','resolved':'Готово'};
+async function jiraSync(){if(!PERM.canEdit){toast('Только для редактора/администратора');return;}
+ let res;try{res=await apiPost('/api/integrations/jira/sync',{});}catch(e){toast('Jira: '+e);return;}
+ if(!res||!res.ok){toast('Jira: '+((res&&res.error)||'не настроена')+'. Задайте JIRA_* и попробуйте снова.');return;}
+ const issues=res.issues||[];let upd=0;
+ issues.forEach(is=>{const key=(is.key||'').toUpperCase();const sum=(is.summary||'');
+   const t=(ST.tasks||[]).find(x=>String(x.jira||'').toUpperCase()===key||String(x.id||'').toUpperCase()===key||(x.title&&sum&&x.title===sum));
+   if(!t)return;const map=JIRA_STATUS_MAP[(is.status||'').toLowerCase()];if(map&&t.status!==map){t.status=map;upd++;}});
+ if(upd){save();views();}
+ if(typeof auditClient==='function')auditClient('jira_sync',issues.length+' issues, '+upd+' upd');
+ toast('Jira: получено '+issues.length+' задач, обновлено статусов: '+upd+'.');}
+// 3.8 Авто-наполнение Star Map по фактической активности (закрытые задачи по ролям)
+function skillsFromActivity(){if(!PERM.canEdit){toast('Только для редактора/администратора');return;}
+ const skills=ST.skills||(ST.skills=[]);let changed=0;
+ (ST.team||[]).forEach(m=>{
+   const closed=(ST.tasks||[]).filter(t=>t.assignee===m.name&&t.status==='Готово').length;
+   const bump=closed>=8?1:closed>=3?0:0; // активным немного повышаем профиль
+   if(!bump)return;
+   skills.filter(s=>s.member===m.name).forEach(s=>{const nl=Math.min(5,(num(s.level)||0)+bump);if(nl!==num(s.level)){s.level=nl;changed++;}});
+ });
+ if(!changed){toast('Нет данных активности для повышения уровней (нужно ≥8 закрытых задач у участника)');return;}
+ save();views();activate('starmap');if(typeof auditClient==='function')auditClient('skills_from_activity',changed);
+ toast('Компетенции обновлены по активности: '+changed+' изменений');}
+// утилита POST к API (использует общий заголовок авторизации hdrs) → JSON
+function apiPost(url,body){const u=String(url).replace(/^\//,'');
+ return fetch(u,{method:'POST',headers:hdrs(true),body:JSON.stringify(body||{})}).then(r=>r.json().catch(()=>({ok:false,error:'HTTP '+r.status})));}
 function detectDelim(line){const cands=[',',';','\t'];let best=',',n=-1;cands.forEach(d=>{const c=line.split(d).length;if(c>n){n=c;best=d;}});return best;}
 function parseCSV(text,delim){const rows=[];let i=0,f='',row=[],q=false;text=String(text).replace(/\r\n/g,'\n').replace(/\r/g,'\n');
  while(i<text.length){const c=text[i];
@@ -1816,6 +1922,11 @@ var ATL_PRODUCTS=[
  {k:'bamboo',name:'Bamboo',desc:'Запуск сборки плана CI/CD.',env:'BAMBOO_BASE_URL, BAMBOO_TOKEN, BAMBOO_PLAN_KEY'},
 ];
 function integrationsView(){const w=document.createElement('div');
+ (function(){const bar=document.createElement('div');bar.className='grm-pick';
+  const b=document.createElement('button');b.className='btn primary';b.textContent='🔄 Синхронизировать с Jira';b.title='Подтянуть статусы задач из проекта Jira (двусторонняя синхронизация)';b.onclick=jiraSync;
+  const c=document.createElement('span');c.style.cssText='font-size:12.5px;color:var(--muted);align-self:center;margin-left:auto';
+  c.textContent='Статусы задач обновятся по данным Jira-проекта (нужны JIRA_* на сервере).';
+  bar.appendChild(b);bar.appendChild(c);w.appendChild(bar);})();
  const grid=document.createElement('div');grid.className='sup-grid';grid.style.marginTop='6px';
  ATL_PRODUCTS.forEach(p=>{const card=document.createElement('div');card.className='card intg-card';
    card.innerHTML='<div class="intg-head"><span class="intg-name">'+esc(p.name)+'</span><span class="intg-badge b-unk" id="intg_'+p.k+'">…</span></div>'+
@@ -1856,8 +1967,9 @@ function starmapView(){const w=document.createElement('div');const team=ST.team|
  const bar=document.createElement('div');bar.className='grm-pick';
  const b=document.createElement('button');b.className='btn primary';b.textContent='⭐ Обновить компетенции по ролям';
  b.onclick=()=>{if(!PERM.canEdit){toast('Только для редактора/администратора');return;}const n=syncSkills();save();views();activate('starmap');if(typeof auditClient==='function')auditClient('starmap_sync',n);toast(n?('Добавлено компетенций: '+n):'Компетенции уже актуальны');};
+ const ba=document.createElement('button');ba.className='btn';ba.textContent='📈 По активности';ba.title='Повысить уровни компетенций по числу закрытых задач участника';ba.onclick=skillsFromActivity;
  const cnt=document.createElement('span');cnt.style.cssText='font-size:12.5px;color:var(--muted);align-self:center;margin-left:auto';cnt.textContent='Записей компетенций: '+skills.length;
- bar.appendChild(b);bar.appendChild(cnt);w.appendChild(bar);
+ bar.appendChild(b);bar.appendChild(ba);bar.appendChild(cnt);w.appendChild(bar);
  // KPIs
  const roles=[...new Set(team.map(m=>m.role).filter(Boolean))];
  const levels=skills.map(s=>num(s.level)).filter(v=>v>0);const avg=levels.length?levels.reduce((a,b)=>a+b,0)/levels.length:0;
@@ -2105,9 +2217,12 @@ function backlogView(){const w=document.createElement('div');const C=compute();
     {k:'est',label:'Оценка',type:'num'},{k:'priority',label:'Приоритет'},{k:'dor',label:'DoR',type:'select',opts:['','Готова']},
     {k:'status',label:'Статус',type:'select',opts:STAT_TASK},
     {k:'sprint',label:'Спринт',type:'num'},{k:'release',label:'Релиз',type:'select',opts:[''].concat((ST.releases||[]).map(r=>r.id))},
-    {k:'dep',label:'Зависит от',type:'dep'},{k:'started',label:'В работу',type:'date'},{k:'done',label:'Готово',type:'date'}
+    {k:'dep',label:'Зависит от',type:'dep'},{k:'okr',label:'OKR (Key Result)',type:'select',opts:[''].concat(krList())},
+    {k:'started',label:'В работу',type:'date'},{k:'done',label:'Готово',type:'date'}
    ],{newId:'id',prefix:'T-'}));
  return w;}
+// список Key Results для привязки задач (прослеживаемость OKR → работа)
+function krList(){return Array.from(new Set((ST.okr||[]).map(o=>o.kr).filter(Boolean)));}
 /* ================= Доска — интерактивный бесконечный холст (whiteboard) ================= */
 var BW={tool:'select',color:'#FFE066',sel:[],svg:null,g:null,wrap:null,mode:null,_sv:null};
 var BRD_COLORS=['#FFE066','#FFB84D','#FF8A8A','#A0E7A0','#8FC7FF','#C6A0FF','#FFFFFF','#1F2937'];
@@ -2405,6 +2520,7 @@ function views(){
  // Gantt
  renderGantt(C);
  setView('deps','Зависимости от других стримов','Межстримовые зависимости задач, историй и фич. Маркеры ◆ отражены на диаграмме Ганта.',depsView());
+ setView('piboard','Программная доска (PI Planning)','Матрица «стрим × спринт» межкомандных зависимостей и вех на горизонте программного инкремента (SAFe).',piView());
  // OKR
  renderOKR(C);
  // Budget
@@ -2440,6 +2556,7 @@ function views(){
    editable('calendar',[{k:'date',label:'Дата',type:'date'},{k:'name',label:'Праздник / выходной',wide:true}]));
  // Params
  renderParams();
+ setView('scope','Контроль scope','Лог изменений состава спринтов/релизов (scope creep): добавления, переносы и удаления задач с базовым срезом для сравнения.',scopeView());
  setView('checks','Проверки данных','Автоматический контроль целостности данных с авто-исправлением типичных проблем.',checksView());
  // EDA report (Настройки) — разведочный анализ всех данных приложения
  setView('eda','EDA отчёт — разведочный анализ данных','Автоматический разведочный анализ (EDA) всех данных приложения: объём и полнота датасетов, числовые сводки, распределения категорий, кросс-таблицы и аномалии.',edaView());
@@ -2506,7 +2623,7 @@ function renderDash(C){const v=document.getElementById('v_dash');const T=ST.ttmT
  ${attnBand(C)}
  ${goalBand}
  ${riskBand}
- ${doneSp?`<div class="card" style="border-left:4px solid var(--good);margin-top:12px;display:flex;gap:12px;align-items:center;flex-wrap:wrap"><span style="font-size:13.5px">🏁 Спринт #${doneSp} завершён — все задачи в статусе «Готово». Сформировать отчёт по спринту?</span><button class="btn primary" style="margin-left:auto" onclick="openPptxModalFor(${doneSp})">📊 Сформировать отчёт</button></div>`:''}
+ ${doneSp?`<div class="card" style="border-left:4px solid var(--good);margin-top:12px;display:flex;gap:12px;align-items:center;flex-wrap:wrap"><span style="font-size:13.5px">🏁 Спринт #${doneSp} завершён — все задачи в статусе «Готово». Сформировать отчёт по спринту?</span><button class="btn" onclick="publishSprintReport(${doneSp})" title="Опубликовать сводку в Confluence и Slack">📣 Опубликовать</button><button class="btn primary" onclick="openPptxModalFor(${doneSp})">📊 Сформировать отчёт</button></div>`:''}
  <div class="grid kpis" id="dk"></div>
  <div class="cols two" style="margin-top:14px">
   <div class="card"><p class="ctitle">Ёмкость / План / Velocity по спринтам</p><div id="dc1"></div>
@@ -2554,22 +2671,46 @@ function releaseComp(r){
 }
 function releasesView(C){const w=document.createElement('div');
  w.appendChild(editable('releases',[{k:'id',label:'ID'},{k:'name',label:'Релиз',wide:true},{k:'sfrom',label:'Спр. от',type:'num'},{k:'sto',label:'Спр. до',type:'num'},{k:'status',label:'Статус',type:'select',opts:STAT_MS}],{newId:'id',prefix:'R-'}));
+ // 4.6 release burn-up (агрегированный) + «уверенность релиза»
+ const bu=document.createElement('div');bu.className='card';bu.style.marginTop='14px';
+ bu.innerHTML='<p class="ctitle">Release burn-up — выполнено vs объём релизов</p><div id="rel_bu"></div><div class="legend"><span><i style="background:var(--good)"></i>Выполнено (SP)</span><span><i style="background:var(--accent)"></i>Объём релизов (SP)</span></div>';
+ w.appendChild(bu);
+ const relScope=(ST.releases||[]).reduce((a,r)=>a+releaseComp(r).totalSP,0);
+ const cats=['С0'].concat(C.sp.map(x=>'С'+x.s));let cum=0,stop=false;const doneCum=[0];
+ C.sp.forEach(x=>{if(x.vel==null||stop){stop=true;doneCum.push(null);}else{cum+=x.vel;doneCum.push(cum);}});
+ setTimeout(()=>{lines(document.getElementById('rel_bu'),cats,[{color:col('--good'),data:doneCum,w:3},{color:col('--accent'),data:cats.map(()=>relScope),dash:true,noPts:true}]);},0);
  const card=document.createElement('div');card.className='card';card.style.marginTop='14px';card.innerHTML='<p class="ctitle">Содержимое релизов (авто) — нажмите строку, чтобы раскрыть список</p>';
  const tw=document.createElement('div');tw.className='twrap';const t=document.createElement('table');
- let h='<tr><th></th><th>ID</th><th>Релиз</th><th>Дата</th><th class="num">Стори</th><th class="num">Задач</th><th class="num">Дефектов</th><th class="num">Объём</th></tr>';
+ let h='<tr><th></th><th>ID</th><th>Релиз</th><th>Дата</th><th class="num">Стори</th><th class="num">Задач</th><th class="num">Дефектов</th><th class="num">Объём</th><th class="num">Готово</th><th>Уверенность</th></tr>';
  const chip=(id,title,goto,cls)=>`<a class="itemlnk${cls?' '+cls:''}" data-goto="${goto}" title="${esc(title||'')}">${esc(id)}${title?' · '+esc(String(title).slice(0,40)):''}</a>`;
  (ST.releases||[]).forEach((r,ri)=>{const cmp=releaseComp(r);
    const stories=cmp.stories,tasksA=cmp.tasks,bugs=cmp.bugs,vol=cmp.totalSP;
    const rd=C.relDate(r);
-   h+=`<tr class="rel-row" data-ri="${ri}"><td class="exp" data-ri="${ri}">▸</td><td>${r.id}</td><td>${esc(r.name)}</td><td>${rd?fmtd(rd):''}</td><td class="num">${stories.length}</td><td class="num">${tasksA.length}</td><td class="num">${bugs.length}</td><td class="num">${fmt(vol,1)}</td></tr>`;
+   const conf=releaseConfidence(r,cmp,C);
+   h+=`<tr class="rel-row" data-ri="${ri}"><td class="exp" data-ri="${ri}">▸</td><td>${r.id}</td><td>${esc(r.name)}</td><td>${rd?fmtd(rd):''}</td><td class="num">${stories.length}</td><td class="num">${tasksA.length}</td><td class="num">${bugs.length}</td><td class="num">${fmt(vol,1)}</td><td class="num">${pctf(cmp.pct)}</td><td><span class="pill ${conf.cls}" title="${esc(conf.note)}">${conf.label}</span></td></tr>`;
    const grp=(lbl,arr)=>`<div class="rel-grp"><span class="rel-lbl">${lbl} (${arr.length})</span>${arr.length?arr.join(''):'<span class="rel-none">—</span>'}</div>`;
    const det=grp('Стори',stories.map(x=>chip(x.id,x.title,'backlog','story')))+grp('Задачи',tasksA.map(x=>chip(x.id,x.title,'backlog')))+grp('Дефекты',bugs.map(x=>chip(x.id,x.desc,'bugs','def')));
-   h+=`<tr class="rel-det" data-ri="${ri}" style="display:none"><td></td><td colspan="7">${det}</td></tr>`;});
+   h+=`<tr class="rel-det" data-ri="${ri}" style="display:none"><td></td><td colspan="9">${det}</td></tr>`;});
  t.innerHTML=h;tw.appendChild(t);card.appendChild(tw);w.appendChild(card);
  t.addEventListener('click',e=>{const lnk=e.target.closest('.itemlnk');if(lnk){activate(lnk.dataset.goto);return;}
    const row=e.target.closest('.rel-row');if(!row)return;const ri=row.dataset.ri;const det=t.querySelector('.rel-det[data-ri="'+ri+'"]');
    const open=det.style.display!=='none';det.style.display=open?'none':'';row.querySelector('.exp').textContent=open?'▸':'▾';});
  return w;}
+// 4.6 «уверенность релиза»: успеем ли закрыть остаток в окне спринтов релиза при текущей velocity
+function releaseConfidence(r,cmp,C){const rem=Math.max(0,cmp.totalSP-cmp.doneSP);
+ if(cmp.totalSP===0)return {label:'—',cls:'p-neut',note:'Нет задач в релизе'};
+ if(rem===0||r.status==='Готово')return {label:'Готово',cls:'p-good',note:'Все задачи релиза выполнены'};
+ const sto=(r.sto===''||r.sto==null)?null:+r.sto;
+ const sprintsLeft=sto==null?null:Math.max(0,sto-C.cur+1);
+ const vel=C.avgVel||0;
+ if(sprintsLeft==null||!vel)return {label:'н/д',cls:'p-neut',note:'Недостаточно данных (velocity или окно релиза)'};
+ if(sprintsLeft===0)return {label:'Под угрозой',cls:'p-crit',note:'Окно релиза истекло, остаток '+fmt(rem,0)+' SP'};
+ const ratio=(sprintsLeft*vel)/rem;
+ const pct=Math.round(Math.min(1,ratio)*100);
+ const note='Прогноз ёмкости '+fmt(sprintsLeft*vel,0)+' SP на остаток '+fmt(rem,0)+' SP за '+sprintsLeft+' спр.';
+ if(ratio>=1.1)return {label:'Высокая '+pct+'%',cls:'p-good',note:note};
+ if(ratio>=0.85)return {label:'Средняя '+pct+'%',cls:'p-warn',note:note};
+ return {label:'Низкая '+pct+'%',cls:'p-crit',note:note};}
 function debtView(C){const w=document.createElement('div');
  w.appendChild(editable('techDebt',[{k:'id',label:'ID'},{k:'desc',label:'Описание',wide:true},{k:'area',label:'Область'},
    {k:'type',label:'Тип',type:'select',opts:['Архитектура','Код','Тесты','Инфраструктура','Документация']},{k:'impact',label:'Влияние',type:'select',opts:['High','Medium','Low']},
@@ -2777,6 +2918,11 @@ function kanApplyMove(board,id,newStatus){
   if(typeof auditClient==='function')auditClient('release_assign',(t2.id||'')+' → '+(nv||'без релиза'));
   toast('«'+(t2.id||'')+'» → '+(nv?kanRelName(nv):'без релиза'));return;}
  const t=(ST.tasks||[]).find(x=>x.id===id);if(!t||t.status===newStatus)return;
+ const lim=num((board.wip||{})[newStatus]);
+ if(lim){const inCol=kanColCount(board,newStatus);if(inCol>=lim)toast('⚠ WIP-лимит колонки «'+newStatus+'» ('+lim+') достигнут — ограничьте работу в процессе');}
+ // ворота DoR/DoD (мягкое предупреждение)
+ if(newStatus==='В работе'&&(ST.dorItems||[]).length&&(t.dor||'')!=='Готова'&&!isTaskReady(t.id))toast('⚠ DoR не выполнен: задача '+(t.id||'')+' не готова к работе (проверьте Definition of Ready)');
+ if(newStatus==='Готово'){const dd=ST.dod||[];const met=dd.length?dd.every(d=>d.done):true;if(!met)toast('⚠ DoD не выполнен: закройте пункты Definition of Done перед завершением');}
  t.status=newStatus;const today=kanToday(),first=(board.cols&&board.cols[0])||'To Do';
  if(newStatus==='Готово'){if(!t.started)t.started=today;if(!t.done)t.done=today;}
  else if(newStatus===first){t.started='';t.done='';}
@@ -2820,6 +2966,17 @@ function kanAddColumn(board){if(!PERM.canAdmin){toast('Только для ад�
  if((board.cols||[]).indexOf(st)>=0){toast('Такая колонка уже есть');return;}
  (board.cols||(board.cols=[])).push(st);
  save();views();activate('kanban');if(typeof auditClient==='function')auditClient('kanban_col_add',(board.name||'')+': '+st);toast('Колонка «'+st+'» добавлена');}
+function kanEditWip(board){if(!PERM.canAdmin){toast('Только для администратора');return;}
+ const cols=kanEffectiveCols(board).filter(c=>(board.cols||[]).indexOf(c)>=0||true);
+ board.wip=board.wip||{};
+ const cur=cols.map(c=>c+' = '+(num(board.wip[c])||0)).join('\n');
+ const inp=prompt('WIP-лимиты по колонкам (0 — без лимита), по одной на строку «Колонка = N»:\n\n'+cur,
+   cols.map(c=>c+' = '+(num(board.wip[c])||0)).join('\n'));
+ if(inp==null)return;const nw={};
+ inp.split('\n').forEach(line=>{const m=line.split('=');if(m.length<2)return;const name=m[0].trim();const v=num(m[1]);if(cols.indexOf(name)>=0&&v>0)nw[name]=v;});
+ board.wip=nw;save();views();activate('kanban');
+ if(typeof auditClient==='function')auditClient('kanban_wip',(board.name||'')+': '+JSON.stringify(nw));
+ toast('WIP-лимиты обновлены');}
 function kanDelColumn(board,st){if(!PERM.canAdmin){toast('Только для администратора');return;}
  if(kanBoardItems(board).some(it=>kanColOf(board,it)===st)){toast('Сначала перенесите карточки из «'+st+'»');return;}
  const i=(board.cols||[]).indexOf(st);if(i<0)return;board.cols.splice(i,1);
@@ -2847,6 +3004,9 @@ function kanbanView(){const w=document.createElement('div');const bs=kanBoards()
  if(PERM.canAdmin&&!kanIsCompose(def)){
    const ac=document.createElement('button');ac.className='btn';ac.textContent='＋ Колонка';ac.onclick=()=>kanAddColumn(def);tools.appendChild(ac);
  }
+ if(PERM.canAdmin&&!kanIsRelease(def)&&!kanIsCompose(def)){
+   const wb=document.createElement('button');wb.className='btn';wb.textContent='⚖ WIP-лимиты';wb.title='Задать лимиты «в работе» по колонкам';wb.onclick=()=>kanEditWip(def);tools.appendChild(wb);
+ }
  if(PERM.canAdmin){
    const rn=document.createElement('button');rn.className='btn';rn.textContent='✎ Переименовать';rn.onclick=()=>kanRenameBoard(def);tools.appendChild(rn);
    const dl=document.createElement('button');dl.className='btn danger';dl.textContent='🗑 Удалить доску';dl.onclick=()=>kanDeleteBoard(def);tools.appendChild(dl);
@@ -2863,9 +3023,12 @@ function kanbanView(){const w=document.createElement('div');const bs=kanBoards()
    const kc=kanIsCompose(def)?(st==='__none__'?'#7A8AA0':'#2D5BE3'):kanColColor(st);
    const col=document.createElement('div');col.className='kan-col';col.style.setProperty('--kc',kc);col.dataset.status=st;
    const sum=kanIsRelease(def)?null:list.reduce((a,t)=>a+num(t.est),0);
-   const cnt=list.length+(sum!=null?' · '+fmt(sum,0)+' SP':'');
+   const lim=(!kanIsRelease(def)&&!kanIsCompose(def))?num((def.wip||{})[st]):0;
+   const over=lim&&list.length>lim;
+   const cnt=list.length+(lim?' / '+lim:'')+(sum!=null?' · '+fmt(sum,0)+' SP':'');
+   const wipBadge=lim?'<span class="kc-wip'+(over?' over':'')+'" title="WIP-лимит колонки">WIP '+list.length+'/'+lim+'</span>':'';
    const delBtn=(PERM.canAdmin&&(def.cols||[]).indexOf(st)>=0)?'<button class="kc-del" data-del="'+esc(st)+'" title="Удалить колонку">✕</button>':'';
-   let h='<div class="kc-head"><span class="kc-dot"></span><span class="kc-title">'+esc(kanColLabel(def,st))+'</span><span class="kc-count">'+cnt+'</span>'+delBtn+'</div><div class="kc-body">';
+   let h='<div class="kc-head"><span class="kc-dot"></span><span class="kc-title">'+esc(kanColLabel(def,st))+'</span>'+wipBadge+'<span class="kc-count">'+cnt+'</span>'+delBtn+'</div><div class="kc-body">';
    h+=list.length?list.map(cardFn).join(''):'<div class="kan-empty">Нет карточек</div>';
    h+='</div>';col.innerHTML=h;b.appendChild(col);});
  b.addEventListener('click',e=>{const d=e.target.closest('button[data-del]');if(d){e.stopPropagation();kanDelColumn(def,d.dataset.del);}});
@@ -2983,6 +3146,90 @@ function sprintGoalsView(){const w=document.createElement('div');
   +'Хорошая цель <b>одна на спринт</b>, понятна заказчику и помогает принимать решения при изменении плана (что можно отбросить, а что — нельзя).<br>'
   +'Столбец <b>% факт</b> считается автоматически как доля задач спринта в статусе «Готово» — быстрый индикатор достижения цели.</p>';
  w.appendChild(lg);return w;}
+/* 4.4 PI Planning / Program Board (SAFe): матрица стримов × спринтов с межкомандными зависимостями */
+function piView(){const w=document.createElement('div');
+ const N=ST.params.sprints||11;const deps=ST.deps||[];
+ const streams=Array.from(new Set(deps.map(d=>d.stream).filter(Boolean)));
+ if(!streams.length){const e=document.createElement('div');e.className='card';e.innerHTML='<p style="margin:0;color:var(--muted)">Нет межстримовых зависимостей. Добавьте их в разделе «Зависимости» — и здесь появится программная доска.</p>';w.appendChild(e);return w;}
+ const sprints=[];for(let s=1;s<=N;s++)sprints.push(s);
+ const depColorKey=st=>(st==='Заблокировано'||st==='Просрочено')?'crit':(st==='Получено'||st==='Подтверждено')?'good':'warn';
+ const dirMark=d=>d.dir==='Зависят от нас'?'➡':'⬅';
+ const wrap=document.createElement('div');wrap.className='twrap';wrap.style.marginBottom='14px';
+ let h='<table class="pi-board"><tr><th style="min-width:150px">Стрим \\ Спринт</th>';
+ sprints.forEach(s=>h+='<th class="num">С'+s+'</th>');h+='</tr>';
+ streams.forEach(stream=>{h+='<tr><td style="font-weight:600">'+esc(stream)+'</td>';
+   sprints.forEach(s=>{const cell=deps.filter(d=>d.stream===stream&&+d.sprint===s);
+     h+='<td class="pi-cell">'+cell.map(d=>'<span class="pi-chip p-'+depColorKey(d.status)+'" title="'+esc((d.item||d.desc||'')+' — '+(d.status||''))+'">'+dirMark(d)+' '+esc(d.item||d.task||d.desc||'•').slice(0,16)+'</span>').join('')+'</td>';});
+   h+='</tr>';});
+ // строка вех
+ const ms=ST.milestones||[];
+ h+='<tr><td style="font-weight:600">🏁 Вехи</td>';sprints.forEach(s=>{const mm=ms.filter(m=>+m.sprint===s);
+   h+='<td class="pi-cell">'+mm.map(m=>'<span class="pi-chip p-'+(m.status==='Задержка'?'crit':m.status==='Готово'?'good':'warn')+'" title="'+esc(m.name||'')+'">◆ '+esc(m.name||'').slice(0,16)+'</span>').join('')+'</td>';});
+ h+='</tr></table>';
+ wrap.innerHTML=h;w.appendChild(wrap);
+ // легенда + метрики
+ const blocked=deps.filter(d=>d.status==='Заблокировано'||d.status==='Просрочено').length;
+ const kp=document.createElement('div');kp.className='grid kpis';
+ kp.innerHTML=kpiCard('Стримов',streams.length,'внешних команд','neut')
+   +kpiCard('Зависимостей',deps.length,'на программной доске','neut')
+   +kpiCard('Заблокировано',blocked,'требуют эскалации',blocked?'crit':'good')
+   +kpiCard('Вех',ms.length,'контрольных точек','neut');
+ w.appendChild(kp);
+ const lg=document.createElement('div');lg.className='card';lg.style.marginTop='14px';
+ lg.innerHTML='<p class="ctitle">Программная доска (PI Planning, SAFe)</p><p style="font-size:13px;color:var(--muted);line-height:1.7;margin:0">'
+  +'Матрица <b>стрим × спринт</b> визуализирует межкомандные зависимости на горизонте программного инкремента. '
+  +'<b>⬅</b> — мы зависим от стрима, <b>➡</b> — стрим зависит от нас, <b>◆</b> — веха. '
+  +'Цвет: <span style="color:var(--good)">получено/подтверждено</span>, <span style="color:var(--warn)">ожидается</span>, <span style="color:var(--crit)">заблокировано</span>. '
+  +'Красные ячейки — кандидаты на эскалацию (кнопка «Эскалировать» в разделе «Зависимости»).</p>';
+ w.appendChild(lg);return w;}
+/* 4.9 Контроль scope (scope creep): лог изменений состава + базовый срез для сравнения */
+function scopeView(){const w=document.createElement('div');
+ (function(){const bar=document.createElement('div');bar.className='grm-pick';
+  const b1=document.createElement('button');b1.className='btn';b1.textContent='📌 Зафиксировать базовый состав';b1.title='Сохранить текущее распределение задач по спринтам как базовый срез';b1.onclick=scopeBaseline;
+  const b2=document.createElement('button');b2.className='btn primary';b2.textContent='🔍 Сравнить с базовым';b2.title='Записать в лог отличия текущего состава от базового';b2.onclick=scopeDiff;
+  const c=document.createElement('span');c.style.cssText='font-size:12.5px;color:var(--muted);align-self:center;margin-left:auto';
+  let base=null;try{base=JSON.parse(localStorage.getItem('scopeBase')||'null');}catch(e){}
+  c.textContent=base?('Базовый срез: '+Object.keys(base.map||{}).length+' задач от '+(base.date||'—')):'Базовый срез не зафиксирован';
+  bar.appendChild(b1);bar.appendChild(b2);bar.appendChild(c);w.appendChild(bar);})();
+ w.appendChild(editable('scopeLog',[{k:'id',label:'ID'},{k:'date',label:'Дата',type:'date'},{k:'sprint',label:'Спринт',type:'num'},
+   {k:'kind',label:'Тип',type:'select',opts:['Добавлено','Убрано','Перенесено','Изменено']},
+   {k:'item',label:'Задача / элемент'},{k:'detail',label:'Что изменилось',wide:true}],{newId:'id',prefix:'SC-'}));
+ const log=ST.scopeLog||[];
+ const cnt=k=>log.filter(x=>x.kind===k).length;
+ const kp=document.createElement('div');kp.className='grid kpis';kp.style.marginTop='14px';
+ kp.innerHTML=kpiCard('Записей',log.length,'изменений состава','neut')
+   +kpiCard('Добавлено',cnt('Добавлено'),'в активные спринты',cnt('Добавлено')>3?'warn':'neut')
+   +kpiCard('Перенесено',cnt('Перенесено'),'между спринтами',cnt('Перенесено')?'warn':'neut')
+   +kpiCard('Убрано',cnt('Убрано'),'из состава','neut');
+ w.appendChild(kp);
+ // scope creep по спринтам
+ const cc=document.createElement('div');cc.className='card';cc.style.marginTop='14px';
+ const ccBox=document.createElement('div');
+ cc.innerHTML='<p class="ctitle">Изменения состава по спринтам</p>';cc.appendChild(ccBox);w.appendChild(cc);
+ const N=ST.params.sprints||11;const cats=[],adds=[],moves=[];
+ for(let s=1;s<=N;s++){cats.push('С'+s);adds.push(log.filter(x=>+x.sprint===s&&x.kind==='Добавлено').length);moves.push(log.filter(x=>+x.sprint===s&&x.kind==='Перенесено').length);}
+ bars(ccBox,cats,[{color:col('--warn'),data:adds},{color:col('--accent'),data:moves}]);
+ const lg=document.createElement('div');lg.className='card';lg.style.marginTop='14px';
+ lg.innerHTML='<p class="ctitle">Контроль scope creep</p><p style="font-size:13px;color:var(--muted);line-height:1.7;margin:0">'
+  +'<b>Scope creep</b> — неконтролируемое расширение состава спринта/релиза после его начала. Лог фиксирует добавления, '
+  +'переносы и удаления задач. «Зафиксировать базовый состав» сохраняет текущее распределение задач по спринтам; '
+  +'«Сравнить с базовым» находит отличия и записывает их в лог. Авто-переносы из «Бэклога» попадают сюда автоматически. '
+  +'Здоровая практика: фиксировать базовый срез на старте спринта и держать добавления в активный спринт близко к нулю.</p>';
+ w.appendChild(lg);return w;}
+function scopeBaseline(){if(!PERM.canEdit){toast('Только для редактора/администратора');return;}
+ const map={};(ST.tasks||[]).forEach(t=>{if(t.sprint!=null&&t.sprint!=='')map[t.id]=+t.sprint;});
+ try{localStorage.setItem('scopeBase',JSON.stringify({date:todayISO(),map:map}));}catch(e){}
+ views();activate('scope');toast('Базовый состав зафиксирован: '+Object.keys(map).length+' задач');}
+function scopeDiff(){if(!PERM.canEdit){toast('Только для редактора/администратора');return;}
+ let base=null;try{base=JSON.parse(localStorage.getItem('scopeBase')||'null');}catch(e){}
+ if(!base||!base.map){toast('Сначала зафиксируйте базовый состав');return;}
+ const now={};(ST.tasks||[]).forEach(t=>{if(t.sprint!=null&&t.sprint!=='')now[t.id]=+t.sprint;});
+ let n=0;const seen=x=>({});
+ Object.keys(now).forEach(id=>{if(base.map[id]==null){logScope('Добавлено',id,'Добавлена после базового среза',now[id]);n++;}
+   else if(base.map[id]!==now[id]){logScope('Перенесено',id,'Спринт '+base.map[id]+' → '+now[id]+' после базового среза',now[id]);n++;}});
+ Object.keys(base.map).forEach(id=>{if(now[id]==null){logScope('Убрано',id,'Снята со спринта '+base.map[id]+' после базового среза',base.map[id]);n++;}});
+ if(!n){toast('Отличий от базового среза нет');return;}
+ save();views();activate('scope');toast('Записано изменений состава: '+n);}
 function dailyView(){const w=document.createElement('div');
  (function(){const bar=document.createElement('div');bar.className='grm-pick';
   const b=document.createElement('button');b.className='btn primary';b.textContent='⛔ Блокеры → в «Зависимости»';b.onclick=dailyBlockersToDeps;
@@ -3171,10 +3418,17 @@ function renderParams(){const P=ST.params;const v=document.getElementById('v_par
   <label>Focus factor</label><input id="p_focus" type="number" step="0.05" value="${P.focus||0.8}">
   <label>Цель спринта</label><input id="p_goal" value="${(P.goal||'').replace(/"/g,'&quot;')}">
  </div>
- <p class="ctitle" style="margin-top:18px">Definition of Done</p><div class="dodlist" id="doddiv"></div></div>`;
+ <p class="ctitle" style="margin-top:18px">Definition of Done</p><div class="dodlist" id="doddiv"></div>
+ <p class="ctitle" style="margin-top:18px">Definition of Ready</p><div class="dodlist" id="dordiv"></div>
+ <p class="mnote" style="margin-top:8px">DoR/DoD — чеклисты-«ворота»: задача не должна браться в работу без готовности (DoR) и считаться выполненной без DoD. При перетаскивании на доске нарушение ворот подсвечивается предупреждением.</p></div>`;
  const dd=ST.dod||[];const dv=document.getElementById('doddiv');
  dv.innerHTML=dd.map((d,i)=>`<label><input type="checkbox" data-i="${i}" ${d.done?'checked':''}> ${d.crit}</label>`).join('');
  dv.addEventListener('change',e=>{if(e.target.dataset.i!=null){dd[+e.target.dataset.i].done=e.target.checked;commit();}});
+ const dr=ST.dorItems||(ST.dorItems=[]);const rv=document.getElementById('dordiv');
+ rv.innerHTML=dr.map((d,i)=>`<label><input type="checkbox" data-i="${i}" ${d.done?'checked':''}> ${esc(d.crit)}</label>`).join('')
+   +(PERM.canEdit?'<div style="margin-top:8px"><button class="btn" id="dor_add">＋ Пункт DoR</button></div>':'');
+ rv.addEventListener('change',e=>{if(e.target.dataset.i!=null){dr[+e.target.dataset.i].done=e.target.checked;commit();}});
+ const da=document.getElementById('dor_add');if(da)da.onclick=()=>{const t=(prompt('Новый пункт Definition of Ready:','')||'').trim();if(!t)return;dr.push({crit:t,done:false});save();renderParams();};
  ['name','start','today','goal'].forEach(k=>{const e=document.getElementById('p_'+k);e.addEventListener('input',()=>{P[k]=e.value;save();recomputeSoft();});});
  ['sprints','focus'].forEach(k=>{const e=document.getElementById('p_'+k);e.addEventListener('input',()=>{P[k]=num(e.value);save();recomputeSoft();});});
 }
@@ -3192,6 +3446,12 @@ function renderRoadmap(C){const v=document.getElementById('v_roadmap');
 function depColor(st){return (st==='Заблокировано'||st==='Просрочено')?col('--crit'):(st==='Получено'||st==='Подтверждено')?col('--good'):col('--warn');}
 function depsView(){const w=document.createElement('div');
  w.appendChild(depIssuesBanner());
+ (function(){const bar=document.createElement('div');bar.className='grm-pick';
+  const b=document.createElement('button');b.className='btn primary';b.textContent='🚨 Эскалировать блокеры';b.title='Отправить заблокированные зависимости и критичные дефекты в Opsgenie + Slack';b.onclick=escalateBlockers;
+  const c=document.createElement('span');c.style.cssText='font-size:12.5px;color:var(--muted);align-self:center;margin-left:auto';
+  c.textContent='Заблокировано: '+(ST.deps||[]).filter(d=>d.status==='Заблокировано'||d.status==='Просрочено').length
+    +' · критичных дефектов: '+(ST.bugs||[]).filter(x=>x.status!=='Закрыт'&&(x.sev==='Critical'||x.sev==='High')).length;
+  bar.appendChild(b);bar.appendChild(c);w.appendChild(bar);})();
  w.appendChild(editable('deps',[{k:'id',label:'ID'},{k:'item',label:'Элемент',wide:true},
    {k:'type',label:'Тип',type:'select',opts:['История','Задача','Фича','Эпик']},
    {k:'task',label:'Задача (Гант)',type:'dep'},{k:'stream',label:'Внешний стрим'},
@@ -3254,7 +3514,23 @@ function renderOKR(C){const v=document.getElementById('v_okr');
  v.innerHTML=`<h1>OKR — цели квартала</h1><p class="lede">Objective + Key Results. Прогресс = Текущее / Цель.</p>`;
  v.appendChild(editable('okr',[{k:'q',label:'Квартал'},{k:'obj',label:'Objective',wide:true},{k:'kr',label:'Key Result',wide:true},{k:'target',label:'Цель',type:'num'},{k:'cur',label:'Текущее',type:'num'}]));
  const card=document.createElement('div');card.className='card';card.style.marginTop='14px';card.innerHTML='<p class="ctitle">Прогресс Key Results</p><div id="okc"></div>';v.appendChild(card);
- const okr=ST.okr||[];bars(document.getElementById('okc'),okr.map(o=>String(o.kr||'').slice(0,14)),[{color:col('--good'),data:okr.map(o=>num(o.target)?num(o.cur)/num(o.target):0)}],{pct:true});}
+ const okr=ST.okr||[];bars(document.getElementById('okc'),okr.map(o=>String(o.kr||'').slice(0,14)),[{color:col('--good'),data:okr.map(o=>num(o.target)?num(o.cur)/num(o.target):0)}],{pct:true});
+ // 4.8 прослеживаемость OKR → задачи: покрытие Key Results работой
+ const krs=krList();const tasks=ST.tasks||[];
+ const linked=tasks.filter(t=>t.okr).length;const covered=krs.filter(kr=>tasks.some(t=>t.okr===kr)).length;
+ const kp=document.createElement('div');kp.className='grid kpis';kp.style.marginTop='14px';
+ kp.innerHTML=kpiCard('Key Results',krs.length,'целей квартала','neut')
+   +kpiCard('Покрыто задачами',covered,krs.length?pctf(covered/krs.length):'—',covered===krs.length&&krs.length?'good':covered?'warn':'crit')
+   +kpiCard('Связей OKR→задача',linked,'прослеживаемость','neut')
+   +kpiCard('Задач без цели',tasks.length-linked,'не привязаны к OKR',(tasks.length-linked)>0?'warn':'good');
+ v.appendChild(kp);
+ const tc=document.createElement('div');tc.className='card';tc.style.marginTop='14px';
+ let th='<p class="ctitle">Прослеживаемость: Key Result → задачи</p><div class="twrap" style="border:none"><table><tr><th>Key Result</th><th class="num">Задач</th><th class="num">Готово</th><th class="num">% готовности</th><th>Задачи</th></tr>';
+ krs.forEach(kr=>{const ts=tasks.filter(t=>t.okr===kr);const dn=ts.filter(t=>t.status==='Готово').length;
+   th+=`<tr><td>${esc(kr)}</td><td class="num">${ts.length}</td><td class="num">${dn}</td><td class="num">${ts.length?pctf(dn/ts.length):'—'}</td><td style="font-size:12px;color:var(--muted)">${ts.map(t=>esc(t.id)).join(', ')||'—'}</td></tr>`;});
+ const orphan=tasks.filter(t=>!t.okr&&t.type!=='Тех.долг');
+ if(orphan.length)th+=`<tr><td><i>Без привязки к OKR</i></td><td class="num">${orphan.length}</td><td class="num">—</td><td class="num">—</td><td style="font-size:12px;color:var(--muted)">${orphan.slice(0,12).map(t=>esc(t.id)).join(', ')}${orphan.length>12?' …':''}</td></tr>`;
+ th+='</table></div>';tc.innerHTML=th;v.appendChild(tc);}
 /* ---------- Бюджет ---------- */
 function renderBudget(C){const v=document.getElementById('v_budget');const B=ST.budget;
  v.innerHTML=`<h1>Бюджет</h1><p class="lede">Стоимость = ёмкость спринта × ставка. Накопленный расход и остаток бюджета.</p>
@@ -3360,7 +3636,51 @@ function renderAnalytics(C){const v=document.getElementById('v_analytics');const
  // bugs by severity
  const sev={Critical:0,Major:0,Minor:0};(ST.bugs||[]).forEach(b=>{if(sev[b.sev]!=null)sev[b.sev]++;});
  bars(document.getElementById('an_sev'),Object.keys(sev),[{color:col('--crit'),data:Object.values(sev)}]);
+ // 3.9 Монте-Карло: прогноз даты завершения с доверительными интервалами
+ const mc=mcReleaseForecast(C);
+ // 4.7 flow efficiency + SLA/SLO по дефектам
+ const fe=flowEfficiency();const sla=bugSLA();
+ const extra=document.createElement('div');extra.className='grid kpis';extra.style.marginTop='14px';
+ extra.innerHTML=[
+   kpiCard('Прогноз даты (P50)',mc?fmtd(mc.p50date):'—',mc?('через ~'+mc.p50+' спр.'):'нет velocity','neut'),
+   kpiCard('Прогноз даты (P85)',mc?fmtd(mc.p85date):'—',mc?('консервативно, '+mc.p85+' спр.'):'—',mc?'warn':'neut'),
+   kpiCard('Flow efficiency',fe.n?pctf(fe.eff):'—','активное / цикл (оценка)',fe.eff>=.4?'good':fe.eff>=.25?'warn':'crit'),
+   kpiCard('SLA по дефектам',sla.ok+'/'+sla.total,'уровней в пределах',sla.ok===sla.total?'good':'crit')
+ ].join('');
+ v.appendChild(extra);
+ const g3=document.createElement('div');g3.className='grid2';g3.style.marginTop='0';
+ const mcCard=document.createElement('div');mcCard.className='card';
+ mcCard.innerHTML='<p class="ctitle">Монте-Карло: распределение числа спринтов до завершения</p><div id="an_mc"></div>'
+   +(mc?'<p style="font-size:12px;color:var(--muted);margin:8px 0 0">P50 ≈ '+mc.p50+' спр. ('+fmtd(mc.p50date)+'), P85 ≈ '+mc.p85+' спр. ('+fmtd(mc.p85date)+'), остаток '+fmt(C.remain,0)+' SP, '+mc.trials+' симуляций.</p>':'<p style="font-size:12px;color:var(--muted);margin:8px 0 0">Недостаточно данных velocity для симуляции.</p>');
+ const slaCard=document.createElement('div');slaCard.className='card';
+ let sh='<p class="ctitle">SLA/SLO по дефектам (серьёзность)</p><div class="twrap" style="border:none"><table><tr><th>Серьёзность</th><th class="num">Открыто</th><th class="num">Цель (откр.)</th><th>Статус</th></tr>';
+ sla.rows.forEach(r=>{sh+=`<tr><td>${esc(r.sev)}</td><td class="num">${r.open}</td><td class="num">≤ ${r.target}</td><td>${r.ok?'<span class="pill p-good">в норме</span>':'<span class="pill p-crit">нарушение</span>'}</td></tr>`;});
+ sh+='</table></div><p style="font-size:12px;color:var(--muted);margin:8px 0 0">Flow efficiency (оценка) = активная работа (SP как чел-дни) / календарный цикл задачи. SLA — целевой потолок открытых дефектов по серьёзности.</p>';
+ slaCard.innerHTML=sh;
+ g3.appendChild(mcCard);g3.appendChild(slaCard);v.appendChild(g3);
+ if(mc)bars(document.getElementById('an_mc'),mc.hist.map(x=>x.k+' спр'),[{color:col('--accent'),data:mc.hist.map(x=>x.n)}]);
+ else document.getElementById('an_mc').innerHTML='<p style="color:var(--muted);font-size:13px">Нет закрытых спринтов с velocity.</p>';
 }
+// 3.9 Монте-Карло прогноз даты завершения проекта (P50/P85) по распределению velocity
+function mcReleaseForecast(C){const vels=(C.vels||[]).filter(v=>v>0);if(!vels.length||C.remain<=0)return null;
+ const trials=2000,maxSp=200;const counts=[];
+ for(let t=0;t<trials;t++){let rem=C.remain,n=0;while(rem>0&&n<maxSp){rem-=vels[Math.floor(Math.random()*vels.length)];n++;}counts.push(n);}
+ counts.sort((a,b)=>a-b);
+ const q=p=>counts[Math.min(counts.length-1,Math.floor(p*counts.length))];
+ const p50=q(0.5),p85=q(0.85);
+ const dateFor=n=>{const idx=C.cur-1+n-1;const sp=C.sp[Math.min(C.sp.length-1,Math.max(0,idx))];return sp?sp.b:(C.curSp?C.curSp.b:new Date());};
+ // гистограмма
+ const hmap={};counts.forEach(n=>{hmap[n]=(hmap[n]||0)+1;});
+ const hist=Object.keys(hmap).map(k=>({k:+k,n:hmap[k]})).sort((a,b)=>a.k-b.k);
+ return {p50,p85,p50date:dateFor(p50),p85date:dateFor(p85),trials,hist};}
+// 4.7 оценка flow efficiency: активная работа (SP≈чел-дни) к календарному циклу
+function flowEfficiency(){const done=(ST.tasks||[]).filter(t=>t.started&&t.done&&t.status==='Готово');
+ let act=0,cyc=0,n=0;done.forEach(t=>{const cycle=Math.max(1,Math.round((pd(t.done)-pd(t.started))/MS));const active=Math.min(cycle,Math.max(0,num(t.est)));if(active>0){act+=active;cyc+=cycle;n++;}});
+ return {eff:cyc?act/cyc:0,n:n};}
+// 4.7 SLA/SLO по дефектам: целевой потолок открытых дефектов по серьёзности
+function bugSLA(){const targets={Critical:0,Major:2,Minor:5};const rows=[];let ok=0;
+ Object.keys(targets).forEach(sev=>{const open=(ST.bugs||[]).filter(b=>b.sev===sev&&b.status!=='Закрыт').length;const good=open<=targets[sev];if(good)ok++;rows.push({sev:sev,open:open,target:targets[sev],ok:good});});
+ return {rows:rows,ok:ok,total:rows.length};}
 /* ---------- Excel export (pure JS zip + OOXML) ---------- */
 const _crc=(()=>{let t=[];for(let n=0;n<256;n++){let c=n;for(let k=0;k<8;k++)c=c&1?0xEDB88320^(c>>>1):c>>>1;t[n]=c>>>0;}return t;})();
 function crc32(u8){let c=0xFFFFFFFF;for(let i=0;i<u8.length;i++)c=_crc[(c^u8[i])&0xFF]^(c>>>8);return(c^0xFFFFFFFF)>>>0;}
@@ -3418,6 +3738,7 @@ function exportXlsx(){const C=compute();const s=[];
  s.push({name:'Дэйли',aoa:[['ID','Дата','Спринт','Участник','Вчера','Сегодня','Блокер']].concat((ST.daily||[]).map(x=>[x.id,x.date,num(x.sprint),x.participant,x.yesterday,x.today,x.blocker]))});
  s.push({name:'График отпусков',aoa:[['ID','Участник','Тип','С','По','Дней','Статус','Комментарий']].concat((ST.vacation||[]).map(x=>[x.id,x.member,x.type,x.from,x.to,num(x.days),x.status,x.notes]))});
  s.push({name:'Дни рождения',aoa:[['ID','Участник','Дата рождения','Роль','Комментарий']].concat((ST.birthdays||[]).map(x=>[x.id,x.member,x.date,x.role,x.notes]))});
+ s.push({name:'Контроль scope',aoa:[['ID','Дата','Спринт','Тип','Задача/элемент','Что изменилось']].concat((ST.scopeLog||[]).map(x=>[x.id,x.date,num(x.sprint),x.kind,x.item,x.detail]))});
  const bin=buildXlsx(s);const blob=new Blob([bin],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='Планирование_спринта.xlsx';document.body.appendChild(a);a.click();a.remove();toast('Excel экспортирован');}
 
@@ -3632,17 +3953,29 @@ function recomputeSoft(){/* light: refresh dashboard only, keep edit focus */ re
 /* ---------- sidebar navigation ---------- */
 const NAV=[
  {g:'Планирование',items:[['dash','Дашборд','📋'],['board','Доска','🧩'],['roadmap','Дорожная карта','🗺️'],['kanban','Kanban-доска','🗃️'],['quarters','Кварталы','🗓️'],['sprintGoals','Цели спринтов','🎯'],['rice','RICE','📊'],['wsjf','WSJF','⚖️'],['moscow','MoSCoW','📌'],['okr','OKR','🧭']]},
- {g:'Работа',items:[['backlog','Бэклог','🗂️'],['gantt','Гант','📊'],['deps','Зависимости','🔗'],['team','Команда','👥'],['starmap','Star Map','⭐']]},
+ {g:'Работа',items:[['backlog','Бэклог','🗂️'],['gantt','Гант','📊'],['deps','Зависимости','🔗'],['piboard','Программная доска','🧭'],['team','Команда','👥'],['starmap','Star Map','⭐']]},
  {g:'Выпуск',items:[['releases','Релизы','🚀'],['milestones','Вехи','🏁'],['debt','Техдолг','🧱']]},
  {g:'Аналитика',items:[['analytics','Аналитика','📈'],['risks','Риски','⚠️'],['bugs','Баги','🐞']]},
  {g:'Церемонии',items:[['daily','Дэйли','☀️'],['grooming','Груминг','🧹'],['demo','Демо спринта','🎬'],['retro','Ретроспективы','🔄'],['agile','Agile-зрелость','🪜']]},
  {g:'Персонал',items:[['vacation','График отпусков','🏖️'],['birthdays','Дни рождения','🎂']]},
- {g:'Настройки',items:[['budget','Бюджет','💰'],['calendar','Календарь','📅'],['checks','Проверки данных','🧪'],['eda','EDA отчёт','🔬'],['integrations','Интеграции','🔌'],['params','Параметры','⚙️']]},
+ {g:'Настройки',items:[['budget','Бюджет','💰'],['calendar','Календарь','📅'],['scope','Контроль scope','📐'],['checks','Проверки данных','🧪'],['eda','EDA отчёт','🔬'],['integrations','Интеграции','🔌'],['params','Параметры','⚙️']]},
  {g:'Справка',items:[['faq','FAQ','❓'],['support','Support','🛟'],['audit','Журнал событий','🧾']]},
 ];
-const APP_VERSION='1.39.0';const APP_DATE='2026-10-05';
+const APP_VERSION='1.40.0';const APP_DATE='2026-10-05';
 const APP_ABOUT='Кросс-функциональная команда — это группа специалистов из разных областей (разработчиков, дизайнеров, маркетологов, аналитиков, менеджеров и других), которые объединяются для работы над одним конкретным проектом или задачей. Ключевая идея в том, чтобы собрать внутри команды всех необходимых экспертов, чтобы она могла самостоятельно пройти путь от идеи до результата, не передавая задачу последовательно из одного отдела в другой.';
 const CHANGELOG=[
+ {v:'1.40.0',date:'2026-10-05',items:[
+   'Новый раздел «Программная доска (PI Planning)» (Работа): матрица «стрим × спринт» межкомандных зависимостей и вех (SAFe).',
+   'Новый раздел «Контроль scope» (Настройки): лог изменений состава спринтов/релизов (scope creep) с базовым срезом и сравнением; авто-переносы попадают в лог.',
+   'WIP-лимиты на Kanban-досках: лимиты по колонкам, бейджи и предупреждение при превышении (практика Kanban); редактор лимитов для администратора.',
+   'Definition of Ready как чеклист (Параметры) + «ворота» DoR/DoD: предупреждение при перетаскивании задачи в работу/готово без выполнения критериев.',
+   'Прослеживаемость OKR → задачи: привязка задач к Key Result (колонка в «Бэклоге») и покрытие целей работой в разделе OKR.',
+   'Аналитика: Монте-Карло прогноз даты завершения (P50/P85) с доверительными интервалами, оценка flow efficiency и SLA/SLO по дефектам.',
+   'Релизы: release burn-up и «уверенность релиза» (успеваем ли закрыть остаток в окне спринтов при текущей velocity).',
+   'Авто-поиск дубликатов задач (нечёткое сравнение названий) в «Проверках данных».',
+   'Star Map: кнопка «По активности» — повышение уровней компетенций по числу закрытых задач.',
+   'Интеграции: авто-эскалация блокеров/критичных дефектов (Opsgenie+Slack), публикация отчёта по спринту (Confluence+Slack), двусторонняя синхронизация статусов с Jira.',
+   'Серверное хранение: WIP-лимиты досок, счётчик переносов и привязка к OKR у задач, чеклист DoR и лог scope creep (миграция V9).']},
  {v:'1.39.0',date:'2026-10-05',items:[
    'Новый раздел «Цели спринтов» (Планирование): Sprint Goal по каждому спринту со статусом и авто-расчётом «% факт» по готовности задач; текущая цель и её статус выведены на дашборд.',
    'Новый раздел «WSJF» (Планирование): приоритизация по методологии SAFe — Cost of Delay (Business Value + Time Criticality + Risk Reduction) / Job Size, с авто-рангом, приоритетом и диаграммой.',
@@ -4088,6 +4421,11 @@ startAnalytics();setInterval(startAnalytics,30000);
   if(/(синхрон|обнов).{0,16}(готовн|dor|dod задач)/.test(s)){if(!canDo)return {t:'Действие доступно редактору/администратору.'};const n=syncReadiness();save();views();activate('backlog');return {t:'Готовность (DoR) синхронизирована с задачами: '+n+' изменений.',goto:'backlog'};}
   if(/(перенеси|перенос|carry).{0,20}(незаверш|неготов|остав|хвост)/.test(s)||/(перенеси|перенос).{0,10}спринт(?!.*t-?\d)/.test(s)){if(!canDo)return {t:'Действие доступно редактору/администратору.'};const m=s.match(/спринт[а-я]*\s*#?(\d+)/);carryoverSprint(m?+m[1]:null);return {t:'Переношу незавершённые задачи'+(m?' из спринта #'+m[1]:'')+' в следующий спринт.',goto:'roadmap'};}
   if(/(риск.*срыв|срыв.*спринт|прогноз.*спринт|успе.*спринт|спринт.*успе)/.test(s)){const r=sprintRisk(C);if(!r)return {t:'Недостаточно данных для прогноза.'};return {t:'Риск срыва спринта #'+r.cur+': '+r.level+' ('+r.score+'/100).'+(r.reasons.length?'\n• '+r.reasons.join('\n• '):''),goto:'dash'};}
+  if(/(эскалир|эскалац|escalate).{0,14}(блок|баг|дефект|зависим)?/.test(s)){if(!canDo)return {t:'Действие доступно редактору/администратору.'};escalateBlockers();return {t:'Эскалирую блокеры и критичные дефекты (Opsgenie + Slack).',goto:'deps'};}
+  if(/(опубликуй|публикац|отправь).{0,16}(отчёт|отчет|спринт|сводк)/.test(s)){if(!canDo)return {t:'Действие доступно редактору/администратору.'};publishSprintReport();return {t:'Публикую отчёт по спринту (Confluence + Slack).',goto:'dash'};}
+  if(/(синхрониз|подтяни|sync).{0,10}(jira|джир|задач.*jira)/.test(s)||/jira.*синхрон/.test(s)){if(!canDo)return {t:'Действие доступно редактору/администратору.'};jiraSync();return {t:'Синхронизирую статусы задач из Jira.',goto:'integrations'};}
+  if(/(прогноз.*дат|когда.*релиз|дата.*заверш|монте.?карло.*дат)/.test(s)){const mc=mcReleaseForecast(C);if(!mc)return {t:'Недостаточно данных velocity для прогноза даты.'};return {t:'Прогноз завершения: P50 ≈ '+fmtd(mc.p50date)+' (~'+mc.p50+' спр.), P85 ≈ '+fmtd(mc.p85date)+' (~'+mc.p85+' спр.).',goto:'analytics'};}
+  if(/(scope|скоуп|состав.*измен|измен.*состав|раздувани)/.test(s)){const log=ST.scopeLog||[];return {t:'Контроль scope: записей '+log.length+' (добавлено '+log.filter(x=>x.kind==='Добавлено').length+', перенесено '+log.filter(x=>x.kind==='Перенесено').length+').',goto:'scope'};}
   // navigation (requires a verb)
   if(/(открой|откр\b|покажи|перейд|переключ|запусти|show|go to)/.test(s)){
    for(const k in SYN){if(s.indexOf(k)>=0){activate(SYN[k]);return {t:'Открыл раздел «'+navLabel(SYN[k])+'».'};}}}
@@ -4139,6 +4477,7 @@ const TOUR=[
  {v:'backlog',h:'Бэклог',p:'Редактируемые задачи — источник данных для всех метрик. Есть поиск, сортировка по колонкам, строка итогов и отмена удаления.',d:9000},
  {v:'gantt',h:'Диаграмма Ганта',p:'Задачи на шкале дат по спринтам. Красная рамка — критический путь, ромб ◆ — внешняя зависимость от другого стрима.',d:9000},
  {v:'deps',h:'Зависимости',p:'Межстримовые зависимости задач, историй и фич: направление, статус с RAG-подсветкой, риск и отдельный список для эскалации.',d:9000},
+ {v:'piboard',h:'Программная доска (PI Planning)',p:'Матрица «стрим × спринт» межкомандных зависимостей и вех на горизонте программного инкремента (SAFe).',d:8000},
  {v:'team',h:'Команда',p:'Состав команды и доступность — из этого считается ёмкость каждого спринта.',d:6500},
  {v:'releases',h:'Релизы',p:'Содержимое релизов считается автоматически. Строку можно раскрыть в список стори, задач и дефектов со ссылками на них.',d:9000},
  {v:'milestones',h:'Вехи',p:'Контрольные точки, привязанные к спринтам и релизам.',d:6000},
@@ -4149,7 +4488,8 @@ const TOUR=[
  {v:'retro',h:'Ретроспективы',p:'Итоги спринтов и action items с процентом закрытия.',d:6500},
  {v:'okr',h:'OKR',p:'Цели квартала и прогресс Key Results.',d:6000},
  {v:'budget',h:'Бюджет',p:'Стоимость по ёмкости спринтов и накопленный расход относительно бюджета проекта.',d:6500},
- {v:'params',h:'Параметры',p:'Дата старта, focus factor, длительность спринта, Definition of Done, ключ команды — база всех расчётов.',d:8000},
+ {v:'scope',h:'Контроль scope',p:'Лог изменений состава спринтов/релизов (scope creep): добавления, переносы и удаления с базовым срезом для сравнения.',d:7000},
+ {v:'params',h:'Параметры',p:'Дата старта, focus factor, длительность спринта, Definition of Done и Definition of Ready, ключ команды — база всех расчётов.',d:8000},
  {v:'params',h:'И ещё',p:'Тёмная тема, палитра команд по Ctrl+K, экспорт в Excel и JSON, многопользовательский режим с общей БД и Python-сервис аналитики.',d:9000},
  {v:'dash',h:'Спасибо за просмотр',p:'Стек: веб-интерфейс + Java (Spring Boot) + Python (FastAPI) + PostgreSQL. Полный проект — на GitHub.',d:8000},
 ];

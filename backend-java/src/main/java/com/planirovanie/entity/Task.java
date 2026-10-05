@@ -25,5 +25,7 @@ public class Task {
     @Column(name = "release_id") @JsonProperty("release") public String release;
     public String priority;
     public String dor;
+    public Integer carried;   // how many times this task was carried over to a later sprint
+    public String okr;        // linked OKR key-result (traceability)
     @JsonIgnore public Integer ord;
 }

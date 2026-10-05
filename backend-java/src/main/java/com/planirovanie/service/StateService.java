@@ -17,6 +17,8 @@ public class StateService {
     private final ParamRepo params;
     private final AppMetaRepo meta;
     private final DodRepo dod;
+    private final DorItemRepo dorItems;
+    private final ScopeLogRepo scopeLog;
     private final TeamRepo team;
     private final TaskRepo tasks;
     private final ReleaseRepo releases;
@@ -55,7 +57,8 @@ public class StateService {
                         FaqRepo faq, GroomingRepo grooming, DemoRepo demo, DailyRepo daily, VacationRepo vacation,
                         BirthdayRepo birthdays, DependencyRepo deps, OkrRepo okr, BoardRepo boards,
                         BoardDocRepo boardDoc, SkillRepo skills, AgileMaturityRepo agile,
-                        SprintGoalRepo sprintGoals, WsjfRepo wsjf) {
+                        SprintGoalRepo sprintGoals, WsjfRepo wsjf,
+                        DorItemRepo dorItems, ScopeLogRepo scopeLog) {
         this.params = params; this.meta = meta; this.dod = dod; this.team = team; this.tasks = tasks;
         this.releases = releases; this.milestones = milestones; this.techDebt = techDebt; this.risks = risks;
         this.bugs = bugs; this.calendar = calendar; this.retro = retro; this.mood = mood; this.kudos = kudos;
@@ -64,6 +67,7 @@ public class StateService {
         this.birthdays = birthdays; this.deps = deps;
         this.okr = okr; this.boards = boards; this.boardDoc = boardDoc; this.skills = skills; this.agile = agile;
         this.sprintGoals = sprintGoals; this.wsjf = wsjf;
+        this.dorItems = dorItems; this.scopeLog = scopeLog;
     }
 
     @Transactional(readOnly = true)
@@ -79,6 +83,8 @@ public class StateService {
         s.budget = bd;
         s.ttmTarget = p.ttmTarget;
         s.dod = dod.findAllByOrderByOrdAsc();
+        s.dorItems = dorItems.findAllByOrderByOrdAsc();
+        s.scopeLog = scopeLog.findAllByOrderByOrdAsc();
         s.team = team.findAllByOrderByOrdAsc();
         s.tasks = tasks.findAllByOrderByOrdAsc();
         s.releases = releases.findAllByOrderByOrdAsc();
@@ -147,6 +153,8 @@ public class StateService {
         params.save(p);
 
         order(s.dod, (e, i) -> { e.id = null; e.ord = i; });
+        order(s.dorItems, (e, i) -> { e.id = null; e.ord = i; });
+        order(s.scopeLog, (e, i) -> { e.pk = null; e.ord = i; });
         order(s.team, (e, i) -> { e.id = null; e.ord = i; });
         order(s.tasks, (e, i) -> { e.pk = null; e.ord = i; });
         order(s.releases, (e, i) -> { e.pk = null; e.ord = i; });
@@ -177,6 +185,8 @@ public class StateService {
         order(s.boards, (e, i) -> { e.pk = null; e.ord = i; });
 
         dod.deleteAllInBatch();        if (s.dod != null)        dod.saveAll(s.dod);
+        dorItems.deleteAllInBatch();   if (s.dorItems != null)   dorItems.saveAll(s.dorItems);
+        scopeLog.deleteAllInBatch();   if (s.scopeLog != null)   scopeLog.saveAll(s.scopeLog);
         team.deleteAllInBatch();       if (s.team != null)       team.saveAll(s.team);
         tasks.deleteAllInBatch();      if (s.tasks != null)      tasks.saveAll(s.tasks);
         releases.deleteAllInBatch();   if (s.releases != null)   releases.saveAll(s.releases);

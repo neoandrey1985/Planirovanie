@@ -30,6 +30,12 @@ public class IntegrationsController {
         return svc.createJira(body.get("summary"), body.getOrDefault("description", ""));
     }
 
+    /** Two-way Jira sync (read side): pull issues from the configured project. */
+    @PostMapping("/jira/sync")
+    public Map<String, Object> jiraSync() {
+        return svc.syncJira();
+    }
+
     /** Generic Atlassian action: /api/integrations/atlassian/{product} with {title, body}.
      *  product ∈ jira | jsm | confluence | bitbucket | trello | opsgenie | statuspage | bamboo. */
     @PostMapping("/atlassian/{product}")

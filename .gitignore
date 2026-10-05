@@ -8,3 +8,6 @@ server/data.db
 backend-java/target/
 **/__pycache__/
 *.pyc
+
+# deliverable build intermediates
+build/

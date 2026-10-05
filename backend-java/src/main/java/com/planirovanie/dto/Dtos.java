@@ -30,6 +30,8 @@ public final class Dtos {
     public static class StateDto {
         public ParamsDto params;
         public List<Dod> dod;
+        public List<DorItem> dorItems;
+        public List<ScopeLog> scopeLog;
         public List<TeamMember> team;
         public List<Task> tasks;
         public List<Release> releases;

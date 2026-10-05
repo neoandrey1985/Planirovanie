@@ -1,5 +1,6 @@
 package com.planirovanie.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,8 +12,10 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -281,6 +284,39 @@ public class IntegrationService {
                     .POST(HttpRequest.BodyPublishers.noBody()).build());
             return r.statusCode() / 100 == 2 ? ok(null) : err("Bamboo: HTTP " + r.statusCode() + " " + r.body());
         } catch (Exception e) { return err("Bamboo: " + e.getMessage()); }
+    }
+
+    /** Two-way Jira sync (read side): pull issues from the configured project as [{key, summary, status}].
+     *  The client matches issues to tasks and applies the status map; writes back via {@link #createJira}. */
+    public Map<String, Object> syncJira() {
+        if (!jiraConfigured())
+            return err("Jira не настроена (JIRA_BASE_URL, JIRA_EMAIL, JIRA_API_TOKEN, JIRA_PROJECT_KEY)");
+        try {
+            String jql = enc("project=" + jiraProject + " ORDER BY updated DESC");
+            String url = jiraBase.replaceAll("/+$", "")
+                    + "/rest/api/3/search?maxResults=200&fields=summary,status&jql=" + jql;
+            String basic = Base64.getEncoder().encodeToString((jiraEmail + ":" + jiraToken).getBytes(StandardCharsets.UTF_8));
+            HttpResponse<String> r = send(HttpRequest.newBuilder(URI.create(url))
+                    .header("Accept", "application/json")
+                    .header("Authorization", "Basic " + basic).GET().build());
+            if (r.statusCode() / 100 == 2) {
+                List<Map<String, String>> out = new ArrayList<>();
+                for (JsonNode is : M.readTree(r.body()).path("issues")) {
+                    Map<String, String> o = new LinkedHashMap<>();
+                    o.put("key", is.path("key").asText(""));
+                    o.put("summary", is.path("fields").path("summary").asText(""));
+                    o.put("status", is.path("fields").path("status").path("name").asText(""));
+                    out.add(o);
+                }
+                Map<String, Object> m = ok(null);
+                m.put("issues", out);
+                m.put("count", out.size());
+                return m;
+            }
+            return err("Jira: HTTP " + r.statusCode() + " " + r.body());
+        } catch (Exception e) {
+            return err("Jira sync: " + e.getMessage());
+        }
     }
 
     private static String enc(String s) {
