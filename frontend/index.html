@@ -4309,6 +4309,16 @@ function exportXlsx(){const C=compute();const s=[];
  s.push({name:'График отпусков',aoa:[['ID','Участник','Тип','С','По','Дней','Статус','Комментарий']].concat((ST.vacation||[]).map(x=>[x.id,x.member,x.type,x.from,x.to,num(x.days),x.status,x.notes]))});
  s.push({name:'Дни рождения',aoa:[['ID','Участник','Дата рождения','Роль','Комментарий']].concat((ST.birthdays||[]).map(x=>[x.id,x.member,x.date,x.role,x.notes]))});
  s.push({name:'Контроль scope',aoa:[['ID','Дата','Спринт','Тип','Задача/элемент','Что изменилось']].concat((ST.scopeLog||[]).map(x=>[x.id,x.date,num(x.sprint),x.kind,x.item,x.detail]))});
+ s.push({name:'Запросы на изменение',aoa:[['ID','Дата','Запрос','Тип','Влияние','Инициатор','Статус','Решение']].concat((ST.changeRequests||[]).map(x=>[x.id,x.date,x.title,x.type,x.impact,x.requester,x.status,x.note]))});
+ s.push({name:'Журнал проблем',aoa:[['ID','Дата','Проблема','Приоритет','Владелец','Статус','Срок','Решение']].concat((ST.issues||[]).map(x=>[x.id,x.date,x.title,x.priority,x.owner,x.status,x.due,x.resolution]))});
+ s.push({name:'Стейкхолдеры',aoa:[['ID','Стейкхолдер','Роль','Влияние','Интерес','Вовлечённость','Целевая','Стратегия']].concat((ST.stakeholders||[]).map(x=>[x.id,x.name,x.role,num(x.power),num(x.interest),x.engageCur,x.engageTarget,x.strategy]))});
+ s.push({name:'Журнал решений',aoa:[['ID','Дата','Решение','Контекст','Варианты','Что решили','Обоснование','Владелец','Статус']].concat((ST.decisions||[]).map(x=>[x.id,x.date,x.title,x.context,x.options,x.decision,x.rationale,x.owner,x.status]))});
+ s.push({name:'Импедименты',aoa:[['ID','Возник','Импедимент','Владелец','Серьёзность','Статус','Спринт','Снят']].concat((ST.impediments||[]).map(x=>[x.id,x.date,x.title,x.owner,x.severity,x.status,num(x.sprint),x.resolved]))});
+ s.push({name:'Уроки',aoa:[['ID','Дата','Спринт','Категория','Ситуация','Урок','Рекомендация']].concat((ST.lessons||[]).map(x=>[x.id,x.date,num(x.sprint),x.category,x.context,x.lesson,x.recommendation]))});
+ s.push({name:'RACI',aoa:[['ID','Активность','R','A','C','I']].concat((ST.raci||[]).map(x=>[x.id,x.activity,x.r,x.a,x.c,x.i]))});
+ s.push({name:'Story Map',aoa:[['ID','Активность','Релиз','История','Задача']].concat((ST.storyMap||[]).map(x=>[x.id,x.activity,x.release,x.story,x.task]))});
+ s.push({name:'Planning Poker',aoa:[['ID','Задача','История','Голоса','Итог','Статус']].concat((ST.poker||[]).map(x=>[x.id,x.task,x.title,x.votes,x.result,x.status]))});
+ s.push({name:'Портфель',aoa:[['ID','Проект','RAG','Health','Velocity','Бюджет','Потрачено','Прогресс','Владелец','Комментарий']].concat((ST.portfolio||[]).map(x=>[x.id,x.name,x.status,num(x.health),num(x.velocity),num(x.budget),num(x.spent),num(x.progress),x.owner,x.note]))});
  const bin=buildXlsx(s);const blob=new Blob([bin],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='Планирование_спринта.xlsx';document.body.appendChild(a);a.click();a.remove();toast('Excel экспортирован');}
 
