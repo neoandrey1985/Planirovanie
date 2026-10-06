@@ -23,7 +23,7 @@ MIGR_DIR = ROOT / "backend-java" / "src" / "main" / "resources" / "db" / "migrat
 BUILD = ROOT / "build" / "arch"
 BUILD.mkdir(parents=True, exist_ok=True)
 OUT = ROOT / "Архитектура_приложения.docx"
-VER = "1.42.0"
+VER = "1.44.0"
 
 # domain + purpose per table (tables not listed fall back to «—»)
 PURPOSE = {
@@ -73,6 +73,9 @@ PURPOSE = {
  "portfolio": ("Контроль", "Портфель проектов"),
  "faq": ("Контроль", "Частые вопросы"),
  "calendar": ("Контроль", "Календарь праздников"),
+ "team_health": ("Церемонии", "Team Health Check (Spotify Squad): оценки измерений здоровья команды"),
+ "deployments": ("Выпуск", "Деплои — для DORA (частота, lead time, change failure rate)"),
+ "incidents": ("Аналитика", "Прод-инциденты и постмортемы — MTTR для DORA"),
 }
 DOMAIN_ORDER = ["Система", "Планирование", "Команда", "Выпуск", "Аналитика", "Церемонии", "Контроль"]
 DOMAIN_STYLE = {"Система": ("#E4EBFB", "#2D5BE3"), "Планирование": ("#E4EBFB", "#2D5BE3"),
@@ -208,7 +211,8 @@ def main():
     doc.add_heading("Миграции Flyway", level=2)
     MDESC = {"V1": "начальная схема и демо-данные", "V2": "пользователи и сессии", "V3": "поля задач и Kanban-доски",
              "V4": "холст доски", "V5": "компетенции (skills)", "V6": "Agile-зрелость", "V7": "Scrum-мастер",
-             "V8": "цели спринтов и WSJF", "V9": "WIP, DoR, scope-лог, OKR-связь", "V10": "пакеты PM + иерархия работ (WBS)"}
+             "V8": "цели спринтов и WSJF", "V9": "WIP, DoR, scope-лог, OKR-связь", "V10": "пакеты PM + иерархия работ (WBS)",
+             "V11": "Team Health Check, деплои и инциденты (DORA)"}
     tbl(doc, ["Версия", "Что добавляет"], [[v, MDESC.get(v, "")] for v in migr])
     doc.add_heading("Каталог таблиц", level=2)
     rows = []

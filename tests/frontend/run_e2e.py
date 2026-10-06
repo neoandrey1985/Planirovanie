@@ -596,6 +596,19 @@ def main():
             assert r['hcDims'] >= 1 and r['seeded'], 'health check / registers not seeded'
         case('health-perf: bus factor, DORA, aging WIP, say-do, health check', t_health_perf)
 
+        # ---- 31. NAV integrity: unique ids, every id has a container ----
+        def t_nav():
+            r = page.evaluate("""()=>{const ids=NAV.flatMap(g=>g.items.map(i=>i[0]));
+              const dups=ids.filter((x,i)=>ids.indexOf(x)!==i);
+              const missing=ids.filter(id=>!document.getElementById('v_'+id));
+              return {n:ids.length, uniq:new Set(ids).size, dups, missing, groups:NAV.length,
+                      names:NAV.map(g=>g.g)};}""")
+            assert r['n'] == r['uniq'], 'duplicate NAV ids: ' + str(r['dups'])
+            assert not r['missing'], 'NAV ids without a v_ container: ' + str(r['missing'])
+            assert r['groups'] >= 8, 'unexpectedly few nav groups'
+            assert 'Обзор' in r['names'] and 'Команда' in r['names'], 'expected regrouped blocks missing'
+        case('nav: unique ids, containers, regrouped blocks', t_nav)
+
         br.close()
     httpd.shutdown()
 
