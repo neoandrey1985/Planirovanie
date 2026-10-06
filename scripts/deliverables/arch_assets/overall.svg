@@ -1,0 +1,87 @@
+<svg width="2160" height="1215" viewBox="0 0 2160 1215" xmlns="http://www.w3.org/2000/svg">
+ <defs>
+   <marker id="ar" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+     <path d="M0,0 L8,3 L0,6 Z" fill="#5A6B82"/>
+   </marker>
+   <style>
+     .box{rx:16;stroke-width:2}
+     .lbl{font-size:30px;font-weight:700;fill:#16202E}
+     .sub{font-size:22px;fill:#5A6B82}
+     .tag{font-size:20px;fill:#5A6B82}
+     .edge{stroke:#5A6B82;stroke-width:2.5;fill:none;marker-end:url(#ar)}
+     .edgel{font-size:19px;fill:#5A6B82}
+   </style>
+ </defs>
+
+ <text x="80" y="78" font-size="46" font-weight="700" fill="#16202E">Архитектура и стек</text>
+ <text x="80" y="120" font-size="26" fill="#5A6B82">Полиглот-архитектура; каждый сервис изолирован, всё поднимается одной командой docker-compose.</text>
+
+ <!-- Browser -->
+ <rect x="860" y="170" width="440" height="96" rx="16" fill="#E4EBFB" stroke="#2D5BE3" stroke-width="2"/>
+ <text x="1080" y="212" text-anchor="middle" class="lbl">🌐 Браузер / клиент</text>
+ <text x="1080" y="245" text-anchor="middle" class="sub">веб-интерфейс (SPA)</text>
+
+ <!-- nginx -->
+ <rect x="560" y="330" width="1040" height="92" rx="16" fill="#F2F5FA" stroke="#2D5BE3" stroke-width="2.5"/>
+ <text x="1080" y="372" text-anchor="middle" class="lbl">nginx — reverse proxy · :8080 · TLS</text>
+ <text x="1080" y="402" text-anchor="middle" class="sub">маршрутизация / · /api · /analytics · /ws/board · раздача /docs</text>
+ <path class="edge" d="M1080,266 L1080,330"/>
+
+ <!-- Row of services -->
+ <!-- Frontend SPA -->
+ <rect x="120" y="500" width="560" height="190" rx="16" fill="#FFFFFF" stroke="#2D5BE3" stroke-width="2"/>
+ <text x="150" y="552" class="lbl">🖥 Frontend SPA</text>
+ <text x="150" y="590" class="sub">ванильный JS, один index.html</text>
+ <text x="150" y="622" class="sub">localStorage + офлайн-режим</text>
+ <text x="150" y="654" class="sub">доска (WebSocket), экспорт Excel/PPTX/PDF</text>
+
+ <!-- Java backend -->
+ <rect x="800" y="500" width="560" height="190" rx="16" fill="#FFFFFF" stroke="#1F9D6B" stroke-width="2.5"/>
+ <text x="830" y="552" class="lbl">☕ Java · Spring Boot</text>
+ <text x="830" y="590" class="sub">REST /api/state (оптим. блокировка)</text>
+ <text x="830" y="622" class="sub">авторизация, роли, аудит</text>
+ <text x="830" y="654" class="sub">Flyway-миграции V1–V10, интеграции</text>
+
+ <!-- Python analytics -->
+ <rect x="1480" y="500" width="560" height="190" rx="16" fill="#FFFFFF" stroke="#C98A00" stroke-width="2.5"/>
+ <text x="1510" y="552" class="lbl">🐍 Python · FastAPI</text>
+ <text x="1510" y="590" class="sub">движок метрик /analytics</text>
+ <text x="1510" y="622" class="sub">velocity, прогноз, Монте-Карло</text>
+ <text x="1510" y="654" class="sub">тот же токен авторизации</text>
+
+ <path class="edge" d="M700,376 C520,420 400,440 400,500"/>
+ <path class="edge" d="M1080,422 L1080,500"/>
+ <path class="edge" d="M1460,376 C1640,420 1760,440 1760,500"/>
+
+ <!-- WS between frontend and java -->
+ <path class="edge" d="M680,585 L800,585" marker-end="url(#ar)"/>
+ <path class="edge" d="M800,615 L680,615" marker-end="url(#ar)"/>
+ <text x="690" y="578" class="edgel">WebSocket /ws/board</text>
+
+ <!-- Databases -->
+ <rect x="800" y="780" width="360" height="150" rx="16" fill="#EAF6F0" stroke="#1F9D6B" stroke-width="2"/>
+ <text x="980" y="828" text-anchor="middle" class="lbl">🗄 PostgreSQL</text>
+ <text x="980" y="862" text-anchor="middle" class="sub">основная БД</text>
+ <text x="980" y="894" text-anchor="middle" class="sub">Flyway V1–V10</text>
+
+ <rect x="1200" y="780" width="300" height="150" rx="16" fill="#EAF6F0" stroke="#1F9D6B" stroke-width="2"/>
+ <text x="1350" y="828" text-anchor="middle" class="lbl">🧾 PostgreSQL</text>
+ <text x="1350" y="862" text-anchor="middle" class="sub">журнал / аудит</text>
+
+ <path class="edge" d="M1000,690 L985,780"/>
+ <path class="edge" d="M1180,690 L1330,780"/>
+ <path class="edge" d="M1620,690 C1500,740 1180,760 1120,790"/>
+ <text x="1420" y="735" class="edgel">чтение метрик</text>
+
+ <!-- Integrations -->
+ <rect x="120" y="780" width="560" height="150" rx="16" fill="#FBF3E0" stroke="#C98A00" stroke-width="2"/>
+ <text x="150" y="828" class="lbl">🔌 Внешние интеграции</text>
+ <text x="150" y="864" class="sub">Atlassian: Jira, Confluence, Opsgenie,</text>
+ <text x="150" y="896" class="sub">Bitbucket, Trello, … · Slack (исходящие)</text>
+ <path class="edge" d="M800,650 C700,710 560,740 500,780"/>
+
+ <!-- Footer stack -->
+ <rect x="120" y="1010" width="1920" height="120" rx="16" fill="#F2F5FA" stroke="#DCE3EC" stroke-width="2"/>
+ <text x="1080" y="1058" text-anchor="middle" font-size="26" font-weight="700" fill="#16202E">Развёртывание: docker-compose (web · api · analytics · db)</text>
+ <text x="1080" y="1096" text-anchor="middle" font-size="23" fill="#5A6B82">nginx · Java 17 / Spring Boot · Python / FastAPI · PostgreSQL · Flyway · WebSocket</text>
+</svg>

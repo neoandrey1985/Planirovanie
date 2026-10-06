@@ -19,6 +19,7 @@ python -m playwright install chromium
 | `capture_shots.py` | Скриншот каждого раздела из `NAV` → `build/shots/<id>.jpg` (2160×1215). | `python scripts/deliverables/capture_shots.py` |
 | `build_video.py` | Видео-обзор `Обзор_приложения.mp4` по массиву `TOUR` (кадры + подписи + H.264). | `python scripts/deliverables/build_video.py` |
 | `gen_xlsx.py` | `Планирование_спринта_PRO.xlsx` через встроенный экспорт приложения. | `python scripts/deliverables/gen_xlsx.py` |
+| `build_architecture_doc.py` | `Архитектура_приложения.docx`: общая архитектура, микросервисы и БД. Каталог таблиц и диаграмма БД строятся парсингом миграций `V*.sql` (новые таблицы подхватываются сами). Рисунки — `arch_assets/*.svg`. | `python scripts/deliverables/build_architecture_doc.py` |
 
 `capture_shots.py` поддерживает `--only id1,id2`, чтобы переснять только новые разделы.
 
