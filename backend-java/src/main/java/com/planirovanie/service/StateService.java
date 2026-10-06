@@ -29,6 +29,9 @@ public class StateService {
     private final StoryMapItemRepo storyMap;
     private final PokerRoundRepo poker;
     private final PortfolioProjectRepo portfolio;
+    private final TeamHealthRepo teamHealth;
+    private final DeploymentRepo deployments;
+    private final IncidentRepo incidents;
     private final TeamRepo team;
     private final TaskRepo tasks;
     private final ReleaseRepo releases;
@@ -72,7 +75,8 @@ public class StateService {
                         ChangeRequestRepo changeRequests, IssueRepo issues, StakeholderRepo stakeholders,
                         DecisionRepo decisions, ImpedimentRepo impediments, LessonRepo lessons,
                         RaciRepo raci, StoryMapItemRepo storyMap, PokerRoundRepo poker,
-                        PortfolioProjectRepo portfolio) {
+                        PortfolioProjectRepo portfolio,
+                        TeamHealthRepo teamHealth, DeploymentRepo deployments, IncidentRepo incidents) {
         this.params = params; this.meta = meta; this.dod = dod; this.team = team; this.tasks = tasks;
         this.releases = releases; this.milestones = milestones; this.techDebt = techDebt; this.risks = risks;
         this.bugs = bugs; this.calendar = calendar; this.retro = retro; this.mood = mood; this.kudos = kudos;
@@ -85,6 +89,7 @@ public class StateService {
         this.changeRequests = changeRequests; this.issues = issues; this.stakeholders = stakeholders;
         this.decisions = decisions; this.impediments = impediments; this.lessons = lessons;
         this.raci = raci; this.storyMap = storyMap; this.poker = poker; this.portfolio = portfolio;
+        this.teamHealth = teamHealth; this.deployments = deployments; this.incidents = incidents;
     }
 
     @Transactional(readOnly = true)
@@ -139,6 +144,9 @@ public class StateService {
         s.storyMap = storyMap.findAllByOrderByOrdAsc();
         s.poker = poker.findAllByOrderByOrdAsc();
         s.portfolio = portfolio.findAllByOrderByOrdAsc();
+        s.teamHealth = teamHealth.findAllByOrderByOrdAsc();
+        s.deployments = deployments.findAllByOrderByOrdAsc();
+        s.incidents = incidents.findAllByOrderByOrdAsc();
         s.boards = boards.findAllByOrderByOrdAsc();
         boardDoc.findById(1).ifPresent(bdoc -> {
             if (bdoc.data != null && !bdoc.data.isBlank()) {
@@ -219,6 +227,9 @@ public class StateService {
         order(s.storyMap, (e, i) -> { e.pk = null; e.ord = i; });
         order(s.poker, (e, i) -> { e.pk = null; e.ord = i; });
         order(s.portfolio, (e, i) -> { e.pk = null; e.ord = i; });
+        order(s.teamHealth, (e, i) -> { e.pk = null; e.ord = i; });
+        order(s.deployments, (e, i) -> { e.pk = null; e.ord = i; });
+        order(s.incidents, (e, i) -> { e.pk = null; e.ord = i; });
         order(s.boards, (e, i) -> { e.pk = null; e.ord = i; });
 
         dod.deleteAllInBatch();        if (s.dod != null)        dod.saveAll(s.dod);
@@ -261,6 +272,9 @@ public class StateService {
         storyMap.deleteAllInBatch();   if (s.storyMap != null)   storyMap.saveAll(s.storyMap);
         poker.deleteAllInBatch();      if (s.poker != null)      poker.saveAll(s.poker);
         portfolio.deleteAllInBatch();  if (s.portfolio != null)  portfolio.saveAll(s.portfolio);
+        teamHealth.deleteAllInBatch(); if (s.teamHealth != null) teamHealth.saveAll(s.teamHealth);
+        deployments.deleteAllInBatch();if (s.deployments != null) deployments.saveAll(s.deployments);
+        incidents.deleteAllInBatch();  if (s.incidents != null)  incidents.saveAll(s.incidents);
         boards.deleteAllInBatch();     if (s.boards != null)     boards.saveAll(s.boards);
         if (s.board != null && !s.board.isNull()) {
             BoardDoc bd = boardDoc.findById(1).orElseGet(() -> { BoardDoc nb = new BoardDoc(); nb.id = 1; return nb; });

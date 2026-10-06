@@ -569,6 +569,33 @@ def main():
             assert r['grew'], 'portfolio snapshot did not add/update entry'
         case('pm-registers: change/issues/stakeholders/... + portfolio snapshot', t_pm)
 
+        # ---- 30. Team health & performance package (v1.43) ----
+        def t_health_perf():
+            r = page.evaluate("""()=>{try{
+              // bus factor from Star Map
+              const B=busFactor();
+              // DORA from deployments + incidents
+              const D=dora();
+              const tiers=['Elite','High','Medium','Low','—'];
+              const dOk=[D.tFreq,D.tLead,D.tCfr,D.tMttr].every(t=>tiers.includes(t));
+              const cfrOk=D.count?Math.abs(D.cfr - D.failed/D.count)<1e-9:D.cfr===0;
+              // aging WIP + say-do
+              const aw=agingWip(); const agingOk=aw.every(x=>x.age>=0) && (aw.length<2 || aw[0].age>=aw[1].age);
+              const sd=sayDo(compute()); const sdOk=sd.avg===null||(sd.avg>=0);
+              // health check latest-per-dimension
+              const hc=hcLatest(); const hcDims=Object.keys(hc).length;
+              // seeded registers
+              const seeded=['teamHealth','deployments','incidents'].every(k=>Array.isArray(ST[k])&&ST[k].length>0);
+              return {busShape:('bf'in B&&'spof'in B&&'uncovered'in B), dOk, cfrOk, agingOk, sdOk, hcDims, seeded};
+            }catch(e){return 'ERR:'+e.message;}}""")
+            assert r is not True and isinstance(r, dict), 'health/perf failed: ' + str(r)
+            assert r['busShape'], 'busFactor() shape invalid'
+            assert r['dOk'] and r['cfrOk'], 'DORA tiers/CFR invalid'
+            assert r['agingOk'], 'aging WIP ordering/age invalid'
+            assert r['sdOk'], 'say-do ratio invalid'
+            assert r['hcDims'] >= 1 and r['seeded'], 'health check / registers not seeded'
+        case('health-perf: bus factor, DORA, aging WIP, say-do, health check', t_health_perf)
+
         br.close()
     httpd.shutdown()
 

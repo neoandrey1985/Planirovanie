@@ -38,6 +38,9 @@ class StateRoundTripTest {
           "storyMap":[{"id":"SM-01","activity":"Оформление заказа","release":"R-1","story":"Выбор доставки","task":"T-01"}],
           "poker":[{"id":"PK-01","task":"T-01","title":"X","votes":"Иванов:5, Петров:8","result":"5","status":"Завершён"}],
           "portfolio":[{"id":"PO-01","name":"Маркетплейс","status":"Жёлтый","health":0.62,"velocity":34,"budget":8000000,"spent":3200000,"progress":0.45,"owner":"PMO","note":"n"}],
+          "teamHealth":[{"id":"HC-01","date":"2026-09-10","sprint":3,"dimension":"Поставка ценности","rating":"Зелёный","trend":"Растёт","note":"n"}],
+          "deployments":[{"id":"DP-01","date":"2026-09-10","release":"R-1","env":"Prod","status":"Успех","leadDays":2.5,"note":"n"}],
+          "incidents":[{"id":"IN-01","date":"2026-09-11","title":"Сбой оплаты","severity":"High","downHours":3.5,"cause":"таймаут шлюза","status":"Восстановлен","postmortem":"добавить ретраи"}],
           "dorItems":[{"crit":"Критерии приёмки описаны","done":true}],
           "scopeLog":[{"id":"SC-01","date":"2026-09-10","sprint":3,"kind":"Добавлено","item":"T-09","detail":"добавлена в активный спринт"}],
           "deps":[{"id":"D-01","item":"I","stream":"S","dir":"Мы зависим","status":"Заблокировано","task":"T-01"}],
@@ -104,6 +107,12 @@ class StateRoundTripTest {
            .andExpect(jsonPath("$.state.storyMap[0].release").value("R-1"))
            .andExpect(jsonPath("$.state.poker[0].result").value("5"))
            .andExpect(jsonPath("$.state.portfolio[0].health").value(0.62))
+           .andExpect(jsonPath("$.state.teamHealth[0].dimension").value("Поставка ценности"))
+           .andExpect(jsonPath("$.state.teamHealth[0].rating").value("Зелёный"))
+           .andExpect(jsonPath("$.state.deployments[0].env").value("Prod"))
+           .andExpect(jsonPath("$.state.deployments[0].leadDays").value(2.5))
+           .andExpect(jsonPath("$.state.incidents[0].severity").value("High"))
+           .andExpect(jsonPath("$.state.incidents[0].downHours").value(3.5))
            .andExpect(jsonPath("$.state.dorItems[0].crit").value("Критерии приёмки описаны"))
            .andExpect(jsonPath("$.state.dorItems[0].done").value(true))
            .andExpect(jsonPath("$.state.scopeLog[0].id").value("SC-01"))

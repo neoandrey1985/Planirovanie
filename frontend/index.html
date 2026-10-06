@@ -476,7 +476,7 @@ body.noadmin #rst,body.noadmin #imp{display:none}
  </div>
 </div></header>
 <div class="shell"><aside class="side" id="side"><nav id="nav"></nav><div class="side-foot" id="sidefoot"></div></aside><div class="scrim" id="scrim"></div>
-<main id="main"><section class="view" id="v_dash"></section><section class="view" id="v_board"></section><section class="view" id="v_kanban"></section><section class="view" id="v_backlog"></section><section class="view" id="v_team"></section><section class="view" id="v_starmap"></section><section class="view" id="v_roadmap"></section><section class="view" id="v_quarters"></section><section class="view" id="v_rice"></section><section class="view" id="v_wsjf"></section><section class="view" id="v_moscow"></section><section class="view" id="v_sprintGoals"></section><section class="view" id="v_gantt"></section><section class="view" id="v_deps"></section><section class="view" id="v_piboard"></section><section class="view" id="v_releases"></section><section class="view" id="v_milestones"></section><section class="view" id="v_debt"></section><section class="view" id="v_okr"></section><section class="view" id="v_budget"></section><section class="view" id="v_analytics"></section><section class="view" id="v_risks"></section><section class="view" id="v_bugs"></section><section class="view" id="v_daily"></section><section class="view" id="v_grooming"></section><section class="view" id="v_demo"></section><section class="view" id="v_vacation"></section><section class="view" id="v_birthdays"></section><section class="view" id="v_retro"></section><section class="view" id="v_agile"></section><section class="view" id="v_calendar"></section><section class="view" id="v_scope"></section><section class="view" id="v_checks"></section><section class="view" id="v_eda"></section><section class="view" id="v_integrations"></section><section class="view" id="v_params"></section><section class="view" id="v_faq"></section><section class="view" id="v_support"></section><section class="view" id="v_audit"></section><section class="view" id="v_evm"></section><section class="view" id="v_changes"></section><section class="view" id="v_issues"></section><section class="view" id="v_stakeholders"></section><section class="view" id="v_statusreport"></section><section class="view" id="v_decisions"></section><section class="view" id="v_wbs"></section><section class="view" id="v_storymap"></section><section class="view" id="v_impediments"></section><section class="view" id="v_poker"></section><section class="view" id="v_lessons"></section><section class="view" id="v_raci"></section><section class="view" id="v_portfolio"></section></main></div>
+<main id="main"><section class="view" id="v_dash"></section><section class="view" id="v_board"></section><section class="view" id="v_kanban"></section><section class="view" id="v_backlog"></section><section class="view" id="v_team"></section><section class="view" id="v_starmap"></section><section class="view" id="v_roadmap"></section><section class="view" id="v_quarters"></section><section class="view" id="v_rice"></section><section class="view" id="v_wsjf"></section><section class="view" id="v_moscow"></section><section class="view" id="v_sprintGoals"></section><section class="view" id="v_gantt"></section><section class="view" id="v_deps"></section><section class="view" id="v_piboard"></section><section class="view" id="v_releases"></section><section class="view" id="v_milestones"></section><section class="view" id="v_debt"></section><section class="view" id="v_okr"></section><section class="view" id="v_budget"></section><section class="view" id="v_analytics"></section><section class="view" id="v_risks"></section><section class="view" id="v_bugs"></section><section class="view" id="v_daily"></section><section class="view" id="v_grooming"></section><section class="view" id="v_demo"></section><section class="view" id="v_vacation"></section><section class="view" id="v_birthdays"></section><section class="view" id="v_retro"></section><section class="view" id="v_agile"></section><section class="view" id="v_calendar"></section><section class="view" id="v_scope"></section><section class="view" id="v_checks"></section><section class="view" id="v_eda"></section><section class="view" id="v_integrations"></section><section class="view" id="v_params"></section><section class="view" id="v_faq"></section><section class="view" id="v_support"></section><section class="view" id="v_audit"></section><section class="view" id="v_evm"></section><section class="view" id="v_changes"></section><section class="view" id="v_issues"></section><section class="view" id="v_stakeholders"></section><section class="view" id="v_statusreport"></section><section class="view" id="v_decisions"></section><section class="view" id="v_wbs"></section><section class="view" id="v_storymap"></section><section class="view" id="v_impediments"></section><section class="view" id="v_poker"></section><section class="view" id="v_lessons"></section><section class="view" id="v_raci"></section><section class="view" id="v_portfolio"></section><section class="view" id="v_busfactor"></section><section class="view" id="v_healthcheck"></section><section class="view" id="v_dora"></section><section class="view" id="v_incidents"></section></main></div>
 <div class="palette" id="palette"><div class="pbox"><input class="pin" id="pin" placeholder="Поиск раздела или действия…" autocomplete="off"><div class="plist" id="plist"></div></div></div>
 <div class="role-pop" id="rolepop"></div>
 <div class="modal" id="accmodal"><div class="mbox">
@@ -1520,6 +1520,30 @@ function migrate(d){
   {id:'PO-01',name:'Маркетплейс (текущий)',status:'Жёлтый',health:0.62,velocity:34,budget:8000000,spent:3200000,progress:0.45,owner:'PMO',note:'Активный проект'},
   {id:'PO-02',name:'Мобильное приложение',status:'Зелёный',health:0.82,velocity:28,budget:5000000,spent:1500000,progress:0.30,owner:'Mobile Lead',note:'По плану'},
   {id:'PO-03',name:'Миграция в облако',status:'Красный',health:0.48,velocity:18,budget:6000000,spent:4800000,progress:0.70,owner:'Platform',note:'Перерасход, риск сроков'}];
+ // v1.43: здоровье и производительность кросс-функциональной команды
+ if(!Array.isArray(d.teamHealth))d.teamHealth=[
+  {id:'HC-01',date:'2026-09-11',sprint:3,dimension:'Поставка ценности',rating:'Зелёный',trend:'Растёт',note:'Регулярные демо принимаются'},
+  {id:'HC-02',date:'2026-09-11',sprint:3,dimension:'Простота работы',rating:'Жёлтый',trend:'Стабильно',note:'Много ручной рутины'},
+  {id:'HC-03',date:'2026-09-11',sprint:3,dimension:'Обучение',rating:'Зелёный',trend:'Растёт',note:'Парное программирование'},
+  {id:'HC-04',date:'2026-09-11',sprint:3,dimension:'Миссия',rating:'Зелёный',trend:'Стабильно',note:'Цель понятна всем'},
+  {id:'HC-05',date:'2026-09-11',sprint:3,dimension:'Командная работа',rating:'Зелёный',trend:'Растёт',note:'Хорошая взаимопомощь'},
+  {id:'HC-06',date:'2026-09-11',sprint:3,dimension:'Поддержка и помощь',rating:'Жёлтый',trend:'Стабильно',note:'Внешние зависимости тормозят'},
+  {id:'HC-07',date:'2026-09-11',sprint:3,dimension:'Пешки или игроки',rating:'Зелёный',trend:'Стабильно',note:'Команда влияет на решения'},
+  {id:'HC-08',date:'2026-09-11',sprint:3,dimension:'Скорость',rating:'Жёлтый',trend:'Падает',note:'Блокеры по оплате'},
+  {id:'HC-09',date:'2026-09-11',sprint:3,dimension:'Подходящий процесс',rating:'Зелёный',trend:'Стабильно',note:'Scrum устоялся'},
+  {id:'HC-10',date:'2026-09-11',sprint:3,dimension:'Здоровье кодовой базы',rating:'Красный',trend:'Падает',note:'Рост техдолга и флейки-тестов'},
+  {id:'HC-11',date:'2026-09-11',sprint:3,dimension:'Весело',rating:'Зелёный',trend:'Стабильно',note:'Команда мотивирована'}];
+ if(!Array.isArray(d.deployments))d.deployments=[
+  {id:'DP-01',date:'2026-08-15',release:'R-1',env:'Prod',status:'Успех',leadDays:3.0,note:'Каркас каталога'},
+  {id:'DP-02',date:'2026-08-27',release:'R-1',env:'Prod',status:'Успех',leadDays:2.2,note:'Корзина'},
+  {id:'DP-03',date:'2026-09-02',release:'R-1',env:'Stage',status:'Успех',leadDays:1.4,note:'Оплата (пилот)'},
+  {id:'DP-04',date:'2026-09-09',release:'R-1',env:'Prod',status:'Откат',leadDays:2.8,note:'Откат из-за сбоя оплаты'},
+  {id:'DP-05',date:'2026-09-10',release:'R-1',env:'Prod',status:'Успех',leadDays:0.6,note:'Хотфикс оплаты'},
+  {id:'DP-06',date:'2026-09-14',release:'R-2',env:'Prod',status:'Успех',leadDays:1.9,note:'Уведомления'}];
+ if(!Array.isArray(d.incidents))d.incidents=[
+  {id:'IN-01',date:'2026-09-09',title:'Массовые таймауты оплаты в проде',severity:'Critical',downHours:2.5,cause:'Таймаут платёжного шлюза',status:'Восстановлен',postmortem:'Добавить ретраи и circuit breaker'},
+  {id:'IN-02',date:'2026-09-12',title:'Расхождение остатков каталога',severity:'Medium',downHours:6.0,cause:'Задержка синхронизации с 1С',status:'Закрыт',postmortem:'Мониторинг лага синхронизации'},
+  {id:'IN-03',date:'2026-09-15',title:'Падение уведомлений (email)',severity:'High',downHours:1.2,cause:'Лимит SMTP',status:'Восстановлен',postmortem:'Очередь и бэкофф'}];
  if(!Array.isArray(d.faq))d.faq=[
   {id:'Q-01',category:'Начало работы',q:'С чего начать работу в приложении?',a:'Заполните «Параметры» (даты старта, число спринтов, focus factor), затем «Команду» и «Бэклог». Дорожная карта, ёмкость, velocity, релизы и метрики считаются автоматически из этих данных.'},
   {id:'Q-02',category:'Начало работы',q:'Нужен ли интернет или сервер?',a:'Нет. Приложение работает локально в браузере, данные хранятся в localStorage. Если поднят backend (Java + Python), состояние дополнительно синхронизируется через /api/state — индикатор в шапке показывает статус.'},
@@ -2776,6 +2800,10 @@ function views(){
  setView('lessons','Уроки','Реестр извлечённых уроков (lessons learned): ситуация, урок и рекомендация; пополняется из ретроспектив.',lessonsView());
  setView('raci','RACI','Матрица ответственности: для каждой активности — Responsible / Accountable / Consulted / Informed.',raciView());
  setView('portfolio','Портфель','Портфельный обзор нескольких проектов: статус RAG, health, velocity, бюджет и прогресс; снимок текущего проекта одной кнопкой.',portfolioView());
+ setView('busfactor','Bus factor / покрытие компетенций','Риск ключевого человека: сколько людей владеют каждым навыком (из Star Map), одиночные точки отказа и непокрытые навыки.',busFactorView());
+ setView('healthcheck','Team Health Check','Периодическая самооценка здоровья команды (модель Spotify Squad): светофор и тренд по измерениям.',healthCheckView());
+ setView('dora','DORA — производительность доставки','Четыре метрики DORA: частота деплоев, Lead Time, Change Failure Rate, MTTR — с уровнями Elite/High/Medium/Low.',doraView());
+ setView('incidents','Инциденты и постмортемы','Реестр прод-инцидентов со временем восстановления (MTTR) и постмортемами; питает DORA.',incidentsView());
  setView('checks','Проверки данных','Автоматический контроль целостности данных с авто-исправлением типичных проблем.',checksView());
  // EDA report (Настройки) — разведочный анализ всех данных приложения
  setView('eda','EDA отчёт — разведочный анализ данных','Автоматический разведочный анализ (EDA) всех данных приложения: объём и полнота датасетов, числовые сводки, распределения категорий, кросс-таблицы и аномалии.',edaView());
@@ -3785,6 +3813,127 @@ function teamView(){const w=document.createElement('div');const C=compute();
  w.appendChild(card);
  setTimeout(()=>bars(document.getElementById('team_load'),team.map(m=>String(m.name||'').slice(0,12)),[{color:col('--accent'),data:cap.map(c=>c.cap)},{color:col('--warn'),data:demand.map(d=>d.sp)}]),0);
  return w;}
+/* ================= v1.43: здоровье и производительность кросс-функциональной команды ================= */
+/* ---- B1: Bus factor / покрытие компетенций ---- */
+function busFactor(){const skills=ST.skills||[];const bySkill={};
+ skills.forEach(s=>{const k=(s.skill||'').trim();if(!k)return;(bySkill[k]=bySkill[k]||[]).push(s);});
+ const rows=Object.keys(bySkill).map(k=>{const comp=bySkill[k].filter(s=>num(s.level)>=3).map(s=>s.member);
+   return {skill:k,cov:comp.length,owners:comp};}).sort((a,b)=>a.cov-b.cov);
+ const spof=rows.filter(r=>r.cov===1),uncovered=rows.filter(r=>r.cov===0);
+ const covered=rows.filter(r=>r.cov>0);
+ const bf=covered.length?Math.min.apply(null,covered.map(r=>r.cov)):0;
+ const soleOwners={};spof.forEach(r=>{const m=r.owners[0]||'—';soleOwners[m]=(soleOwners[m]||0)+1;});
+ const avgCov=rows.length?rows.reduce((a,r)=>a+r.cov,0)/rows.length:0;
+ return {rows,spof,uncovered,bf,soleOwners,avgCov};}
+function busFactorView(){const w=document.createElement('div');const B=busFactor();
+ const kp=document.createElement('div');kp.className='grid kpis';
+ kp.innerHTML=kpiCard('Bus factor',B.bf,'мин. носителей навыка',B.bf>=2?'good':B.bf===1?'crit':'warn')
+  +kpiCard('Одиночные точки',B.spof.length,'навык у 1 человека',B.spof.length?'crit':'good')
+  +kpiCard('Не покрыто',B.uncovered.length,'навыков без носителя',B.uncovered.length?'crit':'good')
+  +kpiCard('Ср. покрытие',fmt(B.avgCov,1),'человек на навык',B.avgCov>=2?'good':'warn');
+ w.appendChild(kp);
+ const card=document.createElement('div');card.className='card';card.style.marginTop='14px';
+ let h='<p class="ctitle">Покрытие компетенций (носители с уровнем ≥ 3)</p><div class="twrap" style="border:none"><table><tr><th>Навык</th><th class="num">Носителей</th><th>Кто владеет</th><th>Риск</th></tr>';
+ B.rows.forEach(r=>{const risk=r.cov===0?'<span class="pill p-crit">нет носителя</span>':r.cov===1?'<span class="pill p-crit">SPOF</span>':r.cov===2?'<span class="pill p-warn">тонко</span>':'<span class="pill p-good">ок</span>';
+   h+=`<tr><td>${esc(r.skill)}</td><td class="num">${r.cov}</td><td style="font-size:12.5px;color:var(--muted)">${r.owners.map(esc).join(', ')||'—'}</td><td>${risk}</td></tr>`;});
+ h+='</table></div>';card.innerHTML=h;w.appendChild(card);
+ const so=Object.keys(B.soleOwners);
+ if(so.length){const sc=document.createElement('div');sc.className='card';sc.style.marginTop='14px';sc.style.borderLeft='4px solid var(--crit)';
+   sc.innerHTML='<p class="ctitle" style="color:var(--crit)">Ключевые люди (единственные носители)</p><p style="margin:0;font-size:13px;color:var(--muted)">'
+    +so.map(m=>esc(m)+' — '+B.soleOwners[m]+' навык(ов)').join(' · ')+'. Снизьте риск: парное программирование, ротация, обучение второго носителя.</p>';
+   w.appendChild(sc);}
+ const lg=document.createElement('div');lg.className='card';lg.style.marginTop='14px';
+ lg.innerHTML='<p class="ctitle">Bus factor и кросс-функциональность</p><p style="font-size:13px;color:var(--muted);line-height:1.7;margin:0">'
+  +'<b>Bus factor</b> — сколько людей можно потерять, прежде чем какой-то навык «просядет» до нуля (здесь — минимальное число носителей по всем навыкам). '
+  +'<b>SPOF</b> (single point of failure) — навык, которым владеет только один человек; <b>не покрыто</b> — навык без носителей уровня ≥ 3. '
+  +'Данные берутся из «Star Map». Для кросс-функциональной команды здоровый ориентир — покрытие каждого ключевого навыка ≥ 2 людьми.</p>';
+ w.appendChild(lg);return w;}
+/* ---- B2: Team Health Check (Spotify Squad) ---- */
+var HEALTH_DIMS=['Поставка ценности','Простота работы','Обучение','Миссия','Командная работа','Поддержка и помощь','Пешки или игроки','Скорость','Подходящий процесс','Здоровье кодовой базы','Весело'];
+function hcColor(r){return r==='Зелёный'?'good':r==='Жёлтый'?'warn':r==='Красный'?'crit':'neut';}
+function hcTrendIcon(t){return t==='Растёт'?'↑':t==='Падает'?'↓':'→';}
+function hcLatest(){const hc=ST.teamHealth||[];const by={};hc.forEach(x=>{const d=by[x.dimension];if(!d||String(x.date)>=String(d.date))by[x.dimension]=x;});return by;}
+function healthCheckView(){const w=document.createElement('div');
+ w.appendChild(editable('teamHealth',[{k:'id',label:'ID'},{k:'date',label:'Дата',type:'date'},{k:'sprint',label:'Спринт',type:'num'},
+   {k:'dimension',label:'Измерение',type:'select',opts:HEALTH_DIMS.slice()},{k:'rating',label:'Оценка',type:'select',opts:['Зелёный','Жёлтый','Красный']},
+   {k:'trend',label:'Тренд',type:'select',opts:['Растёт','Стабильно','Падает']},{k:'note',label:'Комментарий',wide:true}],{newId:'id',prefix:'HC-'}));
+ const latest=hcLatest();const dims=Object.keys(latest);
+ const g=dims.filter(d=>latest[d].rating==='Зелёный').length,y=dims.filter(d=>latest[d].rating==='Жёлтый').length,r=dims.filter(d=>latest[d].rating==='Красный').length;
+ const kp=document.createElement('div');kp.className='grid kpis';kp.style.marginTop='14px';
+ kp.innerHTML=kpiCard('Измерений',dims.length,'оценено','neut')+kpiCard('🟢 Зелёных',g,'в норме',g>=dims.length*0.6?'good':'warn')
+  +kpiCard('🟡 Жёлтых',y,'требуют внимания',y?'warn':'good')+kpiCard('🔴 Красных',r,'проблемные',r?'crit':'good');
+ w.appendChild(kp);
+ const board=document.createElement('div');board.className='grid';board.style.cssText='grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px;margin-top:14px';
+ dims.forEach(d=>{const x=latest[d];const c=document.createElement('div');c.className='card kpi';
+   c.innerHTML='<div class="stripe s-'+hcColor(x.rating)+'"></div><div class="k-label">'+esc(d)+'</div><div class="k-val" style="font-size:20px">'+esc(x.rating)+' <span style="font-size:17px;color:var(--muted)">'+hcTrendIcon(x.trend)+'</span></div><div class="k-note">'+esc((x.note||'').slice(0,50))+'</div>';
+   board.appendChild(c);});
+ w.appendChild(board);
+ const lg=document.createElement('div');lg.className='card';lg.style.marginTop='14px';
+ lg.innerHTML='<p class="ctitle">Team Health Check (модель Spotify Squad)</p><p style="font-size:13px;color:var(--muted);line-height:1.7;margin:0">'
+  +'Периодическая самооценка команды по измерениям здоровья: каждая карточка — светофор (🟢/🟡/🔴) и тренд (↑/→/↓). '
+  +'Проводится раз в несколько спринтов всей командой; показывает не производительность, а <b>самочувствие</b> и где системно «болит». '
+  +'Красные зоны и падающие тренды — темы для ретроспективы и действий.</p>';
+ w.appendChild(lg);return w;}
+/* ---- A1: DORA ---- */
+function dora(){const dep=ST.deployments||[],inc=ST.incidents||[];
+ const start=pd(ST.params.start)||pd('2026-08-03'),today=pd(ST.params.today)||new Date();
+ const weeks=Math.max(1,(today-start)/(7*MS));
+ const freq=dep.length/weeks;
+ const leads=dep.map(d=>num(d.leadDays)).filter(v=>v>0);const lead=leads.length?leads.reduce((a,b)=>a+b,0)/leads.length:null;
+ const failed=dep.filter(d=>d.status==='Ошибка'||d.status==='Откат').length;const cfr=dep.length?failed/dep.length:0;
+ const downs=inc.map(i=>num(i.downHours)).filter(v=>v>0);const mttr=downs.length?downs.reduce((a,b)=>a+b,0)/downs.length:null;
+ const tFreq=freq>=7?'Elite':freq>=1?'High':freq>=0.25?'Medium':'Low';
+ const tLead=lead==null?'—':lead<1?'Elite':lead<=7?'High':lead<=30?'Medium':'Low';
+ const tCfr=cfr<0.05?'Elite':cfr<0.15?'High':cfr<0.30?'Medium':'Low';
+ const tMttr=mttr==null?'—':mttr<1?'Elite':mttr<24?'High':mttr<168?'Medium':'Low';
+ return {freq,lead,cfr,mttr,failed,count:dep.length,tFreq,tLead,tCfr,tMttr};}
+function tierTone(t){return t==='Elite'||t==='High'?'good':t==='Medium'?'warn':t==='Low'?'crit':'neut';}
+function doraView(){const w=document.createElement('div');const D=dora();
+ const kp=document.createElement('div');kp.className='grid kpis';
+ kp.innerHTML=kpiCard('Частота деплоев',fmt(D.freq,1)+' <small>/нед</small>',D.tFreq,tierTone(D.tFreq))
+  +kpiCard('Lead Time',D.lead==null?'—':fmt(D.lead,1)+' <small>дн</small>',D.tLead,tierTone(D.tLead))
+  +kpiCard('Change Failure Rate',pctf(D.cfr),D.tCfr+' · сбоев '+D.failed+'/'+D.count,tierTone(D.tCfr))
+  +kpiCard('MTTR',D.mttr==null?'—':fmt(D.mttr,1)+' <small>ч</small>',D.tMttr,tierTone(D.tMttr));
+ w.appendChild(kp);
+ w.appendChild((function(){const c=document.createElement('div');c.style.marginTop='14px';
+   c.appendChild(editable('deployments',[{k:'id',label:'ID'},{k:'date',label:'Дата',type:'date'},{k:'release',label:'Релиз',type:'select',opts:[''].concat((ST.releases||[]).map(x=>x.id))},
+     {k:'env',label:'Среда',type:'select',opts:['Prod','Stage','Test']},{k:'status',label:'Статус',type:'select',opts:['Успех','Ошибка','Откат']},
+     {k:'leadDays',label:'Lead time (дн)',type:'num'},{k:'note',label:'Комментарий',wide:true}],{newId:'id',prefix:'DP-'}));return c;})());
+ const lg=document.createElement('div');lg.className='card';lg.style.marginTop='14px';
+ lg.innerHTML='<p class="ctitle">DORA-метрики (производительность доставки)</p><p style="font-size:13px;color:var(--muted);line-height:1.7;margin:0">'
+  +'Четыре ключевые метрики DevOps Research and Assessment:<br>'
+  +'<b>Deployment Frequency</b> — как часто выкатываем (из «Деплоев»).<br>'
+  +'<b>Lead Time for Changes</b> — время от начала работы до прода (поле lead time у деплоя).<br>'
+  +'<b>Change Failure Rate</b> — доля деплоев со статусом «Ошибка»/«Откат».<br>'
+  +'<b>MTTR</b> — среднее время восстановления (из «Инцидентов», поле «часы»).<br>'
+  +'Уровни: <b>Elite</b> / <b>High</b> — хорошо, <b>Medium</b> — средне, <b>Low</b> — требует улучшения. Деплои и инциденты ведутся в соответствующих разделах.</p>';
+ w.appendChild(lg);return w;}
+/* ---- D1: инциденты и постмортемы ---- */
+function incidentsView(){const w=document.createElement('div');
+ w.appendChild(editable('incidents',[{k:'id',label:'ID'},{k:'date',label:'Дата',type:'date'},{k:'title',label:'Инцидент',wide:true},
+   {k:'severity',label:'Серьёзность',type:'select',opts:['Critical','High','Medium','Low']},{k:'downHours',label:'Восстановление (ч)',type:'num'},
+   {k:'cause',label:'Причина',wide:true},{k:'status',label:'Статус',type:'select',opts:['Открыт','Восстановлен','Закрыт']},{k:'postmortem',label:'Постмортем / действие',wide:true}],{newId:'id',prefix:'IN-'}));
+ const inc=ST.incidents||[];const open=inc.filter(x=>x.status==='Открыт');
+ const downs=inc.map(x=>num(x.downHours)).filter(v=>v>0);const mttr=downs.length?downs.reduce((a,b)=>a+b,0)/downs.length:0;
+ const crit=inc.filter(x=>x.severity==='Critical').length;
+ const kp=document.createElement('div');kp.className='grid kpis';kp.style.marginTop='14px';
+ kp.innerHTML=kpiCard('Инцидентов',inc.length,'в журнале','neut')+kpiCard('Открыто',open.length,'не восстановлено',open.length?'crit':'good')
+  +kpiCard('MTTR',fmt(mttr,1)+' <small>ч</small>','среднее восстановление',mttr<24?'good':'warn')+kpiCard('Critical',crit,'критичных',crit?'crit':'good');
+ w.appendChild(kp);
+ const cc=document.createElement('div');cc.className='card';cc.style.marginTop='14px';cc.innerHTML='<p class="ctitle">Время восстановления по инцидентам (ч)</p><div id="inc_c"></div>';w.appendChild(cc);
+ setTimeout(()=>bars(document.getElementById('inc_c'),inc.map(x=>esc((x.id||'')+'')),[{color:col('--crit'),data:inc.map(x=>num(x.downHours))}]),0);
+ const lg=document.createElement('div');lg.className='card';lg.style.marginTop='14px';
+ lg.innerHTML='<p class="ctitle">Управление инцидентами и постмортемы</p><p style="font-size:13px;color:var(--muted);line-height:1.7;margin:0">'
+  +'Реестр прод-инцидентов с серьёзностью, временем восстановления и постмортемом (безвинный разбор + действие). '
+  +'Питает DORA-метрики: <b>MTTR</b> — среднее время восстановления, вместе с деплоями даёт <b>Change Failure Rate</b>. '
+  +'В отличие от «Багов» (дефекты в разработке) — это сбои в проде, влияющие на пользователей.</p>';
+ w.appendChild(lg);return w;}
+/* ---- A3/C1: aging WIP и Say-Do (для аналитики) ---- */
+function agingWip(){const today=appTodayDate();const wip=(ST.tasks||[]).filter(t=>t.started&&!t.done&&t.status!=='Готово');
+ return wip.map(t=>({id:t.id,title:t.title,age:Math.max(0,Math.round((today-appDateOf(t.started))/86400000)),status:t.status,assignee:t.assignee})).sort((a,b)=>b.age-a.age);}
+function sayDo(C){const closed=C.sp.filter(x=>x.status==='Закрыт'&&x.plan>0&&x.vel!=null);
+ const rows=closed.map(x=>({s:x.s,plan:x.plan,done:x.vel,ratio:x.vel/x.plan}));
+ const avg=rows.length?rows.reduce((a,r)=>a+r.ratio,0)/rows.length:null;return {rows,avg};}
 function dailyView(){const w=document.createElement('div');
  (function(){const bar=document.createElement('div');bar.className='grm-pick';
   const b=document.createElement('button');b.className='btn primary';b.textContent='⛔ Блокеры → в «Зависимости»';b.onclick=dailyBlockersToDeps;
@@ -4230,6 +4379,25 @@ function renderAnalytics(C){const v=document.getElementById('v_analytics');const
  g3.appendChild(mcCard);g3.appendChild(slaCard);v.appendChild(g3);
  if(mc)bars(document.getElementById('an_mc'),mc.hist.map(x=>x.k+' спр'),[{color:col('--accent'),data:mc.hist.map(x=>x.n)}]);
  else document.getElementById('an_mc').innerHTML='<p style="color:var(--muted);font-size:13px">Нет закрытых спринтов с velocity.</p>';
+ // A3 Aging WIP + C1 Say-Do (надёжность обязательств)
+ const aw=agingWip();const sdr=sayDo(C);
+ const awAvg=aw.length?aw.reduce((a,x)=>a+x.age,0)/aw.length:0;
+ const kp3=document.createElement('div');kp3.className='grid kpis';kp3.style.marginTop='14px';
+ kp3.innerHTML=kpiCard('Задач «в работе»',aw.length,'незавершённых','neut')
+   +kpiCard('Старение WIP',fmt(awAvg,0)+' <small>дн</small>','средний возраст',awAvg<=10?'good':awAvg<=20?'warn':'crit')
+   +kpiCard('Самая старая',aw.length?aw[0].age+' дн':'—',aw.length?esc((aw[0].id||'')):'—',aw.length&&aw[0].age>20?'crit':'neut')
+   +kpiCard('Say-Do (надёжность)',sdr.avg==null?'—':pctf(sdr.avg),'взято vs выполнено',sdr.avg==null?'neut':sdr.avg>=0.85?'good':sdr.avg>=0.7?'warn':'crit');
+ v.appendChild(kp3);
+ const g4=document.createElement('div');g4.className='grid2';
+ const awc=document.createElement('div');awc.className='card';awc.innerHTML='<p class="ctitle">Aging WIP — возраст незавершённых задач (дн)</p><div id="an_aw"></div>';
+ const sdc=document.createElement('div');sdc.className='card';sdc.innerHTML='<p class="ctitle">Say-Do ratio по закрытым спринтам</p><div id="an_sd"></div><div class="legend"><span><i style="background:var(--accent)"></i>выполнено / взято</span></div>';
+ g4.appendChild(awc);g4.appendChild(sdc);v.appendChild(g4);
+ setTimeout(()=>{
+   if(aw.length)bars(document.getElementById('an_aw'),aw.slice(0,12).map(x=>esc((x.id||'')+'')),[{color:col('--warn'),data:aw.slice(0,12).map(x=>x.age)}]);
+   else document.getElementById('an_aw').innerHTML='<p style="color:var(--muted);font-size:13px">Нет задач «в работе» с датой старта.</p>';
+   if(sdr.rows.length)bars(document.getElementById('an_sd'),sdr.rows.map(r=>'С'+r.s),[{color:col('--accent'),data:sdr.rows.map(r=>r.ratio)}],{pct:true});
+   else document.getElementById('an_sd').innerHTML='<p style="color:var(--muted);font-size:13px">Нет закрытых спринтов с планом и velocity.</p>';
+ },0);
 }
 // 3.9 Монте-Карло прогноз даты завершения проекта (P50/P85) по распределению velocity
 function mcReleaseForecast(C){const vels=(C.vels||[]).filter(v=>v>0);if(!vels.length||C.remain<=0)return null;
@@ -4319,6 +4487,9 @@ function exportXlsx(){const C=compute();const s=[];
  s.push({name:'Story Map',aoa:[['ID','Активность','Релиз','История','Задача']].concat((ST.storyMap||[]).map(x=>[x.id,x.activity,x.release,x.story,x.task]))});
  s.push({name:'Planning Poker',aoa:[['ID','Задача','История','Голоса','Итог','Статус']].concat((ST.poker||[]).map(x=>[x.id,x.task,x.title,x.votes,x.result,x.status]))});
  s.push({name:'Портфель',aoa:[['ID','Проект','RAG','Health','Velocity','Бюджет','Потрачено','Прогресс','Владелец','Комментарий']].concat((ST.portfolio||[]).map(x=>[x.id,x.name,x.status,num(x.health),num(x.velocity),num(x.budget),num(x.spent),num(x.progress),x.owner,x.note]))});
+ s.push({name:'Team Health Check',aoa:[['ID','Дата','Спринт','Измерение','Оценка','Тренд','Комментарий']].concat((ST.teamHealth||[]).map(x=>[x.id,x.date,num(x.sprint),x.dimension,x.rating,x.trend,x.note]))});
+ s.push({name:'Деплои',aoa:[['ID','Дата','Релиз','Среда','Статус','Lead time (дн)','Комментарий']].concat((ST.deployments||[]).map(x=>[x.id,x.date,x.release,x.env,x.status,num(x.leadDays),x.note]))});
+ s.push({name:'Инциденты',aoa:[['ID','Дата','Инцидент','Серьёзность','Восстановление (ч)','Причина','Статус','Постмортем']].concat((ST.incidents||[]).map(x=>[x.id,x.date,x.title,x.severity,num(x.downHours),x.cause,x.status,x.postmortem]))});
  const bin=buildXlsx(s);const blob=new Blob([bin],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='Планирование_спринта.xlsx';document.body.appendChild(a);a.click();a.remove();toast('Excel экспортирован');}
 
@@ -4533,17 +4704,25 @@ function recomputeSoft(){/* light: refresh dashboard only, keep edit focus */ re
 /* ---------- sidebar navigation ---------- */
 const NAV=[
  {g:'Планирование',items:[['dash','Дашборд','📋'],['board','Доска','🧩'],['roadmap','Дорожная карта','🗺️'],['kanban','Kanban-доска','🗃️'],['quarters','Кварталы','🗓️'],['sprintGoals','Цели спринтов','🎯'],['storymap','Story Map','🗺'],['rice','RICE','📊'],['wsjf','WSJF','⚖️'],['moscow','MoSCoW','📌'],['okr','OKR','🧭'],['portfolio','Портфель','🗂']]},
- {g:'Работа',items:[['backlog','Бэклог','🗂️'],['wbs','Иерархия работ','🌳'],['gantt','Гант','📊'],['deps','Зависимости','🔗'],['piboard','Программная доска','🧭'],['team','Команда','👥'],['raci','RACI','👔'],['starmap','Star Map','⭐'],['stakeholders','Стейкхолдеры','🤝']]},
+ {g:'Работа',items:[['backlog','Бэклог','🗂️'],['wbs','Иерархия работ','🌳'],['gantt','Гант','📊'],['deps','Зависимости','🔗'],['piboard','Программная доска','🧭'],['team','Команда','👥'],['raci','RACI','👔'],['starmap','Star Map','⭐'],['busfactor','Bus factor','🚌'],['stakeholders','Стейкхолдеры','🤝']]},
  {g:'Выпуск',items:[['releases','Релизы','🚀'],['milestones','Вехи','🏁'],['debt','Техдолг','🧱'],['changes','Изменения','🔀']]},
- {g:'Аналитика',items:[['analytics','Аналитика','📈'],['evm','EVM','💹'],['risks','Риски','⚠️'],['issues','Проблемы','🚧'],['bugs','Баги','🐞']]},
- {g:'Церемонии',items:[['daily','Дэйли','☀️'],['grooming','Груминг','🧹'],['poker','Planning Poker','🃏'],['demo','Демо спринта','🎬'],['retro','Ретроспективы','🔄'],['impediments','Импедименты','⛔'],['lessons','Уроки','📚'],['agile','Agile-зрелость','🪜']]},
+ {g:'Аналитика',items:[['analytics','Аналитика','📈'],['evm','EVM','💹'],['dora','DORA','🚀'],['risks','Риски','⚠️'],['issues','Проблемы','🚧'],['incidents','Инциденты','🔥'],['bugs','Баги','🐞']]},
+ {g:'Церемонии',items:[['daily','Дэйли','☀️'],['grooming','Груминг','🧹'],['poker','Planning Poker','🃏'],['demo','Демо спринта','🎬'],['retro','Ретроспективы','🔄'],['healthcheck','Health Check','🩺'],['impediments','Импедименты','⛔'],['lessons','Уроки','📚'],['agile','Agile-зрелость','🪜']]},
  {g:'Персонал',items:[['vacation','График отпусков','🏖️'],['birthdays','Дни рождения','🎂']]},
  {g:'Настройки',items:[['budget','Бюджет','💰'],['calendar','Календарь','📅'],['scope','Контроль scope','📐'],['decisions','Журнал решений','🧠'],['checks','Проверки данных','🧪'],['eda','EDA отчёт','🔬'],['integrations','Интеграции','🔌'],['params','Параметры','⚙️']]},
  {g:'Справка',items:[['faq','FAQ','❓'],['statusreport','Статус-отчёт','📰'],['support','Support','🛟'],['audit','Журнал событий','🧾']]},
 ];
-const APP_VERSION='1.42.0';const APP_DATE='2026-10-06';
+const APP_VERSION='1.43.0';const APP_DATE='2026-10-06';
 const APP_ABOUT='Кросс-функциональная команда — это группа специалистов из разных областей (разработчиков, дизайнеров, маркетологов, аналитиков, менеджеров и других), которые объединяются для работы над одним конкретным проектом или задачей. Ключевая идея в том, чтобы собрать внутри команды всех необходимых экспертов, чтобы она могла самостоятельно пройти путь от идеи до результата, не передавая задачу последовательно из одного отдела в другой.';
 const CHANGELOG=[
+ {v:'1.43.0',date:'2026-10-06',items:[
+   'Пакет «Здоровье и производительность кросс-функциональной команды».',
+   'Раздел «Bus factor / покрытие компетенций» (Работа): носители каждого навыка из Star Map, одиночные точки отказа (SPOF) и непокрытые навыки — риск ключевого человека.',
+   'Раздел «Team Health Check» (Церемонии): самооценка здоровья команды по модели Spotify Squad — светофор и тренд по измерениям.',
+   'Раздел «DORA» (Аналитика): частота деплоев, Lead Time, Change Failure Rate, MTTR с уровнями Elite/High/Medium/Low; реестр деплоев.',
+   'Раздел «Инциденты» (Аналитика): прод-инциденты со временем восстановления и постмортемами (питает MTTR/CFR).',
+   'Аналитика: Aging WIP (старение незавершённых задач) и Say-Do ratio (надёжность обязательств спринта).',
+   'Серверное хранение Team Health Check, деплоев и инцидентов в PostgreSQL (миграция V11).']},
  {v:'1.42.0',date:'2026-10-06',items:[
    'Классическое управление: раздел «EVM» (освоенный объём) — PV/EV/AC, CPI/SPI, прогноз EAC/ETC/VAC, S-кривая и отклонение от базового плана.',
    'Раздел «Запросы на изменение» (CCB) — формальный контроль изменений scope/сроков/стоимости/качества.',
@@ -5040,6 +5219,12 @@ startAnalytics();setInterval(startAnalytics,30000);
   if(/(решени.*журнал|журнал решений|adr)/.test(s))return {t:'Журнал решений (ADR): '+((ST.decisions||[]).length)+' записей.',goto:'decisions'};
   if(/(урок|lessons|извлеч.*урок)/.test(s))return {t:'Реестр уроков: '+((ST.lessons||[]).length)+' записей.',goto:'lessons'};
   if(/(raci|матрица ответствен)/.test(s))return {t:'RACI: '+((ST.raci||[]).length)+' активностей.',goto:'raci'};
+  if(/(dora|частота деплоев|lead time|change failure|mttr|производительность доставки)/.test(s)){const D=dora();return {t:'DORA: частота '+fmt(D.freq,1)+'/нед ('+D.tFreq+'), Lead '+(D.lead==null?'—':fmt(D.lead,1)+' дн ('+D.tLead+')')+', CFR '+pctf(D.cfr)+' ('+D.tCfr+'), MTTR '+(D.mttr==null?'—':fmt(D.mttr,1)+' ч ('+D.tMttr+')')+'.',goto:'dora'};}
+  if(/(bus factor|фактор автобуса|ключев.*человек|покрыти.*компетен|spof)/.test(s)){const B=busFactor();return {t:'Bus factor '+B.bf+'; одиночных точек отказа: '+B.spof.length+', непокрыто навыков: '+B.uncovered.length+'.',goto:'busfactor'};}
+  if(/(health check|здоровье команд|самочувстви.*команд|spotify)/.test(s)){const l=hcLatest();const r=Object.keys(l).filter(d=>l[d].rating==='Красный').length;return {t:'Team Health Check: красных измерений '+r+'. Подробности в разделе.',goto:'healthcheck'};}
+  if(/(инцидент|incident|постмортем|mttr)/.test(s)){const op=(ST.incidents||[]).filter(x=>x.status==='Открыт').length;return {t:'Инцидентов: '+((ST.incidents||[]).length)+', открыто '+op+'.',goto:'incidents'};}
+  if(/(деплой|deploy|выкат)/.test(s))return {t:'Деплоев зафиксировано: '+((ST.deployments||[]).length)+'. Метрики — в разделе DORA.',goto:'dora'};
+  if(/(aging wip|старение.*задач|say.?do|надёжность обязатель)/.test(s)){const sd=sayDo(compute());return {t:'Say-Do (надёжность обязательств): '+(sd.avg==null?'—':pctf(sd.avg))+'. Aging WIP — в «Аналитике».',goto:'analytics'};}
   // navigation (requires a verb)
   if(/(открой|откр\b|покажи|перейд|переключ|запусти|show|go to)/.test(s)){
    for(const k in SYN){if(s.indexOf(k)>=0){activate(SYN[k]);return {t:'Открыл раздел «'+navLabel(SYN[k])+'».'};}}}
