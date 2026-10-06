@@ -48,9 +48,18 @@ python scripts/deliverables/capture_shots.py --only piboard,scope
 python scripts/deliverables/gen_xlsx.py
 python scripts/deliverables/build_video.py
 
-# 4. прогнать регрессию и запушить
+# 4. ОБЯЗАТЕЛЬНО: синхронизировать документы для раздела «Support»
+#    (приложение отдаёт их из frontend/docs/, а генераторы пишут в корень)
+python scripts/deliverables/sync_served_docs.py
+
+# 5. прогнать регрессию и запушить
 make test
 ```
+
+> **Важно:** раздел «Support» в приложении скачивает документы из `frontend/docs/`
+> (список — `SUPPORT_DOCS` в `frontend/index.html`), а не из корня. После любой
+> регенерации документов запускайте `sync_served_docs.py`, иначе пользователи
+> скачивают устаревшие версии.
 
 > Примечание: временная папка сессии (`scratchpad`) очищается между ходами —
 > именно поэтому переиспользуемые генераторы хранятся здесь, в репозитории.
