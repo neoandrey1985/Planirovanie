@@ -97,6 +97,33 @@ def main():
             assert ok, 'APP_VERSION != CHANGELOG[0].v'
         case('versioning: APP_VERSION matches changelog head', t_ver)
 
+        # ---- 3b. assistant knows the whole app (self-training regression) ----
+        def t_assistant():
+            page.evaluate("()=>activate('dash')")
+            r = page.evaluate("""()=>{
+              if(typeof window.assistantAsk!=='function'||typeof window.assistantKB!=='function')
+                return {err:'no assistant hooks (assistantAsk/assistantKB)'};
+              const items=NAV.flatMap(g=>g.items);
+              const ids=items.map(i=>i[0]);
+              const KB=window.assistantKB();
+              const missing=ids.filter(id=>!KB[id]||!KB[id].text||KB[id].text.length<8);
+              const noanswer=[];
+              items.forEach(it=>{const a=window.assistantAsk('что такое '+it[1]);
+                if(!a||!a.t||a.t.length<8)noanswer.push(it[0]);});
+              const ov=window.assistantAsk('какие разделы есть в приложении');
+              const nw=window.assistantAsk('что нового в приложении');
+              return {n:ids.length,kb:Object.keys(KB).length,missing:missing,noanswer:noanswer,
+                      ovOK:!!(ov&&ov.t&&ov.t.indexOf('раздел')>=0),
+                      nwOK:!!(nw&&nw.t&&nw.t.indexOf(APP_VERSION)>=0)};
+            }""")
+            assert 'err' not in r, r.get('err')
+            assert r['kb'] == r['n'], 'KB covers %d of %d NAV sections' % (r['kb'], r['n'])
+            assert not r['missing'], 'sections without knowledge text: %s' % r['missing']
+            assert not r['noanswer'], 'sections the assistant cannot explain: %s' % r['noanswer']
+            assert r['ovOK'], 'assistant overview («какие разделы есть») failed'
+            assert r['nwOK'], 'assistant «что нового» missing current version'
+        case('assistant: knows every NAV section (auto-trained)', t_assistant)
+
         # ---- 4. EDA report ----
         def t_eda():
             page.evaluate("()=>activate('eda')"); page.wait_for_timeout(200)

@@ -4715,9 +4715,14 @@ const NAV=[
  {g:'Система',items:[['params','Параметры','⚙️'],['integrations','Интеграции','🔌'],['calendar','Календарь','📅'],['budget','Бюджет','💰'],['checks','Проверки данных','🧪'],['eda','EDA отчёт','🔬'],['audit','Журнал событий','🧾']]},
  {g:'Справка',items:[['faq','FAQ','❓'],['support','Support','🛟']]},
 ];
-const APP_VERSION='1.44.0';const APP_DATE='2026-10-06';
+const APP_VERSION='1.45.0';const APP_DATE='2026-10-06';
 const APP_ABOUT='Кросс-функциональная команда — это группа специалистов из разных областей (разработчиков, дизайнеров, маркетологов, аналитиков, менеджеров и других), которые объединяются для работы над одним конкретным проектом или задачей. Ключевая идея в том, чтобы собрать внутри команды всех необходимых экспертов, чтобы она могла самостоятельно пройти путь от идеи до результата, не передавая задачу последовательно из одного отдела в другой.';
 const CHANGELOG=[
+ {v:'1.45.0',date:'2026-10-06',items:[
+   'Помощник (чат-бот) обучен всему приложению: знает все разделы и функции и отвечает на вопрос о любом из них («что такое Гант», «зачем Bus factor», «как работает DORA»).',
+   'База знаний помощника строится автоматически из самого приложения (меню NAV, заголовки и описания разделов, гид-тур, история версий), поэтому «обучение» обновляется само после каждого релиза.',
+   'Новые вопросы: «какие разделы есть», «что в блоке …», «что нового»; помощник умеет открывать и ранее не охваченные разделы (Гант, Кварталы, Вехи, Дэйли, Груминг, Демо, Календарь и др.).',
+   'Регрессия: авто-тест проверяет, что помощник знает каждый раздел из NAV (защита «обучения» от устаревания).']},
  {v:'1.44.0',date:'2026-10-06',items:[
    'UX: логичная перегруппировка бокового меню (аккордеон) — 11 смысловых блоков, разделы приведены в соответствие с названиями блоков.',
    'Новый блок «Обзор» (Дашборд, Статус-отчёт, Портфель); «Бэклог и приоритизация» и «Расписание и зависимости» выделены отдельно.',
@@ -5181,6 +5186,57 @@ startAnalytics();setInterval(startAnalytics,30000);
   'зрелост':'agile','maturity':'agile','agile-зрел':'agile','safe':'agile',
   'интеграц':'integrations','atlassian':'integrations','jira':'integrations','confluence':'integrations','trello':'integrations','bitbucket':'integrations','opsgenie':'integrations'};
  function navLabel(id){return ID2LABEL[id]||id;}
+ /* ---- база знаний о приложении: авто-деривация из живого UI ----
+    Пересобирается на каждой загрузке из NAV + DOM (h1/.lede каждого раздела) + TOUR + CHANGELOG,
+    поэтому «обучение» помощника происходит само после каждого обновления приложения:
+    новый или переименованный раздел, изменённое описание и новая версия подхватываются без правок. */
+ const AKA={dash:'обзор kpi сводка панель главная',statusreport:'статус отчёт доклад сводка',portfolio:'портфель проектов программа',
+  roadmap:'дорожная карта план спринтов график спринтов',quarters:'кварталы квартальный план',sprintGoals:'цель спринта обязательство ценность',
+  kanban:'канбан доска статусы колонки карточки',board:'холст схемы стикеры мозговой штурм whiteboard рисование',okr:'цели ключевые результаты objectives key results',
+  backlog:'бэклог задачи список работ',wbs:'иерархия работ декомпозиция эпик фича история роллап',storymap:'карта историй активности',
+  rice:'приоритизация reach impact confidence effort балл',wsjf:'safe cost of delay стоимость задержки',moscow:'must should could wont обязательно желательно',
+  gantt:'диаграмма ганта график сроки',deps:'зависимости блокеры стримы межкомандные',piboard:'pi planning программный инкремент safe матрица',
+  milestones:'вехи контрольные точки дедлайны',team:'команда состав участники роли доступность',raci:'матрица ответственности responsible accountable',
+  starmap:'компетенции навыки скиллы радар уровни',busfactor:'bus factor spof риск ключевых людей покрытие навыков',
+  stakeholders:'стейкхолдеры заинтересованные стороны влияние интерес',vacation:'отпуска график доступность',
+  birthdays:'дни рождения праздники',releases:'релизы выпуски версии',changes:'запросы на изменение change request ccb',
+  scope:'контроль scope скоуп раздувание creep состав',debt:'технический долг техдолг рефакторинг',
+  analytics:'аналитика графики velocity сгорание burndown cfd cycle time прогноз распределение',evm:'освоенный объём earned value cpi spi eac etc',
+  dora:'частота деплоев deployment frequency lead time change failure rate mttr',risks:'риски реестр вероятность влияние исикава',
+  issues:'журнал проблем issue log реестр',incidents:'инциденты постмортем простои',bugs:'баги дефекты качество dre',
+  daily:'дэйли стендап standup планёрка',grooming:'груминг уточнение бэклога refinement',poker:'планинг покер planning poker оценка',
+  demo:'демо обзор спринта sprint review показ',retro:'ретроспектива настроение радар улучшения',
+  healthcheck:'здоровье команды самочувствие spotify squad health check',impediments:'импедименты препятствия блокеры',
+  lessons:'уроки извлечённые выводы',decisions:'журнал решений adr архитектурные',agile:'agile зрелость maturity safe оценка практик',
+  params:'параметры настройки focus factor dod длительность спринта',integrations:'интеграции jira confluence atlassian slack trello opsgenie',
+  calendar:'календарь события расписание',budget:'бюджет деньги стоимость расходы затраты',checks:'проверки данных валидация целостность',
+  eda:'разведочный анализ данных eda полнота датасет качество данных',audit:'журнал событий аудит действия',faq:'частые вопросы справка',support:'поддержка документы скачать руководства инструкции'};
+ let KB=null;
+ function buildKB(){const tour={},out={};
+  try{TOUR.forEach(t=>{if(t&&t.v&&t.p&&(!tour[t.v]||t.p.length>tour[t.v].length))tour[t.v]=t.p;});}catch(e){}
+  NAV.forEach(g=>g.items.forEach(it=>{
+   const id=it[0],label=it[1];let title=label,desc='';
+   const v=document.getElementById('v_'+id);
+   if(v){const h=v.querySelector('h1');if(h&&h.textContent.trim())title=h.textContent.trim();
+    const l=v.querySelector('.lede');if(l&&l.textContent.trim())desc=l.textContent.trim();}
+   const more=(tour[id]&&tour[id].length>desc.length)?tour[id]:'';
+   out[id]={id:id,label:label,group:g.g,title:title,text:(more||desc||(title+' — раздел приложения.')),
+    hay:(label+' '+title+' '+desc+' '+more+' '+(AKA[id]||'')).toLowerCase()};
+  }));
+  return out;}
+ function kb(){if(!KB)KB=buildKB();return KB;}
+ const STOP=/^(что|это|такое|как|где|зачем|для|чего|почему|расскажи|расскаж|опиши|объясни|покажи|про|раздел|страниц|вкладк|мне|пожалуйста|работает|пользоват|использ|делать|нужен|нужна|нужно|есть|приложени|умеет|можно|хочу|открой)$/;
+ function findSectionStrong(s){const K=kb();let hit=null;Object.keys(K).forEach(id=>{const lb=K[id].label.toLowerCase();if(lb.length>=3&&s.indexOf(lb)>=0&&(!hit||lb.length>hit.label.length))hit=K[id];});return hit;}
+ function findSectionFuzzy(s){const K=kb();const toks=s.split(/[^a-zа-яё0-9]+/i).filter(w=>w.length>2&&!STOP.test(w));if(!toks.length)return null;
+  let best=null,bs=0;Object.keys(K).forEach(id=>{const hay=K[id].hay;let sc=0;toks.forEach(w=>{if(hay.indexOf(w)>=0)sc++;});if(sc>bs){bs=sc;best=K[id];}});
+  const thr=toks.length<=2?1:2;return bs>=thr?best:null;}
+ function sectionAnswer(sec){let head=sec.title;if(sec.title.toLowerCase().indexOf(sec.label.toLowerCase())<0)head+=' («'+sec.label+'»)';head+=' — блок «'+sec.group+'».';return {t:head+'\n'+sec.text,goto:sec.id};}
+ function overview(){const n=NAV.reduce((a,g)=>a+g.items.length,0);
+  const parts=NAV.map(g=>'• '+g.g+': '+g.items.map(it=>it[1]).join(', '));
+  return {t:'Приложение «Управление кросс-функциональной командой» — '+n+' разделов в '+NAV.length+' блоках:\n'+parts.join('\n')+'\n\nСпросите про любой раздел («что такое Гант», «зачем Bus factor», «как работает DORA») или скажите «открой …».'};}
+ function groupAnswer(s){for(const g of NAV){if(s.indexOf(g.g.toLowerCase())>=0)return {t:'Блок «'+g.g+'» — '+g.items.length+' разд.: '+g.items.map(it=>it[1]).join(', ')+'.'};}return null;}
+ function whatsNew(){const c=(typeof CHANGELOG!=='undefined'&&CHANGELOG[0])||null;if(!c)return {t:'Текущая версия приложения: '+APP_VERSION+'.'};
+  return {t:'Версия '+c.v+' от '+c.date+':\n• '+c.items.slice(0,8).join('\n• ')+(c.items.length>8?'\n…':'')+'\n\nПолная история — в разделе FAQ.',goto:'faq'};}
  function attnText(C){const T=ST.ttmTarget||15,it=[];
   const blk=(ST.deps||[]).filter(d=>d.status==='Заблокировано'||d.status==='Просрочено').length;if(blk)it.push('⛔ Заблокировано зависимостей: '+blk);
   const critB=(ST.bugs||[]).filter(b=>b.sev==='Critical'&&b.status!=='Закрыт').length;if(critB)it.push('🔴 Critical-баги открыты: '+critB);
@@ -5194,10 +5250,13 @@ startAnalytics();setInterval(startAnalytics,30000);
   let best=null,bs=0;items.forEach(it=>{const hay=((it.q||'')+' '+(it.a||'')+' '+(it.category||'')).toLowerCase();
    let sc=0;qt.forEach(w=>{if(hay.indexOf(w)>=0)sc++;});if(sc>bs){bs=sc;best=it;}});
   return (best&&bs>=Math.min(2,qt.length))?(best.q+'\n\n'+best.a):null;}
- function help(){return {t:'Я помощник по приложению «Управление кросс-функциональной командой». Могу:\n• показать метрики — velocity, health, TTM, баги, зависимости, бюджет, прогноз;\n• подсказать, что требует внимания;\n• объяснить разделы и методологии (RICE, MoSCoW);\n• открыть нужный раздел (напр. «открой риски»).',chips:true};}
- function reply(q){const s=(q||'').toLowerCase().trim();if(!s)return help();
+ function help(){return {t:'Я помощник по приложению «Управление кросс-функциональной командой» и знаю все его разделы и функции. Могу:\n• рассказать про любой из '+NAV.reduce((a,g)=>a+g.items.length,0)+' разделов и методологий («что такое Гант», «зачем Bus factor», «как работает DORA»);\n• перечислить все разделы приложения («какие разделы есть», «что в блоке Команда»);\n• показать метрики — velocity, health, TTM, баги, зависимости, бюджет, прогноз;\n• подсказать, что требует внимания, и что нового в версии;\n• открыть нужный раздел и выполнить действия («набери спринт 4», «сортируй бэклог»).',chips:true};}
+ function reply(q){const s=(q||'').toLowerCase().trim();if(!s)return help();const C=compute();
   if(/^(привет|здравств|хай|hello|hi|добр|ку\b|yo)/.test(s))return {t:'Привет! Спросите про данные проекта (velocity, баги, риски, «что требует внимания») или про разделы приложения. Могу и открыть нужный раздел, а также выполнить действия: «набери спринт 4», «сортируй бэклог по приоритету», «исправь данные», «создай задачу …».',chips:true};
   if(/(что ты умеешь|как польз|помоги|help|что можешь|команды)/.test(s))return help();
+  if(/((какие|каки[ехй]|список|перечисл|покажи все|все)\s.*(раздел|страниц|вкладк|блок|функци|возможност))|(что (умеет|может|есть в|за разделы)).*(приложени|прилож)|обзор приложени|карта приложени|по разделам|меню приложени|из чего состоит/.test(s))return overview();
+  if(/(что нового|что нов|changelog|чейндж.?лог|последн.*(верси|обновлен)|текущ.*верси|номер верси|как(ая|ой).*верси|верси.*приложени|нововведени|недавн.*изменени)/.test(s))return whatsNew();
+  if(/(что в|какие разделы в|состав)\s.*(блок|групп)/.test(s)){const ga=groupAnswer(s);if(ga)return ga;}
   // --- команды-действия (нужны права редактора) ---
   const canDo=(typeof PERM!=='undefined'&&PERM.canEdit);
   if(/(набери|авто.?набор|заполни).{0,12}спринт/.test(s)){const m=s.match(/спринт[а-я]*\s*#?(\d+)/);if(!m)return {t:'Укажите номер спринта, например «набери спринт 4».'};if(!canDo)return {t:'Действие доступно редактору/администратору.'};autoFillSprint(+m[1]);return {t:'Выполняю авто-набор спринта #'+m[1]+' по ёмкости.',goto:'roadmap'};}
@@ -5235,8 +5294,8 @@ startAnalytics();setInterval(startAnalytics,30000);
   if(/(aging wip|старение.*задач|say.?do|надёжность обязатель)/.test(s)){const sd=sayDo(compute());return {t:'Say-Do (надёжность обязательств): '+(sd.avg==null?'—':pctf(sd.avg))+'. Aging WIP — в «Аналитике».',goto:'analytics'};}
   // navigation (requires a verb)
   if(/(открой|откр\b|покажи|перейд|переключ|запусти|show|go to)/.test(s)){
-   for(const k in SYN){if(s.indexOf(k)>=0){activate(SYN[k]);return {t:'Открыл раздел «'+navLabel(SYN[k])+'».'};}}}
-  const C=compute();
+   for(const k in SYN){if(s.indexOf(k)>=0){activate(SYN[k]);return {t:'Открыл раздел «'+navLabel(SYN[k])+'».'};}}
+   const sv=findSectionStrong(s)||findSectionFuzzy(s);if(sv){activate(sv.id);return {t:'Открыл раздел «'+sv.label+'».'};}}
   if(/(что.*вниман|треб.*вниман|проблем|тревож|сигнал|блокер)/.test(s))return {t:attnText(C),goto:'dash'};
   if(/(velocity|велосит|скорост команд)/.test(s))return {t:`Средняя velocity: ${fmt(C.avgVel,1)} SP/спринт. Закрыто задач: ${C.closed}.`,goto:'analytics'};
   if(/(health|здоров|индекс здоров)/.test(s))return {t:`Health-index: ${pctf(C.health)} — ${C.health>=.8?'хорошо':C.health>=.6?'требует внимания':'критично'}.`,goto:'analytics'};
@@ -5255,12 +5314,14 @@ startAnalytics();setInterval(startAnalytics,30000);
   if(/rice/.test(s))return {t:'RICE = (Reach × Impact × Confidence) / Effort — числовой балл для ранжирования фич по приоритету.',goto:'rice'};
   if(/(moscow|москоу|москов)/.test(s))return {t:'MoSCoW распределяет фичи по категориям Must / Should / Could / Won\'t — что обязательно, желательно, возможно и что откладываем.',goto:'moscow'};
   if(/(focus factor|фокус.?фактор)/.test(s))return {t:'Focus factor — доля рабочего времени, реально уходящая на задачи спринта (обычно 0.7–0.8). Задаётся в «Параметрах».',goto:'params'};
+  const secS=findSectionStrong(s);if(secS)return sectionAnswer(secS);
   const f=faqMatch(s);if(f)return {t:f,goto:'faq'};
-  return {t:'Не уверен, что понял вопрос. Могу показать метрики (velocity, health, баги, зависимости, бюджет, прогноз), объяснить разделы или открыть нужный. Примеры — на кнопках ниже.',chips:true};}
+  const secF=findSectionFuzzy(s);if(secF)return sectionAnswer(secF);
+  return {t:'Не уверен, что понял вопрос. Я знаю все разделы приложения — спросите «какие разделы есть», «что такое …», «как работает …», «что нового» — или попросите показать метрики (velocity, health, баги, бюджет). Примеры — на кнопках ниже.',chips:true};}
  function addMsg(text,who,goto){const d=document.createElement('div');d.className='chat-msg '+who;d.textContent=text;
   if(goto){const a=document.createElement('span');a.className='chat-link';a.textContent='Открыть «'+navLabel(goto)+'» →';a.onclick=()=>{activate(goto);};d.appendChild(document.createElement('br'));d.appendChild(a);}
   log.appendChild(d);log.scrollTop=log.scrollHeight;}
- const CHIPS=[['Что требует внимания?','что требует внимания'],['Velocity?','какая velocity'],['Открытых багов?','сколько открытых багов'],['Что заблокировано?','что заблокировано'],['Ёмкость спринта?','как рассчитывается ёмкость спринта'],['Открой аналитику','открой аналитику']];
+ const CHIPS=[['Какие разделы есть?','какие разделы есть в приложении'],['Что требует внимания?','что требует внимания'],['Velocity?','какая velocity'],['Что такое DORA?','что такое dora'],['Что нового?','что нового в приложении'],['Открой аналитику','открой аналитику']];
  function renderChips(){const c=document.getElementById('chatchips');c.innerHTML='';CHIPS.forEach(([lbl,q])=>{const b=document.createElement('button');b.className='chat-chip';b.textContent=lbl;b.onclick=()=>send(q);c.appendChild(b);});}
  function send(text){text=(text==null?input.value:text).trim();if(!text)return;addMsg(text,'user');input.value='';
   if(typeof auditClient==='function')auditClient('assistant_query',text);
@@ -5271,6 +5332,8 @@ startAnalytics();setInterval(startAnalytics,30000);
  document.getElementById('chatx').onclick=closeChat;
  document.getElementById('chatsend').onclick=()=>send();
  input.addEventListener('keydown',e=>{if(e.key==='Enter')send();});
+ // тест-хук: позволяет e2e проверять знание всех разделов (регрессия «обучения»)
+ try{window.assistantAsk=function(q){return reply(q);};window.assistantKB=function(){return kb();};}catch(e){}
 })();
 /* ---------- guided tour (video-style walkthrough) ---------- */
 const TOUR=[

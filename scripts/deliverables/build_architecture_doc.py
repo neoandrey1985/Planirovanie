@@ -23,7 +23,7 @@ MIGR_DIR = ROOT / "backend-java" / "src" / "main" / "resources" / "db" / "migrat
 BUILD = ROOT / "build" / "arch"
 BUILD.mkdir(parents=True, exist_ok=True)
 OUT = ROOT / "Архитектура_приложения.docx"
-VER = "1.44.0"
+VER = "1.45.0"
 
 # domain + purpose per table (tables not listed fall back to «—»)
 PURPOSE = {
