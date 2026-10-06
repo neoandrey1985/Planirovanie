@@ -356,6 +356,28 @@ body.noadmin #rst,body.noadmin #imp{display:none}
 /* ---------- chat assistant ---------- */
 .chat-fab{position:fixed;right:20px;bottom:20px;z-index:60;width:52px;height:52px;border-radius:50%;border:none;background:var(--accent);color:#fff;font-size:22px;cursor:pointer;box-shadow:0 6px 20px rgba(45,91,227,.42);display:flex;align-items:center;justify-content:center}
 .chat-fab:hover{filter:brightness(1.08)}
+/* ---- анимированный робот-помощник (в логике логотипа: аккцент-синий + белый) ---- */
+.robo{overflow:visible;pointer-events:none;display:inline-block}
+.robo .robo-sk{fill:var(--robo,#fff)}
+.robo .robo-eye{fill:var(--roboEye,#2d5be3)}
+.robo .robo-acc{fill:var(--roboAcc,#ffd23f)}
+.chat-fab .robo{--robo:#fff;--roboEye:var(--accent);--roboAcc:#ffd23f;width:30px;height:35px}
+.chat-title .robo{--robo:var(--accent);--roboEye:#fff;--roboAcc:var(--accent);width:17px;height:20px;vertical-align:-4px;margin-right:5px}
+.robo-arm-l,.robo-arm-r,.robo-leg-l,.robo-leg-r,.robo-eyes{transform-box:fill-box}
+.robo-body{animation:roboBob .9s ease-in-out infinite}
+.robo-arm-l{transform-origin:50% 0;animation:roboSwB .9s ease-in-out infinite}
+.robo-arm-r{transform-origin:50% 0;animation:roboSwA .9s ease-in-out infinite}
+.robo-leg-l{transform-origin:50% 0;animation:roboSwA .9s ease-in-out infinite}
+.robo-leg-r{transform-origin:50% 0;animation:roboSwB .9s ease-in-out infinite}
+.robo-eyes{transform-origin:50% 50%;animation:roboBlink 4.2s ease-in-out infinite}
+.robo-tip{animation:roboPulse 1.8s ease-in-out infinite}
+@keyframes roboBob{0%,100%{transform:translateY(0)}25%,75%{transform:translateY(-1.3px)}}
+@keyframes roboSwA{0%,100%{transform:rotate(21deg)}50%{transform:rotate(-21deg)}}
+@keyframes roboSwB{0%,100%{transform:rotate(-21deg)}50%{transform:rotate(21deg)}}
+@keyframes roboBlink{0%,90%,100%{transform:scaleY(1)}95%{transform:scaleY(.12)}}
+@keyframes roboPulse{0%,100%{opacity:1}50%{opacity:.4}}
+.chat-fab:hover .robo-body,.chat-fab:hover .robo-arm-l,.chat-fab:hover .robo-arm-r,.chat-fab:hover .robo-leg-l,.chat-fab:hover .robo-leg-r{animation-duration:.55s}
+@media(prefers-reduced-motion:reduce){.robo *{animation:none!important}}
 .chat-panel{position:fixed;right:20px;bottom:84px;z-index:61;width:min(380px,calc(100vw - 32px));height:min(560px,calc(100vh - 120px));background:var(--panel);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);display:none;flex-direction:column;overflow:hidden}
 .chat-panel.open{display:flex}
 .chat-head{display:flex;align-items:center;justify-content:space-between;padding:11px 14px;border-bottom:1px solid var(--line);background:var(--panel2)}
@@ -514,9 +536,9 @@ body.noadmin #rst,body.noadmin #imp{display:none}
  <label>Спринт</label><select id="pptx_sprint"></select>
  <div class="mrow"><button class="btn" id="pptx_cancel">Отмена</button><button class="btn primary" id="pptx_go">Сформировать</button></div>
 </div></div>
-<button class="chat-fab" id="chatfab" title="Помощник" aria-label="Открыть помощника">💬</button>
+<button class="chat-fab" id="chatfab" title="Помощник" aria-label="Открыть помощника"><svg class="robo" viewBox="0 0 44 52" aria-hidden="true"><g class="robo-body"><rect class="robo-sk" x="21.2" y="2.5" width="1.6" height="5" rx=".8"/><circle class="robo-acc robo-tip" cx="22" cy="2" r="1.8"/><g class="robo-arm-l"><rect class="robo-sk" x="9.5" y="23" width="3.2" height="12" rx="1.6"/><circle class="robo-sk" cx="11.1" cy="35" r="2"/></g><g class="robo-arm-r"><rect class="robo-sk" x="31.3" y="23" width="3.2" height="12" rx="1.6"/><circle class="robo-sk" cx="32.9" cy="35" r="2"/></g><g class="robo-leg-l"><rect class="robo-sk" x="16.4" y="36" width="4" height="11" rx="1.6"/><rect class="robo-sk" x="14.8" y="46.5" width="6" height="3" rx="1.5"/></g><g class="robo-leg-r"><rect class="robo-sk" x="23.6" y="36" width="4" height="11" rx="1.6"/><rect class="robo-sk" x="23.2" y="46.5" width="6" height="3" rx="1.5"/></g><rect class="robo-sk" x="12.5" y="22" width="19" height="15" rx="3.5"/><circle class="robo-acc" cx="22" cy="29.5" r="2.1"/><rect class="robo-sk" x="11.5" y="7" width="21" height="14.5" rx="4.5"/><g class="robo-eyes"><circle class="robo-eye" cx="18" cy="13.6" r="2.3"/><circle class="robo-eye" cx="26" cy="13.6" r="2.3"/></g><rect class="robo-eye" x="18" y="17.2" width="8" height="1.7" rx=".85"/></g></svg></button>
 <div class="chat-panel" id="chatpanel">
- <div class="chat-head"><span class="chat-title">🤖 Помощник</span><button class="chat-x" id="chatx" aria-label="Закрыть">✕</button></div>
+ <div class="chat-head"><span class="chat-title"><svg class="robo" viewBox="0 0 44 52" aria-hidden="true"><g class="robo-body"><rect class="robo-sk" x="21.2" y="2.5" width="1.6" height="5" rx=".8"/><circle class="robo-acc robo-tip" cx="22" cy="2" r="1.8"/><g class="robo-arm-l"><rect class="robo-sk" x="9.5" y="23" width="3.2" height="12" rx="1.6"/><circle class="robo-sk" cx="11.1" cy="35" r="2"/></g><g class="robo-arm-r"><rect class="robo-sk" x="31.3" y="23" width="3.2" height="12" rx="1.6"/><circle class="robo-sk" cx="32.9" cy="35" r="2"/></g><g class="robo-leg-l"><rect class="robo-sk" x="16.4" y="36" width="4" height="11" rx="1.6"/><rect class="robo-sk" x="14.8" y="46.5" width="6" height="3" rx="1.5"/></g><g class="robo-leg-r"><rect class="robo-sk" x="23.6" y="36" width="4" height="11" rx="1.6"/><rect class="robo-sk" x="23.2" y="46.5" width="6" height="3" rx="1.5"/></g><rect class="robo-sk" x="12.5" y="22" width="19" height="15" rx="3.5"/><circle class="robo-acc" cx="22" cy="29.5" r="2.1"/><rect class="robo-sk" x="11.5" y="7" width="21" height="14.5" rx="4.5"/><g class="robo-eyes"><circle class="robo-eye" cx="18" cy="13.6" r="2.3"/><circle class="robo-eye" cx="26" cy="13.6" r="2.3"/></g><rect class="robo-eye" x="18" y="17.2" width="8" height="1.7" rx=".85"/></g></svg>Помощник</span><button class="chat-x" id="chatx" aria-label="Закрыть">✕</button></div>
  <div class="chat-log" id="chatlog"></div>
  <div class="chat-chips" id="chatchips"></div>
  <div class="chat-input"><input id="chatin" type="text" placeholder="Спросите о данных или разделах…" autocomplete="off"><button class="btn primary" id="chatsend" title="Отправить">▶</button></div>
@@ -4722,7 +4744,8 @@ const CHANGELOG=[
    'Помощник (чат-бот) обучен всему приложению: знает все разделы и функции и отвечает на вопрос о любом из них («что такое Гант», «зачем Bus factor», «как работает DORA»).',
    'База знаний помощника строится автоматически из самого приложения (меню NAV, заголовки и описания разделов, гид-тур, история версий), поэтому «обучение» обновляется само после каждого релиза.',
    'Новые вопросы: «какие разделы есть», «что в блоке …», «что нового»; помощник умеет открывать и ранее не охваченные разделы (Гант, Кварталы, Вехи, Дэйли, Груминг, Демо, Календарь и др.).',
-   'Регрессия: авто-тест проверяет, что помощник знает каждый раздел из NAV (защита «обучения» от устаревания).']},
+   'Регрессия: авто-тест проверяет, что помощник знает каждый раздел из NAV (защита «обучения» от устаревания).',
+   'Помощник получил анимированный логотип-робота (SVG): ходит, двигает руками и ногами, моргает — на кнопке «💬» и в шапке чата; уважает prefers-reduced-motion.']},
  {v:'1.44.0',date:'2026-10-06',items:[
    'UX: логичная перегруппировка бокового меню (аккордеон) — 11 смысловых блоков, разделы приведены в соответствие с названиями блоков.',
    'Новый блок «Обзор» (Дашборд, Статус-отчёт, Портфель); «Бэклог и приоритизация» и «Расписание и зависимости» выделены отдельно.',
