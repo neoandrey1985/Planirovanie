@@ -4760,7 +4760,8 @@ const CHANGELOG=[
    'Во всех таблицах приложения можно менять ширину столбцов: потяните за правую границу заголовка; двойной клик по границе — сброс к равным долям.',
    'Заданная ширина запоминается (localStorage) и восстанавливается после перерисовки и перезагрузки; работает для текущих и будущих таблиц автоматически (IntersectionObserver + MutationObserver).',
    'Длинный текст в суженном столбце аккуратно обрезается троеточием; перетаскивание не запускает сортировку.',
-   'В узких столбцах выпадающие списки (select) больше не «ломаются»: своя аккуратная стрелка и усечение текста вместо наложения нативной стрелки; минимальная ширина столбца увеличена.']},
+   'В узких столбцах выпадающие списки (select) больше не «ломаются»: своя аккуратная стрелка и усечение текста вместо наложения нативной стрелки; минимальная ширина столбца увеличена.',
+   'Изменение ширины остаётся доступным после сортировки и фильтрации (перерисовка таблицы восстанавливает «ручки»), а заданная ширина сохраняется при сортировке.']},
  {v:'1.45.0',date:'2026-10-06',items:[
    'Помощник (чат-бот) обучен всему приложению: знает все разделы и функции и отвечает на вопрос о любом из них («что такое Гант», «зачем Bus factor», «как работает DORA»).',
    'База знаний помощника строится автоматически из самого приложения (меню NAV, заголовки и описания разделов, гид-тур, история версий), поэтому «обучение» обновляется само после каждого релиза.',
@@ -5387,23 +5388,26 @@ startAnalytics();setInterval(startAnalytics,30000);
  const MIN=48;
  function headRow(t){return (t.tHead&&t.tHead.rows[0])||t.rows[0]||null;}
  function sig(t){const hr=headRow(t);if(!hr)return null;
-  const labels=[].map.call(hr.cells,c=>(c.textContent||'').replace(/\s+/g,' ').trim().slice(0,18)).join('~');
+  const labels=[].map.call(hr.cells,c=>(c.textContent||'').replace(/[▲▼]/g,'').replace(/\s+/g,' ').trim().slice(0,18)).join('~');
   let p=t.parentElement;while(p&&!p.id)p=p.parentElement;const vid=p?p.id:'root';
   let idx=0;if(p){const ts=p.getElementsByTagName('table');idx=[].indexOf.call(ts,t);}
   return vid+'#'+idx+'|'+labels;}
+ function hasGrips(hr){return hr.querySelectorAll('.col-grip').length;}
  function enhance(t){
-  if(t.dataset.colr)return;
   const hr=headRow(t);if(!hr)return;
   const cells=[].slice.call(hr.cells);
   if(cells.length<2)return;
   if(cells.some(c=>c.tagName!=='TH'||c.colSpan>1))return; // только простые заголовки
+  const need=cells.length-1;
+  if(t.dataset.colr&&hasGrips(hr)===need)return; // уже обработана и ручки на месте
+  // точное измерение: временно вернуть авто-раскладку (перерисовка сортировкой/фильтром сбрасывает ширины)
+  t.classList.remove('colr');cells.forEach(c=>{c.style.width='';});
   const r=cells.map(c=>c.getBoundingClientRect().width);
-  if(r.some(w=>w<=0))return; // скрыта/ещё не отрисована (в т.ч. cardt на мобильном)
+  if(r.some(w=>w<=0)){io.observe(t);return;} // скрыта (другой раздел/мобильный cardt) — обработаем, когда станет видимой
   t.dataset.colr='1';t.classList.add('colr');
-  const s=sig(t),saved=s&&store[s];
-  let widths;
-  if(saved&&saved.length===cells.length){const BASE=r.reduce((a,b)=>a+b,0)||1000;widths=saved.map(x=>x*BASE);}
-  else widths=r;
+  const s=sig(t),saved=s&&store[s],sum=r.reduce((a,b)=>a+b,0)||1000;
+  const widths=(saved&&saved.length===cells.length)?saved.map(x=>x*sum):r;
+  hr.querySelectorAll('.col-grip').forEach(g=>g.remove()); // убрать возможные старые ручки
   cells.forEach((c,i)=>{
    if(getComputedStyle(c).position==='static')c.style.position='relative';
    c.style.width=widths[i]+'px';
@@ -5446,16 +5450,17 @@ startAnalytics();setInterval(startAnalytics,30000);
   const n=cells.length;cells.forEach(c=>{c.style.width=(100/n)+'%';});
   requestAnimationFrame(()=>{const r=cells.map(c=>c.getBoundingClientRect().width);cells.forEach((c,k)=>{c.style.width=r[k]+'px';});});
  }
- const io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){enhance(e.target);if(e.target.dataset.colr)io.unobserve(e.target);}});});
- function observeAll(){document.querySelectorAll('table').forEach(t=>{if(!t.dataset.colr)io.observe(t);});}
- const mo=new MutationObserver(ms=>{ms.forEach(m=>{m.addedNodes&&m.addedNodes.forEach(n=>{
-   if(n.nodeType!==1)return;
-   if(n.tagName==='TABLE'){if(!n.dataset.colr)io.observe(n);}
-   else if(n.querySelectorAll){n.querySelectorAll('table').forEach(t=>{if(!t.dataset.colr)io.observe(t);});}
-  });});});
- function init(){observeAll();mo.observe(document.body,{childList:true,subtree:true});}
+ const io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting)enhance(e.target);});});
+ function ensureAll(){document.querySelectorAll('table').forEach(t=>{
+   io.observe(t); // idempotent — поймает появление таблицы в видимой области (смена раздела)
+   const hr=headRow(t);
+   if(t.dataset.colr&&hr&&hasGrips(hr)!==Math.max(0,hr.cells.length-1))enhance(t); // восстановить ручки после перерисовки (сортировка/фильтр)
+  });}
+ let moT=null;
+ const mo=new MutationObserver(()=>{clearTimeout(moT);moT=setTimeout(ensureAll,60);});
+ function init(){ensureAll();mo.observe(document.body,{childList:true,subtree:true});}
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
- try{window.__colResizeEnhance=enhance;window.__colResizeScan=observeAll;}catch(e){}
+ try{window.__colResizeEnhance=enhance;window.__colResizeScan=ensureAll;}catch(e){}
 })();
 /* ---------- guided tour (video-style walkthrough) ---------- */
 const TOUR=[

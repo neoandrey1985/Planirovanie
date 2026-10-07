@@ -148,7 +148,25 @@ def main():
             assert r['grips2'] == r['grips'], 'enhance is not idempotent (%d -> %d)' % (r['grips'], r['grips2'])
             assert r['widthsSet'], 'column widths were not frozen'
             assert r['fixed'], 'table did not switch to fixed layout (.colr)'
-        case('tables: columns are resizable (grips + fixed layout)', t_colresize)
+            # grips must survive an in-place re-render (sort/filter)
+            page.evaluate("()=>activate('team')"); page.wait_for_timeout(250)
+            r2 = page.evaluate("""()=>{
+              const t=document.querySelector('#v_team table'); if(!t)return {skip:true};
+              window.__colResizeEnhance(t);
+              const hr=(t.tHead&&t.tHead.rows[0])||t.rows[0];
+              const th=hr.querySelector('th.sortable'); if(!th)return {skip:true};
+              const before=t.querySelectorAll('.col-grip').length;
+              th.click();  // sort → re-render thead/tbody in place
+              return {before:before};
+            }""")
+            if not r2.get('skip'):
+                page.wait_for_timeout(300)  # allow MO debounce + repair
+                after = page.evaluate("()=>{const t=document.querySelector('#v_team table');"
+                                      "const hr=(t.tHead&&t.tHead.rows[0])||t.rows[0];"
+                                      "return {grips:t.querySelectorAll('.col-grip').length,need:hr.cells.length-1};}")
+                assert after['grips'] == after['need'], \
+                    'grips lost after sort: %d != %d' % (after['grips'], after['need'])
+        case('tables: columns are resizable (grips survive sort/filter)', t_colresize)
 
         # ---- 4. EDA report ----
         def t_eda():
