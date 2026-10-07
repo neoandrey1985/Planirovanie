@@ -207,7 +207,9 @@ td.wide input{min-width:220px}
 /* изменение ширины столбцов во всех таблицах (перетаскивание границы заголовка) */
 .colr{table-layout:fixed}
 .colr th,.colr td{overflow:hidden;text-overflow:ellipsis}
-.colr td input,.colr td select{min-width:0}
+.colr td input,.colr td select{min-width:0;text-overflow:ellipsis}
+/* в узком столбце нативная стрелка select налезает на текст — свой аккуратный chevron + усечение */
+.colr td select{appearance:none;-webkit-appearance:none;padding-right:17px;background-repeat:no-repeat;background-position:right 5px center;background-size:9px 6px;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path d='M1 1l4 4 4-4' fill='none' stroke='%238a93a6' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/></svg>")}
 .col-grip{position:absolute;top:0;right:0;width:8px;height:100%;cursor:col-resize;z-index:6;user-select:none}
 .col-grip:hover,.col-grip.drag{box-shadow:inset -2px 0 0 var(--accent)}
 body.col-resizing,body.col-resizing *{cursor:col-resize!important;user-select:none!important}
@@ -4757,7 +4759,8 @@ const CHANGELOG=[
  {v:'1.46.0',date:'2026-10-07',items:[
    'Во всех таблицах приложения можно менять ширину столбцов: потяните за правую границу заголовка; двойной клик по границе — сброс к равным долям.',
    'Заданная ширина запоминается (localStorage) и восстанавливается после перерисовки и перезагрузки; работает для текущих и будущих таблиц автоматически (IntersectionObserver + MutationObserver).',
-   'Длинный текст в суженном столбце аккуратно обрезается троеточием; перетаскивание не запускает сортировку.']},
+   'Длинный текст в суженном столбце аккуратно обрезается троеточием; перетаскивание не запускает сортировку.',
+   'В узких столбцах выпадающие списки (select) больше не «ломаются»: своя аккуратная стрелка и усечение текста вместо наложения нативной стрелки; минимальная ширина столбца увеличена.']},
  {v:'1.45.0',date:'2026-10-06',items:[
    'Помощник (чат-бот) обучен всему приложению: знает все разделы и функции и отвечает на вопрос о любом из них («что такое Гант», «зачем Bus factor», «как работает DORA»).',
    'База знаний помощника строится автоматически из самого приложения (меню NAV, заголовки и описания разделов, гид-тур, история версий), поэтому «обучение» обновляется само после каждого релиза.',
@@ -5381,7 +5384,7 @@ startAnalytics();setInterval(startAnalytics,30000);
  const LS='tblcolw';let store={};
  try{store=JSON.parse(localStorage.getItem(LS)||'{}')||{};}catch(e){store={};}
  function persist(){try{localStorage.setItem(LS,JSON.stringify(store));}catch(e){}}
- const MIN=40;
+ const MIN=48;
  function headRow(t){return (t.tHead&&t.tHead.rows[0])||t.rows[0]||null;}
  function sig(t){const hr=headRow(t);if(!hr)return null;
   const labels=[].map.call(hr.cells,c=>(c.textContent||'').replace(/\s+/g,' ').trim().slice(0,18)).join('~');
