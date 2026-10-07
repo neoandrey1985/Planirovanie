@@ -124,6 +124,32 @@ def main():
             assert r['nwOK'], 'assistant «что нового» missing current version'
         case('assistant: knows every NAV section (auto-trained)', t_assistant)
 
+        # ---- 3c. resizable table columns (grips + persist) ----
+        def t_colresize():
+            page.evaluate("()=>activate('sprintGoals')"); page.wait_for_timeout(200)
+            r = page.evaluate("""()=>{
+              if(typeof window.__colResizeEnhance!=='function')return {err:'no colResize hook'};
+              const t=document.querySelector('#v_sprintGoals table');
+              if(!t)return {err:'no table'};
+              window.__colResizeEnhance(t);
+              const hr=(t.tHead&&t.tHead.rows[0])||t.rows[0];
+              const cols=hr.cells.length;
+              const grips=t.querySelectorAll('.col-grip').length;
+              const widthsSet=[].every.call(hr.cells,c=>/px|%/.test(c.style.width||''));
+              const fixed=t.classList.contains('colr');
+              // идемпотентность: второй вызов не плодит гриппы
+              window.__colResizeEnhance(t);
+              const grips2=t.querySelectorAll('.col-grip').length;
+              return {cols:cols,grips:grips,grips2:grips2,widthsSet:widthsSet,fixed:fixed};
+            }""")
+            assert 'err' not in r, r.get('err')
+            assert r['cols'] >= 2, 'table has too few columns'
+            assert r['grips'] == r['cols'] - 1, 'grips %d != cols-1 (%d)' % (r['grips'], r['cols'] - 1)
+            assert r['grips2'] == r['grips'], 'enhance is not idempotent (%d -> %d)' % (r['grips'], r['grips2'])
+            assert r['widthsSet'], 'column widths were not frozen'
+            assert r['fixed'], 'table did not switch to fixed layout (.colr)'
+        case('tables: columns are resizable (grips + fixed layout)', t_colresize)
+
         # ---- 4. EDA report ----
         def t_eda():
             page.evaluate("()=>activate('eda')"); page.wait_for_timeout(200)

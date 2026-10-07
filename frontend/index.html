@@ -204,6 +204,13 @@ td input:hover,td select:hover{border-color:var(--line)}
 td input:focus,td select:focus{border-color:var(--accent);outline:none;background:var(--panel2)}
 td.num input{text-align:right;font-variant-numeric:tabular-nums}
 td.wide input{min-width:220px}
+/* изменение ширины столбцов во всех таблицах (перетаскивание границы заголовка) */
+.colr{table-layout:fixed}
+.colr th,.colr td{overflow:hidden;text-overflow:ellipsis}
+.colr td input,.colr td select{min-width:0}
+.col-grip{position:absolute;top:0;right:0;width:8px;height:100%;cursor:col-resize;z-index:6;user-select:none}
+.col-grip:hover,.col-grip.drag{box-shadow:inset -2px 0 0 var(--accent)}
+body.col-resizing,body.col-resizing *{cursor:col-resize!important;user-select:none!important}
 .rowdel{border:none;background:none;color:var(--muted);cursor:pointer;font-size:15px;padding:2px 6px;border-radius:6px}
 .rowdel:hover{color:var(--crit);background:var(--crit-bg)}
 .pill{display:inline-block;font-size:11px;font-weight:600;padding:2px 8px;border-radius:999px}
@@ -4744,9 +4751,13 @@ const NAV=[
  {g:'Система',items:[['params','Параметры','⚙️'],['integrations','Интеграции','🔌'],['calendar','Календарь','📅'],['budget','Бюджет','💰'],['checks','Проверки данных','🧪'],['eda','EDA отчёт','🔬'],['audit','Журнал событий','🧾']]},
  {g:'Справка',items:[['faq','FAQ','❓'],['support','Support','🛟']]},
 ];
-const APP_VERSION='1.45.0';const APP_DATE='2026-10-06';
+const APP_VERSION='1.46.0';const APP_DATE='2026-10-07';
 const APP_ABOUT='Кросс-функциональная команда — это группа специалистов из разных областей (разработчиков, дизайнеров, маркетологов, аналитиков, менеджеров и других), которые объединяются для работы над одним конкретным проектом или задачей. Ключевая идея в том, чтобы собрать внутри команды всех необходимых экспертов, чтобы она могла самостоятельно пройти путь от идеи до результата, не передавая задачу последовательно из одного отдела в другой.';
 const CHANGELOG=[
+ {v:'1.46.0',date:'2026-10-07',items:[
+   'Во всех таблицах приложения можно менять ширину столбцов: потяните за правую границу заголовка; двойной клик по границе — сброс к равным долям.',
+   'Заданная ширина запоминается (localStorage) и восстанавливается после перерисовки и перезагрузки; работает для текущих и будущих таблиц автоматически (IntersectionObserver + MutationObserver).',
+   'Длинный текст в суженном столбце аккуратно обрезается троеточием; перетаскивание не запускает сортировку.']},
  {v:'1.45.0',date:'2026-10-06',items:[
    'Помощник (чат-бот) обучен всему приложению: знает все разделы и функции и отвечает на вопрос о любом из них («что такое Гант», «зачем Bus factor», «как работает DORA»).',
    'База знаний помощника строится автоматически из самого приложения (меню NAV, заголовки и описания разделов, гид-тур, история версий), поэтому «обучение» обновляется само после каждого релиза.',
@@ -5364,6 +5375,84 @@ startAnalytics();setInterval(startAnalytics,30000);
  input.addEventListener('keydown',e=>{if(e.key==='Enter')send();});
  // тест-хук: позволяет e2e проверять знание всех разделов (регрессия «обучения»)
  try{window.assistantAsk=function(q){return reply(q);};window.assistantKB=function(){return kb();};}catch(e){}
+})();
+/* ---------- изменение ширины столбцов во всех таблицах ---------- */
+(function(){
+ const LS='tblcolw';let store={};
+ try{store=JSON.parse(localStorage.getItem(LS)||'{}')||{};}catch(e){store={};}
+ function persist(){try{localStorage.setItem(LS,JSON.stringify(store));}catch(e){}}
+ const MIN=40;
+ function headRow(t){return (t.tHead&&t.tHead.rows[0])||t.rows[0]||null;}
+ function sig(t){const hr=headRow(t);if(!hr)return null;
+  const labels=[].map.call(hr.cells,c=>(c.textContent||'').replace(/\s+/g,' ').trim().slice(0,18)).join('~');
+  let p=t.parentElement;while(p&&!p.id)p=p.parentElement;const vid=p?p.id:'root';
+  let idx=0;if(p){const ts=p.getElementsByTagName('table');idx=[].indexOf.call(ts,t);}
+  return vid+'#'+idx+'|'+labels;}
+ function enhance(t){
+  if(t.dataset.colr)return;
+  const hr=headRow(t);if(!hr)return;
+  const cells=[].slice.call(hr.cells);
+  if(cells.length<2)return;
+  if(cells.some(c=>c.tagName!=='TH'||c.colSpan>1))return; // только простые заголовки
+  const r=cells.map(c=>c.getBoundingClientRect().width);
+  if(r.some(w=>w<=0))return; // скрыта/ещё не отрисована (в т.ч. cardt на мобильном)
+  t.dataset.colr='1';t.classList.add('colr');
+  const s=sig(t),saved=s&&store[s];
+  let widths;
+  if(saved&&saved.length===cells.length){const BASE=r.reduce((a,b)=>a+b,0)||1000;widths=saved.map(x=>x*BASE);}
+  else widths=r;
+  cells.forEach((c,i)=>{
+   if(getComputedStyle(c).position==='static')c.style.position='relative';
+   c.style.width=widths[i]+'px';
+   if(i<cells.length-1){
+    const g=document.createElement('div');g.className='col-grip';g.title='Потяните, чтобы изменить ширину столбца (двойной клик — сброс)';
+    g.addEventListener('mousedown',ev=>startDrag(ev,t,cells,i));
+    g.addEventListener('click',ev=>{ev.stopPropagation();ev.preventDefault();});
+    g.addEventListener('dblclick',ev=>{ev.stopPropagation();ev.preventDefault();resetCols(t,cells);});
+    c.appendChild(g);
+   }
+  });
+ }
+ let drag=null;
+ function startDrag(ev,t,cells,i){
+  ev.preventDefault();ev.stopPropagation();
+  const r=cells.map(c=>c.getBoundingClientRect().width); // ре-базис: factor=1 на время тяги
+  cells.forEach((c,k)=>{c.style.width=r[k]+'px';});
+  drag={cells:cells,i:i,x:ev.clientX,wi:r[i],wj:r[i+1],t:t};
+  document.body.classList.add('col-resizing');ev.currentTarget.classList.add('drag');
+  window.addEventListener('mousemove',onMove);window.addEventListener('mouseup',onUp);
+ }
+ function onMove(ev){
+  if(!drag)return;const d=ev.clientX-drag.x,sum=drag.wi+drag.wj;
+  let ni=drag.wi+d,nj=drag.wj-d;
+  if(ni<MIN){ni=MIN;nj=sum-MIN;}
+  if(nj<MIN){nj=MIN;ni=sum-MIN;}
+  drag.cells[drag.i].style.width=ni+'px';drag.cells[drag.i+1].style.width=nj+'px';
+ }
+ function onUp(){
+  if(!drag)return;
+  window.removeEventListener('mousemove',onMove);window.removeEventListener('mouseup',onUp);
+  document.body.classList.remove('col-resizing');
+  const g=document.querySelector('.col-grip.drag');if(g)g.classList.remove('drag');
+  const s=sig(drag.t);
+  if(s){const w=drag.cells.map(c=>parseFloat(c.style.width)||1),sum=w.reduce((a,b)=>a+b,0)||1;store[s]=w.map(x=>x/sum);persist();}
+  drag=null;
+ }
+ function resetCols(t,cells){
+  const s=sig(t);if(s){delete store[s];persist();}
+  const n=cells.length;cells.forEach(c=>{c.style.width=(100/n)+'%';});
+  requestAnimationFrame(()=>{const r=cells.map(c=>c.getBoundingClientRect().width);cells.forEach((c,k)=>{c.style.width=r[k]+'px';});});
+ }
+ const io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){enhance(e.target);if(e.target.dataset.colr)io.unobserve(e.target);}});});
+ function observeAll(){document.querySelectorAll('table').forEach(t=>{if(!t.dataset.colr)io.observe(t);});}
+ const mo=new MutationObserver(ms=>{ms.forEach(m=>{m.addedNodes&&m.addedNodes.forEach(n=>{
+   if(n.nodeType!==1)return;
+   if(n.tagName==='TABLE'){if(!n.dataset.colr)io.observe(n);}
+   else if(n.querySelectorAll){n.querySelectorAll('table').forEach(t=>{if(!t.dataset.colr)io.observe(t);});}
+  });});});
+ function init(){observeAll();mo.observe(document.body,{childList:true,subtree:true});}
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+ try{window.__colResizeEnhance=enhance;window.__colResizeScan=observeAll;}catch(e){}
 })();
 /* ---------- guided tour (video-style walkthrough) ---------- */
 const TOUR=[
