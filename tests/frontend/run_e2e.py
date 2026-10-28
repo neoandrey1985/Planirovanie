@@ -168,6 +168,30 @@ def main():
                     'grips lost after sort: %d != %d' % (after['grips'], after['need'])
         case('tables: columns are resizable (grips survive sort/filter)', t_colresize)
 
+        # ---- 3d. JSON import normalizes partial data via migrate() ----
+        def t_import_migrate():
+            page.evaluate("()=>activate('dash')")
+            r = page.evaluate("""()=>{
+              const backup=JSON.stringify(ST);
+              try{
+                // частичный «импорт»: только params + одна задача, без большинства коллекций/досок
+                const partial={params:JSON.parse(backup).params,
+                               tasks:[{id:'T-99',title:'x',role:'Backend',type:'Задача',est:3,status:'To Do',sprint:1}]};
+                ST=migrate(JSON.parse(JSON.stringify(partial)));
+                const need=['team','tasks','boards','risks','bugs','deps','releases',
+                            'incidents','deployments','stakeholders','okr'];
+                const missing=need.filter(k=>!Array.isArray(ST[k]));
+                if(!ST.board||typeof ST.board!=='object')missing.push('board');
+                let threw=null;
+                try{views();activate('team');activate('dora');activate('kanban');activate('dash');}
+                catch(e){threw=String((e&&e.message)||e);}
+                return {missing:missing,threw:threw};
+              } finally { ST=JSON.parse(backup); try{views();activate('dash');}catch(e){} }
+            }""")
+            assert not r['missing'], 'migrate() left collections missing after partial import: %s' % r['missing']
+            assert not r['threw'], 'views() threw after migrated partial import: %s' % r['threw']
+        case('import: partial JSON is normalized by migrate() without crashing', t_import_migrate)
+
         # ---- 4. EDA report ----
         def t_eda():
             page.evaluate("()=>activate('eda')"); page.wait_for_timeout(200)

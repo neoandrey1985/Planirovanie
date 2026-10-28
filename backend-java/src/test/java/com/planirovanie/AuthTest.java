@@ -2,8 +2,12 @@ package com.planirovanie;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.planirovanie.service.AuthService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -27,6 +31,7 @@ class AuthTest {
 
     @Autowired MockMvc mvc;
     @Autowired ObjectMapper om;
+    @Autowired AuthService auth;
 
     private static final String STATE = """
         {"state":{"params":{"name":"P","start":"2026-08-03","sprintDays":10,"focus":0.8,"today":"2026-09-10","goal":"G","sprints":11},
@@ -106,5 +111,16 @@ class AuthTest {
         mvc.perform(post("/api/auth/login").contentType(MediaType.APPLICATION_JSON).content(bad))
            .andExpect(status().isTooManyRequests())
            .andExpect(header().exists("Retry-After"));
+    }
+
+    @Test
+    void pruneKeepsActiveThrottleButBoundsMap() {
+        String key = "prunetest|203.0.113.9";
+        for (int i = 0; i < 4; i++) auth.noteLogin(key, false);  // max-attempts=4 -> locked
+        assertTrue(auth.isLocked(key), "key must be locked after max failed attempts");
+        auth.pruneAttempts();                                    // must not drop an active lock
+        assertTrue(auth.isLocked(key), "prune must preserve an active throttle entry");
+        auth.noteLogin(key, true);                               // success clears the counter
+        assertFalse(auth.isLocked(key), "successful login must clear the throttle");
     }
 }

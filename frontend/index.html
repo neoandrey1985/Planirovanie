@@ -1662,6 +1662,11 @@ function migrate(d){
  if(Array.isArray(d.tasks)){const ids=new Set(d.tasks.map(t=>t.id));
   d.tasks.forEach(t=>{let dp=t.dep==null?'':String(t.dep).trim();
    if(dp.charAt(0)==='='||dp==='0'||dp===t.id||(dp&&!ids.has(dp)))dp='';t.dep=dp;});}
+ // гарантировать наличие всех коллекций-массивов из SEED и полей params (безопасный импорт частичных данных)
+ try{if(SEED&&typeof SEED==='object'){
+  Object.keys(SEED).forEach(k=>{if(Array.isArray(SEED[k])&&!Array.isArray(d[k]))d[k]=[];});
+  if(SEED.params&&typeof SEED.params==='object')d.params=Object.assign({},SEED.params,(d.params&&typeof d.params==='object')?d.params:{});
+ }}catch(e){}
  return d;}
 function cpm(tasks){const dur={},pred={},ids=tasks.map(t=>t.id),idset=new Set(ids);
  tasks.forEach(t=>{dur[t.id]=num(t.est);const dp=(t.dep&&String(t.dep).trim());pred[t.id]=(dp&&dp!==t.id&&idset.has(dp))?[dp]:[];});
@@ -2583,7 +2588,7 @@ function brdDown(e){
  const node=e.target.closest&&e.target.closest('[data-id]');
  if(BW.tool==='select'){
    if(node){const id=node.getAttribute('data-id');if(e.shiftKey){const i=BW.sel.indexOf(id);i<0?BW.sel.push(id):BW.sel.splice(i,1);}else if(BW.sel.indexOf(id)<0)BW.sel=[id];
-     BW.mode='move';BW.mv={sx:pt.x,sy:pt.y,orig:BW.sel.map(sid=>{const it=brdItems().find(x=>x.id===sid);return {id:sid,it:JSON.parse(JSON.stringify(it))};})};brdRender();}
+     BW.mode='move';BW.mv={sx:pt.x,sy:pt.y,orig:BW.sel.map(sid=>{const it=brdItems().find(x=>x.id===sid);return it?{id:sid,it:JSON.parse(JSON.stringify(it))}:null;}).filter(Boolean)};brdRender();}
    else{if(!e.shiftKey)BW.sel=[];BW.mode='marquee';BW.mq={sx:e.clientX,sy:e.clientY};BW._mqd=document.createElement('div');BW._mqd.style.cssText='position:absolute;border:1px solid #2D5BE3;background:rgba(45,91,227,.08);z-index:7;pointer-events:none';BW.wrap.appendChild(BW._mqd);brdRender();}
    return;}
  // инструменты создания
@@ -4761,7 +4766,8 @@ const CHANGELOG=[
    'Заданная ширина запоминается (localStorage) и восстанавливается после перерисовки и перезагрузки; работает для текущих и будущих таблиц автоматически (IntersectionObserver + MutationObserver).',
    'Длинный текст в суженном столбце аккуратно обрезается троеточием; перетаскивание не запускает сортировку.',
    'В узких столбцах выпадающие списки (select) больше не «ломаются»: своя аккуратная стрелка и усечение текста вместо наложения нативной стрелки; минимальная ширина столбца увеличена.',
-   'Изменение ширины остаётся доступным после сортировки и фильтрации (перерисовка таблицы восстанавливает «ручки»), а заданная ширина сохраняется при сортировке.']},
+   'Изменение ширины остаётся доступным после сортировки и фильтрации (перерисовка таблицы восстанавливает «ручки»), а заданная ширина сохраняется при сортировке.',
+   'Надёжность (по итогам ревью кода): импорт JSON нормализуется через migrate() и больше не ломает приложение на частичных/старых данных; migrate() гарантирует наличие всех коллекций; защита дублирования на «Доске» от устаревших id; ограничение памяти троттлинга логина на бэкенде.']},
  {v:'1.45.0',date:'2026-10-06',items:[
    'Помощник (чат-бот) обучен всему приложению: знает все разделы и функции и отвечает на вопрос о любом из них («что такое Гант», «зачем Bus factor», «как работает DORA»).',
    'База знаний помощника строится автоматически из самого приложения (меню NAV, заголовки и описания разделов, гид-тур, история версий), поэтому «обучение» обновляется само после каждого релиза.',
@@ -5012,7 +5018,7 @@ document.getElementById('pptxmodal').addEventListener('click',e=>{if(e.target.id
  document.addEventListener('keydown',e=>{if(e.key==='Escape')setOpen(false);});})();
 document.getElementById('exp').onclick=()=>{const b=new Blob([JSON.stringify(ST,null,1)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='planirovanie_data.json';a.click();toast('Экспортировано');auditClient('export_json');};
 document.getElementById('imp').onclick=()=>{if(!PERM.canAdmin){toast('Только для администратора');return;}document.getElementById('file').click();};
-document.getElementById('file').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{ST=JSON.parse(r.result);save();views();activate(CURV);toast('Импортировано');auditClient('import_json',f.name);}catch(err){toast('Ошибка файла');}};r.readAsText(f);};
+document.getElementById('file').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);if(!d||typeof d!=='object'||Array.isArray(d))throw new Error('bad shape');ST=migrate(d);save();views();activate(CURV);toast('Импортировано');auditClient('import_json',f.name);}catch(err){toast('Ошибка файла');}};r.readAsText(f);};
 document.getElementById('impcsv').onclick=()=>{if(!PERM.canEdit){toast('Только для редактора/администратора');return;}document.getElementById('filecsv').click();};
 document.getElementById('filecsv').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{importCSVTasks(String(r.result));}catch(err){toast('Ошибка CSV');}e.target.value='';};r.readAsText(f);};
 document.getElementById('rst').onclick=()=>{if(!PERM.canAdmin){toast('Только для администратора');return;}if(confirm('Сбросить все данные к исходным?')){ST=migrate(JSON.parse(JSON.stringify(SEED)));save();views();activate(CURV);toast('Сброшено');auditClient('reset_data');}};

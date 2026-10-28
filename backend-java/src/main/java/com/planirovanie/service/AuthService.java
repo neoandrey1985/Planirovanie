@@ -206,13 +206,26 @@ public class AuthService {
             if (a[0] >= maxAttempts) a[2] = now + lockoutSeconds * 1000L;
             return a;
         });
+        // keep the in-memory map bounded under key churn (distinct user|ip spray)
+        if (attempts.size() > 1000) pruneAttempts();
     }
 
     public long lockoutSeconds() { return lockoutSeconds; }
 
     @Transactional
     public int purgeExpired() {
+        pruneAttempts();
         return sessions.deleteExpired(Instant.now());
+    }
+
+    /** Drop throttle entries that are no longer locked and whose failure window has elapsed,
+     *  so the in-memory {@link #attempts} map stays bounded under key churn (user|ip spray). */
+    public void pruneAttempts() {
+        long now = System.currentTimeMillis();
+        attempts.entrySet().removeIf(e -> {
+            long[] a = e.getValue();
+            return a[2] <= now && (now - a[1]) > lockoutSeconds * 1000L;
+        });
     }
 
     public Optional<AppUser> findUser(String username) {
