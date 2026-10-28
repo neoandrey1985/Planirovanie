@@ -429,6 +429,7 @@ body.noadmin #rst,body.noadmin #imp{display:none}
 .brd-tool.on{background:var(--accent);color:#fff;border-color:var(--accent)}
 .brd-top{position:absolute;right:12px;top:12px;display:flex;gap:6px;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);padding:5px 7px;z-index:5;flex-wrap:wrap}
 .brd-top .btn{padding:5px 9px;font-size:12.5px}
+.brd-top{max-width:calc(100% - 320px);justify-content:flex-end}
 .brd-zoom{font-size:12.5px;color:var(--muted);min-width:44px;text-align:center;font-variant-numeric:tabular-nums;cursor:pointer}
 .brd-colors{position:absolute;left:60px;top:12px;display:flex;gap:5px;background:var(--panel);border:1px solid var(--line);border-radius:10px;box-shadow:var(--shadow);padding:6px;z-index:5;flex-wrap:wrap;max-width:230px}
 .brd-sw{width:22px;height:22px;border-radius:6px;cursor:pointer;border:2px solid rgba(0,0,0,.08)}
@@ -439,7 +440,7 @@ body.noadmin #rst,body.noadmin #imp{display:none}
 .brd-timer .tt{font-size:20px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--ink);min-width:64px;text-align:center}
 .brd-timer.warn .tt{color:var(--crit)}
 .brd-timer button{border:1px solid var(--line);background:var(--panel2);border-radius:7px;cursor:pointer;font-size:13px;padding:3px 8px;font-family:inherit;color:var(--ink)}
-.brd-hint{position:absolute;left:12px;bottom:10px;font-size:11.5px;color:var(--muted);background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:4px 9px;z-index:4;opacity:.9}
+.brd-hint{position:absolute;left:64px;bottom:10px;font-size:11.5px;color:var(--muted);background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:4px 9px;z-index:4;opacity:.9}
 .brd-empty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:14px;pointer-events:none}
 .brd-cursor{position:absolute;z-index:9;pointer-events:none;transform:translate(-2px,-2px);transition:left .05s linear,top .05s linear;will-change:left,top}
 .brd-cursor svg{display:block;filter:drop-shadow(0 1px 1px rgba(0,0,0,.3))}
@@ -464,6 +465,28 @@ body.noadmin #rst,body.noadmin #imp{display:none}
 /* доска: всплывающие панели эмодзи и анимации */
 .brd-pop{position:absolute;left:60px;top:12px;z-index:9;background:var(--panel);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);padding:8px;display:none}
 .brd-pop.on{display:block}
+.brd-tools .brd-sep{height:1px;background:var(--line);margin:3px 4px}
+.brd-tool:disabled{opacity:.35;cursor:default}
+.brd-search{width:128px;padding:5px 9px;font-size:12.5px;border:1px solid var(--line);border-radius:8px;background:var(--panel2);color:var(--ink);font-family:inherit}
+.brd-findn{font-size:11.5px;color:var(--muted);min-width:22px;font-variant-numeric:tabular-nums}
+.brd-top .btn.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+.brd-mini{position:absolute;right:12px;bottom:46px;width:180px;height:120px;background:var(--panel);border:1px solid var(--line);border-radius:10px;box-shadow:var(--shadow);z-index:6;overflow:hidden;cursor:crosshair}
+.brd-mini svg{display:block;width:100%;height:100%}
+.brd-actbar{position:absolute;left:50%;bottom:48px;transform:translateX(-50%);display:none;gap:2px;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);padding:4px 6px;z-index:6;flex-wrap:wrap;justify-content:center;max-width:calc(100% - 400px)}
+.brd-actbar.on{display:flex}
+.brd-actbar button{border:1px solid transparent;background:transparent;border-radius:7px;cursor:pointer;font-size:13.5px;min-width:27px;height:28px;padding:0 5px;color:var(--ink);font-family:inherit;white-space:nowrap}
+.brd-actbar button:hover{background:var(--panel2);border-color:var(--line)}
+.brd-actbar .sep{width:1px;height:20px;background:var(--line);margin:0 3px}
+.brd-actbar .cnt{font-size:11.5px;color:var(--muted);padding:0 6px;font-variant-numeric:tabular-nums}
+.brd-menu-h{font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin:8px 4px 3px}
+.brd-menu-h:first-child{margin-top:0}
+.brd-task-list{max-height:220px;overflow:auto;display:flex;flex-direction:column;gap:2px;margin-bottom:8px;width:320px}
+.brd-task-list button{flex:none;text-align:left;border:1px solid transparent;background:transparent;border-radius:7px;cursor:pointer;font-size:12.5px;padding:5px 8px;color:var(--ink);font-family:inherit;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.brd-task-list button:hover{background:var(--panel2);border-color:var(--line)}
+.brd-pop .m{color:var(--muted);font-size:11px}
+.brd-metric-grid{display:grid;grid-template-columns:1fr 1fr;gap:3px;width:320px}
+.brd-metric-grid button{text-align:left;border:1px solid var(--line);background:var(--panel2);border-radius:8px;cursor:pointer;font-size:12.5px;padding:6px 9px;color:var(--ink);font-family:inherit}
+.brd-metric-grid button:hover{border-color:var(--accent)}
 .brd-pop .brd-pop-t{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin:0 2px 6px}
 .brd-emoji-grid{display:grid;grid-template-columns:repeat(8,1fr);gap:2px;max-width:320px;max-height:230px;overflow:auto}
 .brd-emoji-grid button{width:34px;height:32px;border:0;background:transparent;border-radius:7px;cursor:pointer;font-size:19px;line-height:1}
@@ -2418,7 +2441,7 @@ function brdEnsure(){if(!ST.board||typeof ST.board!=='object')ST.board={cam:{x:8
 function brdCam(){return brdEnsure().cam;}
 function brdItems(){return brdEnsure().items;}
 function brdAuthor(){try{if(typeof AUTH!=='undefined'&&AUTH.user)return AUTH.user;}catch(e){}try{return ROLEMETA[PERM.role][1];}catch(e){}return 'Аноним';}
-function brdSave(){if(!PERM.canEdit)return;if(BW._sv)clearTimeout(BW._sv);BW._sv=setTimeout(()=>{try{save();}catch(e){}},220);}
+function brdSave(){if(!PERM.canEdit)return;if(BW._sv)clearTimeout(BW._sv);BW._sv=setTimeout(()=>{try{save();}catch(e){}},220);brdHistRecord();}
 function brdId(){return 'i'+Date.now().toString(36)+Math.random().toString(36).slice(2,5);}
 function brdToWorld(cx,cy){const r=BW.svg.getBoundingClientRect(),c=brdCam();return {x:(cx-r.left-c.x)/c.z,y:(cy-r.top-c.y)/c.z};}
 /* bbox по типу элемента (мировые координаты) */
@@ -2437,8 +2460,34 @@ function brdItemEl(it){
  const g=brdEl('g',{'data-id':it.id});g.style.cursor=PERM.canEdit?'move':'default';
  if(it.t==='frame'){
    g.appendChild(brdEl('rect',{x:it.x,y:it.y,width:it.w,height:it.h,rx:10,fill:'none',stroke:'#9AA7B8','stroke-width':1.5,'stroke-dasharray':'2 6'}));
-   const lbl=brdEl('rect',{x:it.x,y:it.y-24,width:Math.min(it.w,10+(String(it.title||'Фрейм').length)*8.5),height:22,rx:7,fill:'#EEF2F7',stroke:'#D5DEEA'});g.appendChild(lbl);
-   const tx=brdEl('text',{x:it.x+9,y:it.y-8,'font-size':13,'font-weight':700,fill:'#5A6B82','font-family':'Segoe UI, Calibri, sans-serif',style:'pointer-events:none'});tx.textContent=it.title||'Фрейм';g.appendChild(tx);
+   if(!it.notitle){const lbl=brdEl('rect',{x:it.x,y:it.y-24,width:Math.min(it.w,10+(String(it.title||'Фрейм').length)*8.5),height:22,rx:7,fill:'#EEF2F7',stroke:'#D5DEEA'});g.appendChild(lbl);
+   const tx=brdEl('text',{x:it.x+9,y:it.y-8,'font-size':13,'font-weight':700,fill:'#5A6B82','font-family':'Segoe UI, Calibri, sans-serif',style:'pointer-events:none'});tx.textContent=it.title||'Фрейм';g.appendChild(tx);}
+ } else if(it.t==='task'){
+   const w=it.w||220,h=it.h||118,t=brdTask(it),sc=t?(BRD_TSTAT[t.status]||'#94A3B8'):'#CBD5E1',ff='Segoe UI, Calibri, sans-serif';
+   g.appendChild(brdEl('rect',{x:it.x+2,y:it.y+3,width:w,height:h,rx:10,fill:'rgba(0,0,0,.10)'}));
+   g.appendChild(brdEl('rect',{x:it.x,y:it.y,width:w,height:h,rx:10,fill:'#FFFFFF',stroke:'#CBD5E1','stroke-width':1.2}));
+   g.appendChild(brdEl('rect',{x:it.x,y:it.y,width:6,height:h,rx:3,fill:sc}));
+   const idt=brdEl('text',{x:it.x+16,y:it.y+21,'font-size':11,'font-weight':700,fill:'#5A6B82','font-family':ff,style:'pointer-events:none'});
+   idt.textContent='📋 '+(t?t.id:(it.taskId||'?'))+(t&&t.type?' · '+t.type:'');g.appendChild(idt);
+   const ttl=t?String(t.title||''):'Задача удалена из бэклога',maxc=Math.max(8,Math.floor((w-26)/(13.5*0.56))*2);
+   g.appendChild(brdTextNode(it.x+16,it.y+42,w-26,ttl.length>maxc?ttl.slice(0,maxc-1)+'…':ttl,13.5,t?'#16202E':'#94A3B8','start').node);
+   if(t){const as=brdEl('text',{x:it.x+16,y:it.y+h-12,'font-size':11,fill:'#5A6B82','font-family':ff,style:'pointer-events:none'});as.textContent='👤 '+(t.assignee||'—');g.appendChild(as);
+     const spx=brdEl('text',{x:it.x+w-12,y:it.y+h-12,'font-size':11,'font-weight':700,fill:'#16202E','text-anchor':'end','font-family':ff,style:'pointer-events:none'});spx.textContent='SP '+(num(t.est)||0);g.appendChild(spx);
+     const stl=String(t.status||'—'),pw=16+stl.length*6.4;const pg=brdEl('g',{'data-taskstat':it.id});pg.style.cursor=PERM.canEdit?'pointer':'default';
+     pg.appendChild(brdEl('rect',{x:it.x+w-pw-10,y:it.y+8,width:pw,height:18,rx:9,fill:sc}));
+     const pt=brdEl('text',{x:it.x+w-10-pw/2,y:it.y+21,'font-size':10.5,'font-weight':700,fill:'#fff','text-anchor':'middle','font-family':ff,style:'pointer-events:none'});pt.textContent=stl;pg.appendChild(pt);g.appendChild(pg);}
+ } else if(it.t==='metric'){
+   const w=it.w||230,h=it.h||120,d=brdMetricData(it.m),ff='Segoe UI, Calibri, sans-serif',tc=BRD_TONE[d.tone||'neut'];
+   g.appendChild(brdEl('rect',{x:it.x+2,y:it.y+3,width:w,height:h,rx:12,fill:'rgba(0,0,0,.10)'}));
+   g.appendChild(brdEl('rect',{x:it.x,y:it.y,width:w,height:h,rx:12,fill:'#FFFFFF',stroke:'#D5DEEA','stroke-width':1.2}));
+   g.appendChild(brdEl('rect',{x:it.x,y:it.y,width:w,height:5,rx:2.5,fill:tc}));
+   const tt=brdEl('text',{x:it.x+14,y:it.y+26,'font-size':11,'font-weight':700,fill:'#5A6B82','font-family':ff,style:'pointer-events:none'});tt.textContent='📊 '+String(d.title||'').toUpperCase();g.appendChild(tt);
+   if(d.text!=null){const tx=String(d.text);g.appendChild(brdTextNode(it.x+14,it.y+50,w-28,tx.length>90?tx.slice(0,89)+'…':tx,13.5,'#16202E','start').node);}
+   else{const v=brdEl('text',{x:it.x+14,y:it.y+66,'font-size':28,'font-weight':800,fill:d.tone&&d.tone!=='neut'?tc:'#16202E','font-family':ff,style:'pointer-events:none'});v.textContent=d.val;g.appendChild(v);}
+   if(d.sub){const sb=brdEl('text',{x:it.x+14,y:it.y+h-14,'font-size':11,fill:'#5A6B82','font-family':ff,style:'pointer-events:none'});sb.textContent=d.sub;g.appendChild(sb);}
+   if(d.spark&&d.spark.length>1){const vs=d.spark.map(Number),mx=Math.max.apply(null,vs)||1,x0=it.x+w-104,y0=it.y+38,sw=90,sh=36;
+     const pts=vs.map((v,i)=>(x0+sw*i/(vs.length-1)).toFixed(1)+','+(y0+sh-sh*v/mx).toFixed(1)).join(' ');
+     g.appendChild(brdEl('polyline',{points:pts,fill:'none',stroke:tc,'stroke-width':2,'stroke-linejoin':'round','stroke-linecap':'round'}));}
  } else if(it.t==='sticky'){
    g.appendChild(brdEl('rect',{x:it.x+2,y:it.y+3,width:it.w,height:it.h,rx:8,fill:'rgba(0,0,0,.10)'}));
    g.appendChild(brdEl('rect',{x:it.x,y:it.y,width:it.w,height:it.h,rx:8,fill:it.fill||'#FFE066',stroke:'rgba(0,0,0,.08)'}));
@@ -2487,6 +2536,10 @@ function brdItemEl(it){
  } else if(it.t==='image'){
    const im=brdEl('image',{x:it.x,y:it.y,width:it.w,height:it.h,preserveAspectRatio:'xMidYMid meet'});im.setAttributeNS('http://www.w3.org/1999/xlink','href',it.src);im.setAttribute('href',it.src);g.appendChild(im);
  }
+ if(it.ref&&BRD_REF[it.ref.k]){const b=brdBBox(it),lbl=brdRefLabel(it.ref),cw=14+lbl.length*6.2;const rg=brdEl('g',{'data-refopen':it.id});rg.style.cursor='pointer';
+   rg.appendChild(brdEl('rect',{x:b.x+b.w-cw-8,y:b.y+b.h-25,width:cw,height:17,rx:8.5,fill:'rgba(255,255,255,.92)',stroke:'rgba(45,91,227,.45)'}));
+   const rt=brdEl('text',{x:b.x+b.w-8-cw/2,y:b.y+b.h-13,'font-size':10,'font-weight':700,'text-anchor':'middle',fill:'#2D5BE3','font-family':'Segoe UI, Calibri, sans-serif',style:'pointer-events:none'});rt.textContent=lbl;rg.appendChild(rt);g.appendChild(rg);}
+ if(it.locked){const b=brdBBox(it);const lk=brdEl('text',{x:b.x+b.w-4,y:b.y+(it.t==='frame'?-8:15),'font-size':12,'text-anchor':'end','font-family':'Segoe UI Emoji, sans-serif',style:'pointer-events:none'});lk.textContent='🔒';g.appendChild(lk);}
  if(it.anim)g.setAttribute('class','brd-anim brd-anim-'+it.anim);
  return g;}
 /* ---- полная перерисовка ---- */
@@ -2502,12 +2555,17 @@ function brdRender(){
  BW.wrap.style.backgroundPosition=c.x+'px '+c.y+'px';
  const z=document.getElementById('brd-zoom');if(z)z.textContent=Math.round(c.z*100)+'%';
  const em=BW.wrap.querySelector('.brd-empty');if(em)em.style.display=items.length?'none':'flex';
- if(typeof brdPositionCursors==='function')brdPositionCursors();}
+ if(typeof brdPositionCursors==='function')brdPositionCursors();
+ brdActbarUI();brdMiniQueue();}
 function brdRenderSel(){
  const c=brdCam(),hs=9/c.z;
  BW.sel.forEach(id=>{const it=brdItems().find(x=>x.id===id);if(!it)return;const b=brdBBox(it);
    BW.g.appendChild(brdEl('rect',{x:b.x-3/c.z,y:b.y-3/c.z,width:b.w+6/c.z,height:b.h+6/c.z,fill:'none',stroke:'#2D5BE3','stroke-width':1.5/c.z,'stroke-dasharray':(5/c.z)+' '+(4/c.z),style:'pointer-events:none'}));});
- if(BW.sel.length===1&&PERM.canEdit){const it=brdItems().find(x=>x.id===BW.sel[0]);if(!it)return;
+ // контур групп в выделении
+ const grps={};BW.sel.forEach(id=>{const it=brdItemById(id);if(it&&it.grp)(grps[it.grp]=grps[it.grp]||[]).push(it);});
+ Object.keys(grps).forEach(k=>{const bs=brdItems().filter(x=>x.grp===k).map(brdBBox);if(bs.length<2)return;const x0=Math.min.apply(null,bs.map(b=>b.x)),y0=Math.min.apply(null,bs.map(b=>b.y)),x1=Math.max.apply(null,bs.map(b=>b.x+b.w)),y1=Math.max.apply(null,bs.map(b=>b.y+b.h)),p=10/c.z;
+   BW.g.appendChild(brdEl('rect',{x:x0-p,y:y0-p-26,width:x1-x0+p*2,height:y1-y0+p*2+26,rx:8/c.z,fill:'none',stroke:'#7C3AED','stroke-width':1.5/c.z,'stroke-dasharray':(8/c.z)+' '+(5/c.z),style:'pointer-events:none'}));});
+ if(BW.sel.length===1&&PERM.canEdit){const it=brdItems().find(x=>x.id===BW.sel[0]);if(!it||it.locked)return;
    if(it.t==='conn'){if(!brdConnAnchored(it)){[['p1',it.x1,it.y1],['p2',it.x2,it.y2]].forEach(h=>{const cc=brdEl('circle',{cx:h[1],cy:h[2],r:hs*0.7,fill:'#fff',stroke:'#2D5BE3','stroke-width':1.5/c.z,'data-handle':h[0],'data-id':it.id});cc.style.cursor='crosshair';BW.g.appendChild(cc);});}}
    else if(it.t!=='pen'){const b=brdBBox(it);[['nw',b.x,b.y],['ne',b.x+b.w,b.y],['sw',b.x,b.y+b.h],['se',b.x+b.w,b.y+b.h]].forEach(h=>{const r=brdEl('rect',{x:h[1]-hs/2,y:h[2]-hs/2,width:hs,height:hs,rx:2/c.z,fill:'#fff',stroke:'#2D5BE3','stroke-width':1.5/c.z,'data-handle':h[0],'data-id':it.id});r.style.cursor='nwse-resize';BW.g.appendChild(r);});}
    // быстрое продолжение схемы: дублировать фигуру и провести связь в направлении «+»
@@ -2519,7 +2577,8 @@ function brdRenderSel(){
        BW.g.appendChild(q);});}}}
 /* ---- операции ---- */
 function brdAdd(it){brdItems().push(it);}
-function brdDelSel(){if(!PERM.canEdit||!BW.sel.length)return;const dead=new Set(BW.sel);
+function brdDelSel(){if(!PERM.canEdit||!BW.sel.length)return;const dead=new Set(BW.sel.filter(id=>{const it=brdItemById(id);return it&&!it.locked;}));
+ if(!dead.size){toast('Закреплённые элементы не удаляются — сначала открепите (🔓)');return;}
  // заодно удаляем связи-стрелки, привязанные к удаляемым фигурам
  brdItems().forEach(x=>{if(x.t==='conn'&&((x.from&&dead.has(x.from))||(x.to&&dead.has(x.to))))dead.add(x.id);});
  const ids=Array.from(dead);ST.board.items=brdItems().filter(x=>!dead.has(x.id));BW.sel=[];brdSave();brdRender();if(typeof brdWSDelete==='function')brdWSDelete(ids);}
@@ -2578,7 +2637,7 @@ function brdFit(){const items=brdItems();const r=BW.svg.getBoundingClientRect();
  let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;items.forEach(it=>{const b=brdBBox(it);x0=Math.min(x0,b.x);y0=Math.min(y0,b.y-(it.t==='frame'?26:0));x1=Math.max(x1,b.x+b.w);y1=Math.max(y1,b.y+b.h);});
  const pad=60,bw=x1-x0+pad*2,bh=y1-y0+pad*2,c=brdCam();c.z=Math.min(2,Math.max(0.15,Math.min(r.width/bw,r.height/bh)));c.x=(r.width-(x1+x0)*c.z)/2;c.y=(r.height-(y1+y0)*c.z)/2;brdRender();brdSave();}
 /* ---- редактор текста поверх холста ---- */
-function brdEdit(it){if(!PERM.canEdit)return;if(it.t==='conn'||it.t==='pen'||it.t==='image'||it.t==='link'||it.t==='emoji')return;const c=brdCam();const b=brdBBox(it);
+function brdEdit(it){if(!PERM.canEdit)return;if(it.t==='conn'||it.t==='pen'||it.t==='image'||it.t==='link'||it.t==='emoji'||it.t==='task'||it.t==='metric'||it.locked)return;const c=brdCam();const b=brdBBox(it);
  const ta=document.createElement('textarea');ta.className='brd-edit';ta.value=it.t==='frame'?(it.title||''):(it.text||'');
  const fs=(it.t==='text'?(it.size||18):(it.t==='sticky'?15:14))*c.z;
  ta.style.left=(b.x*c.z+c.x)+'px';ta.style.top=((it.t==='frame'?b.y-26:b.y)*c.z+c.y)+'px';
@@ -2589,8 +2648,14 @@ function brdEdit(it){if(!PERM.canEdit)return;if(it.t==='conn'||it.t==='pen'||it.
  ta.addEventListener('blur',commit);ta.addEventListener('keydown',e=>{e.stopPropagation();if(e.key==='Escape'){ta.blur();}if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)){ta.blur();}});}
 /* ---- указатель ---- */
 function brdDown(e){
- if(e.button===2)return;BW.svg.setPointerCapture&&BW.svg.setPointerCapture(e.pointerId);
- const pt=brdToWorld(e.clientX,e.clientY),c=brdCam();
+ if(e.button===2)return;BW.svg.setPointerCapture&&BW.svg.setPointerCapture(e.pointerId);brdClosePops();
+ let pt=brdToWorld(e.clientX,e.clientY);const c=brdCam();
+ if(BW.snap&&BW.tool!=='select'&&BW.tool!=='hand'&&BW.tool!=='pen')pt={x:brdSnapV(pt.x),y:brdSnapV(pt.y)};
+ // переход к связанной сущности и смена статуса живой карточки задачи
+ const refo=e.target.closest&&e.target.closest('[data-refopen]');
+ if(refo&&BW.tool==='select'){const it=brdItemById(refo.getAttribute('data-refopen'));const m=it&&it.ref&&BRD_REF[it.ref.k];if(m)activate(m[1]);return;}
+ const tst=e.target.closest&&e.target.closest('[data-taskstat]');
+ if(tst&&BW.tool==='select'&&PERM.canEdit){brdTaskCycle(tst.getAttribute('data-taskstat'));return;}
  const vote=e.target.closest&&e.target.closest('[data-vote]');
  if(vote&&BW.tool==='select'&&PERM.canEdit){const it=brdItems().find(x=>x.id===vote.getAttribute('data-vote'));if(it){it.votes=(num(it.votes)||0)+1;brdSave();brdRender();if(typeof brdWSUpsert==='function')brdWSUpsert([it.id]);}return;}
  // быстрое продолжение схемы и действия со ссылками (до панорамы)
@@ -2607,8 +2672,8 @@ function brdDown(e){
  if(handle&&BW.tool==='select'){BW.mode='resize';BW.rz={id:handle.getAttribute('data-id'),h:handle.getAttribute('data-handle')};return;}
  const node=e.target.closest&&e.target.closest('[data-id]');
  if(BW.tool==='select'){
-   if(node){const id=node.getAttribute('data-id');if(e.shiftKey){const i=BW.sel.indexOf(id);i<0?BW.sel.push(id):BW.sel.splice(i,1);}else if(BW.sel.indexOf(id)<0)BW.sel=[id];
-     BW.mode='move';BW.mv={sx:pt.x,sy:pt.y,orig:BW.sel.map(sid=>{const it=brdItems().find(x=>x.id===sid);return it?{id:sid,it:JSON.parse(JSON.stringify(it))}:null;}).filter(Boolean)};brdRender();}
+   if(node){const id=node.getAttribute('data-id');brdSelectWith(id,e.shiftKey);
+     BW.mode='move';BW.mv={sx:pt.x,sy:pt.y,orig:brdMoveSet().map(sid=>{const it=brdItemById(sid);return it?{id:sid,it:JSON.parse(JSON.stringify(it))}:null;}).filter(Boolean)};brdRender();}
    else{if(!e.shiftKey)BW.sel=[];BW.mode='marquee';BW.mq={sx:e.clientX,sy:e.clientY};BW._mqd=document.createElement('div');BW._mqd.style.cssText='position:absolute;border:1px solid #2D5BE3;background:rgba(45,91,227,.08);z-index:7;pointer-events:none';BW.wrap.appendChild(BW._mqd);brdRender();}
    return;}
  // инструменты создания
@@ -2621,9 +2686,11 @@ function brdDown(e){
  if(BW.tool==='link'){const it={id:brdId(),t:'link',x:pt.x,y:pt.y,w:240,h:72,url:'',title:''};brdAdd(it);BW.sel=[it.id];brdSetTool('select');brdSave();brdRender();brdWSUpsert([it.id]);brdEditLink(it);return;}
 }
 function brdMoveEv(e){
- if(!BW.mode)return;const pt=brdToWorld(e.clientX,e.clientY),c=brdCam();
+ if(!BW.mode)return;let pt=brdToWorld(e.clientX,e.clientY);const c=brdCam();
+ if(BW.snap&&(BW.mode==='draw'||BW.mode==='resize'))pt={x:brdSnapV(pt.x),y:brdSnapV(pt.y)};
  if(BW.mode==='pan'){c.x=BW.pan.cx+(e.clientX-BW.pan.sx);c.y=BW.pan.cy+(e.clientY-BW.pan.sy);brdRender();return;}
- if(BW.mode==='move'){const dx=pt.x-BW.mv.sx,dy=pt.y-BW.mv.sy;BW.mv.orig.forEach(o=>{const it=brdItems().find(x=>x.id===o.id);if(!it)return;const src=o.it;if(it.t==='conn'){if(it.from&&it.to)return;it.x1=src.x1+dx;it.y1=src.y1+dy;it.x2=src.x2+dx;it.y2=src.y2+dy;}else if(it.t==='pen'){it.pts=src.pts.map(p=>[p[0]+dx,p[1]+dy]);}else{it.x=src.x+dx;it.y=src.y+dy;}});brdRender();return;}
+ if(BW.mode==='move'){let dx=pt.x-BW.mv.sx,dy=pt.y-BW.mv.sy;
+   if(BW.snap){const ref=BW.mv.orig.find(o=>o.it.x!=null);if(ref){dx=brdSnapV(ref.it.x+dx)-ref.it.x;dy=brdSnapV(ref.it.y+dy)-ref.it.y;}}BW.mv.orig.forEach(o=>{const it=brdItems().find(x=>x.id===o.id);if(!it)return;const src=o.it;if(it.t==='conn'){if(it.from&&it.to)return;it.x1=src.x1+dx;it.y1=src.y1+dy;it.x2=src.x2+dx;it.y2=src.y2+dy;}else if(it.t==='pen'){it.pts=src.pts.map(p=>[p[0]+dx,p[1]+dy]);}else{it.x=src.x+dx;it.y=src.y+dy;}});brdRender();return;}
  if(BW.mode==='resize'){const it=brdItems().find(x=>x.id===BW.rz.id);if(!it)return;
    if(it.t==='conn'){if(BW.rz.h==='p1'){it.x1=pt.x;it.y1=pt.y;}else{it.x2=pt.x;it.y2=pt.y;}}
    else{const b=brdBBox(it);let x0=b.x,y0=b.y,x1=b.x+b.w,y1=b.y+b.h;if(BW.rz.h.indexOf('w')>=0)x0=pt.x;if(BW.rz.h.indexOf('e')>=0)x1=pt.x;if(BW.rz.h.indexOf('n')>=0)y0=pt.y;if(BW.rz.h.indexOf('s')>=0)y1=pt.y;it.x=Math.min(x0,x1);it.y=Math.min(y0,y1);it.w=Math.max(24,Math.abs(x1-x0));if(it.t!=='text')it.h=Math.max(24,Math.abs(y1-y0));}
@@ -2639,7 +2706,8 @@ function brdUp(e){
  else if(BW.mode==='move'||BW.mode==='resize'){brdSave();}
  else if(BW.mode==='marquee'){const wr=brdToWorld(BW.mq.sx,BW.mq.sy),wr2=brdToWorld(e.clientX,e.clientY);const rx0=Math.min(wr.x,wr2.x),ry0=Math.min(wr.y,wr2.y),rx1=Math.max(wr.x,wr2.x),ry1=Math.max(wr.y,wr2.y);
    brdItems().forEach(it=>{const b=brdBBox(it);if(b.x<rx1&&b.x+b.w>rx0&&b.y<ry1&&b.y+b.h>ry0)BW.sel.push(it.id);});BW._mqd&&BW._mqd.remove();BW._mqd=null;brdRender();}
- if(BW.mode==='move'||BW.mode==='resize'||BW.mode==='draw'||BW.mode==='pen')brdWSUpsert(BW.sel);
+ if(BW.mode==='move'&&BW.mv)brdWSUpsert(BW.mv.orig.map(o=>o.id));
+ else if(BW.mode==='resize'||BW.mode==='draw'||BW.mode==='pen')brdWSUpsert(BW.sel);
  BW.mode=null;}
 /* ---- таймер фасилитации ---- */
 function brdTimerTick(){const b=document.getElementById('brd-timer');if(!b||BW.timer==null)return;BW.timer--;const mm=Math.floor(Math.max(0,BW.timer)/60),ss=Math.max(0,BW.timer)%60;b.querySelector('.tt').textContent=mm+':'+String(ss).padStart(2,'0');b.classList.toggle('warn',BW.timer<=10);if(BW.timer<=0){clearInterval(BW._ti);BW._ti=null;try{toast('⏱ Время вышло');}catch(e){}}}
@@ -2667,7 +2735,7 @@ function brdExportPDF(){brdRaster(async(url,ex)=>{let JsPDF;try{JsPDF=await load
 /* ---- панель инструментов ---- */
 function brdSetTool(t){BW.tool=t;document.querySelectorAll('.brd-tool').forEach(b=>b.classList.toggle('on',b.dataset.tool===t));
  const sv=BW.svg;if(sv){sv.classList.toggle('pan',t==='hand');}}
-function brdClosePops(){['brd-emoji-pop','brd-anim-pop'].forEach(id=>{const p=document.getElementById(id);if(p)p.classList.remove('on');});}
+function brdClosePops(){['brd-emoji-pop','brd-anim-pop','brd-tpl-pop','brd-data-pop','brd-conv-pop'].forEach(id=>{const p=document.getElementById(id);if(p)p.classList.remove('on');});}
 function brdToggleEmojiPanel(){const p=document.getElementById('brd-emoji-pop');if(!p)return;const on=p.classList.contains('on');brdClosePops();if(!on)p.classList.add('on');}
 function brdToggleAnimPanel(){const p=document.getElementById('brd-anim-pop');if(!p)return;const on=p.classList.contains('on');brdClosePops();if(!on){if(!BW.sel.length){toast('Выделите элемент для анимации');return;}p.classList.add('on');}}
 function brdPickedEmoji(ch){if(BW.emojiEditId){const it=brdItemById(BW.emojiEditId);BW.emojiEditId=null;if(it){it.char=ch;brdSave();brdRender();if(typeof brdWSUpsert==='function')brdWSUpsert([it.id]);}brdClosePops();return;}
@@ -2675,6 +2743,8 @@ function brdPickedEmoji(ch){if(BW.emojiEditId){const it=brdItemById(BW.emojiEdit
 function brdPickEmoji(it){BW.emojiEditId=it.id;brdClosePops();const p=document.getElementById('brd-emoji-pop');if(p)p.classList.add('on');}
 function boardView(){
  brdEnsure();const RO=!PERM.canEdit;
+ if(BW.snap==null){try{BW.snap=localStorage.getItem('brd_snap')==='1';}catch(e){BW.snap=false;}}
+ if(BW.miniOff==null){try{BW.miniOff=localStorage.getItem('brd_mini')==='0';}catch(e){BW.miniOff=false;}}
  const wrap=document.createElement('div');wrap.className='brd-wrap';BW.wrap=wrap;
  const svg=brdEl('svg',{class:'brd-svg'});BW.svg=svg;const g=brdEl('g',{});BW.g=g;svg.appendChild(g);wrap.appendChild(svg);
  const empty=document.createElement('div');empty.className='brd-empty';empty.textContent='Пусто — выберите инструмент слева и кликните по холсту';wrap.appendChild(empty);
@@ -2682,6 +2752,8 @@ function boardView(){
  const tools=document.createElement('div');tools.className='brd-tools';
  const TOOLS=[['select','🖱️','Выделение / перемещение'],['hand','✋','Рука (панорама)'],['sticky','🗒️','Стикер'],['text','🅣','Текст'],['rect','▭','Прямоугольник'],['ellipse','◯','Овал'],['diamond','◇','Ромб'],['conn','↗','Стрелка / связь'],['pen','✏️','Карандаш'],['frame','▢','Фрейм'],['emoji','😀','Эмодзи'],['link','🔗','Ссылка на ресурс / документ']];
  TOOLS.forEach(t=>{const b=document.createElement('button');b.className='brd-tool'+(t[0]===BW.tool?' on':'');b.dataset.tool=t[0];b.textContent=t[1];b.title=t[2];b.disabled=RO&&t[0]!=='hand'&&t[0]!=='select';b.onclick=t[0]==='emoji'?(()=>brdToggleEmojiPanel()):(()=>brdSetTool(t[0]));tools.appendChild(b);});
+ if(!RO){const sp=document.createElement('div');sp.className='brd-sep';tools.appendChild(sp);
+   [['brd-undo','↶','Отменить (Ctrl+Z)',brdUndo],['brd-redo','↷','Повторить (Ctrl+Shift+Z / Ctrl+Y)',brdRedo]].forEach(u=>{const b=document.createElement('button');b.className='brd-tool';b.id=u[0];b.textContent=u[1];b.title=u[2];b.onclick=u[3];tools.appendChild(b);});}
  wrap.appendChild(tools);
  // панель эмодзи
  const epop=document.createElement('div');epop.className='brd-pop';epop.id='brd-emoji-pop';epop.style.top='54px';
@@ -2705,23 +2777,44 @@ function boardView(){
  top.appendChild(mkbtn('−','Уменьшить',()=>{const c=brdCam();c.z=Math.max(0.15,c.z/1.15);brdRender();brdSave();}));
  const zl=document.createElement('span');zl.className='brd-zoom';zl.id='brd-zoom';zl.textContent='100%';zl.title='Сбросить масштаб';zl.onclick=()=>{const c=brdCam();c.z=1;brdRender();brdSave();};top.appendChild(zl);
  top.appendChild(mkbtn('+','Увеличить',()=>{const c=brdCam();c.z=Math.min(4,c.z*1.15);brdRender();brdSave();}));
- top.appendChild(mkbtn('⤢ По размеру','Показать всё',brdFit));
+ top.appendChild(mkbtn('⤢','По размеру — показать всё',brdFit));
+ const fq=document.createElement('input');fq.type='search';fq.className='brd-search';fq.id='brd-find';fq.placeholder='🔍 Поиск';fq.title='Поиск по тексту элементов (Ctrl+F). Enter — следующее совпадение';fq.value=BW.findQ||'';
+ fq.addEventListener('input',()=>{BW.findQ=fq.value;brdFind(fq.value);BW.sel=(BW.found||[]).slice();brdRender();brdFindUI();});
+ fq.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();brdFindNext();}else if(e.key==='Escape'){fq.value='';BW.findQ='';brdFind('');BW.sel=[];brdRender();brdFindUI();fq.blur();}});
+ top.appendChild(fq);const fqn=document.createElement('span');fqn.className='brd-findn';fqn.id='brd-findn';top.appendChild(fqn);
+ if(!RO){top.appendChild(mkbtn('📋 Шаблоны','Шаблоны ретро, анализа и продукта',brdToggleTplPanel));
+   top.appendChild(mkbtn('📊 Данные','Живые карточки задач и виджеты-метрики из приложения',brdToggleDataPanel));}
  if(!RO){const fi=document.createElement('input');fi.type='file';fi.accept='image/*';fi.style.display='none';fi.id='brd-file';fi.onchange=e=>{const f=e.target.files[0];if(!f)return;const rd=new FileReader();rd.onload=()=>{const im=new Image();im.onload=()=>{const c=brdCam(),r=svg.getBoundingClientRect();const cx=(r.width/2-c.x)/c.z,cy=(r.height/2-c.y)/c.z;const mw=320,sc=Math.min(1,mw/im.width);const it={id:brdId(),t:'image',x:cx-im.width*sc/2,y:cy-im.height*sc/2,w:im.width*sc,h:im.height*sc,src:rd.result};brdAdd(it);BW.sel=[it.id];brdSave();brdRender();brdWSUpsert([it.id]);};im.src=rd.result;};rd.readAsDataURL(f);e.target.value='';};wrap.appendChild(fi);
-   top.appendChild(mkbtn('🖼 Изобр.','Вставить изображение',()=>fi.click()));}
- if(!RO){top.appendChild(mkbtn('⛓ Связать','Соединить выделенные фигуры авто-стрелками',brdConnectSel));
-   top.appendChild(mkbtn('✨ Анимация','Анимация выделенного элемента',brdToggleAnimPanel));}
+   top.appendChild(mkbtn('🖼','Вставить изображение',()=>fi.click()));}
+ if(!RO){top.appendChild(mkbtn('⛓','Связать: соединить выделенные фигуры авто-стрелками',brdConnectSel));
+   top.appendChild(mkbtn('✨','Анимация выделенного элемента',brdToggleAnimPanel));}
  top.appendChild(mkbtn('⤓ PNG','Экспорт в PNG',brdExportPNG));
  top.appendChild(mkbtn('⤓ PDF','Экспорт в PDF',brdExportPDF));
  if(typeof AUTH!=='undefined'&&AUTH.token){top.appendChild(mkbtn('Slack','Отправить сводку доски в Slack',brdSlack));top.appendChild(mkbtn('Jira','Создать задачу в Jira из выделенного',brdJira));}
  top.appendChild(mkbtn('⏱','Таймер фасилитации',()=>{const m=prompt('Таймер на сколько минут?','5');const mn=parseFloat(m);if(mn>0)brdTimerStart(Math.round(mn*60));}));
+ const snb=mkbtn('⌗','Привязка к сетке',()=>{BW.snap=!BW.snap;snb.classList.toggle('on',BW.snap);try{localStorage.setItem('brd_snap',BW.snap?'1':'0');}catch(e){}toast(BW.snap?'Привязка к сетке включена':'Привязка к сетке выключена');});snb.classList.toggle('on',!!BW.snap);if(!RO)top.appendChild(snb);
+ const mmb=mkbtn('🗺','Мини-карта',()=>{BW.miniOff=!BW.miniOff;mmb.classList.toggle('on',!BW.miniOff);const m=document.getElementById('brd-mini');if(m)m.style.display=BW.miniOff?'none':'';try{localStorage.setItem('brd_mini',BW.miniOff?'0':'1');}catch(e){}brdMiniRender();});mmb.classList.toggle('on',!BW.miniOff);top.appendChild(mmb);
  if(!RO)top.appendChild(mkbtn('🗑','Удалить выделенное (Del)',brdDelSel,'danger'));
  wrap.appendChild(top);
+ // мини-карта
+ const mini=document.createElement('div');mini.className='brd-mini';mini.id='brd-mini';mini.title='Мини-карта: клик/перетаскивание — перейти к области';mini.innerHTML='<svg viewBox="0 0 180 120" preserveAspectRatio="none"></svg>';if(BW.miniOff)mini.style.display='none';
+ const mmGo=e=>{const r=mini.getBoundingClientRect(),mm=BW._mm;if(!mm)return;const wx=((e.clientX-r.left)*180/r.width-mm.ox)/mm.s,wy=((e.clientY-r.top)*120/r.height-mm.oy)/mm.s;const c=brdCam(),sr=svg.getBoundingClientRect();c.x=sr.width/2-wx*c.z;c.y=sr.height/2-wy*c.z;brdRender();};
+ mini.addEventListener('pointerdown',e=>{e.stopPropagation();mini.setPointerCapture&&mini.setPointerCapture(e.pointerId);BW._mmDrag=true;mmGo(e);});
+ mini.addEventListener('pointermove',e=>{if(BW._mmDrag)mmGo(e);});
+ mini.addEventListener('pointerup',()=>{BW._mmDrag=false;brdSave();});
+ wrap.appendChild(mini);
+ // панель действий над выделенным
+ if(!RO){const ab=document.createElement('div');ab.className='brd-actbar';ab.id='brd-actbar';
+   const cnt=document.createElement('span');cnt.className='cnt';ab.appendChild(cnt);
+   BRD_ACTS.forEach(a=>{if(a==='|'){const s=document.createElement('span');s.className='sep';ab.appendChild(s);return;}
+     const b=document.createElement('button');b.textContent=a[1];b.title=a[2];b.dataset.act=a[0];b.onclick=e=>{e.stopPropagation();a[3]();};ab.appendChild(b);});
+   wrap.appendChild(ab);}
  // таймер
  const tm=document.createElement('div');tm.className='brd-timer';tm.id='brd-timer';tm.innerHTML='<span>⏱</span><span class="tt">0:00</span>';
  const tp=document.createElement('button');tp.textContent='+1м';tp.onclick=()=>{BW.timer=(BW.timer||0)+60;brdTimerTick();};tm.appendChild(tp);
  const tx=document.createElement('button');tx.textContent='✕';tx.onclick=()=>{if(BW._ti)clearInterval(BW._ti);BW._ti=null;BW.timer=null;tm.classList.remove('on');};tm.appendChild(tx);
  wrap.appendChild(tm);
- const hint=document.createElement('div');hint.className='brd-hint';hint.textContent=RO?'Режим просмотра: панорама колёсиком/рукой, экспорт доступен, ссылки открываются.':'Колесо — масштаб · «+» у фигуры — дубль со стрелкой · ⛓ связать выделенные · ✨ анимация · 😀 эмодзи · 🔗 ссылка · Del — удалить';wrap.appendChild(hint);
+ const hint=document.createElement('div');hint.className='brd-hint';hint.textContent=RO?'Режим просмотра: панорама колёсиком/рукой, экспорт доступен, ссылки открываются.':'Колесо — масштаб · «+» у фигуры — дубль со стрелкой · Ctrl+Z/Y — отмена/повтор · Ctrl+C/V/D — копия/вставка/дубль · Ctrl+G — группа · Del — удалить';wrap.appendChild(hint);
  // события
  svg.addEventListener('pointerdown',brdDown);
  svg.addEventListener('pointermove',brdMoveEv);
@@ -2731,10 +2824,215 @@ function boardView(){
  svg.addEventListener('pointermove',e=>{const now=Date.now();if(now-BWS.lastCur<45)return;BWS.lastCur=now;if(!BWS.ws||BWS.ws.readyState!==1)return;const w=brdToWorld(e.clientX,e.clientY);brdWSSend({type:'cursor',x:Math.round(w.x),y:Math.round(w.y),name:brdAuthor()});});
  brdClearCursors();if(brdServerMode()){brdWSConnect();}brdPresence();
  svg.addEventListener('wheel',e=>{e.preventDefault();const c=brdCam(),r=svg.getBoundingClientRect(),mx=e.clientX-r.left,my=e.clientY-r.top;const f=e.deltaY<0?1.1:1/1.1;const nz=Math.min(4,Math.max(0.15,c.z*f));const wx=(mx-c.x)/c.z,wy=(my-c.y)/c.z;c.z=nz;c.x=mx-wx*nz;c.y=my-wy*nz;brdRender();brdSave();},{passive:false});
- svg.addEventListener('dblclick',e=>{const node=e.target.closest&&e.target.closest('[data-id]');if(node){const it=brdItems().find(x=>x.id===node.getAttribute('data-id'));if(it){if(it.t==='link')brdOpenLink(it.url,it.title);else if(it.t==='emoji'){if(PERM.canEdit)brdPickEmoji(it);}else brdEdit(it);}}});
+ svg.addEventListener('dblclick',e=>{const node=e.target.closest&&e.target.closest('[data-id]');if(node){const it=brdItems().find(x=>x.id===node.getAttribute('data-id'));if(it){if(it.t==='link')brdOpenLink(it.url,it.title);else if(it.t==='task')brdOpenTask(it);else if(it.t==='metric')activate(BRD_METRIC_VIEW[it.m]||'dash');else if(it.t==='emoji'){if(PERM.canEdit)brdPickEmoji(it);}else brdEdit(it);}}});
  svg.addEventListener('contextmenu',e=>e.preventDefault());
- setTimeout(()=>brdRender(),0);
+ brdHistEnsure();
+ setTimeout(()=>{brdRender();brdHistUI();brdFindUI();},0);
  return wrap;}
+/* ================= Доска: эргономика, связь с данными приложения, шаблоны ================= */
+/* ---- история: отмена/повтор (снимки элементов; запись — при каждом brdSave, с дебаунсом) ---- */
+function brdSnap(){return JSON.stringify(brdItems());}
+function brdHistReset(){BW.hist=[brdSnap()];BW.hi=0;BW._histRef=brdEnsure();if(BW._ht){clearTimeout(BW._ht);BW._ht=null;}brdHistUI();}
+function brdHistEnsure(){if(!BW.hist||BW._histRef!==ST.board)brdHistReset();}
+function brdHistCommit(){BW._ht=null;const s=brdSnap();if(s===BW.hist[BW.hi])return;BW.hist=BW.hist.slice(0,BW.hi+1);BW.hist.push(s);if(BW.hist.length>50)BW.hist.shift();BW.hi=BW.hist.length-1;brdHistUI();}
+function brdHistRecord(){if(BW._restoring)return;brdHistEnsure();if(BW._ht)clearTimeout(BW._ht);BW._ht=setTimeout(brdHistCommit,180);}
+function brdHistFlush(){brdHistEnsure();if(BW._ht){clearTimeout(BW._ht);brdHistCommit();}}
+function brdHistApply(s){const before=brdItems();BW._restoring=true;ST.board.items=JSON.parse(s);
+ const now=brdItems(),ids=new Set(now.map(x=>x.id));BW.sel=(BW.sel||[]).filter(id=>ids.has(id));
+ if(BWS.ws){const old=new Map(before.map(x=>[x.id,JSON.stringify(x)]));const up=now.filter(x=>old.get(x.id)!==JSON.stringify(x)).map(x=>x.id),del=before.filter(x=>!ids.has(x.id)).map(x=>x.id);if(up.length)brdWSUpsert(up);if(del.length)brdWSDelete(del);}
+ brdRender();try{save();}catch(e){}BW._restoring=false;brdHistUI();}
+function brdUndo(){if(!PERM.canEdit)return;brdHistFlush();if(BW.hi<=0){toast('Нечего отменять');return;}BW.hi--;brdHistApply(BW.hist[BW.hi]);}
+function brdRedo(){if(!PERM.canEdit)return;brdHistFlush();if(BW.hi>=BW.hist.length-1){toast('Нечего повторять');return;}BW.hi++;brdHistApply(BW.hist[BW.hi]);}
+function brdHistUI(){const u=document.getElementById('brd-undo'),r=document.getElementById('brd-redo');const pend=!!BW._ht;
+ if(u)u.disabled=!BW.hist||(BW.hi<=0&&!pend);if(r)r.disabled=!BW.hist||BW.hi>=BW.hist.length-1||pend;}
+/* ---- буфер обмена: копировать / вставить / дублировать (связи между копиями перепривязываются) ---- */
+function brdCopy(silent){if(!BW.sel.length)return false;const set=new Set(BW.sel);const items=brdItems().filter(x=>set.has(x.id));
+ brdItems().forEach(x=>{if(x.t==='conn'&&x.from&&x.to&&set.has(x.from)&&set.has(x.to)&&!set.has(x.id))items.push(x);});
+ BW.clip=JSON.parse(JSON.stringify(items));BW.pasteN=0;if(!silent)toast('Скопировано: '+BW.clip.length);return true;}
+function brdPaste(){if(!PERM.canEdit||!BW.clip||!BW.clip.length)return;BW.pasteN=(BW.pasteN||0)+1;const off=24*BW.pasteN,map={},grp={},made=[];
+ BW.clip.forEach(x=>{map[x.id]=brdId();});
+ BW.clip.forEach(x=>{const n=JSON.parse(JSON.stringify(x));n.id=map[x.id];delete n.locked;
+   if(n.grp){grp[n.grp]=grp[n.grp]||brdId();n.grp=grp[n.grp];}
+   if(n.t==='conn'&&n.from&&n.to){n.from=map[n.from]||n.from;n.to=map[n.to]||n.to;}else brdMove(n,off,off);
+   if(n.t==='sticky'){n.votes=0;n.author=brdAuthor();}
+   brdAdd(n);made.push(n.id);});
+ BW.sel=made.filter(id=>{const it=brdItemById(id);return it&&it.t!=='conn';});brdSave();brdRender();brdWSUpsert(made);}
+function brdDuplicate(){if(!PERM.canEdit)return;if(brdCopy(true))brdPaste();}
+/* ---- группы ---- */
+function brdGroup(){if(!PERM.canEdit)return;const ids=BW.sel.filter(id=>{const it=brdItemById(id);return it&&it.t!=='conn';});if(ids.length<2){toast('Выделите 2+ элемента для группировки (Shift-клик или рамкой)');return;}
+ const g=brdId();ids.forEach(id=>{brdItemById(id).grp=g;});brdSave();brdRender();brdWSUpsert(ids);toast('Сгруппировано: '+ids.length);}
+function brdUngroup(){if(!PERM.canEdit)return;let n=0;BW.sel.forEach(id=>{const it=brdItemById(id);if(it&&it.grp){delete it.grp;n++;}});if(!n){toast('В выделении нет групп');return;}brdSave();brdRender();brdWSUpsert(BW.sel);toast('Группа расформирована');}
+function brdGroupMembers(id){const it=brdItemById(id);if(!it||!it.grp)return [id];return brdItems().filter(x=>x.grp===it.grp).map(x=>x.id);}
+function brdSelectWith(id,shift){const ids=brdGroupMembers(id);
+ if(shift){if(BW.sel.indexOf(id)>=0)BW.sel=BW.sel.filter(x=>ids.indexOf(x)<0);else ids.forEach(x=>{if(BW.sel.indexOf(x)<0)BW.sel.push(x);});}
+ else if(BW.sel.indexOf(id)<0)BW.sel=ids.slice();}
+/* что двигать: выделенное (кроме закреплённого) + всё, что лежит внутри выделенных фреймов */
+function brdMoveSet(){const set=new Set(BW.sel.filter(id=>{const it=brdItemById(id);return it&&!it.locked;}));
+ brdItems().forEach(fr=>{if(fr.t!=='frame'||!set.has(fr.id))return;const b=brdBBox(fr);
+   brdItems().forEach(x=>{if(set.has(x.id)||x.locked||(x.t==='conn'&&x.from&&x.to))return;const q=brdBBox(x),cx=q.x+q.w/2,cy=q.y+q.h/2;if(cx>=b.x&&cx<=b.x+b.w&&cy>=b.y&&cy<=b.y+b.h)set.add(x.id);});});
+ return Array.from(set);}
+/* ---- закрепление ---- */
+function brdToggleLock(){if(!PERM.canEdit||!BW.sel.length)return;const its=BW.sel.map(brdItemById).filter(Boolean);const lock=!its.every(x=>x.locked);
+ its.forEach(x=>{if(lock)x.locked=true;else delete x.locked;});brdSave();brdRender();brdWSUpsert(BW.sel);toast(lock?'🔒 Закреплено: '+its.length:'🔓 Откреплено: '+its.length);}
+/* ---- выравнивание и распределение ---- */
+function brdAlignItems(){return BW.sel.map(brdItemById).filter(it=>it&&!it.locked&&!(it.t==='conn'&&it.from&&it.to));}
+function brdAlign(mode){if(!PERM.canEdit)return;const its=brdAlignItems();if(its.length<2){toast('Выделите 2+ элемента для выравнивания');return;}
+ const bs=its.map(brdBBox),L=Math.min.apply(null,bs.map(b=>b.x)),R=Math.max.apply(null,bs.map(b=>b.x+b.w)),T=Math.min.apply(null,bs.map(b=>b.y)),B=Math.max.apply(null,bs.map(b=>b.y+b.h));
+ its.forEach((it,i)=>{const b=bs[i];let dx=0,dy=0;
+  if(mode==='left')dx=L-b.x;else if(mode==='right')dx=R-(b.x+b.w);else if(mode==='hcenter')dx=(L+R)/2-(b.x+b.w/2);
+  else if(mode==='top')dy=T-b.y;else if(mode==='bottom')dy=B-(b.y+b.h);else if(mode==='vcenter')dy=(T+B)/2-(b.y+b.h/2);
+  brdMove(it,dx,dy);});
+ brdSave();brdRender();brdWSUpsert(its.map(x=>x.id));}
+function brdDistribute(axis){if(!PERM.canEdit)return;const its=brdAlignItems();if(its.length<3){toast('Выделите 3+ элемента для распределения');return;}
+ const k=axis==='h'?'x':'y',sz=axis==='h'?'w':'h',arr=its.map(it=>({it:it,b:brdBBox(it)})).sort((a,b)=>a.b[k]-b.b[k]);
+ const first=arr[0].b,last=arr[arr.length-1].b,span=(last[k]+last[sz])-first[k],total=arr.reduce((s,a)=>s+a.b[sz],0),gap=(span-total)/(arr.length-1);
+ let pos=first[k];arr.forEach(a=>{const d=pos-a.b[k];if(axis==='h')brdMove(a.it,d,0);else brdMove(a.it,0,d);pos+=a.b[sz]+gap;});
+ brdSave();brdRender();brdWSUpsert(its.map(x=>x.id));}
+/* ---- привязка к сетке ---- */
+const BRD_GRID=22;
+function brdSnapV(v){return BW.snap?Math.round(v/BRD_GRID)*BRD_GRID:v;}
+/* ---- панель действий над выделенным ---- */
+var BRD_ACTS=[['dup','⧉','Дублировать (Ctrl+D)',()=>brdDuplicate()],['grp','▣','Сгруппировать (Ctrl+G)',()=>brdGroup()],['ungrp','⊟','Разгруппировать (Ctrl+Shift+G)',()=>brdUngroup()],['lock','🔒','Закрепить / открепить (Ctrl+L)',()=>brdToggleLock()],'|',
+ ['al','⇤','Выровнять по левому краю',()=>brdAlign('left')],['ac','⇔','Выровнять по центру (по горизонтали)',()=>brdAlign('hcenter')],['ar','⇥','Выровнять по правому краю',()=>brdAlign('right')],
+ ['at','⤒','Выровнять по верху',()=>brdAlign('top')],['am','⇕','Выровнять по середине (по вертикали)',()=>brdAlign('vcenter')],['ab','⤓','Выровнять по низу',()=>brdAlign('bottom')],'|',
+ ['dh','⇹','Распределить по горизонтали (3+)',()=>brdDistribute('h')],['dv','⇳','Распределить по вертикали (3+)',()=>brdDistribute('v')],'|',
+ ['conv','⇢ В сущность','Превратить стикеры в задачи, риски, импедименты, решения, action items или уроки',()=>brdToggleConvPanel()],['del','🗑','Удалить (Del)',()=>brdDelSel()]];
+function brdActbarUI(){const a=document.getElementById('brd-actbar');if(!a)return;const n=(BW.sel||[]).length;a.classList.toggle('on',n>0&&PERM.canEdit);
+ const c=a.querySelector('.cnt');if(c)c.textContent=n+' выд.';
+ const lk=a.querySelector('[data-act="lock"]');if(lk){const all=n>0&&BW.sel.every(id=>{const it=brdItemById(id);return it&&it.locked;});lk.textContent=all?'🔓':'🔒';}}
+/* ---- мини-карта ---- */
+function brdMiniQueue(){if(BW._mmq)return;BW._mmq=true;requestAnimationFrame(()=>{BW._mmq=false;brdMiniRender();});}
+function brdMiniRender(){const m=document.getElementById('brd-mini');if(!m||!BW.svg||m.style.display==='none')return;
+ const items=brdItems(),c=brdCam(),r=BW.svg.getBoundingClientRect();if(!r.width)return;
+ const vp={x:-c.x/c.z,y:-c.y/c.z,w:r.width/c.z,h:r.height/c.z};let x0=vp.x,y0=vp.y,x1=vp.x+vp.w,y1=vp.y+vp.h;
+ items.forEach(it=>{const b=brdBBox(it);x0=Math.min(x0,b.x);y0=Math.min(y0,b.y);x1=Math.max(x1,b.x+b.w);y1=Math.max(y1,b.y+b.h);});
+ const W=180,H=120,pad=6,s=Math.min((W-pad*2)/Math.max(1,x1-x0),(H-pad*2)/Math.max(1,y1-y0)),ox=pad-x0*s+((W-pad*2)-(x1-x0)*s)/2,oy=pad-y0*s+((H-pad*2)-(y1-y0)*s)/2;
+ BW._mm={s:s,ox:ox,oy:oy};let h='';
+ items.forEach(it=>{if(it.t==='conn'||it.t==='pen')return;const b=brdBBox(it),fr=it.t==='frame';const fill=fr?'none':(it.fill||(it.t==='task'||it.t==='metric'||it.t==='link'?'#FFFFFF':'#9AA7B8'));
+   h+='<rect x="'+(b.x*s+ox).toFixed(1)+'" y="'+(b.y*s+oy).toFixed(1)+'" width="'+Math.max(1.5,b.w*s).toFixed(1)+'" height="'+Math.max(1.5,b.h*s).toFixed(1)+'" fill="'+esc(fill)+'" stroke="'+(fr?'#9AA7B8':'rgba(0,0,0,.28)')+'" stroke-width=".6"/>';});
+ h+='<rect x="'+(vp.x*s+ox).toFixed(1)+'" y="'+(vp.y*s+oy).toFixed(1)+'" width="'+(vp.w*s).toFixed(1)+'" height="'+(vp.h*s).toFixed(1)+'" fill="rgba(45,91,227,.10)" stroke="#2D5BE3" stroke-width="1.2"/>';
+ m.querySelector('svg').innerHTML=h;}
+/* ---- поиск по доске ---- */
+function brdItemText(it){return [it.text,it.title,it.url,it.char,it.t==='task'?brdTaskText(it):'',it.t==='metric'?(brdMetricData(it.m).title||''):''].filter(Boolean).join(' ');}
+function brdFind(q){q=String(q||'').trim().toLowerCase();BW.found=q?brdItems().filter(it=>brdItemText(it).toLowerCase().indexOf(q)>=0).map(x=>x.id):[];BW.fi=-1;return BW.found;}
+function brdFindNext(){if(!BW.found||!BW.found.length){toast('Ничего не найдено');return;}BW.fi=(BW.fi+1)%BW.found.length;const id=BW.found[BW.fi];BW.sel=[id];brdFocusItem(id);brdFindUI();}
+function brdFindUI(){const l=document.getElementById('brd-findn');if(!l)return;const n=BW.found?BW.found.length:0;l.textContent=BW.findQ?(n?((BW.fi>=0?BW.fi+1:'·')+'/'+n):'0'):'';}
+function brdFocusItem(id){const it=brdItemById(id);if(!it||!BW.svg)return;const b=brdBBox(it),c=brdCam(),r=BW.svg.getBoundingClientRect();c.x=r.width/2-(b.x+b.w/2)*c.z;c.y=r.height/2-(b.y+b.h/2)*c.z;brdRender();}
+function brdFocusBox(b,pad){if(!BW.svg)return;const c=brdCam(),r=BW.svg.getBoundingClientRect();if(!r.width)return;pad=pad||24;
+ // область без плавающих панелей: слева инструменты, сверху палитра/панель, снизу подсказка
+ const L=64,T=Math.min(110,r.height*0.2),R=12,B=56,aw=Math.max(100,r.width-L-R),ah=Math.max(100,r.height-T-B);
+ c.z=Math.min(1.4,Math.max(0.15,Math.min(aw/(b.w+pad*2),ah/(b.h+pad*2))));c.x=L+aw/2-(b.x+b.w/2)*c.z;c.y=T+ah/2-(b.y+b.h/2)*c.z;brdRender();}
+function brdViewCenter(){const c=brdCam(),r=BW.svg?BW.svg.getBoundingClientRect():{width:800,height:600};return {x:((r.width||800)/2-c.x)/c.z,y:((r.height||600)/2-c.y)/c.z};}
+/* ---- всплывающие панели ---- */
+function brdTogglePop(id,css,fill){if(!BW.wrap)return;let p=document.getElementById(id);if(!p){p=document.createElement('div');p.className='brd-pop';p.id=id;p.style.cssText=css||'';BW.wrap.appendChild(p);}
+ const on=p.classList.contains('on');brdClosePops();if(!on){p.innerHTML='';fill(p);p.classList.add('on');}}
+/* ---- живые карточки задач из бэклога ---- */
+var BRD_TSTAT={'To Do':'#94A3B8','В работе':'#E8A23A','Готово':'#22A06B'};
+function brdTask(it){return (ST.tasks||[]).find(t=>t.id===it.taskId);}
+function brdTaskText(it){const t=brdTask(it);return t?((t.id||'')+' '+(t.title||'')+' '+(t.assignee||'')):(it.taskId||'');}
+function brdAddTaskCard(taskId,x,y){if(!PERM.canEdit)return null;const t=(ST.tasks||[]).find(z=>z.id===taskId);if(!t)return null;
+ let px=x,py=y;if(px==null){const c=brdViewCenter();BW._tc=((BW._tc||0)+1)%8;px=c.x-110+BW._tc*20;py=c.y-59+BW._tc*20;}
+ const it={id:brdId(),t:'task',x:px,y:py,w:220,h:118,taskId:taskId};brdAdd(it);BW.sel=[it.id];brdSave();brdRender();brdWSUpsert([it.id]);return it;}
+function brdAddSprintBoard(sp){if(!PERM.canEdit)return;const tasks=(ST.tasks||[]).filter(t=>+t.sprint===+sp);if(!tasks.length){toast('В спринте #'+sp+' нет задач');return;}
+ const cols=['To Do','В работе','Готово'],by={};cols.forEach(c=>by[c]=[]);tasks.forEach(t=>{(by[t.status]||by['To Do']).push(t);});
+ const cw=250,gap=24,pad=24,head=46,step=132,rows=Math.max(1,Math.max.apply(null,cols.map(c=>by[c].length))),innerH=rows*step+14;
+ const W=pad*2+cols.length*cw+(cols.length-1)*gap,H=head+innerH+pad,ctr=brdViewCenter(),X=ctr.x-W/2,Y=ctr.y-H/2,grp=brdId(),made=[];
+ const outer={id:brdId(),t:'frame',x:X,y:Y,w:W,h:H,title:'Спринт #'+sp+' — задачи ('+tasks.length+')',grp:grp};brdAdd(outer);made.push(outer.id);
+ cols.forEach((c,ci)=>{const x=X+pad+ci*(cw+gap);const fr={id:brdId(),t:'frame',x:x,y:Y+head,w:cw,h:innerH,title:c+' · '+by[c].length,grp:grp};brdAdd(fr);made.push(fr.id);
+   by[c].forEach((t,i)=>{const it={id:brdId(),t:'task',x:x+15,y:Y+head+14+i*step,w:220,h:118,taskId:t.id};brdAdd(it);made.push(it.id);});});
+ BW.sel=[];brdSave();brdRender();brdWSUpsert(made);brdFocusBox({x:X,y:Y-26,w:W,h:H+26});toast('Спринт #'+sp+' на доске: '+tasks.length+' карточек');}
+function brdTaskCycle(id){if(!PERM.canEdit)return;const it=brdItemById(id),t=it&&brdTask(it);if(!t){toast('Задача не найдена в бэклоге');return;}
+ const order=['To Do','В работе','Готово'],nx=order[(order.indexOf(t.status)+1)%order.length],today=kanToday();
+ t.status=nx;if(nx==='Готово'){if(!t.started)t.started=today;if(!t.done)t.done=today;}else if(nx==='To Do'){t.started='';t.done='';}else{if(!t.started)t.started=today;t.done='';}
+ save();brdRender();brdWSUpsert([it.id]);try{recomputeSoft();}catch(e){}
+ toast('«'+t.id+'» → '+nx);if(typeof auditClient==='function')auditClient('board_task_status',t.id+' → '+nx);}
+function brdOpenTask(it){const t=brdTask(it);if(!t){toast('Задача не найдена в бэклоге');return;}UI.search=UI.search||{};UI.search.tasks=t.id;views();activate('backlog');toast('Бэклог отфильтрован: '+t.id);}
+/* ---- виджеты-метрики (значения пересчитываются из данных приложения) ---- */
+var BRD_METRICS=[['velocity','⚡ Velocity'],['progress','🏃 Выполнение спринта'],['goal','🎯 Цель спринта'],['health','💚 Health-index'],['risk','⚠️ Риск срыва спринта'],['bugs','🐞 Открытые баги']];
+var BRD_METRIC_VIEW={velocity:'analytics',progress:'roadmap',goal:'sprintGoals',health:'analytics',risk:'dash',bugs:'bugs'};
+var BRD_TONE={good:'#22A06B',warn:'#E8A23A',crit:'#E5484D',neut:'#94A3B8'};
+function brdMetricC(){const now=Date.now();if(!BW._mc||now-BW._mc.t>1500)BW._mc={t:now,C:compute()};return BW._mc.C;}
+function brdMetricData(m){const C=brdMetricC();
+ if(m==='velocity')return {title:'Velocity',val:fmt(C.avgVel,1)+' SP',sub:'средняя за закрытые спринты',spark:(C.vels||[]).filter(v=>v!=null),tone:'neut'};
+ if(m==='progress'){const sp=C.curSp,p=sp&&sp.pct!=null?sp.pct:null;return {title:'Спринт #'+C.cur,val:p==null?'—':pctf(p),sub:sp?('план '+fmt(sp.plan,1)+' / ёмкость '+fmt(sp.cap,1)+' SP'):'нет данных',tone:p==null?'neut':p>=0.9?'good':p>=0.6?'warn':'crit'};}
+ if(m==='goal'){const g=(ST.sprintGoals||[]).find(x=>+x.sprint===+C.cur);return {title:'Цель спринта #'+C.cur,text:g?(g.goal||'—'):'Цель не задана',sub:g?('статус: '+(g.status||'—')):'',tone:g&&g.status==='Достигнута'?'good':g?'warn':'neut'};}
+ if(m==='health')return {title:'Health-index',val:pctf(C.health),sub:C.health>=.8?'хорошо':C.health>=.6?'требует внимания':'критично',tone:C.health>=.8?'good':C.health>=.6?'warn':'crit'};
+ if(m==='risk'){const r=sprintRisk(C);return {title:'Риск срыва спринта',val:r?r.level:'—',sub:r?('индекс '+r.score+'/100'):'нет данных',tone:!r?'neut':r.level==='Высокий'?'crit':r.level==='Средний'?'warn':'good'};}
+ if(m==='bugs'){const cr=(ST.bugs||[]).filter(b=>b.sev==='Critical'&&b.status!=='Закрыт').length;return {title:'Открытые баги',val:String(C.bugsOpen),sub:'Critical: '+cr+' · DRE '+pctf(C.dre),tone:cr?'crit':C.bugsOpen>3?'warn':'good'};}
+ return {title:String(m||'Метрика'),val:'—',sub:'',tone:'neut'};}
+function brdAddMetric(m){if(!PERM.canEdit)return null;const c=brdViewCenter();BW._tc=((BW._tc||0)+1)%8;
+ const it={id:brdId(),t:'metric',m:m,x:c.x-115+BW._tc*20,y:c.y-60+BW._tc*20,w:230,h:120};brdAdd(it);BW.sel=[it.id];brdSave();brdRender();brdWSUpsert([it.id]);return it;}
+function brdToggleDataPanel(){brdTogglePop('brd-data-pop','left:auto;right:12px;top:58px;max-height:calc(100% - 80px);overflow:auto',p=>{const C=compute();
+ const h1=document.createElement('p');h1.className='brd-pop-t';h1.textContent='Живые карточки задач (из бэклога)';p.appendChild(h1);
+ const sb=document.createElement('button');sb.className='btn primary';sb.style.cssText='width:100%;margin-bottom:6px';sb.textContent='🏃 Спринт #'+C.cur+' на доску (по статусам)';sb.onclick=()=>{brdClosePops();brdAddSprintBoard(C.cur);};p.appendChild(sb);
+ const q=document.createElement('input');q.type='search';q.className='tsearch';q.placeholder='Найти задачу по ID, названию, исполнителю…';q.style.cssText='width:100%;margin-bottom:6px';p.appendChild(q);
+ const list=document.createElement('div');list.className='brd-task-list';p.appendChild(list);
+ const draw=()=>{const s=q.value.trim().toLowerCase();list.innerHTML='';
+   (ST.tasks||[]).filter(t=>!s||((t.id||'')+' '+(t.title||'')+' '+(t.assignee||'')).toLowerCase().indexOf(s)>=0).slice(0,60).forEach(t=>{
+     const b=document.createElement('button');b.title='Добавить карточку на доску';b.innerHTML='<b>'+esc(t.id)+'</b> '+esc(t.title||'')+' <span class="m">· '+esc(t.status||'')+'</span>';b.onclick=()=>brdAddTaskCard(t.id);list.appendChild(b);});
+   if(!list.children.length)list.innerHTML='<div class="m" style="padding:6px">Ничего не найдено</div>';};
+ q.addEventListener('input',draw);draw();
+ const h2=document.createElement('p');h2.className='brd-pop-t';h2.textContent='Виджеты-метрики (обновляются сами)';p.appendChild(h2);
+ const mg=document.createElement('div');mg.className='brd-metric-grid';BRD_METRICS.forEach(m=>{const b=document.createElement('button');b.textContent=m[1];b.onclick=()=>{brdAddMetric(m[0]);};mg.appendChild(b);});p.appendChild(mg);
+ setTimeout(()=>q.focus(),0);});}
+/* ---- стикер → сущность приложения ---- */
+var BRD_REF={risk:['Риск','risks'],impediment:['Имп.','impediments'],decision:['ADR','decisions'],action:['Action','retro'],lesson:['Урок','lessons']};
+var BRD_CONV=[['task','📋 Задача (бэклог) — стикер станет живой карточкой'],['risk','⚠️ Риск'],['impediment','⛔ Импедимент'],['decision','🧠 Решение (ADR)'],['action','🔄 Action item ретроспективы'],['lesson','📚 Урок']];
+function brdRefLabel(r){const m=BRD_REF[r.k];return '↗ '+(m?m[0]:r.k)+((r.k==='risk'||r.k==='action')?'':' '+r.id);}
+function brdToggleConvPanel(){brdTogglePop('brd-conv-pop','left:50%;transform:translateX(-50%);top:auto;bottom:92px',p=>{
+ const h=document.createElement('p');h.className='brd-pop-t';h.textContent='Превратить выделенные стикеры в…';p.appendChild(h);
+ const box=document.createElement('div');box.className='brd-anim-menu';BRD_CONV.forEach(c=>{const b=document.createElement('button');b.textContent=c[1];b.onclick=()=>{brdClosePops();brdConvert(c[0]);};box.appendChild(b);});p.appendChild(box);});}
+function brdConvert(kind){if(!PERM.canEdit)return 0;
+ const its=BW.sel.map(brdItemById).filter(it=>it&&!it.locked&&(it.t==='sticky'||it.t==='text'||((it.t==='rect'||it.t==='ellipse'||it.t==='diamond')&&it.text)));
+ if(!its.length){toast('Выделите стикеры или фигуры с текстом');return 0;}
+ const C=compute(),today=kanToday(),made=[],touched=[];
+ its.forEach(it=>{const txt=String(it.text||'').trim();if(!txt)return;const title=txt.split('\n')[0].slice(0,140);
+  if(kind==='task'){const arr=ST.tasks||(ST.tasks=[]),id=genId(arr,'id','T-');arr.push({id:id,title:title,assignee:'',role:'',type:'Задача',est:0,status:'To Do',sprint:'',dep:'',started:'',done:'',added:true});
+    it.t='task';it.taskId=id;it.w=Math.max(it.w||0,220);it.h=Math.max(it.h||0,118);['text','fill','stroke','votes','author','anim','ref'].forEach(k=>delete it[k]);made.push(id);}
+  else if(kind==='risk'){(ST.risks||(ST.risks=[])).push({name:title,p:3,i:3,mit:'',owner:'',status:'Открыт'});it.ref={k:'risk',id:title};made.push('«'+title.slice(0,30)+'»');}
+  else if(kind==='impediment'){const arr=ST.impediments||(ST.impediments=[]),id=genId(arr,'id','IM-');arr.push({id:id,date:today,title:title,owner:'',severity:'Medium',status:'Открыт',sprint:C.cur,resolved:''});it.ref={k:'impediment',id:id};made.push(id);}
+  else if(kind==='decision'){const arr=ST.decisions||(ST.decisions=[]),id=genId(arr,'id','DC-');arr.push({id:id,date:today,title:title,context:txt,options:'',decision:'',rationale:'',owner:'',status:'Предложено'});it.ref={k:'decision',id:id};made.push(id);}
+  else if(kind==='action'){(ST.retro||(ST.retro=[])).push({sprint:C.cur,well:'',improve:'',action:title,owner:'',due:'Спринт '+(C.cur+1),status:'Открыт'});it.ref={k:'action',id:String(C.cur)};made.push('«'+title.slice(0,30)+'»');}
+  else if(kind==='lesson'){const arr=ST.lessons||(ST.lessons=[]),id=genId(arr,'id','LE-');arr.push({id:id,date:today,sprint:C.cur,category:'Процесс',context:'',lesson:title,recommendation:''});it.ref={k:'lesson',id:id};made.push(id);}
+  else return;
+  touched.push(it.id);});
+ if(!made.length){toast('У выделенных элементов нет текста');return 0;}
+ save();brdSave();brdRender();brdWSUpsert(touched);try{recomputeSoft();}catch(e){}
+ const lbl={task:'задач',risk:'рисков',impediment:'импедиментов',decision:'решений (ADR)',action:'action items',lesson:'уроков'}[kind];
+ toast('Создано '+lbl+': '+made.length+' — '+made.slice(0,3).join(', ')+(made.length>3?'…':''));
+ if(typeof auditClient==='function')auditClient('board_convert',kind+': '+made.join(', '));return made.length;}
+/* ---- шаблоны фасилитации: сетка ячеек-фреймов (сгруппированы, двигаются целиком вместе с содержимым) ---- */
+var BRD_TPL={
+ ssc:{icon:'🔄',name:'Ретро: Start / Stop / Continue',cols:3,rows:1,cells:[{c:0,r:0,title:'▶ Start — начать делать',color:'#A0E7A0',hint:'Что начнём делать?'},{c:1,r:0,title:'■ Stop — перестать делать',color:'#FF8A8A',hint:'Что мешает — прекращаем'},{c:2,r:0,title:'↻ Continue — продолжать',color:'#8FC7FF',hint:'Что работает — сохраняем'}]},
+ l4:{icon:'🔄',name:'Ретро: 4L',cols:4,rows:1,cw:260,cells:[{c:0,r:0,title:'💚 Liked — понравилось',color:'#A0E7A0',hint:'Что понравилось?'},{c:1,r:0,title:'📘 Learned — узнали',color:'#8FC7FF',hint:'Чему научились?'},{c:2,r:0,title:'🧩 Lacked — не хватало',color:'#FFB84D',hint:'Чего не хватало?'},{c:3,r:0,title:'✨ Longed for — хотелось бы',color:'#C6A0FF',hint:'О чём мечтаем?'}]},
+ msg:{icon:'🔄',name:'Ретро: Mad / Sad / Glad',cols:3,rows:1,cells:[{c:0,r:0,title:'😠 Mad — злит',color:'#FF8A8A',hint:'Что раздражало?'},{c:1,r:0,title:'😢 Sad — огорчило',color:'#8FC7FF',hint:'Что огорчило?'},{c:2,r:0,title:'😀 Glad — радует',color:'#A0E7A0',hint:'Чему рады?'}]},
+ sail:{icon:'⛵',name:'Ретро: Кораблик (Sailboat)',cols:2,rows:2,cw:380,ch:270,cells:[{c:0,r:0,title:'🌬 Ветер — что нас двигает',color:'#A0E7A0',hint:'Что помогает команде?'},{c:1,r:0,title:'🏝 Остров — наша цель',color:'#8FC7FF',hint:'Куда плывём?'},{c:0,r:1,title:'⚓ Якорь — что тормозит',color:'#FFB84D',hint:'Что замедляет?'},{c:1,r:1,title:'🪨 Рифы — риски впереди',color:'#FF8A8A',hint:'Какие риски видим?'}]},
+ lean:{icon:'☕',name:'Lean Coffee',cols:3,rows:1,cells:[{c:0,r:0,title:'🗂 Темы — голосуйте 👍',color:'#FFE066',hint:'Предложите тему'},{c:1,r:0,title:'💬 Обсуждаем'},{c:2,r:0,title:'✅ Обсудили — выводы'}]},
+ swot:{icon:'🧭',name:'SWOT-анализ',cols:2,rows:2,cw:380,ch:270,cells:[{c:0,r:0,title:'💪 S — сильные стороны',color:'#A0E7A0',hint:'Наши преимущества'},{c:1,r:0,title:'⚠ W — слабые стороны',color:'#FFB84D',hint:'Где мы слабы?'},{c:0,r:1,title:'🚀 O — возможности',color:'#8FC7FF',hint:'Внешние возможности'},{c:1,r:1,title:'⛈ T — угрозы',color:'#FF8A8A',hint:'Внешние угрозы'}]},
+ ie:{icon:'🎯',name:'Матрица «Влияние / Усилия»',cols:2,rows:2,cw:380,ch:270,cells:[{c:0,r:0,title:'⚡ Быстрые победы: влияние ↑ усилия ↓',color:'#A0E7A0',hint:'Делаем в первую очередь'},{c:1,r:0,title:'🏗 Крупные проекты: влияние ↑ усилия ↑',color:'#8FC7FF',hint:'Планируем'},{c:0,r:1,title:'🧹 Мелочи: влияние ↓ усилия ↓',color:'#FFE066',hint:'Когда будет время'},{c:1,r:1,title:'⛔ Неблагодарные: влияние ↓ усилия ↑',color:'#FF8A8A',hint:'Не делаем'}]},
+ pre:{icon:'💥',name:'Premortem — «проект провалился»',cols:3,rows:1,cells:[{c:0,r:0,title:'💥 Провал, потому что…',color:'#FF8A8A',hint:'Почему мы провалились?'},{c:1,r:0,title:'🔎 Ранние признаки',color:'#FFB84D',hint:'Как заметим заранее?'},{c:2,r:0,title:'🛡 Как предотвратить',color:'#A0E7A0',hint:'Что сделаем уже сейчас?'}]},
+ cjm:{icon:'🧑‍💼',name:'Customer Journey Map',cols:5,rows:4,cw:220,ch:150,labW:150,rowLabels:['Действия','Мысли и эмоции','Боли','Возможности'],
+   cells:[].concat.apply([],['Осведомлённость','Рассмотрение','Покупка','Использование','Лояльность'].map((st,c)=>[0,1,2,3].map(r=>r===0?{c:c,r:r,title:st}:{c:c,r:r,notitle:true})))},
+ canvas:{icon:'📐',name:'Lean Canvas',cols:10,rows:3,cw:118,ch:190,cells:[{c:0,r:0,cs:2,rs:2,title:'Проблема'},{c:2,r:0,cs:2,title:'Решение'},{c:2,r:1,cs:2,title:'Ключевые метрики'},{c:4,r:0,cs:2,rs:2,title:'Ценностное предложение'},{c:6,r:0,cs:2,title:'Скрытое преимущество'},{c:6,r:1,cs:2,title:'Каналы'},{c:8,r:0,cs:2,rs:2,title:'Сегменты клиентов'},{c:0,r:2,cs:5,title:'Структура издержек'},{c:5,r:2,cs:5,title:'Потоки доходов'}]},
+ kanban:{icon:'🗃️',name:'Канбан-колонки',cols:3,rows:1,cells:[{c:0,r:0,title:'To Do'},{c:1,r:0,title:'В работе'},{c:2,r:0,title:'Готово'}]}};
+var BRD_TPL_GROUPS=[['Ретроспективы',['ssc','l4','msg','sail']],['Обсуждение и анализ',['lean','swot','ie','pre']],['Продукт',['cjm','canvas']],['Процесс',['kanban']]];
+function brdInsertTemplate(key){if(!PERM.canEdit)return null;const T=BRD_TPL[key];if(!T)return null;
+ const cw=T.cw||300,ch=T.ch||360,gx=16,gy=34,head=46,pad=24,labW=T.rowLabels?(T.labW||140):0;
+ const W=pad*2+labW+T.cols*cw+(T.cols-1)*gx,H=head+T.rows*ch+(T.rows-1)*gy+pad,ctr=brdViewCenter(),X=ctr.x-W/2,Y=ctr.y-H/2,grp=brdId(),made=[];
+ const add=it=>{brdAdd(it);made.push(it.id);};
+ add({id:brdId(),t:'frame',x:X,y:Y,w:W,h:H,title:T.icon+' '+T.name,grp:grp});
+ const x0=X+pad+labW,y0=Y+head;
+ (T.rowLabels||[]).forEach((lab,r)=>add({id:brdId(),t:'text',x:X+pad,y:y0+r*(ch+gy)+ch/2-14,w:labW-14,text:lab,size:15}));
+ T.cells.forEach(cl=>{const cs=cl.cs||1,rs=cl.rs||1,x=x0+cl.c*(cw+gx),y=y0+cl.r*(ch+gy),w=cs*cw+(cs-1)*gx,h=rs*ch+(rs-1)*gy;
+   const fr={id:brdId(),t:'frame',x:x,y:y,w:w,h:h,title:cl.title||'',grp:grp};if(cl.notitle)fr.notitle=true;add(fr);
+   if(cl.color)add({id:brdId(),t:'sticky',x:x+14,y:y+16,w:Math.min(170,w-28),h:110,fill:cl.color,text:cl.hint||'',author:brdAuthor(),votes:0});});
+ BW.sel=[];brdSave();brdRender();brdWSUpsert(made);brdFocusBox({x:X,y:Y-26,w:W,h:H+26});toast('Шаблон «'+T.name+'» добавлен — стикеры внутри можно править и двигать');return made;}
+function brdToggleTplPanel(){brdTogglePop('brd-tpl-pop','left:auto;right:12px;top:58px;max-height:calc(100% - 80px);overflow:auto',p=>{
+ const box=document.createElement('div');box.className='brd-anim-menu';
+ BRD_TPL_GROUPS.forEach(gr=>{const h=document.createElement('div');h.className='brd-menu-h';h.textContent=gr[0];box.appendChild(h);
+   gr[1].forEach(k=>{const T=BRD_TPL[k],b=document.createElement('button');b.textContent=T.icon+' '+T.name;b.onclick=()=>{brdClosePops();brdInsertTemplate(k);};box.appendChild(b);});});
+ const note=document.createElement('div');note.className='m';note.style.cssText='padding:6px 4px 0;max-width:280px';note.textContent='Шаблон вставляется в центр экрана. Клик по рамке выделяет весь шаблон — он двигается вместе со стикерами.';
+ p.appendChild(box);p.appendChild(note);});}
 /* ================= Доска: совместная работа в реальном времени (WebSocket) + интеграции ================= */
 var BWS={ws:null,id:null,peers:{},cursors:{},_els:{},lastCur:0};
 function brdServerMode(){return typeof SYNC!=='undefined'&&SYNC.on&&typeof AUTH!=='undefined'&&!!AUTH.token;}
@@ -2759,6 +3057,7 @@ function brdApplyRemote(m){brdEnsure();
  if(m.op==='upsert'&&m.item&&m.item.id){const arr=brdItems();const i=arr.findIndex(x=>x.id===m.item.id);if(i>=0)arr[i]=m.item;else arr.push(m.item);}
  else if(m.op==='delete'&&m.ids){ST.board.items=brdItems().filter(x=>m.ids.indexOf(x.id)<0);BW.sel=(BW.sel||[]).filter(id=>m.ids.indexOf(id)<0);}
  try{localStorage.setItem('sprintapp',JSON.stringify(ST));}catch(e){}
+ if(BW.hist)brdHistReset(); // правки соавторов: локальную историю начинаем заново, чтобы отмена их не откатила
  if(typeof CURV!=='undefined'&&CURV==='board')brdRender();}
 function brdCurLayer(){if(!BW.wrap)return null;let l=BW.wrap.querySelector('.brd-curlayer');if(!l){l=document.createElement('div');l.className='brd-curlayer';l.style.cssText='position:absolute;inset:0;pointer-events:none;z-index:9;overflow:hidden';BW.wrap.appendChild(l);}return l;}
 function brdPeerCursor(id,name,color,wx,wy){if(!id)return;BWS.cursors[id]={x:wx,y:wy,name:name,color:color};let el=BWS._els[id];const layer=brdCurLayer();if(!layer)return;
@@ -2785,14 +3084,23 @@ async function brdJira(){if(!(typeof AUTH!=='undefined'&&AUTH.token)){toast('Н�
 document.addEventListener('keydown',e=>{if(typeof CURV==='undefined'||CURV!=='board')return;if(e.target&&/^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName))return;
  if(e.key===' ')BW.space=true;
  if((e.key==='Delete'||e.key==='Backspace')&&BW.sel.length){e.preventDefault();brdDelSel();}
- if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='a'){e.preventDefault();BW.sel=brdItems().map(i=>i.id);brdRender();}});
+ const mod=e.ctrlKey||e.metaKey,code=e.code||'';if(!mod)return; // e.code — работает и в русской раскладке
+ if(code==='KeyA'){e.preventDefault();BW.sel=brdItems().map(i=>i.id);brdRender();}
+ else if(code==='KeyZ'&&!e.shiftKey){e.preventDefault();brdUndo();}
+ else if((code==='KeyZ'&&e.shiftKey)||code==='KeyY'){e.preventDefault();brdRedo();}
+ else if(code==='KeyC'){if(brdCopy())e.preventDefault();}
+ else if(code==='KeyV'){if(BW.clip&&BW.clip.length){e.preventDefault();brdPaste();}}
+ else if(code==='KeyD'){e.preventDefault();brdDuplicate();}
+ else if(code==='KeyG'){e.preventDefault();if(e.shiftKey)brdUngroup();else brdGroup();}
+ else if(code==='KeyL'){e.preventDefault();brdToggleLock();}
+ else if(code==='KeyF'){const f=document.getElementById('brd-find');if(f){e.preventDefault();f.focus();f.select();}}});
 document.addEventListener('keyup',e=>{if(e.key===' ')BW.space=false;});
 function views(){
  const C=compute();
  // Dashboard
  renderDash(C);
  // Доска (интерактивный холст)
- {const bv=document.getElementById('v_board');bv.innerHTML='<h1 style="margin-bottom:5px">Доска</h1><p class="lede" style="margin-bottom:10px">Бесконечный холст для схем, стикеров и мозговых штурмов. Инструменты — слева, экспорт и таймер — справа. Изменения сохраняются автоматически.</p>';bv.appendChild(boardView());}
+ {const bv=document.getElementById('v_board');bv.innerHTML='<h1 style="margin-bottom:5px">Доска</h1><p class="lede" style="margin-bottom:10px">Бесконечный холст для схем, стикеров и мозговых штурмов: шаблоны ритуалов (ретро, SWOT, Lean Canvas, CJM), живые карточки задач и виджеты-метрики, превращение стикеров в задачи, риски, импедименты и решения, отмена и повтор, группировка, выравнивание, мини-карта и поиск. Изменения сохраняются автоматически.</p>';bv.appendChild(boardView());}
  // Backlog (с авто-сортировкой по приоритету и авто-набором спринта)
  setView('backlog','Бэклог','Задачи проекта — источник данных для плана, velocity, релизов и метрик. Кнопки выше: сортировка по приоритету (RICE/MoSCoW) и авто-набор спринта по ёмкости.',backlogView());
  // Team
@@ -4794,9 +5102,13 @@ const NAV=[
  {g:'Система',items:[['params','Параметры','⚙️'],['integrations','Интеграции','🔌'],['calendar','Календарь','📅'],['budget','Бюджет','💰'],['checks','Проверки данных','🧪'],['eda','EDA отчёт','🔬'],['audit','Журнал событий','🧾']]},
  {g:'Справка',items:[['faq','FAQ','❓'],['support','Support','🛟']]},
 ];
-const APP_VERSION='1.47.0';const APP_DATE='2026-10-28';
+const APP_VERSION='1.48.0';const APP_DATE='2026-10-28';
 const APP_ABOUT='Кросс-функциональная команда — это группа специалистов из разных областей (разработчиков, дизайнеров, маркетологов, аналитиков, менеджеров и других), которые объединяются для работы над одним конкретным проектом или задачей. Ключевая идея в том, чтобы собрать внутри команды всех необходимых экспертов, чтобы она могла самостоятельно пройти путь от идеи до результата, не передавая задачу последовательно из одного отдела в другой.';
 const CHANGELOG=[
+ {v:'1.48.0',date:'2026-10-28',items:[
+   'Доска — эргономика: отмена/повтор (Ctrl+Z / Ctrl+Shift+Z), копировать/вставить/дублировать (Ctrl+C/V/D), группировка (Ctrl+G), закрепление (Ctrl+L), выравнивание и распределение, привязка к сетке, мини-карта и поиск по тексту (Ctrl+F); фрейм теперь переносится вместе с содержимым.',
+   'Доска — связь с данными: живые карточки задач из бэклога (статус меняется кликом, двойной клик открывает задачу), «Спринт на доску» по статусам, виджеты-метрики (velocity, выполнение и цель спринта, health, риск срыва, баги); стикеры превращаются в задачи, риски, импедименты, решения (ADR), action items и уроки.',
+   'Доска — шаблоны ритуалов одной кнопкой: ретро (Start/Stop/Continue, 4L, Mad/Sad/Glad, Кораблик), Lean Coffee, SWOT, матрица «Влияние/Усилия», Premortem, Customer Journey Map, Lean Canvas, канбан-колонки.']},
  {v:'1.47.0',date:'2026-10-28',items:[
    'Диаграмма Исикавы («причины срыва сроков спринта») стала редактируемой: причины и категории правятся таблицами в разделе «Риски», диаграмма перестраивается из данных автоматически.',
    'Поддержка любого числа причин на категорию, переименование/добавление/удаление категорий (цвет и сторона «кости»), вес причины (1–10) для приоритизации (Парето) и связь причины с реестром рисков.',
@@ -5283,7 +5595,7 @@ startAnalytics();setInterval(startAnalytics,30000);
     новый или переименованный раздел, изменённое описание и новая версия подхватываются без правок. */
  const AKA={dash:'обзор kpi сводка панель главная',statusreport:'статус отчёт доклад сводка',portfolio:'портфель проектов программа',
   roadmap:'дорожная карта план спринтов график спринтов',quarters:'кварталы квартальный план',sprintGoals:'цель спринта обязательство ценность',
-  kanban:'канбан доска статусы колонки карточки',board:'холст схемы стикеры мозговой штурм whiteboard рисование',okr:'цели ключевые результаты objectives key results',
+  kanban:'канбан доска статусы колонки карточки',board:'холст схемы стикеры мозговой штурм whiteboard рисование шаблоны ретро swot lean canvas карточки задач виджеты метрики отмена группировка мини-карта',okr:'цели ключевые результаты objectives key results',
   backlog:'бэклог задачи список работ',wbs:'иерархия работ декомпозиция эпик фича история роллап',storymap:'карта историй активности',
   rice:'приоритизация reach impact confidence effort балл',wsjf:'safe cost of delay стоимость задержки',moscow:'must should could wont обязательно желательно',
   gantt:'диаграмма ганта график сроки',deps:'зависимости блокеры стримы межкомандные',piboard:'pi planning программный инкремент safe матрица',

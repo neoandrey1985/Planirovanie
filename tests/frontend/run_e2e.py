@@ -619,6 +619,77 @@ def main():
             page.evaluate("()=>{setPerm('viewer');applyPerms();views();activate('dash');}")
         case('whiteboard2: connectors, quick-add, animation, cleanup', t_board2)
 
+        # ---- 24b. Whiteboard tools: ergonomics, live data, templates ----
+        def t_board3():
+            r = page.evaluate("""()=>{try{
+              setPerm('editor');applyPerms();views();activate('board');
+              const snap=JSON.stringify(ST.board.items), perm=JSON.stringify(PERM);
+              const keep={};['tasks','risks','impediments','decisions','retro','lessons'].forEach(k=>keep[k]=JSON.stringify(ST[k]||[]));
+              PERM.canEdit=true;
+              const _s=window.save,_u=window.brdWSUpsert,_e=window.brdEdit,_t=window.toast,_f=window.brdFocusBox;
+              window.save=()=>{};window.brdWSUpsert=()=>{};window.brdEdit=()=>{};window.toast=()=>{};
+              const out={};
+              // --- отмена / повтор ---
+              ST.board.items=[];brdHistReset();
+              brdAdd({id:'S1',t:'sticky',x:0,y:0,w:150,h:120,fill:'#FFE066',text:'Идея альфа',author:'t',votes:0});brdSave();
+              const nA=brdItems().length;brdUndo();const nU=brdItems().length;brdRedo();const nR=brdItems().length;
+              out.undo=(nA===1&&nU===0&&nR===1);
+              // --- копировать/вставить: связь между копиями перепривязывается ---
+              brdAdd({id:'R1',t:'rect',x:300,y:0,w:100,h:60,fill:'#fff',stroke:'#2D5BE3'});brdAdd({id:'K1',t:'conn',from:'S1',to:'R1',stroke:'#334155'});
+              BW.sel=['S1','R1'];brdCopy(true);brdPaste();
+              const pasted=brdItems().filter(x=>['S1','R1','K1'].indexOf(x.id)<0),pc=pasted.find(x=>x.t==='conn');
+              out.paste=(pasted.length===3&&!!pc&&pasted.some(x=>x.id===pc.from)&&pasted.some(x=>x.id===pc.to));
+              ST.board.items=brdItems().filter(x=>['S1','R1','K1'].indexOf(x.id)>=0);
+              // --- группа: клик по одному элементу выделяет всю группу ---
+              BW.sel=['S1','R1'];brdGroup();BW.sel=[];brdSelectWith('S1',false);out.group=(BW.sel.length===2);brdUngroup();
+              // --- выравнивание и распределение ---
+              brdItemById('R1').y=200;BW.sel=['S1','R1'];brdAlign('top');out.align=(brdItemById('R1').y===brdItemById('S1').y);
+              ST.board.items=[{id:'D1',t:'rect',x:0,y:0,w:100,h:60},{id:'D2',t:'rect',x:50,y:0,w:100,h:60},{id:'D3',t:'rect',x:500,y:0,w:100,h:60}];
+              BW.sel=['D1','D2','D3'];brdDistribute('h');out.distribute=(Math.abs(brdItemById('D2').x-250)<0.01);
+              // --- закрепление: не удаляется и не двигается ---
+              ST.board.items=[{id:'L1',t:'sticky',x:0,y:0,w:100,h:100,text:'фикс',locked:true}];
+              BW.sel=['L1'];brdDelSel();out.lockDel=!!brdItemById('L1');out.lockMove=(brdMoveSet().indexOf('L1')<0);
+              // --- фрейм переносится вместе с содержимым ---
+              ST.board.items=[{id:'F1',t:'frame',x:0,y:0,w:600,h:400,title:'F'},{id:'S9',t:'sticky',x:100,y:100,w:120,h:100,text:'внутри'},{id:'S8',t:'sticky',x:900,y:900,w:120,h:100,text:'снаружи'}];
+              BW.sel=['F1'];const ms=brdMoveSet();out.frameCarries=(ms.indexOf('S9')>=0&&ms.indexOf('S8')<0);
+              // --- сетка, мини-карта, поиск ---
+              const sn0=BW.snap;BW.snap=true;out.snap=(brdSnapV(30)===22&&brdSnapV(40)===44);BW.snap=sn0;
+              const mm=document.getElementById('brd-mini');if(mm)mm.style.display='';brdMiniRender();
+              out.minimap=!!mm&&mm.querySelectorAll('rect').length>=3;
+              out.search=(brdFind('внутри').length===1&&brdFind('несуществующее-xyz').length===0);
+              // --- живая карточка задачи + смена статуса из доски ---
+              ST.board.items=[];const t0=ST.tasks[0],st0=t0.status;
+              const card=brdAddTaskCard(t0.id);brdRender();
+              out.taskCard=!!card&&document.querySelector('#v_board svg').textContent.indexOf(t0.id)>=0;
+              brdTaskCycle(card.id);out.taskCycle=(t0.status!==st0);
+              t0.title=t0.title+' (обновлено)';brdRender();out.taskLive=document.querySelector('#v_board svg').textContent.indexOf('(обновлено)')>=0;
+              // --- виджеты-метрики ---
+              let mOk=true;BRD_METRICS.forEach(m=>{const d=brdMetricData(m[0]);if(!d||!d.title||(d.val==null&&d.text==null))mOk=false;});
+              brdAddMetric('velocity');brdRender();out.metric=mOk&&document.querySelector('#v_board svg').textContent.indexOf('VELOCITY')>=0;
+              // --- стикер -> сущность ---
+              ST.board.items=[{id:'C1',t:'sticky',x:0,y:0,w:150,h:120,text:'Риск сбоя оплаты'},{id:'C2',t:'sticky',x:0,y:200,w:150,h:120,text:'Сделать экспорт CSV'},{id:'C3',t:'sticky',x:0,y:400,w:150,h:120,text:'Нет доступа к стенду'}];
+              const nr=(ST.risks||[]).length,nt=(ST.tasks||[]).length,ni=(ST.impediments||[]).length;
+              BW.sel=['C1'];brdConvert('risk');BW.sel=['C2'];brdConvert('task');BW.sel=['C3'];brdConvert('impediment');
+              out.convRisk=(ST.risks.length===nr+1&&brdItemById('C1').ref.k==='risk');
+              out.convTask=(ST.tasks.length===nt+1&&brdItemById('C2').t==='task'&&!!brdTask(brdItemById('C2')));
+              out.convImp=(ST.impediments.length===ni+1&&/^IM-/.test(brdItemById('C3').ref.id));
+              // --- шаблоны: каждый добавляет сгруппированную сетку фреймов ---
+              ST.board.items=[];let tplOk=true;
+              Object.keys(BRD_TPL).forEach(k=>{const before=brdItems().length,made=brdInsertTemplate(k)||[];const frames=made.map(brdItemById).filter(x=>x&&x.t==='frame');
+                if(brdItems().length<=before||frames.length<BRD_TPL[k].cells.length+1||!frames.every(f=>f.grp===frames[0].grp))tplOk=false;});
+              out.templates=tplOk&&Object.keys(BRD_TPL).length>=11;
+              const outer=brdItems().find(x=>x.t==='frame'&&x.title.indexOf(BRD_TPL.ssc.name)>=0);BW.sel=[];brdSelectWith(outer.id,false);
+              out.tplMoveAll=(BW.sel.length===4&&brdMoveSet().length>=7);
+              // восстановление
+              window.save=_s;window.brdWSUpsert=_u;window.brdEdit=_e;window.toast=_t;
+              ST.board.items=JSON.parse(snap);Object.keys(keep).forEach(k=>ST[k]=JSON.parse(keep[k]));Object.assign(PERM,JSON.parse(perm));BW.sel=[];brdHistReset();brdRender();
+              return out;
+            }catch(e){return 'ERR:'+e.message+' '+(e.stack||'').split('\\n')[1];}}""")
+            assert isinstance(r, dict), r
+            bad = [k for k, v in r.items() if v is not True]
+            assert not bad, 'board tools failed checks: %s (%s)' % (bad, r)
+        case('whiteboard3: undo/clipboard/group/align/lock, live tasks & metrics, sticky->entity, templates', t_board3)
+
         # ---- 25. EVM: earned value indices and forecast ----
         def t_evm():
             r = page.evaluate("""()=>{const C=compute();const E=evm(C);
