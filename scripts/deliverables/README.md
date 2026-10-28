@@ -17,7 +17,7 @@ python -m playwright install chromium
 | Скрипт | Что делает | Запуск |
 |---|---|---|
 | `capture_shots.py` | Скриншот каждого раздела из `NAV` → `build/shots/<id>.jpg` (2160×1215). | `python scripts/deliverables/capture_shots.py` |
-| `build_video.py` | Видео-обзор `Обзор_приложения.mp4` по массиву `TOUR` (кадры + подписи + H.264). | `python scripts/deliverables/build_video.py` |
+| `build_video.py` | Видео-обзор `Обзор_приложения.mp4` по массиву `TOUR` (кадры + подписи + H.264). Шаг с полем `shot` снимается с демо-сценой из словаря `SCENES` (так в видео два кадра доски: шаблоны/живые данные и сессии/схемы); встроенный тур поле `shot` игнорирует и доску пользователя не меняет. | `python scripts/deliverables/build_video.py` |
 | `gen_xlsx.py` | `Планирование_спринта_PRO.xlsx` через встроенный экспорт приложения. | `python scripts/deliverables/gen_xlsx.py` |
 | `build_architecture_doc.py` | `Архитектура_приложения.docx`: общая архитектура, микросервисы и БД. Каталог таблиц и диаграмма БД строятся парсингом миграций `V*.sql` (новые таблицы подхватываются сами). Рисунки — `arch_assets/*.svg`. | `python scripts/deliverables/build_architecture_doc.py` |
 | `build_test_docs.py` | `Тестовая документация/Тестовая_документация_..._PRO.docx`: тест-план, тестовые сценарии и тест-кейсы. Кейсы парсятся из реальных тестов — `run_e2e.py` (`case('…')` + разделы `NAV`), backend `@Test`, `analytics-python/tests/*` — поэтому не устаревают. | `python scripts/deliverables/build_test_docs.py` |
