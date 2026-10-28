@@ -41,6 +41,8 @@ class StateRoundTripTest {
           "teamHealth":[{"id":"HC-01","date":"2026-09-10","sprint":3,"dimension":"Поставка ценности","rating":"Зелёный","trend":"Растёт","note":"n"}],
           "deployments":[{"id":"DP-01","date":"2026-09-10","release":"R-1","env":"Prod","status":"Успех","leadDays":2.5,"note":"n"}],
           "incidents":[{"id":"IN-01","date":"2026-09-11","title":"Сбой оплаты","severity":"High","downHours":3.5,"cause":"таймаут шлюза","status":"Восстановлен","postmortem":"добавить ретраи"}],
+          "ishikawaCats":[{"name":"Люди","color":"#8FAADC","side":"Сверху"},{"name":"Процессы","color":"#ED7D31","side":"Снизу"}],
+          "ishikawa":[{"id":"IC-01","cat":"Люди","cause":"Текучесть QA","weight":6,"risk":"Срыв оплаты"}],
           "dorItems":[{"crit":"Критерии приёмки описаны","done":true}],
           "scopeLog":[{"id":"SC-01","date":"2026-09-10","sprint":3,"kind":"Добавлено","item":"T-09","detail":"добавлена в активный спринт"}],
           "deps":[{"id":"D-01","item":"I","stream":"S","dir":"Мы зависим","status":"Заблокировано","task":"T-01"}],
@@ -113,6 +115,12 @@ class StateRoundTripTest {
            .andExpect(jsonPath("$.state.deployments[0].leadDays").value(2.5))
            .andExpect(jsonPath("$.state.incidents[0].severity").value("High"))
            .andExpect(jsonPath("$.state.incidents[0].downHours").value(3.5))
+           .andExpect(jsonPath("$.state.ishikawaCats[0].name").value("Люди"))
+           .andExpect(jsonPath("$.state.ishikawaCats[1].side").value("Снизу"))
+           .andExpect(jsonPath("$.state.ishikawa[0].id").value("IC-01"))
+           .andExpect(jsonPath("$.state.ishikawa[0].cause").value("Текучесть QA"))
+           .andExpect(jsonPath("$.state.ishikawa[0].weight").value(6))
+           .andExpect(jsonPath("$.state.ishikawa[0].risk").value("Срыв оплаты"))
            .andExpect(jsonPath("$.state.dorItems[0].crit").value("Критерии приёмки описаны"))
            .andExpect(jsonPath("$.state.dorItems[0].done").value(true))
            .andExpect(jsonPath("$.state.scopeLog[0].id").value("SC-01"))

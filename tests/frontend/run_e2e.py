@@ -192,6 +192,31 @@ def main():
             assert not r['threw'], 'views() threw after migrated partial import: %s' % r['threw']
         case('import: partial JSON is normalized by migrate() without crashing', t_import_migrate)
 
+        # ---- 3e. Ishikawa fishbone is data-driven + editable ----
+        def t_ishikawa():
+            page.evaluate("()=>activate('risks')"); page.wait_for_timeout(250)
+            r = page.evaluate("""()=>{
+              const box=document.getElementById('ishk'); if(!box)return {err:'no #ishk'};
+              if(!box.querySelector('svg'))return {err:'no svg'};
+              const cats=(ST.ishikawaCats||[]).length, causes=(ST.ishikawa||[]).length;
+              if(!Array.isArray(ST.ishikawa))ST.ishikawa=[];
+              const catName=((ST.ishikawaCats||[])[0]||{}).name||'Люди';
+              ST.ishikawa.push({id:'IC-TEST',cat:catName,cause:'ТЕСТ_ПРИЧИНА_XYZ',weight:9,risk:''});
+              drawIshikawa(box);
+              const txt=[].map.call(box.querySelectorAll('text'),t=>t.textContent).join('|');
+              const has=txt.indexOf('ТЕСТ_ПРИЧИНА_XYZ')>=0;
+              const weightShown=txt.indexOf('ТЕСТ_ПРИЧИНА_XYZ [9]')>=0;
+              ST.ishikawa=ST.ishikawa.filter(x=>x.id!=='IC-TEST');drawIshikawa(box); // cleanup
+              const tables=document.querySelectorAll('#v_risks table').length;
+              return {cats:cats,causes:causes,has:has,weightShown:weightShown,tables:tables};
+            }""")
+            assert 'err' not in r, r.get('err')
+            assert r['cats'] >= 1 and r['causes'] >= 1, 'ishikawa seed missing (cats=%s causes=%s)' % (r['cats'], r['causes'])
+            assert r['has'], 'new cause not drawn on the fishbone after drawIshikawa()'
+            assert r['weightShown'], 'cause weight is not shown on the diagram'
+            assert r['tables'] >= 3, 'risks view should expose risks + ishikawa + categories tables (got %d)' % r['tables']
+        case('ishikawa: fishbone is data-driven and editable', t_ishikawa)
+
         # ---- 4. EDA report ----
         def t_eda():
             page.evaluate("()=>activate('eda')"); page.wait_for_timeout(200)

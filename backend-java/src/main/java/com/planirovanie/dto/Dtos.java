@@ -72,6 +72,8 @@ public final class Dtos {
         public List<TeamHealth> teamHealth;
         public List<Deployment> deployments;
         public List<Incident> incidents;
+        public List<IshikawaCat> ishikawaCats;
+        public List<IshikawaCause> ishikawa;
         public List<Board> boards;
         public com.fasterxml.jackson.databind.JsonNode board;
         public BudgetDto budget;

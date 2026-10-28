@@ -32,6 +32,8 @@ public class StateService {
     private final TeamHealthRepo teamHealth;
     private final DeploymentRepo deployments;
     private final IncidentRepo incidents;
+    private final IshikawaCatRepo ishikawaCats;
+    private final IshikawaCauseRepo ishikawa;
     private final TeamRepo team;
     private final TaskRepo tasks;
     private final ReleaseRepo releases;
@@ -76,7 +78,8 @@ public class StateService {
                         DecisionRepo decisions, ImpedimentRepo impediments, LessonRepo lessons,
                         RaciRepo raci, StoryMapItemRepo storyMap, PokerRoundRepo poker,
                         PortfolioProjectRepo portfolio,
-                        TeamHealthRepo teamHealth, DeploymentRepo deployments, IncidentRepo incidents) {
+                        TeamHealthRepo teamHealth, DeploymentRepo deployments, IncidentRepo incidents,
+                        IshikawaCatRepo ishikawaCats, IshikawaCauseRepo ishikawa) {
         this.params = params; this.meta = meta; this.dod = dod; this.team = team; this.tasks = tasks;
         this.releases = releases; this.milestones = milestones; this.techDebt = techDebt; this.risks = risks;
         this.bugs = bugs; this.calendar = calendar; this.retro = retro; this.mood = mood; this.kudos = kudos;
@@ -90,6 +93,7 @@ public class StateService {
         this.decisions = decisions; this.impediments = impediments; this.lessons = lessons;
         this.raci = raci; this.storyMap = storyMap; this.poker = poker; this.portfolio = portfolio;
         this.teamHealth = teamHealth; this.deployments = deployments; this.incidents = incidents;
+        this.ishikawaCats = ishikawaCats; this.ishikawa = ishikawa;
     }
 
     @Transactional(readOnly = true)
@@ -147,6 +151,8 @@ public class StateService {
         s.teamHealth = teamHealth.findAllByOrderByOrdAsc();
         s.deployments = deployments.findAllByOrderByOrdAsc();
         s.incidents = incidents.findAllByOrderByOrdAsc();
+        s.ishikawaCats = ishikawaCats.findAllByOrderByOrdAsc();
+        s.ishikawa = ishikawa.findAllByOrderByOrdAsc();
         s.boards = boards.findAllByOrderByOrdAsc();
         boardDoc.findById(1).ifPresent(bdoc -> {
             if (bdoc.data != null && !bdoc.data.isBlank()) {
@@ -230,6 +236,8 @@ public class StateService {
         order(s.teamHealth, (e, i) -> { e.pk = null; e.ord = i; });
         order(s.deployments, (e, i) -> { e.pk = null; e.ord = i; });
         order(s.incidents, (e, i) -> { e.pk = null; e.ord = i; });
+        order(s.ishikawaCats, (e, i) -> { e.pk = null; e.ord = i; });
+        order(s.ishikawa, (e, i) -> { e.pk = null; e.ord = i; });
         order(s.boards, (e, i) -> { e.pk = null; e.ord = i; });
 
         dod.deleteAllInBatch();        if (s.dod != null)        dod.saveAll(s.dod);
@@ -275,6 +283,8 @@ public class StateService {
         teamHealth.deleteAllInBatch(); if (s.teamHealth != null) teamHealth.saveAll(s.teamHealth);
         deployments.deleteAllInBatch();if (s.deployments != null) deployments.saveAll(s.deployments);
         incidents.deleteAllInBatch();  if (s.incidents != null)  incidents.saveAll(s.incidents);
+        ishikawaCats.deleteAllInBatch(); if (s.ishikawaCats != null) ishikawaCats.saveAll(s.ishikawaCats);
+        ishikawa.deleteAllInBatch();   if (s.ishikawa != null)   ishikawa.saveAll(s.ishikawa);
         boards.deleteAllInBatch();     if (s.boards != null)     boards.saveAll(s.boards);
         if (s.board != null && !s.board.isNull()) {
             BoardDoc bd = boardDoc.findById(1).orElseGet(() -> { BoardDoc nb = new BoardDoc(); nb.id = 1; return nb; });

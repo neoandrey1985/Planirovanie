@@ -1582,6 +1582,26 @@ function migrate(d){
   {id:'IN-01',date:'2026-09-09',title:'Массовые таймауты оплаты в проде',severity:'Critical',downHours:2.5,cause:'Таймаут платёжного шлюза',status:'Восстановлен',postmortem:'Добавить ретраи и circuit breaker'},
   {id:'IN-02',date:'2026-09-12',title:'Расхождение остатков каталога',severity:'Medium',downHours:6.0,cause:'Задержка синхронизации с 1С',status:'Закрыт',postmortem:'Мониторинг лага синхронизации'},
   {id:'IN-03',date:'2026-09-15',title:'Падение уведомлений (email)',severity:'High',downHours:1.2,cause:'Лимит SMTP',status:'Восстановлен',postmortem:'Очередь и бэкофф'}];
+ if(!Array.isArray(d.ishikawaCats)||!d.ishikawaCats.length)d.ishikawaCats=[
+  {name:'Люди',color:'#8FAADC',side:'Сверху'},
+  {name:'Процессы',color:'#ED7D31',side:'Сверху'},
+  {name:'Внешние зависимости',color:'#70AD47',side:'Сверху'},
+  {name:'Инструменты / инфра',color:'#FFC000',side:'Снизу'},
+  {name:'Сроки / календарь',color:'#4472C4',side:'Снизу'},
+  {name:'Требования / объём',color:'#C0392B',side:'Снизу'}];
+ if(!Array.isArray(d.ishikawa)||!d.ishikawa.length)d.ishikawa=[
+  {id:'IC-01',cat:'Люди',cause:'Текучесть QA',weight:6,risk:''},
+  {id:'IC-02',cat:'Люди',cause:'Недооценка задач',weight:7,risk:''},
+  {id:'IC-03',cat:'Процессы',cause:'Слабая оценка (спайки)',weight:6,risk:''},
+  {id:'IC-04',cat:'Процессы',cause:'Нет буфера времени',weight:5,risk:''},
+  {id:'IC-05',cat:'Внешние зависимости',cause:'Внешний API оплаты',weight:8,risk:''},
+  {id:'IC-06',cat:'Внешние зависимости',cause:'Внешние команды/поставки',weight:6,risk:''},
+  {id:'IC-07',cat:'Инструменты / инфра',cause:'Сложные интеграции',weight:6,risk:''},
+  {id:'IC-08',cat:'Инструменты / инфра',cause:'Недоступность сервера',weight:4,risk:''},
+  {id:'IC-09',cat:'Сроки / календарь',cause:'Праздники',weight:3,risk:''},
+  {id:'IC-10',cat:'Сроки / календарь',cause:'Отпуска (декабрь)',weight:4,risk:''},
+  {id:'IC-11',cat:'Требования / объём',cause:'Неясные требования',weight:7,risk:''},
+  {id:'IC-12',cat:'Требования / объём',cause:'Рост объёма (scope)',weight:8,risk:''}];
  if(!Array.isArray(d.faq))d.faq=[
   {id:'Q-01',category:'Начало работы',q:'С чего начать работу в приложении?',a:'Заполните «Параметры» (даты старта, число спринтов, focus factor), затем «Команду» и «Бэклог». Дорожная карта, ёмкость, velocity, релизы и метрики считаются автоматически из этих данных.'},
   {id:'Q-02',category:'Начало работы',q:'Нужен ли интернет или сервер?',a:'Нет. Приложение работает локально в браузере, данные хранятся в localStorage. Если поднят backend (Java + Python), состояние дополнительно синхронизируется через /api/state — индикатор в шапке показывает статус.'},
@@ -3022,28 +3042,44 @@ function risksView(){const w=document.createElement('div');
  const ic=document.createElement('div');ic.className='card';ic.style.marginTop='14px';
  ic.innerHTML='<p class="ctitle">Диаграмма Исикавы — причины срыва сроков спринта</p><div id="ishk"></div>';
  w.appendChild(ic);drawIshikawa(ic.querySelector('#ishk'));
+ const ed=document.createElement('div');ed.className='card';ed.style.marginTop='14px';
+ ed.innerHTML='<p class="ctitle">Причины (Исикава) — редактирование</p><p style="font-size:12.5px;color:var(--muted);margin:.2em 0 .8em">Добавляйте и правьте причины и категории — диаграмма обновляется автоматически. «Вес» (1–10) — вклад причины для приоритизации (Парето). «Связ. риск» связывает причину с реестром рисков.</p>';
+ const catNames=(ST.ishikawaCats||[]).map(c=>c.name);
+ const riskOpts=[''].concat((ST.risks||[]).map(r=>r.name).filter(Boolean));
+ ed.appendChild(editable('ishikawa',[{k:'cat',label:'Категория',type:'select',opts:catNames},{k:'cause',label:'Причина',wide:true},{k:'weight',label:'Вес',type:'num'},{k:'risk',label:'Связ. риск',type:'select',opts:riskOpts}],{newId:'id',prefix:'IC-'}));
+ const cth=document.createElement('p');cth.className='ctitle';cth.style.marginTop='14px';cth.textContent='Категории диаграммы';ed.appendChild(cth);
+ ed.appendChild(editable('ishikawaCats',[{k:'name',label:'Категория',wide:true},{k:'color',label:'Цвет',type:'select',opts:ISH_PALETTE},{k:'side',label:'Сторона',type:'select',opts:['Сверху','Снизу']}]));
+ w.appendChild(ed);
  return w;
  }
-function drawIshikawa(box){const W=1012,H=560,cy=280,x0=60,xHead=770;const svg=el('svg',{viewBox:`0 0 ${W} ${H}`});const ink=col('--ink');
+const ISH_PALETTE=['#8FAADC','#ED7D31','#70AD47','#FFC000','#4472C4','#C0392B','#9B59B6','#16A085'];
+function drawIshikawa(box){if(!box)return;const W=1012,H=560,cy=280,x0=60,xHead=770;const svg=el('svg',{viewBox:`0 0 ${W} ${H}`});const ink=col('--ink');
  svg.appendChild(el('line',{x1:x0,y1:cy,x2:xHead,y2:cy,stroke:ink,'stroke-width':3}));
  svg.appendChild(el('path',{d:`M${xHead} ${cy-10} L${xHead+24} ${cy} L${xHead} ${cy+10} Z`,fill:ink}));
  svg.appendChild(el('rect',{x:xHead+24,y:cy-48,width:206,height:96,rx:6,fill:col('--accent-soft'),stroke:col('--accent'),'stroke-width':1.5}));
  ['Срыв сроков /','рост рисков','спринта'].forEach((t,i)=>{const tx=el('text',{x:xHead+40,y:cy-12+i*22,'font-size':15,'font-weight':700,fill:col('--accent')});tx.textContent=t;svg.appendChild(tx);});
- const cats=[
-  {name:'Люди',color:'#8FAADC',side:-1,ax:250,causes:['Текучесть QA','Недооценка задач']},
-  {name:'Процессы',color:'#ED7D31',side:-1,ax:450,causes:['Слабая оценка (спайки)','Нет буфера времени']},
-  {name:'Внешние зависимости',color:'#70AD47',side:-1,ax:650,causes:['Внешний API оплаты','Внешние команды/поставки']},
-  {name:'Инструменты / инфра',color:'#FFC000',side:1,ax:250,causes:['Сложные интеграции','Недоступность сервера']},
-  {name:'Сроки / календарь',color:'#4472C4',side:1,ax:450,causes:['Праздники','Отпуска (декабрь)']},
-  {name:'Требования / объём',color:'#C0392B',side:1,ax:650,causes:['Неясные требования','Рост объёма (scope)']}];
- cats.forEach(c=>{const bx=c.ax-160,by=cy+c.side*160;
-   svg.appendChild(el('line',{x1:c.ax,y1:cy,x2:bx,y2:by,stroke:c.color,'stroke-width':2.5}));
-   const lw=c.name.length*7.4+16,lh=22,lx=bx-lw/2,ly=c.side<0?by-lh-2:by+2;
-   svg.appendChild(el('rect',{x:lx,y:ly,width:lw,height:lh,rx:3,fill:c.color}));
-   const lt=el('text',{x:bx,y:ly+15,'text-anchor':'middle','font-size':12.5,'font-weight':700,fill:'#fff'});lt.textContent=c.name;svg.appendChild(lt);
-   [0.42,0.72].forEach((t,i)=>{const px=c.ax+(bx-c.ax)*t,py=cy+(by-cy)*t;
-     svg.appendChild(el('line',{x1:px-9,y1:py,x2:px+9,y2:py,stroke:c.color,'stroke-width':1.5}));
-     const ct=el('text',{x:px+13,y:py+4,'font-size':12,fill:ink});ct.textContent=c.causes[i];svg.appendChild(ct);});});
+ // --- данные из ST: категории (цвет/сторона) + причины, сгруппированные по категории ---
+ const defs=ST.ishikawaCats||[],meta={};
+ defs.forEach((c,i)=>{if(c&&c.name)meta[c.name]={color:c.color||ISH_PALETTE[i%ISH_PALETTE.length],side:(c.side==='Снизу')?1:-1};});
+ const groups={},orderNames=[];
+ defs.forEach(c=>{if(c&&c.name&&!(c.name in groups)){groups[c.name]=[];orderNames.push(c.name);}});
+ (ST.ishikawa||[]).forEach(r=>{const k=r.cat||'(без категории)';if(!(k in groups)){groups[k]=[];orderNames.push(k);}groups[k].push(r);});
+ const top=[],bot=[];orderNames.forEach(n=>{const side=meta[n]?meta[n].side:(top.length<=bot.length?-1:1);(side<0?top:bot).push(n);});
+ function drawBone(name,ax,side){const color=(meta[name]&&meta[name].color)||ISH_PALETTE[orderNames.indexOf(name)%ISH_PALETTE.length];
+   const bx=ax-150,by=cy+side*170;
+   svg.appendChild(el('line',{x1:ax,y1:cy,x2:bx,y2:by,stroke:color,'stroke-width':2.5}));
+   const lw=name.length*7.2+16,lh=22,lx=bx-lw/2,ly=side<0?by-lh-2:by+2;
+   svg.appendChild(el('rect',{x:lx,y:ly,width:lw,height:lh,rx:3,fill:color}));
+   const lt=el('text',{x:bx,y:ly+15,'text-anchor':'middle','font-size':12.5,'font-weight':700,fill:'#fff'});lt.textContent=name;svg.appendChild(lt);
+   const causes=groups[name]||[],maxShow=6,shown=causes.slice(0,maxShow),N=shown.length;
+   shown.forEach((r,i)=>{const t=N===1?0.55:0.30+0.52*(i/(N-1)),px=ax+(bx-ax)*t,py=cy+(by-cy)*t;
+     svg.appendChild(el('line',{x1:px-9,y1:py,x2:px+9,y2:py,stroke:color,'stroke-width':1.5}));
+     const wtxt=(r.weight!=null&&r.weight!=='')?(' ['+r.weight+']'):'';
+     const ct=el('text',{x:px+13,y:py+4,'font-size':11.5,fill:ink});ct.textContent=(r.cause||'')+wtxt;svg.appendChild(ct);
+     if(r.risk){const rl=el('text',{x:px+13,y:py+15,'font-size':9.5,fill:col('--muted')});rl.textContent='↳ '+r.risk;svg.appendChild(rl);}});
+   if(causes.length>maxShow){const m=el('text',{x:bx,y:side<0?ly-6:ly+lh+14,'text-anchor':'middle','font-size':10.5,fill:col('--muted')});m.textContent='+ ещё '+(causes.length-maxShow);svg.appendChild(m);}}
+ function layoutSide(names,side){const n=names.length,xA=250,xB=690;names.forEach((name,idx)=>{const ax=n===1?(xA+xB)/2:xA+(xB-xA)*idx/(n-1);drawBone(name,ax,side);});}
+ layoutSide(top,-1);layoutSide(bot,1);
  box.innerHTML='';box.appendChild(svg);}
 function riceConf(v){const s=String(v);return s.indexOf('%')>=0?num(s)/100:num(v);}
 function riceScore(r){const eff=num(r.effort);return eff?num(r.reach)*num(r.impact)*riceConf(r.conf)/eff:0;}
@@ -4743,7 +4779,7 @@ async function exportPptx(sprintSel){
 /* ---------- app plumbing ---------- */
 let CURV='dash';
 function commit(){save();views();activate(CURV);toast('Сохранено');}
-function recomputeSoft(){/* light: refresh dashboard only, keep edit focus */ renderDash(compute());}
+function recomputeSoft(){/* light: refresh dashboard only, keep edit focus */ renderDash(compute());const ik=document.getElementById('ishk');if(ik)drawIshikawa(ik);}
 /* ---------- sidebar navigation ---------- */
 const NAV=[
  {g:'Обзор',items:[['dash','Дашборд','📋'],['statusreport','Статус-отчёт','📰'],['portfolio','Портфель','🗂']]},
@@ -4758,9 +4794,13 @@ const NAV=[
  {g:'Система',items:[['params','Параметры','⚙️'],['integrations','Интеграции','🔌'],['calendar','Календарь','📅'],['budget','Бюджет','💰'],['checks','Проверки данных','🧪'],['eda','EDA отчёт','🔬'],['audit','Журнал событий','🧾']]},
  {g:'Справка',items:[['faq','FAQ','❓'],['support','Support','🛟']]},
 ];
-const APP_VERSION='1.46.0';const APP_DATE='2026-10-07';
+const APP_VERSION='1.47.0';const APP_DATE='2026-10-28';
 const APP_ABOUT='Кросс-функциональная команда — это группа специалистов из разных областей (разработчиков, дизайнеров, маркетологов, аналитиков, менеджеров и других), которые объединяются для работы над одним конкретным проектом или задачей. Ключевая идея в том, чтобы собрать внутри команды всех необходимых экспертов, чтобы она могла самостоятельно пройти путь от идеи до результата, не передавая задачу последовательно из одного отдела в другой.';
 const CHANGELOG=[
+ {v:'1.47.0',date:'2026-10-28',items:[
+   'Диаграмма Исикавы («причины срыва сроков спринта») стала редактируемой: причины и категории правятся таблицами в разделе «Риски», диаграмма перестраивается из данных автоматически.',
+   'Поддержка любого числа причин на категорию, переименование/добавление/удаление категорий (цвет и сторона «кости»), вес причины (1–10) для приоритизации (Парето) и связь причины с реестром рисков.',
+   'Данные сохраняются на бэкенде (новые коллекции ishikawa/ishikawaCats, миграция V12) и синхронизируются через /api/state.']},
  {v:'1.46.0',date:'2026-10-07',items:[
    'Во всех таблицах приложения можно менять ширину столбцов: потяните за правую границу заголовка; двойной клик по границе — сброс к равным долям.',
    'Заданная ширина запоминается (localStorage) и восстанавливается после перерисовки и перезагрузки; работает для текущих и будущих таблиц автоматически (IntersectionObserver + MutationObserver).',
