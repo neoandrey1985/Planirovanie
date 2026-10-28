@@ -690,6 +690,76 @@ def main():
             assert not bad, 'board tools failed checks: %s (%s)' % (bad, r)
         case('whiteboard3: undo/clipboard/group/align/lock, live tasks & metrics, sticky->entity, templates', t_board3)
 
+        # ---- 24c. Whiteboard wave 2: sessions (vote/anon/present/comments) + diagrams ----
+        def t_board4():
+            r = page.evaluate("""()=>{try{
+              setPerm('editor');applyPerms();views();activate('board');
+              const snap=JSON.stringify(ST.board.items),sess=JSON.stringify(ST.board.session||null),perm=JSON.stringify(PERM);
+              PERM.canEdit=true;
+              const _s=window.save,_u=window.brdWSUpsert,_e=window.brdEdit,_t=window.toast,_w=window.brdWSSend,_c=window.confirm;
+              window.save=()=>{};window.brdWSUpsert=()=>{};window.brdEdit=()=>{};window.toast=()=>{};window.brdWSSend=()=>{};
+              const out={};const txt=()=>document.querySelector('#v_board svg').textContent;
+              // --- голосование точками: лимит, скрытый режим, раскрытие, медали, снятие голоса ---
+              ST.board.items=[{id:'V1',t:'sticky',x:0,y:0,w:150,h:120,text:'Идея A',author:'Петров',votes:0},{id:'V2',t:'sticky',x:200,y:0,w:150,h:120,text:'Идея B',author:'Петров',votes:0}];
+              ST.board.session={};brdSessSet(s=>{s.vote={on:true,limit:2,hidden:true,revealed:false};});
+              const a1=brdVote('V1'),a2=brdVote('V1'),a3=brdVote('V2');
+              out.voteLimit=(a1&&a2&&!a3&&brdVoteLeft()===0&&brdItemById('V1').votes===2);
+              out.voteHidden=(brdVoteLabel(brdItemById('V1'))==='✓2'&&brdVoteLabel(brdItemById('V2'))==='🗳');
+              brdVote('V1',true);out.unvote=(brdItemById('V1').votes===1&&brdVoteLeft()===1);
+              brdVote('V1');brdSessSet(s=>{s.vote.revealed=true;});brdRender();
+              out.reveal=(brdVoteLabel(brdItemById('V1'))==='👍2'&&brdVoteRanks()['V1']===1&&txt().indexOf('🥇')>=0);
+              brdVoteReset(true);out.voteReset=(!brdItemById('V1').votes&&!brdItemById('V1').voters&&!brdSess().vote.revealed);
+              // --- анонимный ввод ---
+              brdSessSet(s=>{s.anon=true;s.anonRevealed=false;});const hid=brdAuthorLabel(brdItemById('V1'));
+              brdSessSet(s=>{s.anonRevealed=true;});out.anon=(hid.indexOf('Петров')<0&&brdAuthorLabel(brdItemById('V1')).indexOf('Петров')>=0);
+              brdSessSet(s=>{s.anon=false;});
+              // --- показ по фреймам: порядок чтения, листание, выход ---
+              ST.board.items=[{id:'P2',t:'frame',x:900,y:0,w:400,h:300,title:'Второй'},{id:'P1',t:'frame',x:0,y:0,w:400,h:300,title:'Первый'},
+                {id:'P1a',t:'frame',x:20,y:40,w:100,h:100,title:'вложенный'},{id:'P3',t:'frame',x:0,y:700,w:400,h:300,title:'Третий'}];
+              const order=brdPresFrames().map(f=>f.id).join(',');out.presOrder=(order==='P1,P2,P3');
+              brdPresStart();const on=BW.wrap.classList.contains('brd-presenting')&&BW.pres.i===0;brdPresGo(1);const i1=BW.pres.i;brdPresGo(99);const iEnd=BW.pres.i;
+              brdPresEnd();out.present=(on&&i1===1&&iEnd===2&&!BW.pres&&!BW.wrap.classList.contains('brd-presenting'));
+              // --- комментарии с @упоминаниями ---
+              const who=(ST.team[0]||{}).name;ST.board.items=[{id:'M1',t:'sticky',x:0,y:0,w:150,h:120,text:'Обсудить'}];
+              const cm=brdCmtAdd('M1','Посмотри, пожалуйста @'+who);brdRender();
+              out.comment=(!!cm&&cm.m.indexOf(who)>=0&&brdItemById('M1').comments.length===1&&txt().indexOf('💬 1')>=0&&brdCmtAll().length===1&&brdFind('Посмотри').length===1);
+              brdCmtDel('M1',cm.id);out.commentDel=!brdItemById('M1').comments;
+              // --- блок-схема: новые фигуры + подпись стрелки + быстрое продолжение ---
+              ST.board.items=[];let shapes=true;['terminator','document','database','parallelogram'].forEach((t,i)=>{brdAdd({id:'F'+i,t:t,x:i*220,y:0,w:160,h:90,fill:'#fff',stroke:'#2D5BE3',text:t});});
+              brdRender();['F0','F1','F2','F3'].forEach(id=>{const g=document.querySelector('#v_board svg [data-id="'+id+'"]');if(!g||!g.querySelector('path,polygon,rect'))shapes=false;});
+              brdAdd({id:'K1',t:'conn',from:'F0',to:'F1',label:'да'});brdRender();
+              out.flow=shapes&&txt().indexOf('да')>=0&&BRD_DRAW_T.indexOf('database')>=0;
+              const nq=brdItems().length;brdQuickAdd('F0','down');out.flowQuick=(brdItems().length===nq+2&&brdItems()[brdItems().length-2].t==='terminator');
+              // --- майнд-карта: дочерние/соседние ветки, раскладка в обе стороны, удаление ветки целиком ---
+              ST.board.items=[];const root=brdMindNew();const c1=brdMindAdd(root.id,'child',true),c2=brdMindAdd(root.id,'child',true),s1=brdMindAdd(c1.id,'sibling',true),g1=brdMindAdd(c1.id,'child',true);
+              const R=brdItemById(root.id);
+              out.mindTree=(brdMindKids(root.id).length===3&&c1.x>R.x+R.w&&c2.x+c2.w<R.x&&g1.x>c1.x+c1.w&&brdMindRoot(g1.id).id===root.id);
+              out.mindConn=brdItems().filter(x=>x.t==='conn'&&x.style==='mind').length===4;
+              BW.sel=[c1.id];brdDelSel();out.mindDel=(!brdItemById(g1.id)&&!!brdItemById(c2.id)&&brdItems().filter(x=>x.t==='conn').length===2);
+              // --- таблица: ячейки, строки, столбцы ---
+              ST.board.items=[];const tb=brdTableNew();brdTableSet(tb.id,1,0,'Риск');const h0=tb.h,w0=tb.w;
+              brdTableOp('addRow',tb.id);brdTableOp('addCol',tb.id);brdRender();
+              const T=brdItemById(tb.id);out.table=(T.rows.length===4&&T.rows[0].length===4&&T.h>h0&&T.w>w0&&T.rows[1][0]==='Риск'&&txt().indexOf('Риск')>=0);
+              brdTableOp('delRow',tb.id);brdTableOp('delCol',tb.id);out.tableDel=(brdItemById(tb.id).rows.length===3&&brdItemById(tb.id).rows[0].length===3);
+              // --- авто-раскладка: сетка и дерево по связям ---
+              ST.board.items=[{id:'A',t:'rect',x:0,y:0,w:100,h:60},{id:'B',t:'rect',x:500,y:400,w:100,h:60},{id:'C',t:'rect',x:40,y:900,w:100,h:60},{id:'E1',t:'conn',from:'A',to:'B'},{id:'E2',t:'conn',from:'A',to:'C'}];
+              BW.sel=['A','B','C'];brdAutoTree();const A=brdItemById('A'),B=brdItemById('B'),Cc=brdItemById('C');
+              out.autoTree=(B.x>A.x+A.w&&B.x===Cc.x&&B.y!==Cc.y);
+              ST.board.items=[0,1,2,3].map(i=>({id:'G'+i,t:'rect',x:i*13,y:i*500,w:100,h:60}));BW.sel=['G0','G1','G2','G3'];brdAutoGrid();
+              const xs=new Set(brdItems().map(x=>x.x)),ys=new Set(brdItems().map(x=>x.y));out.autoGrid=(xs.size===2&&ys.size===2);
+              // --- шаблон дорожек по ролям команды ---
+              ST.board.items=[];const roles=new Set((ST.team||[]).map(m=>m.role).filter(Boolean)).size;brdInsertTemplate('swim');
+              out.swim=brdItems().filter(x=>x.t==='frame'&&x.notitle).length===Math.min(6,roles||4);
+              // восстановление
+              window.save=_s;window.brdWSUpsert=_u;window.brdEdit=_e;window.toast=_t;window.brdWSSend=_w;window.confirm=_c;
+              ST.board.items=JSON.parse(snap);ST.board.session=JSON.parse(sess)||{};Object.assign(PERM,JSON.parse(perm));BW.sel=[];BW.pres=null;brdHistReset();brdRender();
+              return out;
+            }catch(e){return 'ERR:'+e.message+' '+(e.stack||'').split('\\n')[1];}}""")
+            assert isinstance(r, dict), r
+            bad = [k for k, v in r.items() if v is not True]
+            assert not bad, 'board wave-2 checks failed: %s (%s)' % (bad, r)
+        case('whiteboard4: voting/anon/presentation/comments, flowchart, mind map, table, auto-layout, swimlanes', t_board4)
+
         # ---- 25. EVM: earned value indices and forecast ----
         def t_evm():
             r = page.evaluate("""()=>{const C=compute();const E=evm(C);
