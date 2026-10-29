@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -32,6 +33,8 @@ public class AuthController {
 
     public record LoginReq(String username, String password) {}
     public record UserReq(String username, String password, String role, String displayName, Boolean active) {}
+    public record MeReq(String member) {}
+    public record PasswordReq(String oldPassword, String newPassword) {}
 
     private Map<String, Object> userView(AppUser u) {
         return Map.of("username", u.username, "role", u.role,
@@ -59,7 +62,9 @@ public class AuthController {
         String name = auth.findUser(sess.username).map(u -> u.displayName == null ? u.username : u.displayName)
                 .orElse(sess.username);
         audit("login", sess.username, sess.role, http, "Вход выполнен");
-        return ResponseEntity.ok(Map.of("token", sess.token, "username", sess.username, "role", sess.role, "name", name));
+        Map<String, Object> body = new LinkedHashMap<>(Map.of("token", sess.token, "username", sess.username, "role", sess.role, "name", name));
+        body.put("member", auth.findUser(sess.username).map(u -> u.memberName).orElse(null));
+        return ResponseEntity.ok(body);
     }
 
     @PostMapping("/logout")
@@ -73,9 +78,50 @@ public class AuthController {
     public ResponseEntity<?> me(HttpServletRequest req) {
         Object s = req.getAttribute("session");
         if (!(s instanceof UserSession us)) return ResponseEntity.status(401).body(Map.of("error", "unauthorized"));
-        String name = auth.findUser(us.username).map(u -> u.displayName == null ? u.username : u.displayName)
-                .orElse(us.username);
-        return ResponseEntity.ok(Map.of("username", us.username, "role", us.role, "name", name));
+        return ResponseEntity.ok(meView(us));
+    }
+
+    private Map<String, Object> meView(UserSession us) {
+        Optional<AppUser> u = auth.findUser(us.username);
+        Map<String, Object> m = new LinkedHashMap<>();
+        m.put("username", us.username);
+        m.put("role", us.role);
+        m.put("name", u.map(x -> x.displayName == null ? x.username : x.displayName).orElse(us.username));
+        m.put("member", u.map(x -> x.memberName).orElse(null));
+        return m;
+    }
+
+    // ---- «Мой профиль»: любой вошедший пользователь (в т.ч. VIEWER) меняет только свою учётную запись ----
+
+    @PutMapping("/me")
+    public ResponseEntity<?> updateMe(@RequestBody MeReq body, HttpServletRequest req) {
+        Object s = req.getAttribute("session");
+        if (!(s instanceof UserSession us)) return ResponseEntity.status(401).body(Map.of("error", "unauthorized"));
+        if (!auth.setMember(us.username, body == null ? null : body.member()))
+            return ResponseEntity.status(404).body(Map.of("error", "not_found"));
+        audit("profile_updated", us.username, us.role, req, "Участник команды: " + (body == null || body.member() == null ? "—" : body.member()));
+        return ResponseEntity.ok(meView(us));
+    }
+
+    @PutMapping("/me/password")
+    public ResponseEntity<?> changePassword(@RequestBody PasswordReq body, HttpServletRequest req) {
+        Object s = req.getAttribute("session");
+        if (!(s instanceof UserSession us)) return ResponseEntity.status(401).body(Map.of("error", "unauthorized"));
+        String key = us.username.toLowerCase() + "|pw|" + req.getRemoteAddr();
+        if (auth.isLocked(key)) return ResponseEntity.status(429)
+                .header("Retry-After", String.valueOf(auth.lockoutSeconds())).body(Map.of("error", "too_many_attempts"));
+        String err = auth.changeOwnPassword(us.username, us.token,
+                body == null ? null : body.oldPassword(), body == null ? null : body.newPassword());
+        if ("wrong_password".equals(err)) auth.noteLogin(key, false);
+        if (err == null) {
+            auth.noteLogin(key, true);
+            audit("password_changed", us.username, us.role, req, "Пользователь сменил свой пароль");
+            return ResponseEntity.noContent().build();
+        }
+        int code = "wrong_password".equals(err) ? 403 : "not_found".equals(err) ? 404 : 400;
+        Map<String, Object> out = new LinkedHashMap<>(Map.of("error", err));
+        if ("weak_password".equals(err)) out.put("minLength", AuthService.MIN_PASSWORD);
+        return ResponseEntity.status(code).body(out);
     }
 
     // ---- ADMIN user management (interceptor enforces ADMIN on /api/auth/users**) ----

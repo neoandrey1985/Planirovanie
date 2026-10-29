@@ -2,7 +2,7 @@
 """Специальные кадры для документов и презентации (1440×810 @1.5 → 2160×1215, build/shots/<имя>.jpg):
 дашборд в режиме администратора, окно входа, помощник, фрагменты разделов (распределения в аналитике, диаграмма Исикавы, форматы ретро),
 релизная доска и «Состав релизов» на Kanban, окно отчёта по спринту, окна администратора (на подменённых
-ответах сервера) и кадры эргономики v1.50 («Мой день», вкладки хаба, меню, первые шаги, мастер).
+ответах сервера) кадры эргономики v1.50 («Мой день», вкладки хаба, меню, первые шаги, мастер) и «Мой профиль» v1.51.
 Разделы целиком — capture_shots.py, доска — capture_board_shots.py.
 Запуск: python scripts/deliverables/capture_special_shots.py [имя ...]"""
 import sys, pathlib
@@ -42,6 +42,12 @@ SHOTS = {
                      "m.querySelector('[data-w=name]').value='Мобильное приложение';m.querySelector('[data-w=goal]').value='Выпустить MVP к весне';"
                      "m.querySelector('[data-w=team]').value=['Орлова Е. — Frontend','Белов И. — QA','Новиков П. — Backend'].join(String.fromCharCode(10));"
                      "m.querySelector('[data-w=tasks]').value=['Прототип главного экрана','Авторизация по телефону','Каталог товаров'].join(String.fromCharCode(10));}"],
+ # «Мой профиль» (v1.51): серверный сеанс на подменённых ответах — видны логин, привязка и смена пароля
+ "s_profile": ["MOCK", "()=>{AUTH.username='ivanov';AUTH.user='Иванов Алексей';AUTH.role='EDITOR';AUTH.member='Иванов А.';setPerm('editor');applyPerms();updateRoleBtn();"
+               "ST.board.items=ST.board.items||[];ST.board.items.push({id:'pf1',t:'sticky',x:0,y:0,w:100,h:80,text:'Ретро',comments:[{id:'c1',a:'Петрова М.',"
+               "t:'@Иванов А. проверь, пожалуйста, вебхуки оплаты',ts:'2026-09-09T10:00:00Z',m:['Иванов А.']}]});views();activate('profile');window.scrollTo(0,0);}"],
+ "s_profile2": ["MOCK", "()=>{AUTH.username='ivanov';AUTH.user='Иванов Алексей';AUTH.role='EDITOR';AUTH.member='Иванов А.';setPerm('editor');applyPerms();updateRoleBtn();"
+                "views();activate('profile');const c=[...document.querySelectorAll('#prof_root .md-h')].find(x=>x.textContent==='Настройки');if(c){c.scrollIntoView({block:'start'});window.scrollBy(0,-120);}}"],
  # серверные окна администратора — на подменённых ответах сервера (демо-учётки, без реальных данных)
  "admin_users": ["MOCK", "async()=>{activate('dash');window.scrollTo(0,0);await openUsers();}"],
  "admin_audit": ["MOCK", "async()=>{views();activate('audit');await new Promise(r=>setTimeout(r,600));"

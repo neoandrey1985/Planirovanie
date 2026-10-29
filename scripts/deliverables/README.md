@@ -29,7 +29,8 @@ python -m playwright install chromium
 `s_menus`, `s_umenu`, `s_onb`, `s_wizard`). `refresh_images.py` заменяет все снимки в `.docx` и `.pptx`
 свежими из `build/shots`: картинка опознаётся по SHA-1 (`shot_hashes.json` — «хэш → имя снимка»), поэтому
 после смены интерфейса достаточно переснять кадры и запустить его. Релиз v1.50 — `release_v150_ux.py`
-(тексты документов) и `release_v150_slides.py` (слайды), оба идемпотентны.
+(тексты документов) и `release_v150_slides.py` (слайды), оба идемпотентны; «Мой профиль» v1.51 — `release_v151_profile.py`
+и `release_v151_slides.py`.
 
 **Доска** (отдельный блок из 6 слайдов): `capture_board_shots.py` снимает демо-сцены
 (`board`, `board_ergo`, `board_tpl`, `board_sess`, `board2`), затем `release_board_slides.py`

@@ -232,6 +232,37 @@ public class AuthService {
         return users.findByUsername(username);
     }
 
+    // ---- «Мой профиль»: действия пользователя над своей учётной записью ----
+
+    public static final int MIN_PASSWORD = 8;
+
+    /** Смена своего пароля. Возвращает null при успехе или код ошибки (wrong_password, weak_password, same_password,
+     *  not_found). Остальные сессии пользователя закрываются, текущая остаётся. */
+    @Transactional
+    public String changeOwnPassword(String username, String currentToken, String oldPassword, String newPassword) {
+        Optional<AppUser> o = users.findByUsername(username);
+        if (o.isEmpty()) return "not_found";
+        AppUser u = o.get();
+        if (oldPassword == null || !hasher.verify(oldPassword, u.passHash)) return "wrong_password";
+        if (newPassword == null || newPassword.length() < MIN_PASSWORD || newPassword.length() > 128) return "weak_password";
+        if (hasher.verify(newPassword, u.passHash)) return "same_password";
+        u.passHash = hasher.hash(newPassword);
+        users.save(u);
+        sessions.deleteOthers(username, currentToken);
+        return null;
+    }
+
+    /** Привязка учётной записи к участнику команды; пустое имя снимает привязку. */
+    @Transactional
+    public boolean setMember(String username, String member) {
+        Optional<AppUser> o = users.findByUsername(username);
+        if (o.isEmpty()) return false;
+        String m = member == null ? "" : member.trim();
+        o.get().memberName = m.isEmpty() ? null : (m.length() > 120 ? m.substring(0, 120) : m);
+        users.save(o.get());
+        return true;
+    }
+
     private String newToken() {
         byte[] b = new byte[32];
         rng.nextBytes(b);

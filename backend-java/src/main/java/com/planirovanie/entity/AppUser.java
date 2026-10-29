@@ -15,6 +15,7 @@ public class AppUser {
     @Column(name = "pass_hash", nullable = false) @JsonIgnore public String passHash;
     @Column(nullable = false) public String role;              // VIEWER | EDITOR | ADMIN
     @Column(name = "display_name") public String displayName;
+    @Column(name = "member_name") public String memberName;   // участник команды («Мой профиль»)
     @Column(nullable = false) public boolean active = true;
     @Column(name = "created_at") public Instant createdAt;
 }

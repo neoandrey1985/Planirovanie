@@ -314,8 +314,10 @@ def main():
               const closed=!document.getElementById('umenu').classList.contains('open');
               return {visible,opened,items,closed};}""")
             assert all(x in r['visible'] for x in ('qcdm', 'stdot', 'umenu')), 'compact header: ＋ Создать, status dot, user menu: ' + str(r['visible'])
-            for x in ('rolebtn', 'tourbtn', 'themebtn', 'densbtn', 'startbtn'):
+            for x in ('profbtn', 'rolebtn', 'tourbtn', 'logoutbtn'):
                 assert x in r['items'], 'user menu missing ' + x
+            for x in ('themebtn', 'densbtn', 'startbtn'):
+                assert x not in r['items'], x + ' moved to «Мой профиль», not the menu'
             for old in ('xls', 'pptxbtn', 'exp', 'imp', 'impcsv', 'rst'):
                 assert old not in r['visible'], old + ' should be inside the menu, not the top bar'
                 assert old in r['items'], 'menu missing action ' + old
@@ -958,6 +960,56 @@ def main():
             assert r['onb'] and r['onbDash'] and r['hidden'], 'new project shows first steps (my day + dashboard), hide works: ' + str(r)
             assert r['steps'] == ['params', 'team', 'backlog'], 'done steps for the new project: ' + str(r['steps'])
         case('scenarios: my day, first steps, «Новый проект» wizard', t_scenarios)
+
+        # ---- Profile: «Мой профиль» — who am I, my work/time, mentions, settings; server binding & own password ----
+        def t_profile():
+            r = page.evaluate("""async()=>{const errs=[];const h=e=>errs.push(String(e.message||e.reason||e));window.addEventListener('error',h);
+             const KEY=()=>%(KEY)s,keepMe=lsGetS(KEY(),''),keepFetch=window.fetch,keepAuth=Object.assign({},AUTH),keepBoard=JSON.stringify(ST.board||{});
+             try{setPerm('editor');applyPerms();lsSetS(KEY(),'');views();activate('dash');
+              document.getElementById('profbtn').click();const opened=CURV==='profile';
+              const tabs=[...document.querySelectorAll('#v_profile > .hub-tabs [data-hubv]')].map(b=>b.dataset.hubv);
+              const noMe=!!document.querySelector('#prof_root .md-empty');const me=ST.team[0].name;
+              const sel=document.querySelector('#prof_root [data-pf=me]');sel.value=me;sel.dispatchEvent(new Event('change',{bubbles:true}));
+              await new Promise(r=>setTimeout(r,80));
+              const stored=lsGetS(KEY(),'')===me&&mdMe()===me;
+              const open=ST.tasks.filter(t=>t.type!=='Эпик'&&t.assignee===me&&t.status!=='Готово').length;
+              const head=[...document.querySelectorAll('#prof_root .md-h')].map(x=>x.textContent);
+              const workOk=head.some(x=>x==='Моя работа — открытых задач: '+open);
+              const it=(ST.board.items=ST.board.items||[]);it.push({id:'pf-test',t:'sticky',x:0,y:0,w:100,h:80,text:'Тест',comments:[{id:'c1',a:'Петрова М.',t:'@'+me+' посмотри, пожалуйста',ts:'2026-09-10T10:00:00Z',m:[me]}]});
+              views();activate('profile');const ment=[...document.querySelectorAll('#prof_root .md-li[data-mdgo=board]')].some(b=>b.textContent.includes('посмотри'));
+              const localPw=!document.querySelector('#prof_root [data-pw]');
+              const d0=document.body.classList.contains('dense');document.querySelector('#prof_root [data-pf=dense]').click();const d1=document.body.classList.contains('dense');
+              document.querySelector('#prof_root [data-pf=dense]').click();const dense=!d0&&d1&&!document.body.classList.contains('dense')&&CURV==='profile';
+              // сервер: привязка в учётной записи и смена пароля (ответы сервера подменены)
+              const calls=[];let pwStatus=204;
+              window.fetch=(u,o)=>{const s=String(u);const J=(x,st)=>Promise.resolve(new Response(x==null?null:JSON.stringify(x),{status:st||200,headers:{'Content-Type':'application/json'}}));
+               if(s.includes('api/auth/me/password')){calls.push(['pw',JSON.parse(o.body)]);return pwStatus===204?J(null,204):J({error:'wrong_password'},pwStatus);}
+               if(s.includes('api/auth/me')&&o&&o.method==='PUT'){const b=JSON.parse(o.body);calls.push(['me',b]);return J({username:'po',role:'EDITOR',name:'PO',member:b.member||null});}
+               return keepFetch(u,o);};
+              AUTH.mode='server';AUTH.token='demo';AUTH.username='po';AUTH.user='PO';AUTH.role='EDITOR';AUTH.member='';
+              const other=ST.team[1].name;await profSetMe(other);lsSetS(KEY(),me);
+              const srvMe=AUTH.member===other&&mdMe()===other;views();activate('profile');
+              const set=(k,v)=>{document.querySelector('#prof_root [data-pw='+k+']').value=v;};const msg=()=>document.getElementById('pf_pwmsg').textContent;
+              set('old','Old-pass-1');set('new','New-pass-2');set('rep','New-pass-X');await profPassword();const mism=msg();
+              set('new','short');set('rep','short');await profPassword();const shortM=msg();
+              set('new','New-pass-2');set('rep','New-pass-2');await profPassword();const okM=msg();
+              pwStatus=403;set('old','bad');set('new','New-pass-3');set('rep','New-pass-3');await profPassword();const badM=msg();
+              uiMenuSync();const lo=document.getElementById('logoutbtn').style.display!=='none';
+              return {opened,tabs,noMe,stored,workOk,head,ment,localPw,dense,srvMe,calls:calls.map(c=>c[0]),meBody:calls[0]&&calls[0][1],pwBody:(calls.find(c=>c[0]==='pw')||[])[1],mism,shortM,okM,badM,lo,errs};
+             }catch(e){return 'ERR:'+e.message;}
+             finally{window.removeEventListener('error',h);window.fetch=keepFetch;Object.assign(AUTH,keepAuth);ST.board=JSON.parse(keepBoard);lsSetS(KEY(),keepMe);uiMenuSync();views();activate('dash');}}""" % {'KEY': "'me'"})
+            assert isinstance(r, dict), 'profile failed: ' + str(r)
+            assert not r['errs'], 'page errors: ' + str(r['errs'][:3])
+            assert r['opened'] and r['tabs'] == ['myday', 'profile'], 'profile opens from the user menu, tab next to «Мой день»: ' + str(r)
+            assert r['noMe'] and r['stored'], 'member binding: prompt when unset, stored after choice'
+            assert r['workOk'] and {'Кто я', 'Моё время', 'Настройки'} <= set(r['head']), 'profile cards: ' + str(r['head'])
+            assert r['ment'], 'board @mention shows in profile'
+            assert r['localPw'] and r['dense'], 'local mode: no password form; settings toggle density'
+            assert r['srvMe'] and r['meBody'] == {'member': r['meBody']['member']} and r['meBody']['member'], 'server binding wins over the browser choice: ' + str(r)
+            assert r['calls'].count('pw') == 2 and r['pwBody'] == {'oldPassword': 'Old-pass-1', 'newPassword': 'New-pass-2'}, 'password requests: ' + str(r)
+            assert 'не совпадают' in r['mism'] and '8 символов' in r['shortM'] and 'изменён' in r['okM'] and 'неверно' in r['badM'], str(r)
+            assert r['lo'], 'logout visible in the user menu with server session'
+        case('profile: who am I, my work/time, mentions, settings, server binding & own password', t_profile)
 
         br.close()
     httpd.shutdown()

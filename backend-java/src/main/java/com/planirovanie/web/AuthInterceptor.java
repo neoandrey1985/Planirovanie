@@ -18,6 +18,7 @@ import java.util.Optional;
  *   - public: login, health, CORS preflight, and the HEAD probe on /api/state;
  *   - reads (GET): any authenticated user (VIEWER+);
  *   - writes (POST/PUT/DELETE/PATCH): EDITOR or ADMIN;
+ *   - /api/auth/me, /api/auth/me/password: any authenticated user (own profile only);
  *   - /api/auth/users**: ADMIN only.
  * The resolved {@link UserSession} is exposed to controllers as request attribute "session".
  */
@@ -60,6 +61,8 @@ public class AuthInterceptor implements HandlerInterceptor {
         boolean writing = method.equals("POST") || method.equals("PUT")
                 || method.equals("DELETE") || method.equals("PATCH");
 
+        // Own profile (member binding, password change): any signed-in user, incl. VIEWER.
+        if (path.endsWith("/api/auth/me") || path.endsWith("/api/auth/me/password")) return true;
         // ADMIN-only surface: user & role management.
         if (path.contains("/api/auth/users")) {
             return "ADMIN".equals(role) ? true : deny(res, 403, "forbidden");

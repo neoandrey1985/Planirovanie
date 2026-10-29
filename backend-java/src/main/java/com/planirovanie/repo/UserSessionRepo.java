@@ -16,4 +16,8 @@ public interface UserSessionRepo extends JpaRepository<UserSession, String> {
     @Modifying
     @Query("delete from UserSession s where s.username = :username")
     int deleteByUsername(@Param("username") String username);
+
+    @Modifying
+    @Query("delete from UserSession s where s.username = :username and s.token <> :token")
+    int deleteOthers(@Param("username") String username, @Param("token") String token);
 }
