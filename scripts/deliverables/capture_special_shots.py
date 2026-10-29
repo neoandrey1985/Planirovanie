@@ -48,6 +48,8 @@ SHOTS = {
                "t:'@Иванов А. проверь, пожалуйста, вебхуки оплаты',ts:'2026-09-09T10:00:00Z',m:['Иванов А.']}]});views();activate('profile');window.scrollTo(0,0);}"],
  "s_profile2": ["MOCK", "()=>{AUTH.username='ivanov';AUTH.user='Иванов Алексей';AUTH.role='EDITOR';AUTH.member='Иванов А.';setPerm('editor');applyPerms();updateRoleBtn();"
                 "views();activate('profile');const c=[...document.querySelectorAll('#prof_root .md-h')].find(x=>x.textContent==='Настройки');if(c){c.scrollIntoView({block:'start'});window.scrollBy(0,-120);}}"],
+ # «Гант по иерархии»: уровень «до историй», вид на сетку
+ "s_hgantt": ["()=>{HG.level=3;HG.open={};HG.fact=true;views();activate('hgantt');const g=document.querySelector('#hg_root .hg-bar');if(g){g.scrollIntoView({block:'start'});window.scrollBy(0,-70);}}"],
  # серверные окна администратора — на подменённых ответах сервера (демо-учётки, без реальных данных)
  "admin_users": ["MOCK", "async()=>{activate('dash');window.scrollTo(0,0);await openUsers();}"],
  "admin_audit": ["MOCK", "async()=>{views();activate('audit');await new Promise(r=>setTimeout(r,600));"

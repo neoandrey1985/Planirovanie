@@ -300,7 +300,7 @@ def main():
             assert r['hasSearch'], 'nav search box missing'
             assert r['fav'] and r['pinned'], 'pin → favorites did not work'
             assert r['toggled'], 'group collapse toggle did not work'
-            assert r['matches'] == ['Гант'], 'filter did not narrow to the match: ' + str(r['matches'])
+            assert r['matches'] == ['Гант', 'Гант по иерархии'], 'filter did not narrow to the matches: ' + str(r['matches'])
         case('sidebar: collapse/pin/filter smart nav', t_nav)
 
         # ---- 4f. Top toolbar: data actions consolidated into one menu ----
@@ -803,6 +803,50 @@ def main():
             assert r['rendered'], 'WBS tree did not render'
         case('wbs: Epic rollup of child estimates', t_wbs)
 
+        # ---- Hierarchical Gantt: Epic → Feature → Story → Task by «parent», rollup of volume and progress ----
+        def t_hgantt():
+            r = page.evaluate("""()=>{const errs=[];const h=e=>errs.push(String(e.message||e.reason||e));window.addEventListener('error',h);
+             const keep=JSON.stringify(ST.tasks);
+             try{HG.level=2;HG.open={};HG.fact=true;views();activate('hgantt');
+              const tabs=[...document.querySelectorAll('#v_hgantt > .hub-tabs [data-hubv]')].map(b=>b.dataset.hubv);
+              const T=ST.tasks,types=[...new Set(T.map(t=>t.type))];
+              const rows=()=>[...document.querySelectorAll('#hg_root .hg-row[data-hgrow]')].map(x=>x.dataset.hgrow);
+              const l2=rows(),roots=T.filter(t=>!t.parent||!T.some(x=>x.id===t.parent)).map(t=>t.id),feats=T.filter(t=>t.type==='Фича').map(t=>t.id);
+              const lvl2=roots.every(id=>l2.includes(id))&&feats.every(id=>l2.includes(id))&&!l2.includes('T-02');
+              document.querySelector('#hg_root [data-hglv="1"]').click();const l1=rows();
+              document.querySelector('#hg_root [data-hgt="E-1"]').click();const e1open=rows().includes('FE-1')&&!rows().includes('FE-3');
+              document.querySelector('#hg_root [data-hglv="9"]').click();const l9=rows().length;
+              const desc=id=>{const out=[];const go=q=>T.filter(t=>t.parent===q).forEach(c=>{out.push(c);go(c.id);});go(id);return out;};
+              const all=[T.find(t=>t.id==='E-1')].concat(desc('E-1'));
+              const sp=all.reduce((s,t)=>s+num(t.est),0),dn=all.filter(t=>t.status==='Готово').reduce((s,t)=>s+num(t.est),0);
+              const meta=document.querySelector('#hg_root [data-hgrow="E-1"] .hg-m').textContent;
+              const G=hgTree(),n=G.nodes.find(x=>x.t.id==='E-1'),ks=desc('E-1').map(t=>num(t.sprint)).filter(s=>s>0);
+              const roll=n.sp===sp&&n.done===dn&&+n.a===+G.spA(Math.min(...ks))&&+n.b===+addD(G.spA(Math.max(...ks)),11);
+              const late=[...document.querySelectorAll('#hg_root .hg-late')].map(x=>x.closest('[data-hgrow]').dataset.hgrow);
+              const facts=document.querySelectorAll('#hg_root .hg-f').length;
+              document.querySelector('#hg_root [data-hgf]').click();const noFact=document.querySelectorAll('#hg_root .hg-f').length===0;HG.fact=true;
+              const a=T.find(t=>t.id==='T-19'),b=T.find(t=>t.id==='T-20'),pa=a.parent,pb=b.parent;a.parent='T-20';b.parent='T-19';hgRefresh();
+              const cyc=(document.querySelector('#hg_root .wiz-warn')||{}).textContent||'';a.parent=pa;b.parent=pb;hgRefresh();
+              document.querySelector('#hg_root [data-hgo="T-14"]').click();const opened=CURV==='backlog'&&UI.search.tasks==='T-14';UI.search.tasks='';
+              const again=migrate(JSON.parse(JSON.stringify(ST))).tasks.filter(t=>t.type==='Фича').length;
+              const blank=migrate(%(BLANK)s(ST)).tasks.length;
+              return {tabs,types,lvl2,l1,roots,e1open,l9,n:T.length,meta,roll,late,facts,noFact,cyc,opened,again,feats:feats.length,blank,depth:wbsDepth(T.filter(t=>!t.parent),T),errs};
+             }catch(e){return 'ERR:'+e.message;}finally{window.removeEventListener('error',h);ST.tasks=JSON.parse(keep);HG.level=2;HG.open={};HG.fact=true;views();activate('dash');}}""" % {'BLANK': 'blankState'})
+            assert isinstance(r, dict), 'hgantt failed: ' + str(r)
+            assert not r['errs'], 'page errors: ' + str(r['errs'][:3])
+            assert r['tabs'][:2] == ['gantt', 'hgantt'], 'hierarchical Gantt is a tab of «Расписание»: ' + str(r['tabs'])
+            assert r['depth'] >= 4 and {'Эпик', 'Фича', 'История', 'Задача'} <= set(r['types']) and r['feats'] == 4, 'demo has 4 levels: ' + str(r)
+            assert r['lvl2'], 'level «До фич» shows roots and features, hides stories/tasks'
+            assert set(r['l1']) == set(r['roots']) and r['e1open'], 'level «Эпики» + expanding one epic: ' + str(r['l1'])
+            assert r['l9'] == r['n'], 'level «Всё» shows every element once'
+            assert r['roll'] and 'SP' in r['meta'], 'epic rollup: volume, done and span from descendants: ' + str(r['meta'])
+            assert 'T-12' in r['late'] and 'T-10' in r['late'], 'overdue / out-of-sprint elements outlined: ' + str(r['late'])
+            assert r['facts'] > 0 and r['noFact'], 'fact bars toggle'
+            assert 'цикле' in r['cyc'], 'cycle in «Родитель» is reported, not crashing'
+            assert r['opened'], 'ID opens the element in «Бэклог»'
+            assert r['again'] == 4 and r['blank'] == 0, 'demo features added once; blank project gets none: ' + str(r)
+        case('hgantt: hierarchy Gantt — levels, rollup, plan/fact, overdue, cycles, demo features', t_hgantt)
+
         # ---- 28. Status report generation ----
         def t_status():
             r = page.evaluate("""()=>{const md=statusReportMd();
@@ -909,7 +953,7 @@ def main():
             assert r['covered'] and r['noMore'], 'every NAV section must be mapped to a hub (no «Ещё»)'
             assert r['tabs'] == ['rice', 'wsjf', 'moscow'] and r['tabGo'] and r['hubTarget'], 'hub tabs and last tab memory: ' + str(r)
             assert 12 <= r['entries'] <= 18 and not r['lvl'], 'compact menu: 12-18 entries, no level switch, got ' + str(r)
-            assert r['found'] == ['Гант'], 'search must find sections inside hubs: ' + str(r['found'])
+            assert r['found'] == ['Гант', 'Гант по иерархии'], 'search must find sections inside hubs: ' + str(r['found'])
             assert r['allMode'] and r['back'], '«Все разделы» toggles the full menu and back: ' + str(r)
             assert r['qcOk'], 'quick create must add a task to the current sprint'
             assert r['qcItems'] == ['task', 'bug', 'risk', 'imp'] and r['qcWiz'] and not r['qcWizViewer'], 'quick create menu: ' + str(r)
@@ -1010,6 +1054,22 @@ def main():
             assert 'не совпадают' in r['mism'] and '8 символов' in r['shortM'] and 'изменён' in r['okM'] and 'неверно' in r['badM'], str(r)
             assert r['lo'], 'logout visible in the user menu with server session'
         case('profile: who am I, my work/time, mentions, settings, server binding & own password', t_profile)
+
+        # ---- Viewer: personal controls (profile, «Я —», Gantt view) stay usable in read-only mode ----
+        def t_viewer_free():
+            r = page.evaluate("""()=>{const keepAuth=Object.assign({},AUTH);
+             try{setPerm('viewer');applyPerms();AUTH.mode='server';AUTH.token='demo';AUTH.username='v';AUTH.user='Наблюдатель';AUTH.role='VIEWER';
+              views();activate('profile');const me=document.querySelector('#prof_root [data-pf=me]'),pw=document.querySelector('#prof_root [data-pw=old]'),btn=document.querySelector('#prof_root [data-pf=pw]');
+              const prof=!!me&&!me.disabled&&!!pw&&!pw.readOnly&&!!btn&&btn.offsetParent!==null;
+              activate('myday');const mm=document.querySelector('#myday_root [data-md=me]');const md=!!mm&&!mm.disabled;
+              activate('hgantt');const hf=document.querySelector('#hg_root [data-hgf]');const hg=!!hf&&!hf.disabled;
+              activate('backlog');const data=[...document.querySelectorAll('#v_backlog td input, #v_backlog td select')].every(e=>e.disabled||e.readOnly);
+              return {prof,md,hg,data};}
+             finally{Object.assign(AUTH,keepAuth);setPerm('editor');applyPerms();views();activate('dash');}}""")
+            assert r['prof'], 'profile: member select, password fields and button usable for VIEWER'
+            assert r['md'] and r['hg'], 'my day «Я —» and Gantt fact toggle usable for VIEWER: ' + str(r)
+            assert r['data'], 'project data stays read-only for VIEWER'
+        case('viewer: personal controls stay usable, data read-only', t_viewer_free)
 
         br.close()
     httpd.shutdown()

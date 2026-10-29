@@ -354,7 +354,7 @@ tfoot td{font-weight:700;background:var(--panel2);color:var(--ink);border-top:2p
 .modal label{display:block;font-size:12.5px;color:var(--muted);margin:12px 0 4px}
 .modal input,.modal select{width:100%;border:1px solid var(--line);background:var(--panel2);color:var(--ink);border-radius:8px;padding:9px 10px;font-family:inherit;font-size:14px}
 .modal .mrow{display:flex;gap:8px;justify-content:flex-end;margin-top:18px;flex-wrap:wrap}
-body.ro #main .btn.primary,body.ro #main .rowdel{display:none}
+body.ro #main .btn.primary:not([data-free]),body.ro #main .rowdel{display:none}
 body.noadmin #rst,body.noadmin #imp{display:none}
 .usr-add{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:6px}
 .usr-add input,.usr-add select{border:1px solid var(--line);background:var(--panel2);color:var(--ink);border-radius:8px;padding:8px 9px;font-family:inherit;font-size:13px}
@@ -572,6 +572,37 @@ body.dense .nav-item{padding:4px 10px;font-size:13px}body.dense .md-wrap{gap:10p
 .pf-load{display:flex;flex-wrap:wrap;gap:10px;align-items:center;font-size:13px;margin:6px 0}
 #uhold{display:none}
 #prof_root .qc-f input,#prof_root .qc-f select{border:1px solid var(--line);background:var(--panel2);color:var(--ink);border-radius:8px;padding:8px 10px;font:inherit;font-size:14px;max-width:420px}
+/* ---- Гант по иерархии ---- */
+.hg-bar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:14px 0 10px}
+.hg-bar .btn.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+.hg-chk{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);margin-left:8px}.hg-chk input{width:auto}
+.hg-grid{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--panel)}
+.hg-row{display:grid;grid-template-columns:minmax(260px,38%) 1fr;border-top:1px solid var(--line);min-height:30px}
+.hg-row:hover{background:color-mix(in srgb,var(--panel2) 60%,transparent)}
+.hg-head{border-top:none;background:var(--panel2);font-size:11px;color:var(--muted);min-height:26px}.hg-head:hover{background:var(--panel2)}
+.hg-l{display:flex;align-items:center;gap:6px;min-width:0;padding:4px 8px;font-size:13px;border-right:1px solid var(--line)}
+.hg-tt{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.hg-sum .hg-tt{font-weight:600}
+.hg-m{flex:none;font-size:11.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+.hg-tg{border:none;background:none;cursor:pointer;width:18px;flex:none;padding:0;color:var(--muted);font-size:12px}.hg-tg0{width:18px;flex:none}
+.hg-ty{flex:none;font-size:10px;font-weight:700;border-radius:4px;padding:1px 5px;background:var(--panel2);color:var(--muted)}
+.hg-ty0{background:color-mix(in srgb,var(--accent) 18%,transparent);color:var(--accent)}.hg-ty1{background:color-mix(in srgb,#8b5cf6 18%,transparent);color:#8b5cf6}
+.hg-ty2{background:color-mix(in srgb,var(--good) 16%,transparent);color:var(--good)}
+.hg-id{border:none;background:none;padding:0;font:inherit;font-weight:700;font-size:12px;color:var(--ink);cursor:pointer;flex:none}.hg-id:hover{color:var(--accent);text-decoration:underline}
+.hg-tl{position:relative;overflow:hidden}
+.hg-tick{position:absolute;top:0;bottom:0;border-left:1px dashed var(--line)}
+.hg-head .hg-tick{border-left-style:solid;padding:5px 0 0 4px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.hg-today{position:absolute;top:0;bottom:0;border-left:2px solid var(--crit);opacity:.5}
+.hg-p{position:absolute;top:8px;height:12px;border-radius:4px;background:color-mix(in srgb,var(--muted) 38%,transparent)}
+.hg-p.wip{background:color-mix(in srgb,var(--accent) 55%,transparent)}.hg-p.done{background:var(--good)}
+.hg-s{position:absolute;top:9px;height:10px;border-radius:2px;background:color-mix(in srgb,var(--ink) 18%,transparent);overflow:hidden}
+.hg-s i{display:block;height:100%;background:color-mix(in srgb,var(--ink) 70%,transparent)}
+.hg-late{box-shadow:inset 0 0 0 2px var(--crit)}
+.hg-f{position:absolute;top:22px;height:4px;border-radius:2px;background:color-mix(in srgb,var(--ink) 55%,transparent)}.hg-f.late{background:var(--crit)}
+.hg-pc{position:absolute;top:6px;font-size:10.5px;color:var(--muted);white-space:nowrap;font-variant-numeric:tabular-nums}
+.hg-leg i{display:inline-block}.hg-lg-s{width:22px!important;height:8px!important;background:linear-gradient(90deg,color-mix(in srgb,var(--ink) 70%,transparent) 55%,color-mix(in srgb,var(--ink) 18%,transparent) 55%)}
+.hg-lg-p{width:22px!important;background:color-mix(in srgb,var(--accent) 55%,transparent)}.hg-lg-f{width:22px!important;height:4px!important;background:color-mix(in srgb,var(--ink) 55%,transparent)}
+.hg-lg-l{box-shadow:inset 0 0 0 2px var(--crit)}.hg-lg-t{width:2px!important;height:14px!important;background:var(--crit);opacity:.6}
+@media (max-width:760px){.hg-row{grid-template-columns:150px 1fr}.hg-m{display:none}}
 /* ---- компактная шапка ---- */
 .st-hidden,#syncst,#anst{display:none!important}
 .st-dot i{display:block;width:10px;height:10px;border-radius:50%;background:var(--muted)}
@@ -612,7 +643,7 @@ body.dense .nav-item{padding:4px 10px;font-size:13px}body.dense .md-wrap{gap:10p
  </div>
 </div></header>
 <div class="shell"><aside class="side" id="side"><nav id="nav"></nav><div class="side-foot" id="sidefoot"></div></aside><div class="scrim" id="scrim"></div>
-<main id="main"><section class="view" id="v_myday"></section><section class="view" id="v_profile"></section><section class="view" id="v_dash"></section><section class="view" id="v_board"></section><section class="view" id="v_kanban"></section><section class="view" id="v_backlog"></section><section class="view" id="v_team"></section><section class="view" id="v_starmap"></section><section class="view" id="v_roadmap"></section><section class="view" id="v_quarters"></section><section class="view" id="v_rice"></section><section class="view" id="v_wsjf"></section><section class="view" id="v_moscow"></section><section class="view" id="v_sprintGoals"></section><section class="view" id="v_gantt"></section><section class="view" id="v_deps"></section><section class="view" id="v_piboard"></section><section class="view" id="v_releases"></section><section class="view" id="v_milestones"></section><section class="view" id="v_debt"></section><section class="view" id="v_okr"></section><section class="view" id="v_budget"></section><section class="view" id="v_analytics"></section><section class="view" id="v_risks"></section><section class="view" id="v_bugs"></section><section class="view" id="v_daily"></section><section class="view" id="v_grooming"></section><section class="view" id="v_demo"></section><section class="view" id="v_vacation"></section><section class="view" id="v_birthdays"></section><section class="view" id="v_retro"></section><section class="view" id="v_agile"></section><section class="view" id="v_calendar"></section><section class="view" id="v_scope"></section><section class="view" id="v_checks"></section><section class="view" id="v_eda"></section><section class="view" id="v_integrations"></section><section class="view" id="v_params"></section><section class="view" id="v_faq"></section><section class="view" id="v_support"></section><section class="view" id="v_audit"></section><section class="view" id="v_evm"></section><section class="view" id="v_changes"></section><section class="view" id="v_issues"></section><section class="view" id="v_stakeholders"></section><section class="view" id="v_statusreport"></section><section class="view" id="v_decisions"></section><section class="view" id="v_wbs"></section><section class="view" id="v_storymap"></section><section class="view" id="v_impediments"></section><section class="view" id="v_poker"></section><section class="view" id="v_lessons"></section><section class="view" id="v_raci"></section><section class="view" id="v_portfolio"></section><section class="view" id="v_busfactor"></section><section class="view" id="v_healthcheck"></section><section class="view" id="v_dora"></section><section class="view" id="v_incidents"></section></main></div>
+<main id="main"><section class="view" id="v_myday"></section><section class="view" id="v_profile"></section><section class="view" id="v_dash"></section><section class="view" id="v_board"></section><section class="view" id="v_kanban"></section><section class="view" id="v_backlog"></section><section class="view" id="v_team"></section><section class="view" id="v_starmap"></section><section class="view" id="v_roadmap"></section><section class="view" id="v_quarters"></section><section class="view" id="v_rice"></section><section class="view" id="v_wsjf"></section><section class="view" id="v_moscow"></section><section class="view" id="v_sprintGoals"></section><section class="view" id="v_gantt"></section><section class="view" id="v_hgantt"></section><section class="view" id="v_deps"></section><section class="view" id="v_piboard"></section><section class="view" id="v_releases"></section><section class="view" id="v_milestones"></section><section class="view" id="v_debt"></section><section class="view" id="v_okr"></section><section class="view" id="v_budget"></section><section class="view" id="v_analytics"></section><section class="view" id="v_risks"></section><section class="view" id="v_bugs"></section><section class="view" id="v_daily"></section><section class="view" id="v_grooming"></section><section class="view" id="v_demo"></section><section class="view" id="v_vacation"></section><section class="view" id="v_birthdays"></section><section class="view" id="v_retro"></section><section class="view" id="v_agile"></section><section class="view" id="v_calendar"></section><section class="view" id="v_scope"></section><section class="view" id="v_checks"></section><section class="view" id="v_eda"></section><section class="view" id="v_integrations"></section><section class="view" id="v_params"></section><section class="view" id="v_faq"></section><section class="view" id="v_support"></section><section class="view" id="v_audit"></section><section class="view" id="v_evm"></section><section class="view" id="v_changes"></section><section class="view" id="v_issues"></section><section class="view" id="v_stakeholders"></section><section class="view" id="v_statusreport"></section><section class="view" id="v_decisions"></section><section class="view" id="v_wbs"></section><section class="view" id="v_storymap"></section><section class="view" id="v_impediments"></section><section class="view" id="v_poker"></section><section class="view" id="v_lessons"></section><section class="view" id="v_raci"></section><section class="view" id="v_portfolio"></section><section class="view" id="v_busfactor"></section><section class="view" id="v_healthcheck"></section><section class="view" id="v_dora"></section><section class="view" id="v_incidents"></section></main></div>
 <div class="palette" id="palette"><div class="pbox"><input class="pin" id="pin" placeholder="Поиск раздела или действия…" autocomplete="off"><div class="plist" id="plist"></div></div></div>
 <div class="role-pop" id="rolepop"></div>
 <div class="modal" id="accmodal"><div class="mbox">
@@ -1621,6 +1652,15 @@ function migrate(d){
   if(!have('E-2'))T.push({id:'E-2',title:'Эпик: Каталог и личный кабинет',assignee:'',role:'',type:'Эпик',est:0,status:'To Do',sprint:'',dep:'',started:'',done:'',priority:'Should'});
   const setP=(tid,pid)=>{const t=T.find(x=>x.id===tid);if(t&&t.parent==null)t.parent=pid;};
   setP('T-01','E-1');setP('T-02','E-1');setP('T-03','E-1');setP('T-05','E-2');setP('T-07','E-2');})();
+  // v1.52: четыре уровня иерархии в демо — фичи под эпиками, истории — родители задач (Эпик → Фича → История → Задача)
+  (function(){const T=d.tasks||[],t1=T.find(t=>t.id==='T-01');
+   if(!t1||t1.title!=='Проектирование API заказов'||t1.parent!=='E-1'||T.some(t=>t.type==='Фича'))return;
+   const F=(id,title,parent,status)=>T.push({id,title,assignee:'',role:'',type:'Фича',est:0,status,sprint:'',dep:'',started:'',done:'',priority:'Must',parent});
+   F('FE-1','Фича: Корзина и заказ','E-1','В работе');F('FE-2','Фича: Онлайн-оплата','E-1','В работе');
+   F('FE-3','Фича: Личный кабинет','E-2','В работе');F('FE-4','Фича: Каталог и рекомендации','E-2','To Do');
+   const P={'T-01':'FE-1','T-02':'T-01','T-10':'FE-1','T-15':'T-10','T-14':'FE-2','T-03':'T-14','T-13':'T-14','T-11':'FE-2','T-08':'T-11',
+    'T-05':'FE-3','T-16':'FE-3','T-17':'FE-4','T-18':'T-17','T-19':'FE-4','T-20':'T-19','T-06':'FE-4'};
+   T.forEach(t=>{if(P[t.id])t.parent=P[t.id];});})();
  if(!Array.isArray(d.changeRequests))d.changeRequests=[
   {id:'CR-01',date:'2026-08-30',title:'Добавить вход через SSO (OAuth2)',type:'Scope',impact:'+8 SP, +1 спринт',requester:'Product Owner',status:'Одобрен',note:'Включено в релиз R-2'},
   {id:'CR-02',date:'2026-09-08',title:'Поддержка оплаты в рассрочку',type:'Scope',impact:'+13 SP',requester:'Коммерция',status:'Отложен',note:'Вернуться после MVP'},
@@ -3510,6 +3550,7 @@ function views(){
  setView('statusreport','Статус-отчёт','Автоматический статус-отчёт (RAG) из текущих данных проекта с экспортом в Markdown и отправкой в Slack.',statusReportView());
  setView('decisions','Журнал решений','Ключевые проектные и архитектурные решения (ADR): контекст, варианты, решение, обоснование и владелец.',decisionsView());
  setView('wbs','Иерархия работ (WBS)','Структура декомпозиции: Эпик → Фича → История → Задача по полю «Родитель» с суммированием объёма и прогресса.',wbsView());
+ setView('hgantt','Гант по иерархии','Эпик → Фича → История → Задача по полю «Родитель»: сводные полосы родителей от раннего начала до позднего окончания потомков, объём и прогресс суммируются снизу вверх; план — по спринтам, факт — по датам «начато / готово».',hganttView());
  setView('storymap','Story Map','Карта пользовательских историй: активности (шаги пути) по горизонтали, релизы по вертикали — для выделения MVP и срезов ценности.',storyMapView());
  setView('impediments','Импедименты','Журнал препятствий со «старением» и владельцем; пополняется из блокеров «Дэйли».',impedimentsView());
  setView('poker','Planning Poker','Совместная оценка в Story Points: голоса участников, медиана, разброс и консенсус по Фибоначчи с применением оценки к задаче.',pokerView());
@@ -4394,6 +4435,67 @@ function wbsView(){const w=document.createElement('div');const tasks=ST.tasks||[
   +'Иерархия строится по полю «Родитель» у задач (в «Бэклоге»): Эпик → Фича → История → Задача. Оценка и выполнение суммируются снизу вверх (роллап), поэтому у эпика виден совокупный объём и прогресс всех вложенных элементов.</p>';
  w.appendChild(lg);return w;}
 function wbsDepth(roots,tasks){let max=1;const go=(t,d,seen)=>{if(seen.has(t.id))return;seen.add(t.id);max=Math.max(max,d);wbsChildren(t.id).forEach(c=>go(c,d+1,seen));};roots.forEach(t=>go(t,1,new Set()));return max;}
+/* ---- Гант по иерархии: Эпик → Фича → История → Задача по полю «Родитель» ----
+   План — по спринтам; у родителя — от раннего начала до позднего окончания потомков (сводная полоса). Факт — по датам
+   «начато / готово» (незавершённая — до «сегодня»). Объём и прогресс суммируются снизу вверх, как в «Иерархии работ». */
+var HG={level:2,fact:true,open:{}};
+const HG_TYPES=[['Эпик','Эпик','Э'],['Фича','Фича','Ф'],['История','История','И'],['Задача','Задача','З'],['Тех.долг','Тех.долг','Д']];
+function hgRank(t){const i=HG_TYPES.findIndex(x=>x[0]===t.type);return i<0?3:Math.min(i,3);}
+function hgTree(){const T=ST.tasks||[],byId={},kids={};T.forEach(t=>{byId[t.id]=t;});
+ T.forEach(t=>{if(t.parent&&t.parent!==t.id&&byId[t.parent])(kids[t.parent]=kids[t.parent]||[]).push(t);});
+ const ord=(a,b)=>hgRank(a)-hgRank(b)||(num(a.sprint)||99)-(num(b.sprint)||99)||String(a.id).localeCompare(String(b.id),'ru',{numeric:true});
+ Object.values(kids).forEach(l=>l.sort(ord));
+ const P=ST.params,start=pd(P.start)||pd('2026-08-03'),today=pd(P.today)||new Date(),memo={};
+ const spA=s=>addD(start,(s-1)*14),spB=s=>addD(start,(s-1)*14+11),mn=(x,y)=>!x?y:!y?x:x<y?x:y,mx=(x,y)=>!x?y:!y?x:x>y?x:y;
+ const node=(t,path)=>{if(memo[t.id])return memo[t.id];if(path.has(t.id))return null;path.add(t.id);
+  const ch=(kids[t.id]||[]).map(c=>node(c,path)).filter(Boolean);path.delete(t.id);
+  const s=num(t.sprint),own=s>0?spB(s):null,fa=t.started?pd(t.started):null,fb=t.done?pd(t.done):(fa&&t.status!=='Готово'?today:null);
+  let a=s>0?spA(s):null,b=own,fA=fa,fB=fb,sp=num(t.est),done=t.status==='Готово'?num(t.est):0,n=0,over=0,late=false;
+  ch.forEach(c=>{sp+=c.sp;done+=c.done;n+=c.n+1;over+=c.over;a=mn(a,c.a);b=mx(b,c.b);fA=mn(fA,c.fA);fB=mx(fB,c.fB);});
+  const ownOver=!!(own&&t.status!=='Готово'&&own<today);if(ownOver){late=true;over++;}   // спринт прошёл, а не готово
+  if(!ch.length){if(own&&t.done&&pd(t.done)>own)late=true;}
+  else if(own&&ch.some(c=>c.b&&c.b>own))late=true;          // потомки выходят за спринт родителя
+  return memo[t.id]={t,ch,a,b,fA,fB,sp,done,n,over,late};};
+ const roots=T.filter(t=>!t.parent||t.parent===t.id||!byId[t.parent]).sort(ord),nodes=roots.map(r=>node(r,new Set()));
+ return {nodes,today,spA,start,lost:T.length-Object.keys(memo).length};}
+function hgOpen(x,d){const o=HG.open[x.t.id];return o!=null?o:d+1<HG.level;}
+function hganttView(){const w=document.createElement('div');w.id='hg_root';const G=hgTree(),T=ST.tasks||[],all=[];
+ const walk=(x,d,vis)=>{all.push([x,d,vis]);const op=hgOpen(x,d);x.ch.forEach(c=>walk(c,d+1,vis&&op));};G.nodes.forEach(x=>walk(x,0,true));
+ const sp=G.nodes.reduce((s,x)=>s+x.sp,0),dn=G.nodes.reduce((s,x)=>s+x.done,0),over=G.nodes.reduce((s,x)=>s+x.over,0),cnt=k=>T.filter(t=>t.type===k).length;
+ const orphans=G.nodes.filter(x=>x.t.type!=='Эпик'&&!x.ch.length).length;
+ let h=`<div class="grid kpis">${kpiCard('Эпики · фичи',cnt('Эпик')+' · '+cnt('Фича'),'историй '+cnt('История')+' · задач '+(cnt('Задача')+cnt('Тех.долг')),'neut',{goto:'wbs'})}`
+  +kpiCard('Объём',fmt(sp,1)+' <small>SP</small>','готово '+fmt(dn,1)+' SP',sp&&dn>=sp?'good':'neut')
+  +kpiCard('Прогресс',sp?pctf(dn/sp):'—','по объёму (SP)',sp&&dn/sp>=.8?'good':'neut')
+  +kpiCard('Просрочено',over,'спринт прошёл, не готово',over?'warn':'good')
+  +kpiCard('Без родителя',orphans,'задачи вне иерархии',orphans?'warn':'good',{goto:'backlog'})+`</div>`;
+ h+=`<div class="hg-bar"><span class="md-note">Уровень:</span>${[[1,'Эпики'],[2,'До фич'],[3,'До историй'],[9,'Всё']].map(([k,l])=>`<button class="btn${HG.level===k&&!Object.keys(HG.open).length?' on':''}" data-hglv="${k}">${l}</button>`).join('')}`
+  +`<label class="hg-chk"><input type="checkbox" data-free data-hgf${HG.fact?' checked':''}> факт (начато → готово)</label></div>`;
+ if(G.lost)h+=`<p class="wiz-warn">Элементов в цикле по полю «Родитель»: ${G.lost} — они не показаны; исправьте поле «Родитель» в «Бэклоге».</p>`;
+ let lo=null,hi=null;all.forEach(([x])=>{[x.a,x.fA].forEach(d=>{if(d&&(!lo||d<lo))lo=d;});[x.b,x.fB].forEach(d=>{if(d&&(!hi||d>hi))hi=d;});});
+ if(!all.length||!lo){h+=`<div class="card"><p class="md-empty">Нет задач со спринтами. Задайте спринт и поле «Родитель» в «Бэклоге» — Эпик → Фича → История → Задача.</p></div>`;w.innerHTML=h;return w;}
+ const end=addD(hi,1),span=end-lo,pos=d=>Math.max(0,Math.min(100,(d-lo)/span*100)),wd=(a,b)=>Math.max(.6,pos(addD(b,1))-pos(a));
+ const ticks=[];for(let s=1;G.spA(s)<=hi&&s<60;s++)if(G.spA(s)>=lo||G.spA(s+1)>lo)ticks.push([s,G.spA(s)]);
+ const grid=ticks.map(([s,d])=>`<span class="hg-tick" style="left:${pos(d)}%"></span>`).join('')+(G.today>=lo&&G.today<=end?`<span class="hg-today" style="left:${pos(G.today)}%"></span>`:'');
+ h+=`<div class="hg-grid"><div class="hg-row hg-head"><div class="hg-l">Элемент · объём · прогресс</div><div class="hg-tl">${ticks.map(([s,d])=>`<span class="hg-tick" style="left:${pos(d)}%"><b>С${s}</b> ${fmtd(d).slice(0,5)}</span>`).join('')}</div></div>`;
+ all.forEach(([x,d,vis])=>{if(!vis)return;const t=x.t,sum=x.ch.length>0,op=hgOpen(x,d),r=hgRank(t),pc=x.sp?x.done/x.sp:(t.status==='Готово'?1:0);
+  const tip=`${t.id} ${t.title||''} · план ${x.a?fmtd(x.a)+'–'+fmtd(x.b):'—'} · факт ${x.fA?fmtd(x.fA)+'–'+(x.fB?fmtd(x.fB):'…'):'—'} · ${fmt(x.done,1)} из ${fmt(x.sp,1)} SP`+(sum?` · вложено ${x.n}`:'')+(x.over?` · просрочено ${x.over}`:'');
+  let bars='';
+  if(x.a)bars+=sum?`<span class="hg-s${x.late?' hg-late':''}" style="left:${pos(x.a)}%;width:${wd(x.a,x.b)}%" title="${esc(tip)}"><i style="width:${Math.round(pc*100)}%"></i></span><span class="hg-pc" style="left:calc(${pos(x.a)+wd(x.a,x.b)}% + 4px)">${pctf(pc)}${x.over?' · ⚠ '+x.over:''}</span>`
+   :`<span class="hg-p ${t.status==='Готово'?'done':t.status==='В работе'?'wip':''}${x.late?' hg-late':''}" style="left:${pos(x.a)}%;width:${wd(x.a,x.b)}%" title="${esc(tip)}"></span>`;
+  if(HG.fact&&x.fA&&x.fB)bars+=`<span class="hg-f${x.b&&x.fB>x.b?' late':''}" style="left:${pos(x.fA)}%;width:${wd(x.fA,x.fB)}%" title="${esc('Факт: '+fmtd(x.fA)+' – '+(t.done||sum?fmtd(x.fB):'сейчас'))}"></span>`;
+  h+=`<div class="hg-row${sum?' hg-sum':''}" data-hgrow="${esc(t.id)}"><div class="hg-l" style="padding-left:${6+d*18}px">`
+   +(sum?`<button class="hg-tg" data-hgt="${esc(t.id)}" data-d="${d}" aria-expanded="${op}" title="${op?'Свернуть':'Развернуть'}">${op?'▾':'▸'}</button>`:'<span class="hg-tg0"></span>')
+   +`<span class="hg-ty hg-ty${r}" title="${esc(t.type||'')}">${(HG_TYPES.find(y=>y[0]===t.type)||['','','З'])[2]}</span><button class="hg-id" data-hgo="${esc(t.id)}" title="Открыть в «Бэклоге»">${esc(t.id)}</button>`
+   +`<span class="hg-tt" title="${esc(t.title||'')}">${esc(t.title||'')}</span><span class="hg-m">${fmt(x.sp,1)} SP · ${pctf(pc)}</span></div><div class="hg-tl">${grid}${bars}</div></div>`;});
+ h+=`</div><div class="legend hg-leg"><span><i class="hg-lg-s"></i>Сводная полоса: заливка — прогресс по SP</span><span><i class="hg-lg-p"></i>План (спринт)</span>`
+  +`<span><i class="hg-lg-f"></i>Факт: начато → готово</span><span><i class="hg-lg-l"></i>Просрочено / выходит за спринт родителя</span><span><i class="hg-lg-t"></i>Сегодня</span></div>`;
+ w.innerHTML=h;return w;}
+function hgRefresh(){const o=document.getElementById('hg_root');if(o)o.replaceWith(hganttView());}
+document.addEventListener('click',e=>{const b=e.target.closest('#hg_root [data-hgt],#hg_root [data-hglv],#hg_root [data-hgo]');if(!b)return;
+ if(b.dataset.hgt){const id=b.dataset.hgt,x=b.getAttribute('aria-expanded')==='true';HG.open[id]=!x;hgRefresh();}
+ else if(b.dataset.hglv){HG.level=+b.dataset.hglv;HG.open={};hgRefresh();}
+ else if(b.dataset.hgo){UI.search=UI.search||{};UI.search.tasks=b.dataset.hgo;views();activate('backlog');toast('Бэклог отфильтрован: '+b.dataset.hgo);}});
+document.addEventListener('change',e=>{if(e.target.closest('#hg_root [data-hgf]')){HG.fact=e.target.checked;hgRefresh();}});
 /* ---- C2: story map ---- */
 function storyMapView(){const w=document.createElement('div');
  w.appendChild(editable('storyMap',[{k:'id',label:'ID'},{k:'activity',label:'Активность (шаг пути)'},{k:'release',label:'Релиз',type:'select',opts:[''].concat((ST.releases||[]).map(r=>r.id))},{k:'story',label:'История',wide:true},{k:'task',label:'Задача (Бэклог)',type:'dep'}],{newId:'id',prefix:'SM-'}));
@@ -5440,7 +5542,7 @@ const NAV=[
  {g:'Обзор',items:[['myday','Мой день','🏠'],['profile','Мой профиль','👤'],['dash','Дашборд','📋'],['statusreport','Статус-отчёт','📰'],['portfolio','Портфель','🗂']]},
  {g:'Планирование',items:[['roadmap','Дорожная карта','🗺️'],['quarters','Кварталы','🗓️'],['sprintGoals','Цели спринтов','🎯'],['kanban','Kanban-доска','🗃️'],['board','Доска','🧩'],['okr','OKR','🧭']]},
  {g:'Бэклог и приоритизация',items:[['backlog','Бэклог','🗂️'],['wbs','Иерархия работ','🌳'],['storymap','Story Map','🗺'],['rice','RICE','📊'],['wsjf','WSJF','⚖️'],['moscow','MoSCoW','📌']]},
- {g:'Расписание и зависимости',items:[['gantt','Гант','📊'],['deps','Зависимости','🔗'],['piboard','Программная доска','🧭'],['milestones','Вехи','🏁']]},
+ {g:'Расписание и зависимости',items:[['gantt','Гант','📊'],['hgantt','Гант по иерархии','🪜'],['deps','Зависимости','🔗'],['piboard','Программная доска','🧭'],['milestones','Вехи','🏁']]},
  {g:'Команда',items:[['team','Команда','👥'],['raci','RACI','👔'],['starmap','Star Map','⭐'],['busfactor','Bus factor','🚌'],['stakeholders','Стейкхолдеры','🤝'],['vacation','График отпусков','🏖️'],['birthdays','Дни рождения','🎂']]},
  {g:'Выпуск',items:[['releases','Релизы','🚀'],['changes','Запросы на изменение','🔀'],['scope','Контроль scope','📐'],['debt','Техдолг','🧱']]},
  {g:'Аналитика и качество',items:[['analytics','Аналитика','📈'],['evm','EVM','💹'],['dora','DORA','🚀'],['risks','Риски','⚠️'],['issues','Проблемы','🚧'],['incidents','Инциденты','🔥'],['bugs','Баги','🐞']]},
@@ -5449,9 +5551,15 @@ const NAV=[
  {g:'Система',items:[['params','Параметры','⚙️'],['integrations','Интеграции','🔌'],['calendar','Календарь','📅'],['budget','Бюджет','💰'],['checks','Проверки данных','🧪'],['eda','EDA отчёт','🔬'],['audit','Журнал событий','🧾']]},
  {g:'Справка',items:[['faq','FAQ','❓'],['support','Support','🛟']]},
 ];
-const APP_VERSION='1.51.0';const APP_DATE='2026-10-29';
+const APP_VERSION='1.52.0';const APP_DATE='2026-10-30';
 const APP_ABOUT='Кросс-функциональная команда — это группа специалистов из разных областей (разработчиков, дизайнеров, маркетологов, аналитиков, менеджеров и других), которые объединяются для работы над одним конкретным проектом или задачей. Ключевая идея в том, чтобы собрать внутри команды всех необходимых экспертов, чтобы она могла самостоятельно пройти путь от идеи до результата, не передавая задачу последовательно из одного отдела в другой.';
 const CHANGELOG=[
+ {v:'1.52.0',date:'2026-10-30',items:[
+   'Гант по иерархии — новая вкладка «Расписания»: Эпик → Фича → История → Задача по полю «Родитель»; у родителя — сводная полоса от раннего начала до позднего окончания потомков, заливка — прогресс по объёму (SP), объём и прогресс суммируются снизу вверх.',
+   'План — по спринтам, факт — тонкой полосой по датам «начато / готово»; просроченные элементы и потомки, выходящие за спринт родителя, обведены красным; линия «сегодня».',
+   'Уровни «Эпики / До фич / До историй / Всё» и раскрытие любого элемента; клик по ID открывает элемент в «Бэклоге»; предупреждение о циклах в поле «Родитель».',
+   'Демо-данные: четыре фичи под эпиками и истории-родители задач — видны все четыре уровня иерархии.',
+   'Исправлено: в режиме «Просмотр» личные элементы (профиль: участник и смена пароля, «Я —» на «Моём дне», вид Ганта) больше не блокируются — данные проекта по-прежнему только для чтения.']},
  {v:'1.51.0',date:'2026-10-29',items:[
    'Мой профиль — первый пункт меню пользователя и вкладка рядом с «Моим днём»: кто я (имя, логин, роль, привязка к участнику команды), моя работа (открытые задачи по спринтам, баги по моим задачам, мои импедименты и риски, компетенции), моё время (загрузка в спринте, отпуска, день рождения), упоминания на доске.',
    'Настройки перенесены в профиль: тема, плотность, стартовая страница; в меню пользователя остались профиль, роль, данные, видеообзор и «Выйти».',
@@ -5751,7 +5859,7 @@ function updateRoleBtn(){const b=document.getElementById('rolebtn');if(!b)return
   else{b.textContent='🔑 Войти';}
  }else{b.textContent=m[0]+' '+m[1];}}
 function applyPerms(){document.body.classList.toggle('ro',!PERM.canEdit);document.body.classList.toggle('noadmin',!PERM.canAdmin);
- document.querySelectorAll('#main input:not(.tsearch), #main select, #main textarea').forEach(el=>{
+ document.querySelectorAll('#main input:not(.tsearch):not([data-free]), #main select:not([data-free]), #main textarea:not([data-free])').forEach(el=>{
   const admF=!!el.closest('#v_params');const locked=!PERM.canEdit||(admF&&!PERM.canAdmin);
   if(el.tagName==='SELECT'||el.type==='checkbox'||el.type==='radio')el.disabled=locked;else el.readOnly=locked;});}
 function applyRole(r){setPerm(r);updateRoleBtn();applyPerms();closeRolePop();toast('Режим: '+ROLEMETA[r][2]);}
@@ -5890,7 +5998,7 @@ function mydayView(){const w=document.createElement('div');w.className='md-wrap'
  const row=t=>`<div class="md-task"><span class="md-id">${esc(t.id)}</span><span class="md-tt">${esc(t.title)}</span><span class="md-note">${num(t.est)} SP${me?'':' · '+esc(t.assignee||'—')}</span>`
   +(PERM.canEdit?(t.status==='To Do'?`<button class="btn" data-md="start" data-id="${esc(t.id)}">▶ В работу</button>`:t.status==='В работе'?`<button class="btn" data-md="done" data-id="${esc(t.id)}">✓ Готово</button>`:''):'')+`</div>`;
  let h=onbCard();
- h+=`<div class="md-bar"><label>Я — <select data-md="me"><option value="">вся команда</option>${(ST.team||[]).map(m=>`<option${m.name===me?' selected':''}>${esc(m.name)}</option>`).join('')}</select></label>`
+ h+=`<div class="md-bar"><label>Я — <select data-md="me" data-free><option value="">вся команда</option>${(ST.team||[]).map(m=>`<option${m.name===me?' selected':''}>${esc(m.name)}</option>`).join('')}</select></label>`
   +`<span class="md-note">Спринт #${cur}${C.curSp?' · '+fmtd(C.curSp.a)+' — '+fmtd(C.curSp.b):''}${R?' · риск срыва: <b>'+esc(R.level.toLowerCase())+'</b>':''}</span></div>`;
  h+=`<div class="md-grid"><div class="card"><div class="md-h">${me?'Мои задачи':'Задачи спринта'} — ${mine.length}</div>`
   +(mine.length?['В работе','To Do','Готово'].map(s=>{const l=by(s);return l.length?`<div class="md-st">${esc(s)} · ${l.length}</div>`+l.map(row).join(''):'';}).join('')
@@ -5968,7 +6076,7 @@ function profileView(){const w=document.createElement('div');w.className='md-wra
  const ini=String(who).split(/\s+/).map(x=>x[0]||'').join('').slice(0,2).toUpperCase()||'?';
  let h=`<div class="md-grid"><div class="card"><div class="md-h">Кто я</div><div class="pf-who"><span class="pf-av">${esc(ini)}</span><div><div class="pf-nm">${esc(who)}</div>`
   +`<div class="md-note">${srv?'Логин: <b>'+esc(AUTH.username)+'</b> · сервер':'Локальный режим — учётной записи нет'}</div><div class="md-note">${role[0]} ${esc(role[1])}${role[2]?' — '+esc(role[2]):''}</div></div></div>`
-  +`<label class="qc-f"><span>Я в команде</span><select data-pf="me"><option value="">— не выбран —</option>${(ST.team||[]).map(m=>`<option${m.name===me?' selected':''}>${esc(m.name)}</option>`).join('')}</select></label>`
+  +`<label class="qc-f"><span>Я в команде</span><select data-pf="me" data-free><option value="">— не выбран —</option>${(ST.team||[]).map(m=>`<option${m.name===me?' selected':''}>${esc(m.name)}</option>`).join('')}</select></label>`
   +(mem?`<div class="md-note">Роль в команде: <b>${esc(mem.role||'—')}</b> · доступность ${Math.round(num(mem.avail)*100)}%</div>`:'')
   +`<p class="md-note">${srv?'Привязка хранится в учётной записи и работает на любом устройстве.':'Привязка и настройки хранятся в этом браузере.'}</p></div>`;
  if(!me){h+=`<div class="card"><div class="md-h">Моя работа</div><p class="md-empty">Выберите себя в поле «Я в команде» — здесь появятся ваши задачи, баги, импедименты, риски и компетенции.</p></div>`;}
@@ -5999,10 +6107,10 @@ function profileView(){const w=document.createElement('div');w.className='md-wra
  h+=`<div class="card"><div class="md-h">Настройки</div><div class="pf-set">`
   +`<button class="btn" data-pf="theme">◐ Тема: ${dark?'тёмная':'светлая'}</button><button class="btn" data-pf="dense">▤ Плотность: ${dense?'компактно':'комфортно'}</button>`
   +`<button class="btn" data-pf="start">🏠 Стартовая страница: ${sv==='dash'?'Дашборд':'Мой день'}</button></div>`
-  +(srv?`<div class="md-st">Смена пароля</div><label class="qc-f"><span>Текущий пароль</span><input type="password" data-pw="old" autocomplete="current-password"></label>`
-    +`<label class="qc-f"><span>Новый пароль — не короче 8 символов</span><input type="password" data-pw="new" autocomplete="new-password"></label>`
-    +`<label class="qc-f"><span>Повторите новый пароль</span><input type="password" data-pw="rep" autocomplete="new-password"></label>`
-    +`<div class="qc-act"><button class="btn" data-pf="logout">⎋ Выйти</button><button class="btn primary" data-pf="pw">Сменить пароль</button></div><p class="md-note" id="pf_pwmsg"></p>`
+  +(srv?`<div class="md-st">Смена пароля</div><label class="qc-f"><span>Текущий пароль</span><input type="password" data-pw="old" data-free autocomplete="current-password"></label>`
+    +`<label class="qc-f"><span>Новый пароль — не короче 8 символов</span><input type="password" data-pw="new" data-free autocomplete="new-password"></label>`
+    +`<label class="qc-f"><span>Повторите новый пароль</span><input type="password" data-pw="rep" data-free autocomplete="new-password"></label>`
+    +`<div class="qc-act"><button class="btn" data-pf="logout">⎋ Выйти</button><button class="btn primary" data-pf="pw" data-free>Сменить пароль</button></div><p class="md-note" id="pf_pwmsg"></p>`
    :`<p class="md-note">Смена пароля и вход доступны при работе с сервером.</p>`)+`</div></div>`;
  w.innerHTML=h;return w;}
 function profRefresh(){views();activate('profile');}
@@ -6038,7 +6146,7 @@ var LAZY={on:false,n:0};
    (например, добавленные позже), автоматически попадают в пункт «Ещё». */
 const NAV2=[['myday','Мой день','🏠',['myday','profile']],['h_over','Обзор','📋',['dash','statusreport','portfolio']],['h_backlog','Бэклог','🗂️',['backlog','wbs','storymap']],
   ['h_prio','Приоритизация','⚖️',['rice','wsjf','moscow']],['h_boards','Доски','🗃️',['kanban','board']],['h_plan','Планирование','🗺️',['roadmap','sprintGoals','quarters','okr']],
-  ['h_sched','Расписание','📅',['gantt','milestones','deps','piboard']],['h_cer','Церемонии','☀️',['daily','grooming','poker','demo','retro']],
+  ['h_sched','Расписание','📅',['gantt','hgantt','milestones','deps','piboard']],['h_cer','Церемонии','☀️',['daily','grooming','poker','demo','retro']],
   ['h_rel','Выпуск','🚀',['releases','changes','scope','debt']],['h_raid','Риски и журналы','⚠️',['risks','issues','impediments','decisions','lessons']],
   ['h_qual','Качество','📈',['analytics','bugs','dora','incidents','evm']],['h_people','Люди','👥',['team','raci','starmap','stakeholders','vacation','birthdays']],
   ['h_health','Здоровье','🩺',['healthcheck','busfactor','agile']],['h_set','Настройки','⚙️',['params','calendar','budget','integrations','checks','eda','audit']],
@@ -6244,7 +6352,7 @@ startAnalytics();setInterval(startAnalytics,30000);
     Пересобирается на каждой загрузке из NAV + DOM (h1/.lede каждого раздела) + TOUR + CHANGELOG,
     поэтому «обучение» помощника происходит само после каждого обновления приложения:
     новый или переименованный раздел, изменённое описание и новая версия подхватываются без правок. */
- const AKA={profile:'мой профиль профиль пользователя кто я учётная запись аккаунт пароль сменить пароль мои задачи мои компетенции упоминания настройки тема плотность выйти',myday:'мой день мои задачи стартовая страница блокеры события сегодня',dash:'обзор kpi сводка панель главная',statusreport:'статус отчёт доклад сводка',portfolio:'портфель проектов программа',
+ const AKA={hgantt:'гант по иерархии иерархический гант диаграмма ганта эпики фичи истории сводная полоса роллап прогресс эпика сроки фичи план факт просрочено',profile:'мой профиль профиль пользователя кто я учётная запись аккаунт пароль сменить пароль мои задачи мои компетенции упоминания настройки тема плотность выйти',myday:'мой день мои задачи стартовая страница блокеры события сегодня',dash:'обзор kpi сводка панель главная',statusreport:'статус отчёт доклад сводка',portfolio:'портфель проектов программа',
   roadmap:'дорожная карта план спринтов график спринтов',quarters:'кварталы квартальный план',sprintGoals:'цель спринта обязательство ценность',
   kanban:'канбан доска статусы колонки карточки',board:'холст схемы стикеры мозговой штурм whiteboard рисование шаблоны ретро swot lean canvas карточки задач виджеты метрики отмена группировка мини-карта голосование презентация показ комментарии упоминания блок-схема майнд-карта mind map таблица дорожки swimlane',okr:'цели ключевые результаты objectives key results',
   backlog:'бэклог задачи список работ',wbs:'иерархия работ декомпозиция эпик фича история роллап',storymap:'карта историй активности',
@@ -6486,6 +6594,7 @@ const TOUR=[
  {v:'board',shot:'board2',h:'Доска — сессии и схемы',p:'Голосование точками со скрытым режимом и медалями лидеров, анонимный ввод, показ по фреймам с режимом «следовать за ведущим», комментарии с @упоминаниями. Блок-схемы с подписями стрелок, майнд-карты, таблицы и дорожки ответственности.',d:11000},
  {v:'backlog',h:'Бэклог',p:'Редактируемые задачи — источник данных для всех метрик. Есть поиск, сортировка по колонкам, строка итогов и отмена удаления.',d:9000},
  {v:'gantt',h:'Диаграмма Ганта',p:'Задачи на шкале дат по спринтам. Красная рамка — критический путь, ромб ◆ — внешняя зависимость от другого стрима.',d:9000},
+ {v:'hgantt',h:'Гант по иерархии',p:'Эпик → Фича → История → Задача по полю «Родитель»: сводные полосы с прогрессом по объёму, план по спринтам и факт по датам «начато / готово»; уровни раскрываются, просрочка подсвечена красным.',d:10000},
  {v:'deps',h:'Зависимости',p:'Межстримовые зависимости задач, историй и фич: направление, статус с RAG-подсветкой, риск и отдельный список для эскалации.',d:9000},
  {v:'piboard',h:'Программная доска (PI Planning)',p:'Матрица «стрим × спринт» межкомандных зависимостей и вех на горизонте программного инкремента (SAFe).',d:8000},
  {v:'team',h:'Команда',p:'Состав команды и доступность — из этого считается ёмкость каждого спринта.',d:6500},
