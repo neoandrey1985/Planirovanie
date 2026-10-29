@@ -847,6 +847,52 @@ def main():
             assert r['again'] == 4 and r['blank'] == 0, 'demo features added once; blank project gets none: ' + str(r)
         case('hgantt: hierarchy Gantt — levels, rollup, plan/fact, overdue, cycles, demo features', t_hgantt)
 
+        # ---- Stage marks on the hierarchy Gantt: auto by roles/demo/release, manual panel, legend, role mapping ----
+        def t_stages():
+            r = page.evaluate("""()=>{const errs=[];const h=e=>errs.push(String(e.message||e.reason||e));window.addEventListener('error',h);
+             const keepT=JSON.stringify(ST.tasks),keepR=ST.params.stageRoles;
+             try{setPerm('editor');applyPerms();HG.level=9;HG.open={};HG.marks=true;views();activate('hgantt');
+              const leg=document.querySelectorAll('#hg_root .hg-mleg .hg-mi').length,legTxt=(document.querySelector('#hg_root .hg-mleg')||{}).textContent||'';
+              const n=id=>hgFind(id),t1=n('T-01'),f1=n('FE-1');
+              const auto={dev:[t1.st.dev_s,t1.st.dev_e],psi:[t1.st.psi_s,t1.st.psi_e],prod:[t1.st.prod_s,t1.st.prod_e],
+               feDevS:f1.st.dev_s,feDevE:f1.st.dev_e||null,feBa:[f1.st.ba_s,f1.st.ba_e],feMan:Object.keys(f1.mk).sort()};
+              const t1marks=document.querySelectorAll('#hg_root [data-hgrow="T-01"] .hg-mk').length;
+              const shapes=[...document.querySelectorAll('#hg_root [data-hgrow="T-01"] .hg-mk')].map(m=>m.title.split(' — ')[0]);
+              // ручная метка: панель «Этапы» по клику на название
+              document.querySelector('#hg_root [data-hgrow="T-12"] .hg-tt').click();const m=document.getElementById('hgsmodal');
+              const fields=m.querySelectorAll('[data-hgk]').length;m.querySelector('[data-hgk="ba_s"]').value='2026-08-20';m.querySelector('[data-hgsx=ok]').click();
+              const saved=JSON.stringify(ST.tasks.find(x=>x.id==='T-12').stages),manMk=[...document.querySelectorAll('#hg_root [data-hgrow="T-12"] .hg-mk')].some(x=>/вручную/.test(x.title)&&x.querySelector('svg circle[r="1.9"]'));
+              document.querySelector('#hg_root [data-hgrow="T-12"] .hg-mk').click();document.querySelector('#hgsmodal [data-hgsx=auto]').click();
+              const reset=JSON.stringify(ST.tasks.find(x=>x.id==='T-12').stages);
+              // роли: убираем Backend из разработки — авто-метки разработки у T-01 пропадают
+              ST.params.stageRoles='ba=Product Owner;sa=Analyst;dev=Frontend;ift=QA';const noDev=!hgFind('T-09').st.dev_s&&hgFind('T-01').st.dev_s==='2026-08-04'&&!!hgFind('T-02').st.dev_s;ST.params.stageRoles=keepR;
+              activate('params');const roleBoxes=document.querySelectorAll('#hgrdiv [data-hgr]').length;
+              const cb=document.querySelector('#hgrdiv [data-hgr="ift"][value="DevOps"]');cb.checked=true;cb.dispatchEvent(new Event('change',{bubbles:true}));
+              const mapped=(hgRoleMap().ift||[]).includes('DevOps');ST.params.stageRoles=keepR;
+              // просмотр: панель только для чтения
+              setPerm('viewer');applyPerms();activate('hgantt');document.querySelector('#hg_root [data-hgrow="T-01"] .hg-tt').click();
+              const ro=[...document.querySelectorAll('#hgsmodal [data-hgk]')].every(i=>i.disabled)&&!document.querySelector('#hgsmodal [data-hgsx=ok]');
+              document.querySelector('#hgsmodal [data-hgsx=cancel]').click();setPerm('editor');applyPerms();
+              document.querySelector('#hg_root [data-hgm]').click();const hidden=document.querySelectorAll('#hg_root .hg-mk').length===0;HG.marks=true;
+              return {leg,legTxt,auto,t1marks,shapes,fields,saved,manMk,reset,noDev,roleBoxes,mapped,ro,hidden,errs};
+             }catch(e){return 'ERR:'+e.message+' '+e.stack;}finally{window.removeEventListener('error',h);ST.tasks=JSON.parse(keepT);ST.params.stageRoles=keepR;HG.marks=true;HG.level=2;HG.open={};setPerm('editor');applyPerms();views();activate('dash');}}""")
+            assert isinstance(r, dict), 'stages failed: ' + str(r)
+            assert not r['errs'], 'page errors: ' + str(r['errs'][:3])
+            assert r['leg'] == 12 and 'Контур — начало' in r['legTxt'], 'legend lists all 12 marks with description'
+            a = r['auto']
+            assert a['dev'] == ['2026-08-03', '2026-08-12'], 'story T-01: own Backend dates + child T-02 (Frontend): ' + str(a)
+            assert a['psi'] == ['2026-08-14', '2026-08-14'], 'PSI from accepted sprint demo: ' + str(a)
+            assert a['prod'] == ['2026-08-17', '2026-08-28'], 'Prod from release R-1 (done): ' + str(a)
+            assert a['feDevS'] == '2026-08-03' and a['feDevE'] is None, 'parent: earliest start, no end while a child is not done: ' + str(a)
+            assert a['feBa'] == ['2026-07-20', '2026-07-24'] and a['feMan'] == ['ba_e', 'ba_s', 'sa_e', 'sa_s'], 'demo manual analysis marks: ' + str(a)
+            assert r['t1marks'] >= 6 and 'Начало разработки' in r['shapes'] and 'Выход в Прод' in r['shapes'], str(r['shapes'])
+            assert r['fields'] == 12 and r['saved'] == '{"ba_s":"2026-08-20"}' and r['manMk'], 'manual mark via panel: ' + str(r)
+            assert r['reset'] == '{}', 'reset to auto clears manual marks'
+            assert r['noDev'], 'role mapping drives auto marks'
+            assert r['roleBoxes'] == 4 * 8 and r['mapped'], 'role mapping editable in Parameters: ' + str(r)
+            assert r['ro'] and r['hidden'], 'viewer read-only panel; marks toggle'
+        case('stages: hierarchy Gantt stage marks — auto (roles, demo, release), manual panel, legend, roles', t_stages)
+
         # ---- 28. Status report generation ----
         def t_status():
             r = page.evaluate("""()=>{const md=statusReportMd();

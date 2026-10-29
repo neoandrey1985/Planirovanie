@@ -102,7 +102,7 @@ public class StateService {
         Param p = params.findById(1).orElseGet(Param::new);
         ParamsDto pd = new ParamsDto();
         pd.name = p.name; pd.start = p.startDate; pd.sprintDays = p.sprintDays; pd.focus = p.focus;
-        pd.today = p.todayDate; pd.goal = p.goal; pd.sprints = p.sprints;
+        pd.today = p.todayDate; pd.goal = p.goal; pd.sprints = p.sprints; pd.stageRoles = p.stageRoles;
         s.params = pd;
         BudgetDto bd = new BudgetDto();
         bd.rate = p.budgetRate; bd.total = p.budgetTotal;
@@ -188,6 +188,7 @@ public class StateService {
         if (s.params != null) {
             p.name = s.params.name; p.startDate = s.params.start; p.sprintDays = s.params.sprintDays;
             p.focus = s.params.focus; p.todayDate = s.params.today; p.goal = s.params.goal; p.sprints = s.params.sprints;
+            p.stageRoles = s.params.stageRoles;
         }
         if (s.budget != null) { p.budgetRate = s.budget.rate; p.budgetTotal = s.budget.total; }
         if (s.ttmTarget != null) p.ttmTarget = s.ttmTarget;

@@ -18,6 +18,7 @@ public final class Dtos {
         public String today;
         public String goal;
         public Integer sprints;
+        public String stageRoles;
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)

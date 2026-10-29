@@ -28,5 +28,7 @@ public class Task {
     public Integer carried;   // how many times this task was carried over to a later sprint
     public String okr;        // linked OKR key-result (traceability)
     public String parent;     // WBS parent task id (Epic -> Feature -> Story -> Task)
+    @Convert(converter = StagesConverter.class) @Column(columnDefinition = "text")
+    public java.util.Map<String, String> stages;   // manual stage marks for the hierarchy Gantt
     @JsonIgnore public Integer ord;
 }

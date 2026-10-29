@@ -603,6 +603,16 @@ body.dense .nav-item{padding:4px 10px;font-size:13px}body.dense .md-wrap{gap:10p
 .hg-lg-p{width:22px!important;background:color-mix(in srgb,var(--accent) 55%,transparent)}.hg-lg-f{width:22px!important;height:4px!important;background:color-mix(in srgb,var(--ink) 55%,transparent)}
 .hg-lg-l{box-shadow:inset 0 0 0 2px var(--crit)}.hg-lg-t{width:2px!important;height:14px!important;background:var(--crit);opacity:.6}
 @media (max-width:760px){.hg-row{grid-template-columns:150px 1fr}.hg-m{display:none}}
+.hg-mk{position:absolute;top:6px;width:16px;height:16px;z-index:2;cursor:pointer;filter:drop-shadow(0 0 1.2px var(--panel))}.hg-mk svg{display:block}
+.hg-mk:hover{transform:scale(1.25)}.hg-mk svg,.hg-mi svg,.hgs-n svg{width:16px!important;height:16px!important;max-width:none;flex:none}.hg-tt[data-hgs]{cursor:pointer}.hg-tt[data-hgs]:hover{color:var(--accent)}
+.hg-mleg{margin-top:12px}.hg-mgrid{display:grid;grid-template-columns:minmax(120px,.6fr) 1fr 1fr;gap:6px 18px;margin:6px 0 8px;font-size:12.5px;align-items:center}.hg-mgrid b{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}.hg-ms{font-weight:600}
+.hg-mi{display:flex;align-items:center;gap:6px}
+.hgs-grid{display:grid;grid-template-columns:minmax(150px,1.1fr) 1fr 1fr;gap:6px 10px;align-items:center;margin:10px 0}
+.hgs-n{display:flex;align-items:center;gap:6px;font-size:13px}.hgs-n svg{flex:none}.hgs-c{display:flex;flex-direction:column;gap:2px}
+.hgs-td{border:none;background:none;color:var(--accent);font:inherit;font-size:11.5px;cursor:pointer;padding:0}
+.hgr-grid{display:flex;flex-direction:column;gap:8px}.hgr-row{display:grid;grid-template-columns:190px 1fr;gap:10px;align-items:start}
+.hgr-roles{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:13px}.hgr-roles label{display:inline-flex;align-items:center;gap:5px}.hgr-roles input{width:auto;min-width:0}
+@media (max-width:760px){.hgs-grid{grid-template-columns:1fr 1fr}.hgs-grid>span:first-child,.hgs-n{grid-column:1/-1}.hgr-row{grid-template-columns:1fr}}
 /* ---- компактная шапка ---- */
 .st-hidden,#syncst,#anst{display:none!important}
 .st-dot i{display:block;width:10px;height:10px;border-radius:50%;background:var(--muted)}
@@ -1661,6 +1671,11 @@ function migrate(d){
    const P={'T-01':'FE-1','T-02':'T-01','T-10':'FE-1','T-15':'T-10','T-14':'FE-2','T-03':'T-14','T-13':'T-14','T-11':'FE-2','T-08':'T-11',
     'T-05':'FE-3','T-16':'FE-3','T-17':'FE-4','T-18':'T-17','T-19':'FE-4','T-20':'T-19','T-06':'FE-4'};
    T.forEach(t=>{if(P[t.id])t.parent=P[t.id];});})();
+  // v1.53: ручные метки бизнес- и системного анализа у демо-фич (остальные этапы — автоматически)
+  (function(){const T=d.tasks||[],f1=T.find(t=>t.id==='FE-1'),f2=T.find(t=>t.id==='FE-2');
+   if(!f1||f1.title!=='Фича: Корзина и заказ'||(f1.stages&&Object.keys(f1.stages).length)||(f2&&f2.stages&&Object.keys(f2.stages).length))return;
+   f1.stages={ba_s:'2026-07-20',ba_e:'2026-07-24',sa_s:'2026-07-24',sa_e:'2026-07-31'};
+   if(f2)f2.stages={ba_s:'2026-07-27',ba_e:'2026-08-05',sa_s:'2026-08-05',sa_e:'2026-08-14'};})();
  if(!Array.isArray(d.changeRequests))d.changeRequests=[
   {id:'CR-01',date:'2026-08-30',title:'Добавить вход через SSO (OAuth2)',type:'Scope',impact:'+8 SP, +1 спринт',requester:'Product Owner',status:'Одобрен',note:'Включено в релиз R-2'},
   {id:'CR-02',date:'2026-09-08',title:'Поддержка оплаты в рассрочку',type:'Scope',impact:'+13 SP',requester:'Коммерция',status:'Отложен',note:'Вернуться после MVP'},
@@ -4438,7 +4453,34 @@ function wbsDepth(roots,tasks){let max=1;const go=(t,d,seen)=>{if(seen.has(t.id)
 /* ---- Гант по иерархии: Эпик → Фича → История → Задача по полю «Родитель» ----
    План — по спринтам; у родителя — от раннего начала до позднего окончания потомков (сводная полоса). Факт — по датам
    «начато / готово» (незавершённая — до «сегодня»). Объём и прогресс суммируются снизу вверх, как в «Иерархии работ». */
-var HG={level:2,fact:true,open:{}};
+var HG={level:2,fact:true,marks:true,open:{}};
+/* Метки этапов: [ключ, этап, фигура, цвет, метка начала, метка завершения]; контур — начало, заливка — завершение.
+   Ручные даты хранятся у задачи в t.stages ({ba_s:'2026-08-05', …}); пустая — дата считается автоматически:
+   по ролям задач (ST.params.stageRoles), ПСИ — по демо спринта, Прод — по релизу задачи; у родителя — из потомков. */
+const HG_ST=[['ba','Бизнес-анализ','circle','#0891b2','Начало бизнес-анализа','Бизнес-анализ пройден'],
+ ['sa','Системный анализ','tri','#7c3aed','Начало системного анализа','Системный анализ пройден'],
+ ['dev','Разработка','square','#2563eb','Начало разработки','Разработка завершена'],
+ ['ift','ИФТ','star','#d97706','Начало ИФТ (интеграционно-функциональное тестирование)','ИФТ завершено'],
+ ['psi','ПСИ','diamond','#059669','Начало ПСИ (приёмо-сдаточные испытания)','ПСИ завершено'],
+ ['prod','Прод','rocket','#dc2626','Начало выхода в Прод','Выход в Прод']];
+const HG_KEYS=HG_ST.flatMap(s=>[s[0]+'_s',s[0]+'_e']);
+const HG_ROLES_DEF='ba=Product Owner;sa=Analyst;dev=Backend,Frontend,Designer,DevOps;ift=QA';
+function hgRoleMap(s){const o={};String(s!=null?s:((ST.params&&ST.params.stageRoles)||HG_ROLES_DEF)).split(';').forEach(p=>{const i=p.indexOf('=');if(i>0)o[p.slice(0,i).trim()]=p.slice(i+1).split(',').map(x=>x.trim()).filter(Boolean);});return o;}
+function hgAutoLeaf(t){const o={},R=hgRoleMap();
+ HG_ST.forEach(([k])=>{if((R[k]||[]).includes(t.role)){if(t.started)o[k+'_s']=t.started;if(t.status==='Готово'&&t.done)o[k+'_e']=t.done;}});
+ const s=num(t.sprint);if(s>0){
+  if(t.status==='Готово'){const dm=(ST.demo||[]).filter(d=>+d.sprint===s&&d.date).sort((a,b)=>String(a.date).localeCompare(String(b.date)))[0];
+   if(dm){o.psi_s=dm.date;if(dm.status==='Принято')o.psi_e=dm.date;}}
+  const rel=(ST.releases||[]).find(r=>r.id===relOfTask(t)),st0=pd(ST.params.start)||pd('2026-08-03');
+  if(rel&&num(rel.sto)>0){o.prod_s=iso(addD(st0,(num(rel.sto)-1)*14));if(rel.status==='Готово'&&t.status==='Готово')o.prod_e=iso(addD(st0,(num(rel.sto)-1)*14+11));}}
+ return o;}
+const HG_STAR=(()=>{let d='';for(let i=0;i<10;i++){const r=i%2?2.9:6.9,a=-Math.PI/2+i*Math.PI/5;d+=(i?'L':'M')+(8+r*Math.cos(a)).toFixed(2)+' '+(8.4+r*Math.sin(a)).toFixed(2);}return d+'Z';})();
+const HG_SHAPES={circle:'<circle cx="8" cy="8" r="5.6"/>',tri:'<path d="M8 2.2 14.2 13.6H1.8Z"/>',square:'<rect x="2.6" y="2.6" width="10.8" height="10.8" rx="1"/>',
+ star:'<path d="'+HG_STAR+'"/>',diamond:'<path d="M8 1.4 14.6 8 8 14.6 1.4 8Z"/>',
+ rocket:'<path d="M8 1.2C10.6 3 11.6 6.2 11 10.2L9.6 11.6H6.4L5 10.2C4.4 6.2 5.4 3 8 1.2ZM5 9.4 2.6 13.4 6 12.2ZM11 9.4 13.4 13.4 10 12.2ZM6.9 12.2 8 15 9.1 12.2Z"/>'};
+function hgMarkSvg(key,man){const S=HG_ST.find(x=>key.startsWith(x[0]+'_')),end=key.endsWith('_e');
+ return `<svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><g style="fill:${end?S[3]:'var(--panel)'};stroke:${S[3]}" stroke-width="1.6" stroke-linejoin="round">${HG_SHAPES[S[2]]}</g>${man?'<circle cx="14.3" cy="1.9" r="1.9" style="fill:var(--ink)"/>':''}</svg>`;}
+function hgMarkName(key){const S=HG_ST.find(x=>key.startsWith(x[0]+'_'));return key.endsWith('_e')?S[5]:S[4];}
 const HG_TYPES=[['Эпик','Эпик','Э'],['Фича','Фича','Ф'],['История','История','И'],['Задача','Задача','З'],['Тех.долг','Тех.долг','Д']];
 function hgRank(t){const i=HG_TYPES.findIndex(x=>x[0]===t.type);return i<0?3:Math.min(i,3);}
 function hgTree(){const T=ST.tasks||[],byId={},kids={};T.forEach(t=>{byId[t.id]=t;});
@@ -4455,7 +4497,12 @@ function hgTree(){const T=ST.tasks||[],byId={},kids={};T.forEach(t=>{byId[t.id]=
   const ownOver=!!(own&&t.status!=='Готово'&&own<today);if(ownOver){late=true;over++;}   // спринт прошёл, а не готово
   if(!ch.length){if(own&&t.done&&pd(t.done)>own)late=true;}
   else if(own&&ch.some(c=>c.b&&c.b>own))late=true;          // потомки выходят за спринт родителя
-  return memo[t.id]={t,ch,a,b,fA,fB,sp,done,n,over,late};};
+  // метки этапов: у листа — по ролям, демо и релизу; у родителя — вместе со своими датами: начало самое раннее, завершение — когда завершено везде, где начато
+  const man=(t.stages&&typeof t.stages==='object')?t.stages:{},selfA=hgAutoLeaf(t),auto=ch.length?{}:selfA;
+  if(ch.length){const src=ch.map(c=>c.st).concat([selfA]);HG_ST.forEach(([k])=>{const wi=src.filter(s=>s[k+'_s']);if(!wi.length)return;auto[k+'_s']=wi.map(s=>s[k+'_s']).sort()[0];
+   if(wi.every(s=>s[k+'_e']))auto[k+'_e']=wi.map(s=>s[k+'_e']).sort().pop();});}
+  const st=Object.assign({},auto),mk={};Object.keys(man).forEach(k=>{if(man[k]&&HG_KEYS.includes(k)){st[k]=man[k];mk[k]=1;}});
+  return memo[t.id]={t,ch,a,b,fA,fB,sp,done,n,over,late,st,mk,auto};};
  const roots=T.filter(t=>!t.parent||t.parent===t.id||!byId[t.parent]).sort(ord),nodes=roots.map(r=>node(r,new Set()));
  return {nodes,today,spA,start,lost:T.length-Object.keys(memo).length};}
 function hgOpen(x,d){const o=HG.open[x.t.id];return o!=null?o:d+1<HG.level;}
@@ -4469,11 +4516,12 @@ function hganttView(){const w=document.createElement('div');w.id='hg_root';const
   +kpiCard('Просрочено',over,'спринт прошёл, не готово',over?'warn':'good')
   +kpiCard('Без родителя',orphans,'задачи вне иерархии',orphans?'warn':'good',{goto:'backlog'})+`</div>`;
  h+=`<div class="hg-bar"><span class="md-note">Уровень:</span>${[[1,'Эпики'],[2,'До фич'],[3,'До историй'],[9,'Всё']].map(([k,l])=>`<button class="btn${HG.level===k&&!Object.keys(HG.open).length?' on':''}" data-hglv="${k}">${l}</button>`).join('')}`
-  +`<label class="hg-chk"><input type="checkbox" data-free data-hgf${HG.fact?' checked':''}> факт (начато → готово)</label></div>`;
+  +`<label class="hg-chk"><input type="checkbox" data-free data-hgf${HG.fact?' checked':''}> факт (начато → готово)</label>`
+  +`<label class="hg-chk"><input type="checkbox" data-free data-hgm${HG.marks?' checked':''}> метки этапов</label></div>`;
  if(G.lost)h+=`<p class="wiz-warn">Элементов в цикле по полю «Родитель»: ${G.lost} — они не показаны; исправьте поле «Родитель» в «Бэклоге».</p>`;
- let lo=null,hi=null;all.forEach(([x])=>{[x.a,x.fA].forEach(d=>{if(d&&(!lo||d<lo))lo=d;});[x.b,x.fB].forEach(d=>{if(d&&(!hi||d>hi))hi=d;});});
+ let lo=null,hi=null;all.forEach(([x])=>{const md=HG.marks?Object.values(x.st).filter(Boolean).map(pd):[];[x.a,x.fA].concat(md).forEach(d=>{if(d&&(!lo||d<lo))lo=d;});[x.b,x.fB].concat(md).forEach(d=>{if(d&&(!hi||d>hi))hi=d;});});
  if(!all.length||!lo){h+=`<div class="card"><p class="md-empty">Нет задач со спринтами. Задайте спринт и поле «Родитель» в «Бэклоге» — Эпик → Фича → История → Задача.</p></div>`;w.innerHTML=h;return w;}
- const end=addD(hi,1),span=end-lo,pos=d=>Math.max(0,Math.min(100,(d-lo)/span*100)),wd=(a,b)=>Math.max(.6,pos(addD(b,1))-pos(a));
+ lo=addD(lo,-2);const end=addD(hi,3),span=end-lo,pos=d=>Math.max(0,Math.min(100,(d-lo)/span*100)),wd=(a,b)=>Math.max(.6,pos(addD(b,1))-pos(a));
  const ticks=[];for(let s=1;G.spA(s)<=hi&&s<60;s++)if(G.spA(s)>=lo||G.spA(s+1)>lo)ticks.push([s,G.spA(s)]);
  const grid=ticks.map(([s,d])=>`<span class="hg-tick" style="left:${pos(d)}%"></span>`).join('')+(G.today>=lo&&G.today<=end?`<span class="hg-today" style="left:${pos(G.today)}%"></span>`:'');
  h+=`<div class="hg-grid"><div class="hg-row hg-head"><div class="hg-l">Элемент · объём · прогресс</div><div class="hg-tl">${ticks.map(([s,d])=>`<span class="hg-tick" style="left:${pos(d)}%"><b>С${s}</b> ${fmtd(d).slice(0,5)}</span>`).join('')}</div></div>`;
@@ -4483,19 +4531,45 @@ function hganttView(){const w=document.createElement('div');w.id='hg_root';const
   if(x.a)bars+=sum?`<span class="hg-s${x.late?' hg-late':''}" style="left:${pos(x.a)}%;width:${wd(x.a,x.b)}%" title="${esc(tip)}"><i style="width:${Math.round(pc*100)}%"></i></span><span class="hg-pc" style="left:calc(${pos(x.a)+wd(x.a,x.b)}% + 4px)">${pctf(pc)}${x.over?' · ⚠ '+x.over:''}</span>`
    :`<span class="hg-p ${t.status==='Готово'?'done':t.status==='В работе'?'wip':''}${x.late?' hg-late':''}" style="left:${pos(x.a)}%;width:${wd(x.a,x.b)}%" title="${esc(tip)}"></span>`;
   if(HG.fact&&x.fA&&x.fB)bars+=`<span class="hg-f${x.b&&x.fB>x.b?' late':''}" style="left:${pos(x.fA)}%;width:${wd(x.fA,x.fB)}%" title="${esc('Факт: '+fmtd(x.fA)+' – '+(t.done||sum?fmtd(x.fB):'сейчас'))}"></span>`;
+  if(HG.marks){const grp={};HG_KEYS.filter(k=>x.st[k]).forEach(k=>{(grp[x.st[k]]=grp[x.st[k]]||[]).push(k);});
+   Object.keys(grp).forEach(dt=>{const l=grp[dt],p=pos(new Date(+pd(dt)+MS/2));l.forEach((k,i)=>{const off=(i-(l.length-1)/2)*11-8;
+    bars+=`<span class="hg-mk" data-hgs="${esc(t.id)}" style="left:calc(${p}% + ${off}px)" title="${esc(hgMarkName(k)+' — '+fmtd(pd(dt))+(x.mk[k]?' · вручную':' · авто'))}">${hgMarkSvg(k,x.mk[k])}</span>`;});});}
   h+=`<div class="hg-row${sum?' hg-sum':''}" data-hgrow="${esc(t.id)}"><div class="hg-l" style="padding-left:${6+d*18}px">`
    +(sum?`<button class="hg-tg" data-hgt="${esc(t.id)}" data-d="${d}" aria-expanded="${op}" title="${op?'Свернуть':'Развернуть'}">${op?'▾':'▸'}</button>`:'<span class="hg-tg0"></span>')
    +`<span class="hg-ty hg-ty${r}" title="${esc(t.type||'')}">${(HG_TYPES.find(y=>y[0]===t.type)||['','','З'])[2]}</span><button class="hg-id" data-hgo="${esc(t.id)}" title="Открыть в «Бэклоге»">${esc(t.id)}</button>`
-   +`<span class="hg-tt" title="${esc(t.title||'')}">${esc(t.title||'')}</span><span class="hg-m">${fmt(x.sp,1)} SP · ${pctf(pc)}</span></div><div class="hg-tl">${grid}${bars}</div></div>`;});
+   +`<span class="hg-tt" data-hgs="${esc(t.id)}" title="${esc((t.title||'')+' — этапы: клик')}">${esc(t.title||'')}</span><span class="hg-m">${fmt(x.sp,1)} SP · ${pctf(pc)}</span></div><div class="hg-tl">${grid}${bars}</div></div>`;});
  h+=`</div><div class="legend hg-leg"><span><i class="hg-lg-s"></i>Сводная полоса: заливка — прогресс по SP</span><span><i class="hg-lg-p"></i>План (спринт)</span>`
   +`<span><i class="hg-lg-f"></i>Факт: начато → готово</span><span><i class="hg-lg-l"></i>Просрочено / выходит за спринт родителя</span><span><i class="hg-lg-t"></i>Сегодня</span></div>`;
+ const R=hgRoleMap(),rl=k=>(R[k]||[]).join(', ')||'не заданы';
+ h+=`<div class="card hg-mleg"><p class="ctitle">Метки этапов</p><div class="hg-mgrid"><b>Этап</b><b>Начало — контур</b><b>Завершение — заливка</b>${HG_ST.map(S=>`<span class="hg-ms">${esc(S[1])}</span><span class="hg-mi">${hgMarkSvg(S[0]+'_s')} ${esc(S[4])}</span><span class="hg-mi">${hgMarkSvg(S[0]+'_e')} ${esc(S[5])}</span>`).join('')}</div>`
+  +`<p class="md-note">Контур — начало этапа, заливка — завершение; точка в углу — метка поставлена вручную. Клик по названию или метке — панель «Этапы».</p>`
+  +`<p class="md-note">Автоматически: бизнес-анализ — задачи ролей ${esc(rl('ba'))}; системный анализ — ${esc(rl('sa'))}; разработка — ${esc(rl('dev'))}; ИФТ — ${esc(rl('ift'))} `
+  +`(начало — «начато», завершение — «готово»; роли настраиваются в «Параметрах»). ПСИ — демо спринта готовой задачи (итог «Принято» — завершение). Прод — релиз задачи: начало последнего спринта релиза; релиз «Готово» — выход в Прод. `
+  +`У родителя: начало — самое раннее у потомков, завершение — когда этап завершён у всех потомков, где он начат.</p></div>`;
  w.innerHTML=h;return w;}
+function hgFind(id){let r=null;const go=l=>l.forEach(x=>{if(r)return;if(x.t.id===id)r=x;else go(x.ch);});go(hgTree().nodes);return r;}
+function hgStagesOpen(id){const node=hgFind(id),t=(ST.tasks||[]).find(x=>x.id===id);
+ if(!t){toast(node?'Метки этого элемента собираются автоматически из вложенных историй':'Элемент не найден');return;}
+ let m=document.getElementById('hgsmodal');if(!m){m=document.createElement('div');m.className='modal';m.id='hgsmodal';document.body.appendChild(m);m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open');});}
+ const man=(t.stages&&typeof t.stages==='object')?t.stages:{},auto=node?node.auto:{},ro=!PERM.canEdit;
+ const cell=k=>`<div class="hgs-c"><input type="date" data-hgk="${k}" value="${esc(man[k]||'')}"${ro?' disabled':''} aria-label="${esc(hgMarkName(k))}">`
+  +`<span class="md-note">авто: ${auto[k]?fmtd(pd(auto[k])):'—'}${ro?'':` · <button class="hgs-td" data-hgtd="${k}">сегодня</button>`}</span></div>`;
+ m.innerHTML=`<div class="mbox wiz-box"><h3>🏷 Этапы — ${esc(t.id)}</h3><p class="mnote">${esc(t.title||'')}. Пустое поле — дата ставится автоматически; заполненное — метка вручную (важнее автоматической).</p>`
+  +`<div class="hgs-grid"><span></span><b>Начало</b><b>Завершение</b>${HG_ST.map(S=>`<span class="hgs-n">${hgMarkSvg(S[0]+'_e')} ${esc(S[1])}</span>${cell(S[0]+'_s')}${cell(S[0]+'_e')}`).join('')}</div>`
+  +`<div class="qc-act">${ro?'':'<button class="btn" data-hgsx="auto">Сбросить всё на авто</button>'}<button class="btn" data-hgsx="cancel">${ro?'Закрыть':'Отмена'}</button>${ro?'':'<button class="btn primary" data-hgsx="ok">Сохранить</button>'}</div></div>`;
+ m.classList.add('open');m.querySelector('[data-hgsx=cancel]').onclick=()=>m.classList.remove('open');
+ m.querySelectorAll('[data-hgtd]').forEach(b=>b.onclick=()=>{m.querySelector('[data-hgk="'+b.dataset.hgtd+'"]').value=todayISO();});
+ const sv=clear=>{const o={};if(!clear)m.querySelectorAll('[data-hgk]').forEach(i=>{if(i.value)o[i.dataset.hgk]=i.value;});t.stages=o;save();m.classList.remove('open');hgRefresh();
+  toast(clear?'Этапы '+t.id+': всё автоматически':'Этапы '+t.id+' сохранены');if(typeof auditClient==='function')auditClient('stages',t.id+':'+Object.keys(o).join(','));};
+ if(!ro){m.querySelector('[data-hgsx=ok]').onclick=()=>sv(false);m.querySelector('[data-hgsx=auto]').onclick=()=>sv(true);}}
+document.addEventListener('click',e=>{const b=e.target.closest('#hg_root [data-hgs]');if(b)hgStagesOpen(b.dataset.hgs);});
 function hgRefresh(){const o=document.getElementById('hg_root');if(o)o.replaceWith(hganttView());}
 document.addEventListener('click',e=>{const b=e.target.closest('#hg_root [data-hgt],#hg_root [data-hglv],#hg_root [data-hgo]');if(!b)return;
  if(b.dataset.hgt){const id=b.dataset.hgt,x=b.getAttribute('aria-expanded')==='true';HG.open[id]=!x;hgRefresh();}
  else if(b.dataset.hglv){HG.level=+b.dataset.hglv;HG.open={};hgRefresh();}
  else if(b.dataset.hgo){UI.search=UI.search||{};UI.search.tasks=b.dataset.hgo;views();activate('backlog');toast('Бэклог отфильтрован: '+b.dataset.hgo);}});
-document.addEventListener('change',e=>{if(e.target.closest('#hg_root [data-hgf]')){HG.fact=e.target.checked;hgRefresh();}});
+document.addEventListener('change',e=>{if(e.target.closest('#hg_root [data-hgf]')){HG.fact=e.target.checked;hgRefresh();}
+ if(e.target.closest('#hg_root [data-hgm]')){HG.marks=e.target.checked;hgRefresh();}});
 /* ---- C2: story map ---- */
 function storyMapView(){const w=document.createElement('div');
  w.appendChild(editable('storyMap',[{k:'id',label:'ID'},{k:'activity',label:'Активность (шаг пути)'},{k:'release',label:'Релиз',type:'select',opts:[''].concat((ST.releases||[]).map(r=>r.id))},{k:'story',label:'История',wide:true},{k:'task',label:'Задача (Бэклог)',type:'dep'}],{newId:'id',prefix:'SM-'}));
@@ -4958,9 +5032,15 @@ function renderParams(){const P=ST.params;const v=document.getElementById('v_par
   <label>Focus factor</label><input id="p_focus" type="number" step="0.05" value="${P.focus||0.8}">
   <label>Цель спринта</label><input id="p_goal" value="${(P.goal||'').replace(/"/g,'&quot;')}">
  </div>
+ <p class="ctitle" style="margin-top:18px">Метки этапов: роли для автоматического режима («Гант по иерархии»)</p><div class="hgr-grid" id="hgrdiv"></div>
+ <p class="mnote" style="margin-top:6px">Начало этапа — дата «начато», завершение — «готово» задач этих ролей. ПСИ — по демо спринта, Прод — по релизу задачи.</p>
  <p class="ctitle" style="margin-top:18px">Definition of Done</p><div class="dodlist" id="doddiv"></div>
  <p class="ctitle" style="margin-top:18px">Definition of Ready</p><div class="dodlist" id="dordiv"></div>
  <p class="mnote" style="margin-top:8px">DoR/DoD — чеклисты-«ворота»: задача не должна браться в работу без готовности (DoR) и считаться выполненной без DoD. При перетаскивании на доске нарушение ворот подсвечивается предупреждением.</p></div>`;
+ const hr=document.getElementById('hgrdiv'),RM=hgRoleMap();
+ hr.innerHTML=HG_ST.slice(0,4).map(S=>`<div class="hgr-row"><span class="hgs-n">${hgMarkSvg(S[0]+'_e')} ${esc(S[1])}</span><div class="hgr-roles">${ROLES.map(r=>`<label><input type="checkbox" data-hgr="${S[0]}" value="${esc(r)}"${(RM[S[0]]||[]).includes(r)?' checked':''}> ${esc(r)}</label>`).join('')}</div></div>`).join('');
+ hr.addEventListener('change',e=>{if(!e.target.dataset.hgr)return;const o={};HG_ST.slice(0,4).forEach(S=>{o[S[0]]=[...hr.querySelectorAll('[data-hgr="'+S[0]+'"]:checked')].map(i=>i.value);});
+  P.stageRoles=HG_ST.slice(0,4).map(S=>S[0]+'='+o[S[0]].join(',')).join(';');save();});
  const dd=ST.dod||[];const dv=document.getElementById('doddiv');
  dv.innerHTML=dd.map((d,i)=>`<label><input type="checkbox" data-i="${i}" ${d.done?'checked':''}> ${d.crit}</label>`).join('');
  dv.addEventListener('change',e=>{if(e.target.dataset.i!=null){dd[+e.target.dataset.i].done=e.target.checked;commit();}});
@@ -5551,9 +5631,13 @@ const NAV=[
  {g:'Система',items:[['params','Параметры','⚙️'],['integrations','Интеграции','🔌'],['calendar','Календарь','📅'],['budget','Бюджет','💰'],['checks','Проверки данных','🧪'],['eda','EDA отчёт','🔬'],['audit','Журнал событий','🧾']]},
  {g:'Справка',items:[['faq','FAQ','❓'],['support','Support','🛟']]},
 ];
-const APP_VERSION='1.52.0';const APP_DATE='2026-10-30';
+const APP_VERSION='1.53.0';const APP_DATE='2026-10-30';
 const APP_ABOUT='Кросс-функциональная команда — это группа специалистов из разных областей (разработчиков, дизайнеров, маркетологов, аналитиков, менеджеров и других), которые объединяются для работы над одним конкретным проектом или задачей. Ключевая идея в том, чтобы собрать внутри команды всех необходимых экспертов, чтобы она могла самостоятельно пройти путь от идеи до результата, не передавая задачу последовательно из одного отдела в другой.';
 const CHANGELOG=[
+ {v:'1.53.0',date:'2026-10-30',items:[
+   'Гант по иерархии — метки этапов: бизнес-анализ (круг), системный анализ (треугольник), разработка (квадрат), ИФТ (звезда), ПСИ (ромб), выход в Прод (ракета); контур — начало, заливка — завершение; все 12 обозначений с описанием — в легенде.',
+   'Автоматический режим: этапы анализа, разработки и ИФТ — по ролям задач (даты «начато / готово»; соответствие ролей настраивается в «Параметрах»), ПСИ — по демо спринта, Прод — по релизу задачи; у родителя метки собираются из потомков.',
+   'Ручной режим: клик по названию или метке — панель «Этапы» с 12 датами, «сегодня» и «Сбросить всё на авто»; ручная метка важнее автоматической и отмечена точкой. С сервером даты хранятся у задачи.']},
  {v:'1.52.0',date:'2026-10-30',items:[
    'Гант по иерархии — новая вкладка «Расписания»: Эпик → Фича → История → Задача по полю «Родитель»; у родителя — сводная полоса от раннего начала до позднего окончания потомков, заливка — прогресс по объёму (SP), объём и прогресс суммируются снизу вверх.',
    'План — по спринтам, факт — тонкой полосой по датам «начато / готово»; просроченные элементы и потомки, выходящие за спринт родителя, обведены красным; линия «сегодня».',
@@ -6352,7 +6436,7 @@ startAnalytics();setInterval(startAnalytics,30000);
     Пересобирается на каждой загрузке из NAV + DOM (h1/.lede каждого раздела) + TOUR + CHANGELOG,
     поэтому «обучение» помощника происходит само после каждого обновления приложения:
     новый или переименованный раздел, изменённое описание и новая версия подхватываются без правок. */
- const AKA={hgantt:'гант по иерархии иерархический гант диаграмма ганта эпики фичи истории сводная полоса роллап прогресс эпика сроки фичи план факт просрочено',profile:'мой профиль профиль пользователя кто я учётная запись аккаунт пароль сменить пароль мои задачи мои компетенции упоминания настройки тема плотность выйти',myday:'мой день мои задачи стартовая страница блокеры события сегодня',dash:'обзор kpi сводка панель главная',statusreport:'статус отчёт доклад сводка',portfolio:'портфель проектов программа',
+ const AKA={hgantt:'метки этапов бизнес-анализ системный анализ разработка ифт пси выход в прод этапы гант по иерархии иерархический гант диаграмма ганта эпики фичи истории сводная полоса роллап прогресс эпика сроки фичи план факт просрочено',profile:'мой профиль профиль пользователя кто я учётная запись аккаунт пароль сменить пароль мои задачи мои компетенции упоминания настройки тема плотность выйти',myday:'мой день мои задачи стартовая страница блокеры события сегодня',dash:'обзор kpi сводка панель главная',statusreport:'статус отчёт доклад сводка',portfolio:'портфель проектов программа',
   roadmap:'дорожная карта план спринтов график спринтов',quarters:'кварталы квартальный план',sprintGoals:'цель спринта обязательство ценность',
   kanban:'канбан доска статусы колонки карточки',board:'холст схемы стикеры мозговой штурм whiteboard рисование шаблоны ретро swot lean canvas карточки задач виджеты метрики отмена группировка мини-карта голосование презентация показ комментарии упоминания блок-схема майнд-карта mind map таблица дорожки swimlane',okr:'цели ключевые результаты objectives key results',
   backlog:'бэклог задачи список работ',wbs:'иерархия работ декомпозиция эпик фича история роллап',storymap:'карта историй активности',
@@ -6594,7 +6678,7 @@ const TOUR=[
  {v:'board',shot:'board2',h:'Доска — сессии и схемы',p:'Голосование точками со скрытым режимом и медалями лидеров, анонимный ввод, показ по фреймам с режимом «следовать за ведущим», комментарии с @упоминаниями. Блок-схемы с подписями стрелок, майнд-карты, таблицы и дорожки ответственности.',d:11000},
  {v:'backlog',h:'Бэклог',p:'Редактируемые задачи — источник данных для всех метрик. Есть поиск, сортировка по колонкам, строка итогов и отмена удаления.',d:9000},
  {v:'gantt',h:'Диаграмма Ганта',p:'Задачи на шкале дат по спринтам. Красная рамка — критический путь, ромб ◆ — внешняя зависимость от другого стрима.',d:9000},
- {v:'hgantt',h:'Гант по иерархии',p:'Эпик → Фича → История → Задача по полю «Родитель»: сводные полосы с прогрессом по объёму, план по спринтам и факт по датам «начато / готово»; уровни раскрываются, просрочка подсвечена красным.',d:10000},
+ {v:'hgantt',h:'Гант по иерархии',p:'Эпик → Фича → История → Задача по полю «Родитель»: сводные полосы с прогрессом по объёму, план по спринтам и факт по датам «начато / готово»; уровни раскрываются, просрочка подсвечена красным. Метки этапов — от бизнес-анализа до выхода в Прод: контур — начало, заливка — завершение; ставятся автоматически по ролям задач или вручную.',d:10000},
  {v:'deps',h:'Зависимости',p:'Межстримовые зависимости задач, историй и фич: направление, статус с RAG-подсветкой, риск и отдельный список для эскалации.',d:9000},
  {v:'piboard',h:'Программная доска (PI Planning)',p:'Матрица «стрим × спринт» межкомандных зависимостей и вех на горизонте программного инкремента (SAFe).',d:8000},
  {v:'team',h:'Команда',p:'Состав команды и доступность — из этого считается ёмкость каждого спринта.',d:6500},

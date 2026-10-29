@@ -50,6 +50,9 @@ SHOTS = {
                 "views();activate('profile');const c=[...document.querySelectorAll('#prof_root .md-h')].find(x=>x.textContent==='Настройки');if(c){c.scrollIntoView({block:'start'});window.scrollBy(0,-120);}}"],
  # «Гант по иерархии»: уровень «до историй», вид на сетку
  "s_hgantt": ["()=>{HG.level=3;HG.open={};HG.fact=true;views();activate('hgantt');const g=document.querySelector('#hg_root .hg-bar');if(g){g.scrollIntoView({block:'start'});window.scrollBy(0,-70);}}"],
+ "s_stages": ["()=>{setPerm('editor');applyPerms();updateRoleBtn();HG.level=3;HG.open={};HG.fact=true;HG.marks=true;views();activate('hgantt');const g=document.querySelector('#hg_root .hg-grid');if(g){g.scrollIntoView({block:'start'});window.scrollBy(0,-60);}}"],
+ "s_stlegend": ["()=>{setPerm('editor');applyPerms();updateRoleBtn();HG.level=2;HG.open={};HG.marks=true;views();activate('hgantt');const g=document.querySelector('#hg_root .hg-mleg');if(g){g.scrollIntoView({block:'end'});window.scrollBy(0,40);}}"],
+ "s_stpanel": ["()=>{setPerm('editor');applyPerms();updateRoleBtn();HG.level=3;HG.open={};HG.marks=true;views();activate('hgantt');window.scrollTo(0,0);hgStagesOpen('FE-1');}"],
  # серверные окна администратора — на подменённых ответах сервера (демо-учётки, без реальных данных)
  "admin_users": ["MOCK", "async()=>{activate('dash');window.scrollTo(0,0);await openUsers();}"],
  "admin_audit": ["MOCK", "async()=>{views();activate('audit');await new Promise(r=>setTimeout(r,600));"

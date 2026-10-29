@@ -17,4 +17,5 @@ public class Param {
     @Column(name = "budget_rate")  public Double budgetRate;
     @Column(name = "budget_total") public Double budgetTotal;
     @Column(name = "ttm_target")   public Integer ttmTarget;
+    @Column(name = "stage_roles")  public String stageRoles;   // roles per stage for auto marks
 }
