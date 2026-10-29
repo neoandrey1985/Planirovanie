@@ -97,6 +97,7 @@ if not any(p.text.startswith(CH) for p in d.paragraphs):
         for img, cap in pics: add_pic(d, anchor, img, cap, 6.3)
     ps = d.paragraphs; toc = next(k for k, p in enumerate(ps) if p.style.name == "Normal" and p.text.startswith("20. Навигация"))
     ps[toc + 1].insert_paragraph_before(CH, style=ps[toc].style)
+    replace_in(d, "Открывается кнопкой роли в шапке.", "Открывается кнопкой роли в меню пользователя (аватар ▾, раздел «Доступ»).")
     replace_in(d, UG_201_OLD, UG_201_NEW); replace_in(d, UG_CH2_OLD, UG_CH2_NEW)
     i = heading(d, "17.1 Верхняя панель", "Heading 2"); ps = d.paragraphs; k = i + 1; last = None
     while ps[k].style.name == "List Bullet":
