@@ -281,7 +281,7 @@ def main():
 
         # ---- 4e. Smart sidebar (collapse / pin / filter / recent) ----
         def t_nav():
-            page.evaluate("()=>{try{localStorage.removeItem('navui');}catch(e){}}")
+            page.evaluate("()=>{try{localStorage.removeItem('navui');}catch(e){}NAVS.mode='all';buildNav();}")
             r = page.evaluate("""()=>{
               const nav=document.getElementById('nav');
               const hasSearch=!!document.getElementById('navsearch');
@@ -295,6 +295,7 @@ def main():
               const matches=[...nav.querySelectorAll('.nav-row')].filter(x=>x.style.display!=='none').map(x=>x.querySelector('.nav-lbl').textContent);
               navFilter('');
               togglePin('backlog');  // cleanup
+              NAVS.mode='compact';buildNav();
               return {hasSearch,fav,pinned,toggled,matches};}""")
             assert r['hasSearch'], 'nav search box missing'
             assert r['fav'] and r['pinned'], 'pin → favorites did not work'
@@ -305,14 +306,16 @@ def main():
         # ---- 4f. Top toolbar: data actions consolidated into one menu ----
         def t_toolbar():
             r = page.evaluate("""()=>{
-              const visible=[...document.querySelector('.tools').children].map(c=>c.id);
-              document.getElementById('datamenu').click();
-              const opened=document.getElementById('dmenu').classList.contains('open');
-              const items=[...document.querySelectorAll('#datapop .btn')].map(b=>b.id);
+              const visible=[...document.querySelector('.tools').children].filter(c=>c.offsetParent!==null).map(c=>c.id);
+              document.getElementById('ubtn').click();
+              const opened=document.getElementById('umenu').classList.contains('open');
+              const items=[...document.querySelectorAll('#upop .btn')].map(b=>b.id);
               document.body.click();
-              const closed=!document.getElementById('dmenu').classList.contains('open');
+              const closed=!document.getElementById('umenu').classList.contains('open');
               return {visible,opened,items,closed};}""")
-            assert 'dmenu' in r['visible'], 'data menu button not in toolbar'
+            assert all(x in r['visible'] for x in ('qcdm', 'stdot', 'umenu')), 'compact header: ＋ Создать, status dot, user menu: ' + str(r['visible'])
+            for x in ('rolebtn', 'tourbtn', 'themebtn', 'densbtn', 'startbtn'):
+                assert x in r['items'], 'user menu missing ' + x
             for old in ('xls', 'pptxbtn', 'exp', 'imp', 'impcsv', 'rst'):
                 assert old not in r['visible'], old + ' should be inside the menu, not the top bar'
                 assert old in r['items'], 'menu missing action ' + old
@@ -762,11 +765,11 @@ def main():
 
         # ---- 25. EVM: earned value indices and forecast ----
         def t_evm():
-            r = page.evaluate("""()=>{const C=compute();const E=evm(C);
+            r = page.evaluate("""async()=>{const C=compute();const E=evm(C);activate('evm');await new Promise(r=>setTimeout(r,60));
               return {bac:E.BAC>0, rows:E.rows.length===C.sp.length,
                       cpiOk:E.CPI===null||E.CPI>0, spiOk:E.SPI===null||E.SPI>0,
                       eacOk:E.EAC===null||(E.CPI&&Math.abs(E.EAC-E.BAC/E.CPI)<1),
-                      chart:(activate('evm'),!!document.querySelector('#v_evm svg'))};}""")
+                      chart:!!document.querySelector('#v_evm svg')};}""")
             assert r['bac'] and r['rows'], 'EVM rows/BAC invalid'
             assert r['cpiOk'] and r['spiOk'], 'EVM indices out of range'
             assert r['eacOk'], 'EAC != BAC/CPI'
@@ -869,6 +872,92 @@ def main():
             assert r['groups'] >= 8, 'unexpectedly few nav groups'
             assert 'Обзор' in r['names'] and 'Команда' in r['names'], 'expected regrouped blocks missing'
         case('nav: unique ids, containers, regrouped blocks', t_nav)
+
+        # ---- 39. Ergonomics: lazy views, compact nav (hubs, tabs, search), compact header, quick create ----
+        def t_ergonomics():
+            r = page.evaluate("""async()=>{const errs=[];const h=e=>errs.push(String(e.message||e.reason||e));window.addEventListener('error',h);
+             try{setPerm('admin');applyPerms();NAVS.mode='compact';activate('dash');views();
+              const lazyBefore=document.querySelectorAll('#v_backlog .lazy-ph').length;activate('backlog');const lazyAfter=document.querySelectorAll('#v_backlog .lazy-ph').length;
+              const allTitles=NAV.flatMap(g=>g.items.map(i=>i[0])).every(id=>{const v=document.getElementById('v_'+id);return v&&v.querySelector('h1');});
+              const navIds=NAV.flatMap(g=>g.items.map(i=>i[0])),mapped=new Set(NAV2.flatMap(e=>e[3]));
+              const covered=navIds.every(id=>mapped.has(id)),noMore=!NAV2.some(e=>e[0]==='h_more');
+              activate('wsjf');const tabs=[...document.querySelectorAll('#v_wsjf > .hub-tabs [data-hubv]')].map(b=>b.dataset.hubv);
+              document.querySelector('#v_wsjf > .hub-tabs [data-hubv=moscow]').click();const tabGo=CURV==='moscow';
+              const hubTarget=document.querySelector('#nav .nav-hubs .nav-item[data-v=moscow]')!==null;
+              const entries=document.querySelectorAll('#nav .nav-hubs:not(.nav-smart) .nav-item').length,lvl=!!document.querySelector('#nav [data-lvl]');
+              navFilter('гант');const found=[...document.querySelectorAll('#nav .nav-allg .nav-row')].filter(x=>x.style.display!=='none').map(x=>x.querySelector('.nav-lbl').textContent);navFilter('');
+              document.querySelector('#nav [data-navmode=all]').click();const allMode=NAVS.mode==='all'&&!document.getElementById('nav').classList.contains('nav2')&&!document.querySelector('#v_moscow > .hub-tabs');
+              document.querySelector('#nav [data-navmode=compact]').click();const back=NAVS.mode==='compact'&&!!document.querySelector('#v_moscow > .hub-tabs');
+              activate('dash');
+              const n0=ST.tasks.length;await qcOpen('task');const m=document.getElementById('qcmodal');m.querySelector('[data-q=title]').value='Быстрая задача';qcSubmit(QC[0]);
+              const last=ST.tasks[ST.tasks.length-1];const qcOk=ST.tasks.length===n0+1&&last.title==='Быстрая задача'&&+last.sprint===compute().cur;
+              ST.tasks.pop();save();views();activate('dash');
+              const qcItems=(qcRender(),[...document.querySelectorAll('#qcpop [data-qc]')].map(b=>b.dataset.qc)),qcWiz=!!document.querySelector('#qcpop [data-proj]');
+              setPerm('viewer');applyPerms();qcRender();const qcWizViewer=!!document.querySelector('#qcpop [data-proj]');setPerm('admin');applyPerms();
+              const dense0=document.body.classList.contains('dense');document.getElementById('densbtn').click();const dense1=document.body.classList.contains('dense');document.getElementById('densbtn').click();
+              const lede=document.querySelector('#v_dash > .lede'),clamp=getComputedStyle(lede).webkitLineClamp;
+              const loadKpi=[...document.querySelectorAll('#v_dash .kpi')].map(k=>k.textContent).find(s=>s.includes('Загрузка'))||'';
+              return {lazyBefore,lazyAfter,allTitles,covered,noMore,tabs,tabGo,hubTarget,entries,lvl,found,allMode,back,qcOk,qcItems,qcWiz,qcWizViewer,
+                dense:!dense0&&dense1&&!document.body.classList.contains('dense'),clamp,nan:loadKpi.includes('NaN'),errs};
+             }catch(e){return 'ERR:'+e.message;}finally{window.removeEventListener('error',h);}}""")
+            assert isinstance(r, dict), 'ergonomics failed: ' + str(r)
+            assert not r['errs'], 'page errors: ' + str(r['errs'][:3])
+            assert r['lazyBefore'] > 0 and r['lazyAfter'] == 0, 'hidden sections must build on open: ' + str(r)
+            assert r['allTitles'], 'every section keeps its title (assistant/search) without being built'
+            assert r['covered'] and r['noMore'], 'every NAV section must be mapped to a hub (no «Ещё»)'
+            assert r['tabs'] == ['rice', 'wsjf', 'moscow'] and r['tabGo'] and r['hubTarget'], 'hub tabs and last tab memory: ' + str(r)
+            assert 12 <= r['entries'] <= 18 and not r['lvl'], 'compact menu: 12-18 entries, no level switch, got ' + str(r)
+            assert r['found'] == ['Гант'], 'search must find sections inside hubs: ' + str(r['found'])
+            assert r['allMode'] and r['back'], '«Все разделы» toggles the full menu and back: ' + str(r)
+            assert r['qcOk'], 'quick create must add a task to the current sprint'
+            assert r['qcItems'] == ['task', 'bug', 'risk', 'imp'] and r['qcWiz'] and not r['qcWizViewer'], 'quick create menu: ' + str(r)
+            assert r['dense'], 'density toggle'
+            assert r['clamp'] == '1', 'section description is one line'
+            assert not r['nan'], 'load KPI must not show NaN'
+        case('ergonomics: lazy views, compact nav hubs/tabs/search, header, quick create, density', t_ergonomics)
+
+        # ---- 40. Scenarios: «Мой день», first steps for an empty project, «Новый проект» wizard ----
+        def t_scenarios():
+            r = page.evaluate("""async()=>{const errs=[];const h=e=>errs.push(String(e.message||e.reason||e));window.addEventListener('error',h);
+             const keep=JSON.stringify(ST);
+             try{setPerm('admin');applyPerms();
+              const me=ST.team[0].name;lsSetS('me',me);views();activate('myday');
+              const cur=compute().cur,mine=ST.tasks.filter(t=>+t.sprint===cur&&t.assignee===me&&t.type!=='Эпик');
+              const rows=document.querySelectorAll('#myday_root .md-task').length;
+              const todo=mine.find(t=>t.status==='To Do');let started=true;
+              if(todo){const st0=todo.status;document.querySelector('#myday_root [data-md=start][data-id="'+todo.id+'"]').click();started=ST.tasks.find(t=>t.id===todo.id).status==='В работе';ST.tasks.find(t=>t.id===todo.id).status=st0;save();}
+              lsSetS('me','');views();activate('myday');const allRows=document.querySelectorAll('#myday_root .md-task').length;
+              const allSp=ST.tasks.filter(t=>+t.sprint===cur&&t.type!=='Эпик').length;
+              const cards=document.querySelectorAll('#myday_root .md-grid > .card').length,onbDemo=!!document.querySelector('#myday_root .onb');
+              projOpen();const m=document.getElementById('projmodal');const set=(k,v)=>{m.querySelector('[data-w='+k+']').value=v;};
+              set('name','Мобильное приложение');set('goal','Выпустить MVP');set('start','2026-11-02');set('days','10');set('sprints','8');
+              set('team',['Орлова Е. — Frontend','Белов И. — qa','Новиков П.'].join(String.fromCharCode(10)));
+              set('tasks',['Прототип главного экрана','Авторизация'].join(String.fromCharCode(10)));
+              m.querySelector('[data-w=backup]').checked=false;projRun();
+              const P=ST.params,re=load();
+              const KEEP=['dod','dorItems','calendar','faq','ishikawaCats','boards','team','tasks'];
+              const leftovers=Object.keys(re).filter(k=>Array.isArray(re[k])&&re[k].length&&!KEEP.includes(k));
+              const wiz={name:P.name,goal:P.goal,start:P.start,sprints:P.sprints,team:ST.team.map(x=>x.name+'/'+x.role),tasks:ST.tasks.map(x=>x.id+':'+x.title+':'+x.sprint),
+                epics:re.tasks.filter(t=>t.type==='Эпик').length,leftovers,board:(re.board.items||[]).length,view:CURV};
+              const onb=!!document.querySelector('#myday_root .onb');activate('dash');const onbDash=!!document.querySelector('#v_dash > .onb-wrap .onb');
+              const steps=onbSteps().filter(s=>s[2]).map(s=>s[0]);
+              document.querySelector('#v_dash > .onb-wrap [data-onb=hide]').click();const hidden=!document.querySelector('#v_dash > .onb-wrap');lsSetS('onb_off','');
+              return {mine:mine.length,rows,started,allRows,allSp,cards,onbDemo,wiz,onb,onbDash,steps,hidden,errs};
+             }catch(e){return 'ERR:'+e.message;}finally{window.removeEventListener('error',h);setPerm('admin');ST=migrate(JSON.parse(keep));save();views();activate('dash');}}""")
+            assert isinstance(r, dict), 'scenarios failed: ' + str(r)
+            assert not r['errs'], 'page errors: ' + str(r['errs'][:3])
+            assert r['rows'] == r['mine'] and r['allRows'] == r['allSp'], 'my day lists my / all tasks of the current sprint: ' + str(r)
+            assert r['started'], 'start button must change the task status'
+            assert r['cards'] == 3 and not r['onbDemo'], 'my day: tasks, attention, events; no first steps for demo data: ' + str(r)
+            w = r['wiz']
+            assert (w['name'], w['goal'], w['start'], w['sprints']) == ('Мобильное приложение', 'Выпустить MVP', '2026-11-02', 8), str(w)
+            assert w['team'] == ['Орлова Е./Frontend', 'Белов И./QA', 'Новиков П./'], 'team lines «Имя — роль»: ' + str(w['team'])
+            assert w['tasks'] == ['T-01:Прототип главного экрана:1', 'T-02:Авторизация:1'], str(w['tasks'])
+            assert w['epics'] == 0 and w['leftovers'] == [] and w['board'] == 0, 'no demo data after reload: ' + str(w)
+            assert w['view'] == 'myday', 'wizard opens «Мой день»'
+            assert r['onb'] and r['onbDash'] and r['hidden'], 'new project shows first steps (my day + dashboard), hide works: ' + str(r)
+            assert r['steps'] == ['params', 'team', 'backlog'], 'done steps for the new project: ' + str(r['steps'])
+        case('scenarios: my day, first steps, «Новый проект» wizard', t_scenarios)
 
         br.close()
     httpd.shutdown()

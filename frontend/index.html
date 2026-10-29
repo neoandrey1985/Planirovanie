@@ -520,6 +520,64 @@ body.noadmin #rst,body.noadmin #imp{display:none}
 .brd-linkmodal .lm-url{font-size:11.5px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:40%}
 .brd-linkmodal iframe{flex:1;border:0;width:100%;background:#fff}
 .brd-linkmodal .lm-fallback{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:var(--muted);font-size:14px;text-align:center;padding:20px}
+/* ---- навигация: уровень, хабы, вкладки ---- */
+.nav-cnt{margin-left:auto;font-size:11px;color:var(--muted);background:var(--panel2);border-radius:999px;padding:0 7px}
+#nav .nav-allg{display:none}#nav.nav2.filtering .nav-hubs{display:none}#nav.nav2.filtering .nav-allg{display:block}
+.nav-mode{margin:12px 6px 4px;background:none;border:1px dashed var(--line);border-radius:8px;color:var(--muted);padding:6px 10px;font:inherit;font-size:12.5px;cursor:pointer;width:calc(100% - 12px);text-align:left}
+.nav-mode:hover{color:var(--ink);border-color:var(--accent)}
+.hub-tabs{display:flex;flex-wrap:wrap;gap:4px;align-items:center;margin:0 0 12px;padding-bottom:10px;border-bottom:1px solid var(--line)}
+.hub-t{font-weight:700;margin-right:8px;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.hub-tabs .btn{padding:4px 10px;font-size:13px}.hub-tabs .btn.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+/* ---- мой день, первые шаги, мастер ---- */
+.md-wrap{display:flex;flex-direction:column;gap:14px}
+.md-bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.md-h{font-weight:700;font-size:14px}.md-note{font-size:12.5px;color:var(--muted)}.md-empty{color:var(--muted);font-size:13px;margin:6px 0}
+.md-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:14px}
+.md-grid .card{display:flex;flex-direction:column;gap:6px}
+.md-st{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-top:6px}
+.md-task{display:flex;gap:8px;align-items:center;padding:5px 0;border-bottom:1px solid var(--line)}
+.md-task:last-child{border-bottom:none}.md-id{font-weight:700;font-size:12px;color:var(--muted);flex:none}.md-tt{flex:1;min-width:0}
+.md-task .btn{padding:2px 8px;font-size:12px;flex:none}
+.md-li{display:block;width:100%;text-align:left;background:none;border:none;border-bottom:1px solid var(--line);padding:6px 2px;font:inherit;font-size:13px;color:var(--ink);cursor:pointer}
+.md-li:hover{background:var(--panel2)}.md-d{font-variant-numeric:tabular-nums;color:var(--muted);font-weight:600;margin-right:4px}
+.onb{border-color:var(--accent);margin-bottom:14px}.onb-wrap{margin-bottom:14px}
+.onb-prog{display:inline-block;width:120px;height:6px;border-radius:3px;background:var(--panel2);overflow:hidden;vertical-align:middle}
+.onb-prog i{display:block;height:100%;background:var(--accent)}
+.onb-steps{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.onb-s{display:flex;gap:8px;align-items:center;border:1px solid var(--line);background:var(--panel2);border-radius:10px;padding:6px 12px 6px 6px;font:inherit;font-size:13px;color:var(--ink);cursor:pointer}
+.onb-s span{display:inline-flex;width:22px;height:22px;border-radius:50%;align-items:center;justify-content:center;background:var(--panel);border:1px solid var(--line);font-size:12px;font-weight:700}
+.onb-s.ok{color:var(--muted)}.onb-s.ok span{background:var(--good);border-color:var(--good);color:#fff}
+.wiz-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.wiz-box{width:min(560px,94vw)!important;max-height:90vh;overflow:auto}
+.wiz-box textarea{width:100%;border:1px solid var(--line);background:var(--panel2);color:var(--ink);border-radius:8px;padding:9px 10px;font:inherit;font-size:14px;box-sizing:border-box}
+.wiz-warn{font-size:12.5px;color:var(--warn);margin:6px 0}
+.qc-chk{flex-direction:row!important;align-items:center;gap:8px!important}.qc-chk input{width:auto!important}
+/* ---- дизайн: сигнал вместо «светофора», спокойные таблицы, компактные заголовки, плотность ---- */
+.kpi .stripe.s-good{background:var(--line)}
+td select{-webkit-appearance:none;appearance:none;background-color:transparent;padding-right:16px;background-repeat:no-repeat;background-position:right 4px center;background-size:9px}
+td select:hover,td select:focus{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%238893a4' stroke-width='1.5'/%3E%3C/svg%3E")}
+td input[type=number]{-moz-appearance:textfield;appearance:textfield}
+td input[type=number]::-webkit-inner-spin-button,td input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+.view > .lede{display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden;cursor:pointer}
+.view > .lede:hover{color:var(--ink)}.view > .lede.open{display:block;-webkit-line-clamp:unset}
+body.dense td,body.dense th{padding:3px 6px}body.dense .card{padding:11px 12px;border-radius:11px}
+body.dense h1{font-size:19px}body.dense .lede{margin-bottom:10px;font-size:12.5px}
+body.dense .kpi .k-val{font-size:21px;margin-top:2px}body.dense .kpi .k-label{font-size:11px}
+body.dense .kpis{grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:9px}body.dense .grid{gap:10px}
+body.dense .nav-item{padding:4px 10px;font-size:13px}body.dense .md-wrap{gap:10px}
+/* ---- компактная шапка ---- */
+.st-hidden,#syncst,#anst{display:none!important}
+.st-dot i{display:block;width:10px;height:10px;border-radius:50%;background:var(--muted)}
+.st-dot.st-good i{background:var(--good)}.st-dot.st-warn i{background:var(--warn)}
+.u-av{display:inline-flex;width:24px;height:24px;border-radius:50%;background:var(--accent);color:#fff;font-size:11px;font-weight:700;align-items:center;justify-content:center;vertical-align:middle}
+.u-nm{font-size:13px;margin-left:6px}
+.mn-h{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);padding:8px 10px 4px}
+#upop,#qcpop{min-width:260px;max-height:80vh;overflow:auto}
+#upop .btn,#qcpop .btn{justify-content:flex-start;text-align:left;width:100%}
+.qc-f{display:flex;flex-direction:column;gap:4px;margin:8px 0;font-size:13px;color:var(--muted)}
+.qc-act{display:flex;justify-content:flex-end;gap:8px;margin-top:12px}
+@media (max-width:760px){.top .inner{flex-wrap:wrap;height:auto;min-height:56px;row-gap:8px}.u-nm{display:none}}
+@media (max-width:640px){.top .brand{font-size:0;gap:0}}
 </style>
 <header class="top"><div class="inner">
  <button class="btn iconbtn" id="menubtn" aria-label="Меню" title="Свернуть / развернуть меню">☰</button>
@@ -547,7 +605,7 @@ body.noadmin #rst,body.noadmin #imp{display:none}
  </div>
 </div></header>
 <div class="shell"><aside class="side" id="side"><nav id="nav"></nav><div class="side-foot" id="sidefoot"></div></aside><div class="scrim" id="scrim"></div>
-<main id="main"><section class="view" id="v_dash"></section><section class="view" id="v_board"></section><section class="view" id="v_kanban"></section><section class="view" id="v_backlog"></section><section class="view" id="v_team"></section><section class="view" id="v_starmap"></section><section class="view" id="v_roadmap"></section><section class="view" id="v_quarters"></section><section class="view" id="v_rice"></section><section class="view" id="v_wsjf"></section><section class="view" id="v_moscow"></section><section class="view" id="v_sprintGoals"></section><section class="view" id="v_gantt"></section><section class="view" id="v_deps"></section><section class="view" id="v_piboard"></section><section class="view" id="v_releases"></section><section class="view" id="v_milestones"></section><section class="view" id="v_debt"></section><section class="view" id="v_okr"></section><section class="view" id="v_budget"></section><section class="view" id="v_analytics"></section><section class="view" id="v_risks"></section><section class="view" id="v_bugs"></section><section class="view" id="v_daily"></section><section class="view" id="v_grooming"></section><section class="view" id="v_demo"></section><section class="view" id="v_vacation"></section><section class="view" id="v_birthdays"></section><section class="view" id="v_retro"></section><section class="view" id="v_agile"></section><section class="view" id="v_calendar"></section><section class="view" id="v_scope"></section><section class="view" id="v_checks"></section><section class="view" id="v_eda"></section><section class="view" id="v_integrations"></section><section class="view" id="v_params"></section><section class="view" id="v_faq"></section><section class="view" id="v_support"></section><section class="view" id="v_audit"></section><section class="view" id="v_evm"></section><section class="view" id="v_changes"></section><section class="view" id="v_issues"></section><section class="view" id="v_stakeholders"></section><section class="view" id="v_statusreport"></section><section class="view" id="v_decisions"></section><section class="view" id="v_wbs"></section><section class="view" id="v_storymap"></section><section class="view" id="v_impediments"></section><section class="view" id="v_poker"></section><section class="view" id="v_lessons"></section><section class="view" id="v_raci"></section><section class="view" id="v_portfolio"></section><section class="view" id="v_busfactor"></section><section class="view" id="v_healthcheck"></section><section class="view" id="v_dora"></section><section class="view" id="v_incidents"></section></main></div>
+<main id="main"><section class="view" id="v_myday"></section><section class="view" id="v_dash"></section><section class="view" id="v_board"></section><section class="view" id="v_kanban"></section><section class="view" id="v_backlog"></section><section class="view" id="v_team"></section><section class="view" id="v_starmap"></section><section class="view" id="v_roadmap"></section><section class="view" id="v_quarters"></section><section class="view" id="v_rice"></section><section class="view" id="v_wsjf"></section><section class="view" id="v_moscow"></section><section class="view" id="v_sprintGoals"></section><section class="view" id="v_gantt"></section><section class="view" id="v_deps"></section><section class="view" id="v_piboard"></section><section class="view" id="v_releases"></section><section class="view" id="v_milestones"></section><section class="view" id="v_debt"></section><section class="view" id="v_okr"></section><section class="view" id="v_budget"></section><section class="view" id="v_analytics"></section><section class="view" id="v_risks"></section><section class="view" id="v_bugs"></section><section class="view" id="v_daily"></section><section class="view" id="v_grooming"></section><section class="view" id="v_demo"></section><section class="view" id="v_vacation"></section><section class="view" id="v_birthdays"></section><section class="view" id="v_retro"></section><section class="view" id="v_agile"></section><section class="view" id="v_calendar"></section><section class="view" id="v_scope"></section><section class="view" id="v_checks"></section><section class="view" id="v_eda"></section><section class="view" id="v_integrations"></section><section class="view" id="v_params"></section><section class="view" id="v_faq"></section><section class="view" id="v_support"></section><section class="view" id="v_audit"></section><section class="view" id="v_evm"></section><section class="view" id="v_changes"></section><section class="view" id="v_issues"></section><section class="view" id="v_stakeholders"></section><section class="view" id="v_statusreport"></section><section class="view" id="v_decisions"></section><section class="view" id="v_wbs"></section><section class="view" id="v_storymap"></section><section class="view" id="v_impediments"></section><section class="view" id="v_poker"></section><section class="view" id="v_lessons"></section><section class="view" id="v_raci"></section><section class="view" id="v_portfolio"></section><section class="view" id="v_busfactor"></section><section class="view" id="v_healthcheck"></section><section class="view" id="v_dora"></section><section class="view" id="v_incidents"></section></main></div>
 <div class="palette" id="palette"><div class="pbox"><input class="pin" id="pin" placeholder="Поиск раздела или действия…" autocomplete="off"><div class="plist" id="plist"></div></div></div>
 <div class="role-pop" id="rolepop"></div>
 <div class="modal" id="accmodal"><div class="mbox">
@@ -1551,6 +1609,7 @@ function migrate(d){
   setK('T-01',krOf(0));setK('T-02',krOf(0));setK('T-03',krOf(1));setK('T-12',krOf(2));})();
  // v1.42: иерархия работ (эпики + связи «родитель»)
  (function(){const T=d.tasks||[];const have=id=>T.some(t=>t.id===id);
+  const t1=T.find(t=>t.id==='T-01');if(!t1||t1.title!=='Проектирование API заказов')return;   // демо-эпики — только для демо-данных
   if(!have('E-1'))T.push({id:'E-1',title:'Эпик: Оформление и оплата заказа',assignee:'',role:'',type:'Эпик',est:0,status:'В работе',sprint:'',dep:'',started:'',done:'',priority:'Must'});
   if(!have('E-2'))T.push({id:'E-2',title:'Эпик: Каталог и личный кабинет',assignee:'',role:'',type:'Эпик',est:0,status:'To Do',sprint:'',dep:'',started:'',done:'',priority:'Should'});
   const setP=(tid,pid)=>{const t=T.find(x=>x.id===tid);if(t&&t.parent==null)t.parent=pid;};
@@ -1630,7 +1689,7 @@ function migrate(d){
   {name:'Инструменты / инфра',color:'#FFC000',side:'Снизу'},
   {name:'Сроки / календарь',color:'#4472C4',side:'Снизу'},
   {name:'Требования / объём',color:'#C0392B',side:'Снизу'}];
- if(!Array.isArray(d.ishikawa)||!d.ishikawa.length)d.ishikawa=[
+ if(!Array.isArray(d.ishikawa))d.ishikawa=[
   {id:'IC-01',cat:'Люди',cause:'Текучесть QA',weight:6,risk:''},
   {id:'IC-02',cat:'Люди',cause:'Недооценка задач',weight:7,risk:''},
   {id:'IC-03',cat:'Процессы',cause:'Слабая оценка (спайки)',weight:6,risk:''},
@@ -3449,6 +3508,7 @@ function views(){
  setView('poker','Planning Poker','Совместная оценка в Story Points: голоса участников, медиана, разброс и консенсус по Фибоначчи с применением оценки к задаче.',pokerView());
  setView('lessons','Уроки','Реестр извлечённых уроков (lessons learned): ситуация, урок и рекомендация; пополняется из ретроспектив.',lessonsView());
  setView('raci','RACI','Матрица ответственности: для каждой активности — Responsible / Accountable / Consulted / Informed.',raciView());
+ setView('myday','Мой день','Ваши задачи текущего спринта, блокеры и ближайшие события команды — стартовая страница.',mydayView());
  setView('portfolio','Портфель','Портфельный обзор нескольких проектов: статус RAG, health, velocity, бюджет и прогресс; снимок текущего проекта одной кнопкой.',portfolioView());
  setView('busfactor','Bus factor / покрытие компетенций','Риск ключевого человека: сколько людей владеют каждым навыком (из Star Map), одиночные точки отказа и непокрытые навыки.',busFactorView());
  setView('healthcheck','Team Health Check','Периодическая самооценка здоровья команды (модель Spotify Squad): светофор и тренд по измерениям.',healthCheckView());
@@ -3504,7 +3564,7 @@ function renderDash(C){const v=document.getElementById('v_dash');const T=ST.ttmT
   kpiCard('Health-index',pctf(C.health),'сводный статус',C.health>=.8?'good':C.health>=.6?'warn':'crit',{goto:'analytics'}),
   kpiCard('Риск срыва спринта',risk?risk.level:'—',risk?('индекс '+risk.score+'/100'):'нет данных',risk?(risk.score>=60?'crit':risk.score>=30?'warn':'good'):'neut',{goto:'roadmap'}),
   kpiCard('Текущий спринт','#'+C.cur,C.curSp?fmtd(C.curSp.a)+'–'+fmtd(C.curSp.b):'','neut',{goto:'roadmap'}),
-  kpiCard('Загрузка',pctf(C.curSp?(C.curSp.plan/C.curSp.cap):0),`ёмкость ${fmt(C.curSp?C.curSp.cap:0,1)} · план ${fmt(C.curSp?C.curSp.plan:0,1)}`,(C.curSp&&C.curSp.plan/C.curSp.cap>1)?'crit':'good',{goto:'gantt',spark:'sp_load'}),
+  kpiCard('Загрузка',C.curSp&&C.curSp.cap?pctf(C.curSp.plan/C.curSp.cap):'—',`ёмкость ${fmt(C.curSp?C.curSp.cap:0,1)} · план ${fmt(C.curSp?C.curSp.plan:0,1)}`,(C.curSp&&C.curSp.plan/C.curSp.cap>1)?'crit':'good',{goto:'gantt',spark:'sp_load'}),
   kpiCard('Ср. velocity',fmt(C.avgVel,1)+' <small>дн</small>','закрытых: '+C.closed,'neut',{goto:'analytics',spark:'sp_vel'}),
   kpiCard('Time to Market',fmt(C.ttmAvg,1)+' <small>дн</small>','цель ≤ '+T,C.ttmAvg<=T?'good':'crit',{goto:'analytics'}),
   kpiCard('DoD',pctf(C.dodPct),'готовность',C.dodPct>=1?'good':C.dodPct>=.8?'warn':'crit',{goto:'params'}),
@@ -5369,7 +5429,7 @@ function commit(){save();views();activate(CURV);toast('Сохранено');}
 function recomputeSoft(){/* light: refresh dashboard only, keep edit focus */ renderDash(compute());const ik=document.getElementById('ishk');if(ik)drawIshikawa(ik);}
 /* ---------- sidebar navigation ---------- */
 const NAV=[
- {g:'Обзор',items:[['dash','Дашборд','📋'],['statusreport','Статус-отчёт','📰'],['portfolio','Портфель','🗂']]},
+ {g:'Обзор',items:[['myday','Мой день','🏠'],['dash','Дашборд','📋'],['statusreport','Статус-отчёт','📰'],['portfolio','Портфель','🗂']]},
  {g:'Планирование',items:[['roadmap','Дорожная карта','🗺️'],['quarters','Кварталы','🗓️'],['sprintGoals','Цели спринтов','🎯'],['kanban','Kanban-доска','🗃️'],['board','Доска','🧩'],['okr','OKR','🧭']]},
  {g:'Бэклог и приоритизация',items:[['backlog','Бэклог','🗂️'],['wbs','Иерархия работ','🌳'],['storymap','Story Map','🗺'],['rice','RICE','📊'],['wsjf','WSJF','⚖️'],['moscow','MoSCoW','📌']]},
  {g:'Расписание и зависимости',items:[['gantt','Гант','📊'],['deps','Зависимости','🔗'],['piboard','Программная доска','🧭'],['milestones','Вехи','🏁']]},
@@ -5381,9 +5441,15 @@ const NAV=[
  {g:'Система',items:[['params','Параметры','⚙️'],['integrations','Интеграции','🔌'],['calendar','Календарь','📅'],['budget','Бюджет','💰'],['checks','Проверки данных','🧪'],['eda','EDA отчёт','🔬'],['audit','Журнал событий','🧾']]},
  {g:'Справка',items:[['faq','FAQ','❓'],['support','Support','🛟']]},
 ];
-const APP_VERSION='1.49.0';const APP_DATE='2026-10-28';
+const APP_VERSION='1.50.0';const APP_DATE='2026-10-29';
 const APP_ABOUT='Кросс-функциональная команда — это группа специалистов из разных областей (разработчиков, дизайнеров, маркетологов, аналитиков, менеджеров и других), которые объединяются для работы над одним конкретным проектом или задачей. Ключевая идея в том, чтобы собрать внутри команды всех необходимых экспертов, чтобы она могла самостоятельно пройти путь от идеи до результата, не передавая задачу последовательно из одного отдела в другой.';
 const CHANGELOG=[
+ {v:'1.50.0',date:'2026-10-29',items:[
+   'Скорость: открытый раздел строится сразу, остальные — при открытии; полная перерисовка в несколько раз быстрее, элементов страницы в разы меньше.',
+   'Шапка: «＋ Создать» (задача, баг, риск, импедимент, мастер «Новый проект»), одна точка состояния вместо двух индикаторов, меню пользователя (роль, данные, тема, плотность, стартовая страница, видеообзор).',
+   'Навигация: 15 пунктов вместо 57 разделов — родственные разделы собраны во вкладки (бэклог, приоритизация, доски, планирование, расписание, церемонии, выпуск, риски и журналы, качество, люди, здоровье, настройки); «Все разделы» — прежнее полное меню; поиск по всем разделам.',
+   'Дизайн: цвет только у отклонений (полоса нормы на KPI нейтральная), таблицы без стрелок списков и счётчиков вне фокуса, описание раздела — одна строка с раскрытием, режим «Плотность: компактно», шапка без переполнения на телефоне.',
+   'Сценарии: стартовая страница «Мой день» (мои задачи со сменой статуса, блокеры, ближайшие 14 дней), «Первые шаги» для пустого проекта, мастер «Новый проект» (свой проект с нуля вместо демо-данных); исправлено «NaN%» загрузки у пустого спринта.']},
  {v:'1.49.0',date:'2026-10-28',items:[
    'Доска — проведение сессий: голосование точками с лимитом голосов на участника, скрытым режимом и раскрытием итогов (медали 🥇🥈🥉), анонимный ввод с раскрытием авторов, показ по фреймам как по слайдам (← →, во весь экран) и режим «следовать за ведущим».',
    'Доска — обсуждения: комментарии к любому элементу с @упоминаниями участников команды, значок 💬 на элементе и сводка всех обсуждений.',
@@ -5711,7 +5777,218 @@ document.getElementById('acc_clear').onclick=()=>{if(!PERM.canAdmin)return;docum
 document.getElementById('acc_save').onclick=()=>{if(!PERM.canAdmin){closeAccModal();return;}lsSet('app_admin_code',document.getElementById('acc_admin').value.trim());lsSet('app_editor_code',document.getElementById('acc_editor').value.trim());closeAccModal();toast('Коды сохранены');};
 document.getElementById('accmodal').addEventListener('click',e=>{if(e.target.id==='accmodal')closeAccModal();});
 setPerm(lsGet('app_role')||'viewer');updateRoleBtn();
+/* ================= Эргономика: шапка, «＋ Создать», «Мой день», первые шаги, мастер, ленивая отрисовка, хабы ================= */
+function lsGetS(k,d){try{return localStorage.getItem(k)||d;}catch(e){return d;}}
+function lsSetS(k,v){try{localStorage.setItem(k,v);}catch(e){}}
+function uxScopeName(){return 'Проект «'+((ST.params&&ST.params.name)||'')+'»';}
+/* ---------- Компактная шапка: «＋ Создать», один индикатор состояния, меню пользователя ----------
+   Существующие кнопки (роль, данные, обзор, тема) переносятся в меню пользователя вместе с их обработчиками;
+   индикаторы синхронизации и аналитики остаются в DOM (их обновляет старый код) и сводятся в одну точку. */
+(function(){const tools=document.querySelector('header.top .tools');if(!tools||document.getElementById('umenu'))return;
+ const mk=(html)=>{const d=document.createElement('div');d.innerHTML=html.trim();return d.firstChild;};
+ const qc=mk(`<div class="dmenu" id="qcdm"><button class="btn primary" id="qcbtn" aria-haspopup="true" aria-expanded="false" title="Быстро создать элемент">＋ Создать</button><div class="dmenu-pop" id="qcpop" role="menu"></div></div>`);
+ const dot=mk(`<button class="btn iconbtn st-dot" id="stdot" title="Состояние" aria-label="Состояние подключения"><i></i></button>`);
+ const um=mk(`<div class="dmenu" id="umenu"><button class="btn" id="ubtn" aria-haspopup="true" aria-expanded="false"><span class="u-av" id="uav">?</span><span class="u-nm" id="unm"></span> <span class="cv">▾</span></button><div class="dmenu-pop" id="upop" role="menu"></div></div>`);
+ const upop=um.querySelector('#upop');
+ const sec=(t)=>{const s=document.createElement('div');s.className='mn-h';s.textContent=t;upop.appendChild(s);};
+ const mv=(id,label)=>{const b=document.getElementById(id);if(!b)return;if(label)b.textContent=label;b.classList.remove('iconbtn');upop.appendChild(b);};
+ sec('Доступ');mv('rolebtn');
+ sec('Данные');['xls','pptxbtn','exp','imp','impcsv','rst'].forEach(id=>mv(id));
+ sec('Вид');mv('themebtn','◐ Светлая / тёмная тема');
+ const dn=document.createElement('button');dn.className='btn';dn.id='densbtn';upop.appendChild(dn);
+ const sv=document.createElement('button');sv.className='btn';sv.id='startbtn';upop.appendChild(sv);
+ sec('Справка');mv('tourbtn','▶ Видеообзор приложения');
+ const dm=document.getElementById('dmenu');if(dm)dm.style.display='none';
+ ['syncst','anst'].forEach(id=>{const e=document.getElementById(id);if(e)e.classList.add('st-hidden');});
+ tools.appendChild(qc);tools.appendChild(dot);tools.appendChild(um);
+ const drop=(wrap,btn,onOpen)=>{const setOpen=o=>{wrap.classList.toggle('open',o);btn.setAttribute('aria-expanded',o?'true':'false');if(o&&onOpen)onOpen();};
+  btn.addEventListener('click',e=>{e.stopPropagation();setOpen(!wrap.classList.contains('open'));});
+  wrap.querySelector('.dmenu-pop').addEventListener('click',()=>setOpen(false),true);   // любое действие закрывает меню
+  document.addEventListener('click',e=>{if(!wrap.contains(e.target))setOpen(false);});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')setOpen(false);});};
+ drop(um,um.querySelector('#ubtn'),uiMenuSync);drop(qc,qc.querySelector('#qcbtn'),qcRender);
+ dot.addEventListener('click',()=>toast(stText()));
+ const obs=new MutationObserver(stSync);['syncst','anst'].forEach(id=>{const e=document.getElementById(id);if(e)obs.observe(e,{attributes:true,childList:true,characterData:true,subtree:true});});
+ const rb=document.getElementById('rolebtn');if(rb)new MutationObserver(uiMenuSync).observe(rb,{childList:true,characterData:true,subtree:true});
+ stSync();uiMenuSync();})();
+function stText(){const a=document.getElementById('syncst'),b=document.getElementById('anst');return [(a&&a.textContent)||'',(b&&b.textContent)||''].filter(Boolean).join(' · ');}
+function stSync(){const d=document.getElementById('stdot');if(!d)return;const cls=['syncst','anst'].map(id=>{const e=document.getElementById(id);return e?e.className:'';}).join(' ');
+ d.className='btn iconbtn st-dot '+(/p-warn|p-crit/.test(cls)?'st-warn':/p-good/.test(cls)?'st-good':'st-neut');d.title=stText();}
+function uiMenuSync(){const rb=document.getElementById('rolebtn'),av=document.getElementById('uav'),nm=document.getElementById('unm');if(!av)return;
+ const role=(typeof PERM!=='undefined'&&ROLEMETA[PERM.role])?ROLEMETA[PERM.role]:['👤','Гость'];
+ const who=(typeof AUTH!=='undefined'&&AUTH.user)?AUTH.user:role[1];av.textContent=String(who).split(/\s+/).map(w=>w[0]||'').join('').slice(0,2).toUpperCase()||'?';
+ nm.textContent=role[1];const ub=document.getElementById('ubtn');if(ub)ub.title=(rb&&rb.textContent)||'';
+ const dn=document.getElementById('densbtn');if(dn)dn.textContent=document.body.classList.contains('dense')?'▤ Плотность: компактно':'▤ Плотность: комфортно';
+ const sb=document.getElementById('startbtn');if(sb)sb.textContent='🏠 Стартовая страница: '+(lsGetS('start_view','myday')==='dash'?'Дашборд':'Мой день');}
+/* ---- «＋ Создать»: быстрое добавление элементов из любого раздела ---- */
+const QC=[
+ {k:'task',ic:'🗂',l:'Задача',view:'backlog',lvl:'team',f:[['title','Название задачи'],['type','Тип',['История','Задача','Тех.долг']],['est','Оценка, SP','num'],['sprint','Спринт','sprint']]},
+ {k:'bug',ic:'🐞',l:'Баг',view:'bugs',lvl:'team',f:[['title','Описание дефекта'],['sev','Серьёзность',['Critical','Major','Minor']],['sprint','Спринт','sprint']]},
+ {k:'risk',ic:'⚠️',l:'Риск',view:'risks',lvl:'team',f:[['title','Риск'],['p','Вероятность 1–5','num'],['i','Влияние 1–5','num'],['owner','Владелец']]},
+ {k:'imp',ic:'⛔',l:'Импедимент',view:'impediments',lvl:'team',f:[['title','Импедимент'],['severity','Важность',['High','Medium','Low']],['owner','Владелец']]}];
+function qcRender(){const p=document.getElementById('qcpop');if(!p)return;
+ p.innerHTML='<div class="mn-h">'+esc(uxScopeName())+'</div>'+QC.map(x=>`<button class="btn" data-qc="${x.k}">${x.ic} ${esc(x.l)}</button>`).join('')
+  +(PERM.canAdmin?'<div class="dmenu-sep"></div><button class="btn" data-proj="1">🧙 Новый проект (мастер)</button>':'');}
+document.addEventListener('click',e=>{const b=e.target.closest('#qcpop [data-qc]');if(b)qcOpen(b.dataset.qc);});
+function qcOpen(k){const q=QC.find(x=>x.k===k);if(!q)return;if(!PERM.canEdit){toast('Только для редактора/администратора');return;}
+ let m=document.getElementById('qcmodal');if(!m){m=document.createElement('div');m.className='modal';m.id='qcmodal';document.body.appendChild(m);
+  m.addEventListener('click',ev=>{if(ev.target===m)m.classList.remove('open');});}
+ const C=compute(),fld=([key,label,kind])=>{let inp;
+  if(Array.isArray(kind))inp=`<select data-q="${key}">${kind.map(o=>`<option>${esc(o)}</option>`).join('')}</select>`;
+  else if(kind==='sprint')inp=`<select data-q="${key}"><option value="">Без спринта</option>${C.sp.map(s=>`<option value="${s.s}"${s.s===C.cur?' selected':''}>Спринт #${s.s}${s.s===C.cur?' (текущий)':''}</option>`).join('')}</select>`;
+  else inp=`<input data-q="${key}" ${kind==='num'?'type="number" min="0" step="1"':''} placeholder="${esc(label)}">`;
+  return `<label class="qc-f"><span>${esc(label)}</span>${inp}</label>`;};
+ m.innerHTML=`<div class="mbox"><h3>${q.ic} ${esc(q.l)}</h3><p class="mnote">${esc(uxScopeName())}</p>${q.f.map(fld).join('')}
+  <div class="qc-act"><button class="btn" data-qcx="cancel">Отмена</button><button class="btn primary" data-qcx="ok">Создать</button></div></div>`;
+ m.classList.add('open');setTimeout(()=>{const i=m.querySelector('[data-q=title]');if(i)i.focus();},30);
+ m.onkeydown=ev=>{if(ev.key==='Enter'&&ev.target.tagName==='INPUT')qcSubmit(q);if(ev.key==='Escape')m.classList.remove('open');};
+ m.querySelector('[data-qcx=cancel]').onclick=()=>m.classList.remove('open');m.querySelector('[data-qcx=ok]').onclick=()=>qcSubmit(q);}
+function qcSubmit(q){const m=document.getElementById('qcmodal'),v={};m.querySelectorAll('[data-q]').forEach(e=>v[e.dataset.q]=e.value.trim());
+ if(!v.title){toast('Заполните название');return;}let id='';const C=compute();
+ if(q.k==='task'){ST.tasks=ST.tasks||[];id=genId(ST.tasks.filter(t=>/^T-\d+$/.test(t.id)),'id','T-');ST.tasks.push({id,title:v.title,assignee:'',role:'',type:v.type,est:num(v.est),status:'To Do',sprint:v.sprint?+v.sprint:'',dep:'',started:'',done:'',priority:'Should'});}
+ else if(q.k==='bug'){ST.bugs=ST.bugs||[];id=genId(ST.bugs,'id','B-');ST.bugs.push({id,desc:v.title,task:'',sprint:v.sprint?+v.sprint:'',sev:v.sev,status:'Открыт',time:0,reopened:false,cause:''});}
+ else if(q.k==='risk'){ST.risks=ST.risks||[];ST.risks.push({name:v.title,p:Math.max(1,Math.min(5,num(v.p)||3)),i:Math.max(1,Math.min(5,num(v.i)||3)),mit:'',owner:v.owner,status:'Открыт'});id=v.title.slice(0,30);}
+ else if(q.k==='imp'){ST.impediments=ST.impediments||[];id=genId(ST.impediments,'id','IM-');ST.impediments.push({id,date:todayISO(),title:v.title,owner:v.owner,severity:v.severity,status:'Открыт',sprint:C.cur,resolved:''});}
+ save();views();activate(CURV);
+ m.classList.remove('open');toastAction(q.l+' '+id+' создан(а)','Открыть',()=>activate(q.view));if(typeof auditClient==='function')auditClient('quick_create',q.k+':'+id);}
+document.getElementById('densbtn').onclick=()=>{const on=!document.body.classList.contains('dense');document.body.classList.toggle('dense',on);lsSetS('ui_dense',on?'1':'0');uiMenuSync();views();activate(CURV);};
+if(lsGetS('ui_dense','0')==='1')document.body.classList.add('dense');
+document.getElementById('startbtn').onclick=()=>{const nx=lsGetS('start_view','myday')==='dash'?'myday':'dash';lsSetS('start_view',nx);uiMenuSync();toast('Стартовая страница: '+(nx==='dash'?'Дашборд':'Мой день'));};
+/* ---------- Мой день: задачи текущего спринта, блокеры, ближайшие события ----------
+   «Я» — участник команды (выбирается один раз; с сервером — по имени пользователя). */
+function mdMe(){const v=lsGetS('me','');if(v&&(ST.team||[]).some(m=>m.name===v))return v;
+ const u=(typeof AUTH!=='undefined'&&AUTH.user)||'';const m=(ST.team||[]).find(x=>u&&(x.name===u||x.name.startsWith(u)));return m?m.name:'';}
+function mdEvents(C){const today=appTodayDate(),end=new Date(today.getTime()+14*864e5),out=[],inWin=d=>d&&d>=today&&d<=end;
+ const sp=C.curSp;if(sp){const b=new Date(sp.b.getUTCFullYear(),sp.b.getUTCMonth(),sp.b.getUTCDate());if(inWin(b))out.push({d:b,ic:'🏁',t:'Конец спринта #'+C.cur,v:'roadmap'});}
+ (ST.demo||[]).forEach(x=>{const d=x.date?appDateOf(x.date):null;if(inWin(d))out.push({d,ic:'🎬',t:'Демо: '+(x.item||''),v:'demo'});});
+ (ST.calendar||[]).forEach(x=>{const ds=typeof x==='string'?x:x.date,d=ds?appDateOf(ds):null;if(inWin(d))out.push({d,ic:'📅',t:'Праздник'+(x.name?': '+x.name:''),v:'calendar'});});
+ (ST.vacation||[]).forEach(x=>{const f=x.from?appDateOf(x.from):null,t=x.to?appDateOf(x.to):null;if(f&&t&&f<=end&&t>=today)out.push({d:f<today?today:f,ic:'🏖',t:(x.member||'')+': '+(x.type||'отсутствие')+' до '+fmtd(new Date(Date.UTC(t.getFullYear(),t.getMonth(),t.getDate()))),v:'vacation'});});
+ (ST.birthdays||[]).forEach(x=>{if(!x.date)return;const p=String(x.date).split('-');let d=new Date(today.getFullYear(),(+p[1]||1)-1,+p[2]||1);if(d<today)d=new Date(today.getFullYear()+1,(+p[1]||1)-1,+p[2]||1);if(inWin(d))out.push({d,ic:'🎂',t:'День рождения: '+(x.member||''),v:'birthdays'});});
+ return out.sort((a,b)=>a.d-b.d).slice(0,10);}
+function mydayView(){const w=document.createElement('div');w.className='md-wrap';w.id='myday_root';const C=compute(),me=mdMe(),cur=C.cur;
+ const T=(ST.tasks||[]).filter(t=>t.type!=='Эпик'),mine=T.filter(t=>+t.sprint===cur&&(!me||t.assignee===me));
+ const by=s=>mine.filter(t=>t.status===s),R=sprintRisk(C);
+ const row=t=>`<div class="md-task"><span class="md-id">${esc(t.id)}</span><span class="md-tt">${esc(t.title)}</span><span class="md-note">${num(t.est)} SP${me?'':' · '+esc(t.assignee||'—')}</span>`
+  +(PERM.canEdit?(t.status==='To Do'?`<button class="btn" data-md="start" data-id="${esc(t.id)}">▶ В работу</button>`:t.status==='В работе'?`<button class="btn" data-md="done" data-id="${esc(t.id)}">✓ Готово</button>`:''):'')+`</div>`;
+ let h=onbCard();
+ h+=`<div class="md-bar"><label>Я — <select data-md="me"><option value="">вся команда</option>${(ST.team||[]).map(m=>`<option${m.name===me?' selected':''}>${esc(m.name)}</option>`).join('')}</select></label>`
+  +`<span class="md-note">Спринт #${cur}${C.curSp?' · '+fmtd(C.curSp.a)+' — '+fmtd(C.curSp.b):''}${R?' · риск срыва: <b>'+esc(R.level.toLowerCase())+'</b>':''}</span></div>`;
+ h+=`<div class="md-grid"><div class="card"><div class="md-h">${me?'Мои задачи':'Задачи спринта'} — ${mine.length}</div>`
+  +(mine.length?['В работе','To Do','Готово'].map(s=>{const l=by(s);return l.length?`<div class="md-st">${esc(s)} · ${l.length}</div>`+l.map(row).join(''):'';}).join('')
+   :`<p class="md-empty">${me?'В текущем спринте нет задач на вас.':'В текущем спринте нет задач.'} <button class="btn" data-mdgo="backlog">Открыть бэклог</button></p>`)+`</div>`;
+ const imp=(ST.impediments||[]).filter(i=>i.status!=='Снят'&&(!me||i.owner===me)),risks=(ST.risks||[]).filter(r=>r.status!=='Закрыт'&&(!me||r.owner===me)&&num(r.p)*num(r.i)>=12),
+  bugs=(ST.bugs||[]).filter(b=>b.status!=='Закрыт'&&b.sev==='Critical'),deps=(ST.deps||[]).filter(d=>d.status==='Заблокировано');
+ const att=[].concat(imp.map(i=>['⛔','Импедимент: '+i.title,'impediments']),risks.map(r=>['⚠️','Риск: '+r.name,'risks']),bugs.map(b=>['🐞','Критичный баг: '+(b.desc||b.id),'bugs']),deps.map(d=>['🔗','Заблокировано: '+(d.item||d.desc||d.id),'deps']));
+ h+=`<div class="card"><div class="md-h">Требует внимания — ${att.length}</div>${att.length?att.slice(0,8).map(a=>`<button class="md-li" data-mdgo="${a[2]}">${a[0]} ${esc(a[1])}</button>`).join(''):'<p class="md-empty">Блокеров нет.</p>'}</div>`;
+ const ev=mdEvents(C);
+ h+=`<div class="card"><div class="md-h">Ближайшие 14 дней</div>${ev.length?ev.map(e=>`<button class="md-li" data-mdgo="${e.v}"><span class="md-d">${('0'+e.d.getDate()).slice(-2)}.${('0'+(e.d.getMonth()+1)).slice(-2)}</span> ${e.ic} ${esc(e.t)}</button>`).join(''):'<p class="md-empty">Событий нет.</p>'}</div>`;
+ h+=`</div>`;
+ w.innerHTML=h;return w;}
+function mdSetStatus(id,st){if(!PERM.canEdit){toast('Только для редактора/администратора');return;}const t=(ST.tasks||[]).find(x=>x.id===id);if(!t)return;
+ t.status=st;if(st==='В работе'&&!t.started)t.started=todayISO();if(st==='Готово')t.done=todayISO();save();views();activate('myday');toast(id+': '+st);}
+document.addEventListener('click',e=>{const b=e.target.closest('#myday_root [data-md], [data-mdgo], [data-onb]');if(!b)return;
+ if(b.dataset.mdgo){activate(b.dataset.mdgo);return;}
+ if(b.dataset.md==='start')mdSetStatus(b.dataset.id,'В работе');else if(b.dataset.md==='done')mdSetStatus(b.dataset.id,'Готово');
+ if(b.dataset.onb==='hide'){lsSetS('onb_off','1');views();activate(CURV);}else if(b.dataset.onb)activate(b.dataset.onb);});
+document.addEventListener('change',e=>{const s=e.target.closest('#myday_root [data-md=me]');if(!s)return;lsSetS('me',s.value);views();activate('myday');});
+/* ---------- Первые шаги для пустого проекта (на «Моём дне» и дашборде) ---------- */
+function onbSteps(){const C=compute(),T=(ST.tasks||[]).filter(t=>t.type!=='Эпик');
+ return [['params','Параметры: название и дата старта',!!(ST.params&&ST.params.name&&ST.params.start)],['team','Состав команды',(ST.team||[]).length>0],
+  ['backlog','Бэклог: хотя бы 3 задачи',T.length>=3],['backlog','План текущего спринта',T.some(t=>+t.sprint===C.cur)],
+  ['sprintGoals','Цель спринта',(ST.sprintGoals||[]).some(g=>+g.sprint===C.cur&&String(g.goal||g.text||'').trim())],['board','Доска: первая сессия',((ST.board&&ST.board.items)||[]).length>0]];}
+function onbCard(){if(lsGetS('onb_off','')==='1')return '';const S=onbSteps(),done=S.filter(s=>s[2]).length;if(done===S.length)return '';
+ return `<div class="card onb"><div class="md-bar"><span class="md-h">🚀 Первые шаги — ${done} из ${S.length}</span><span class="onb-prog"><i style="width:${Math.round(done/S.length*100)}%"></i></span><button class="btn" data-onb="hide">Скрыть</button></div>`
+  +`<div class="onb-steps">${S.map((s,i)=>`<button class="onb-s${s[2]?' ok':''}" data-onb="${s[0]}"><span>${s[2]?'✓':i+1}</span>${esc(s[1])}</button>`).join('')}</div></div>`;}
+function onbInject(){const v=document.getElementById('v_dash');if(!v)return;const old=v.querySelector(':scope > .onb-wrap');if(old)old.remove();const h=onbCard();if(!h)return;
+ const d=document.createElement('div');d.className='onb-wrap';d.innerHTML=h;const lede=v.querySelector(':scope > .lede');if(lede)lede.after(d);else v.prepend(d);}
+/* ---------- Мастер «Новый проект»: свой проект с нуля вместо демо-данных ----------
+   Справочники (DoD, DoR, календарь, FAQ, категории Исикавы, канбан-доски) сохраняются, остальные данные очищаются. */
+function blankState(src){const s=JSON.parse(JSON.stringify(src));const KEEP=['dod','dorItems','calendar','faq','ishikawaCats','boards'];
+ Object.keys(s).forEach(k=>{if(Array.isArray(s[k])&&!KEEP.includes(k))s[k]=[];});s.board={cam:{x:80,y:80,z:1},items:[]};if(s.params)s.params.goal='';return s;}
+function projOpen(){if(!PERM.canAdmin){toast('Только для администратора');return;}
+ let m=document.getElementById('projmodal');if(!m){m=document.createElement('div');m.className='modal';m.id='projmodal';document.body.appendChild(m);m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open');});}
+ const now=new Date().toISOString().slice(0,10),P=ST.params||{};
+ m.innerHTML=`<div class="mbox wiz-box"><h3>🧙 Новый проект</h3><p class="mnote">Свой проект с нуля: параметры, команда и первые задачи — одним шагом. Справочники (DoD, DoR, календарь, FAQ) сохраняются.</p>
+  <label class="qc-f"><span>Название проекта</span><input data-w="name" placeholder="Например, Мобильное приложение"></label>
+  <label class="qc-f"><span>Цель проекта</span><input data-w="goal" placeholder="Чего добиваемся"></label>
+  <div class="wiz-row"><label class="qc-f"><span>Старт первого спринта</span><input type="date" data-w="start" value="${esc(now)}"></label><label class="qc-f"><span>Длина спринта, раб. дней</span><input type="number" min="5" max="20" data-w="days" value="${num(P.sprintDays)||10}"></label><label class="qc-f"><span>Спринтов</span><input type="number" min="1" max="52" data-w="sprints" value="6"></label></div>
+  <label class="qc-f"><span>Команда — по строке «Имя — роль» (роли: ${esc(ROLES.join(', '))})</span><textarea data-w="team" rows="4" placeholder="Иванов А. — Backend"></textarea></label>
+  <label class="qc-f"><span>Бэклог — по задаче в строке (попадут в спринт 1)</span><textarea data-w="tasks" rows="4" placeholder="Прототип главного экрана"></textarea></label>
+  <label class="qc-f qc-chk"><input type="checkbox" data-w="backup" checked><span>Сначала скачать копию текущих данных (JSON)</span></label>
+  <p class="wiz-warn">Текущие данные проекта будут заменены.</p>
+  <div class="qc-act"><button class="btn" data-wx="cancel">Отмена</button><button class="btn primary" data-wx="ok">Создать проект</button></div></div>`;
+ m.classList.add('open');setTimeout(()=>m.querySelector('[data-w=name]').focus(),30);
+ m.querySelector('[data-wx=cancel]').onclick=()=>m.classList.remove('open');m.querySelector('[data-wx=ok]').onclick=projRun;}
+function projRun(){const m=document.getElementById('projmodal'),v={};m.querySelectorAll('[data-w]').forEach(e=>v[e.dataset.w]=e.type==='checkbox'?e.checked:e.value.trim());
+ if(!v.name){toast('Введите название проекта');return;}if(!PERM.canAdmin){toast('Только для администратора');return;}
+ if(v.backup){const b=document.getElementById('exp');if(b)b.click();}
+ const st=blankState(ST),P=st.params||(st.params={});
+ Object.assign(P,{name:v.name,goal:v.goal||'',start:v.start||new Date().toISOString().slice(0,10),today:new Date().toISOString().slice(0,10),
+  sprintDays:Math.max(5,Math.min(20,parseInt(v.days,10)||10)),sprints:Math.max(1,Math.min(52,parseInt(v.sprints,10)||6))});
+ const lines=s=>String(s||'').split('\n').map(x=>x.trim()).filter(Boolean);
+ st.team=lines(v.team).slice(0,40).map(l=>{const p=l.split(/\s+[—–-]\s+|\t|;/);const r=(p[1]||'').trim(),role=ROLES.find(x=>x.toLowerCase()===r.toLowerCase())||'';return {name:p[0].trim(),role,avail:1,absent:0};});
+ st.tasks=lines(v.tasks).slice(0,200).map((t,i)=>({id:'T-'+String(i+1).padStart(2,'0'),title:t,assignee:'',role:'',type:'История',est:0,status:'To Do',sprint:1,dep:'',started:'',done:'',priority:'Should'}));
+ ST=migrate(st);save();lsSetS('onb_off','');m.classList.remove('open');views();activate('myday');
+ toast('Проект «'+v.name+'» создан');if(typeof auditClient==='function')auditClient('wizard_project',v.name);}
+document.addEventListener('click',e=>{if(e.target.closest('[data-proj]'))projOpen();});
+/* ---------- Ленивая отрисовка разделов: views() строит только открытый раздел ----------
+   Во время views() построители разделов (…View) возвращают заглушку с отложенной сборкой; заголовок и описание
+   (setView) ставятся сразу — помощник и поиск видят все разделы. Заглушки открытого раздела собираются при activate(). */
+var LAZY={on:false,n:0};
+(function(){const names=Object.keys(window).filter(k=>typeof window[k]==='function'&&/^[a-z][A-Za-z0-9]*View$/.test(k)&&k!=='setView');
+ names.forEach(k=>{const f=window[k];window[k]=function(){if(!LAZY.on)return f.apply(this,arguments);const self=this,args=arguments;
+   const ph=document.createElement('div');ph.className='lazy-ph';ph._lazy=()=>f.apply(self,args);LAZY.n++;return ph;};});
+ const _views=window.views,_activate=window.activate;
+ window.lazyMaterialize=function(id){const v=document.getElementById('v_'+id);if(!v)return 0;let n=0;
+  v.querySelectorAll('.lazy-ph').forEach(ph=>{if(!ph.isConnected||!ph._lazy)return;const node=ph._lazy();ph._lazy=null;if(node&&node.nodeType)ph.replaceWith(node);else ph.remove();n++;});return n;};
+ window.views=function(){LAZY.on=true;try{return _views.apply(this,arguments);}finally{LAZY.on=false;if(typeof CURV!=='undefined')lazyMaterialize(CURV);}};
+ window.activate=function(id){lazyMaterialize(id);return _activate.apply(this,arguments);};})();
+/* ---------- Компактная навигация: пункты-хабы с вкладками, «Все разделы» ----------
+   Слой поверх NAV: разделы не меняются (id, контейнеры, тесты), меняется только меню. Разделы, не попавшие в карту
+   (например, добавленные позже), автоматически попадают в пункт «Ещё». */
+const NAV2=[['myday','Мой день','🏠',['myday']],['h_over','Обзор','📋',['dash','statusreport','portfolio']],['h_backlog','Бэклог','🗂️',['backlog','wbs','storymap']],
+  ['h_prio','Приоритизация','⚖️',['rice','wsjf','moscow']],['h_boards','Доски','🗃️',['kanban','board']],['h_plan','Планирование','🗺️',['roadmap','sprintGoals','quarters','okr']],
+  ['h_sched','Расписание','📅',['gantt','milestones','deps','piboard']],['h_cer','Церемонии','☀️',['daily','grooming','poker','demo','retro']],
+  ['h_rel','Выпуск','🚀',['releases','changes','scope','debt']],['h_raid','Риски и журналы','⚠️',['risks','issues','impediments','decisions','lessons']],
+  ['h_qual','Качество','📈',['analytics','bugs','dora','incidents','evm']],['h_people','Люди','👥',['team','raci','starmap','stakeholders','vacation','birthdays']],
+  ['h_health','Здоровье','🩺',['healthcheck','busfactor','agile']],['h_set','Настройки','⚙️',['params','calendar','budget','integrations','checks','eda','audit']],
+  ['h_help','Справка','❓',['faq','support']]];
+(function(){const known=new Set();NAV2.forEach(e=>e[3].forEach(id=>known.add(id)));
+ const extra=NAV.flatMap(g=>g.items.map(i=>i[0])).filter(id=>!known.has(id));if(extra.length)NAV2.push(['h_more','Ещё','➕',extra]);
+ NAV2.forEach(e=>{e[3]=e[3].filter(id=>ID2ITEM[id]);});})();
+var NAVS=(function(){try{return Object.assign({mode:'compact',hubLast:{}},JSON.parse(lsGetS('nav2','{}')));}catch(e){return {mode:'compact',hubLast:{}};}})();
+function saveNavS(){lsSetS('nav2',JSON.stringify(NAVS));}
+function navEntryOf(id){return NAV2.find(x=>x[3].includes(id))||null;}
+function navTarget(e){const last=NAVS.hubLast[e[0]];return e[3].includes(last)?last:e[3][0];}
+function buildNav2(){const pinSet=new Set(NAVUI.pins.filter(id=>ID2ITEM[id])),cur=navEntryOf(CURV);
+ const row=(id)=>ID2ITEM[id]?navRow(ID2ITEM[id],pinSet.has(id)):'';
+ let h='<div class="nav-search-wrap"><input id="navsearch" class="nav-search" type="search" placeholder="Поиск раздела…  ⌘K" autocomplete="off"></div>';
+ const pins=[...pinSet];
+ if(pins.length)h+=`<div class="nav-group nav-smart nav-hubs"><div class="nav-h nav-h-static"><span class="nav-h-t">⭐ Избранное</span></div><div class="nav-items">${pins.map(row).join('')}</div></div>`;
+ h+=`<div class="nav-group nav-hubs"><div class="nav-items">${NAV2.map(e=>{const act=cur===e,n=e[3].length;
+   return `<div class="nav-row"><button class="nav-item${act?' active':''}" data-v="${esc(navTarget(e))}" title="${esc(e[3].map(id=>ID2ITEM[id][1]).join(' · '))}"><span class="nav-ic">${e[2]}</span><span class="nav-lbl">${esc(e[1])}</span>${n>1?`<span class="nav-cnt">${n}</span>`:''}</button></div>`;}).join('')}</div></div>`;
+ h+=`<div class="nav-group nav-allg"><div class="nav-h nav-h-static"><span class="nav-h-t">Найдено</span></div><div class="nav-items">${NAV.flatMap(g=>g.items.map(i=>i[0])).map(row).join('')}</div></div>`;
+ h+=`<button class="nav-mode" data-navmode="all">☰ Все разделы (${NAV.reduce((s,g)=>s+g.items.length,0)})</button>`;
+ const nav=document.getElementById('nav');nav.innerHTML=h;nav.classList.add('nav2');
+ if(_navQ){const s=document.getElementById('navsearch');if(s){s.value=_navQ;navFilter(_navQ);}}
+ const sf=document.getElementById('sidefoot');if(sf)sf.innerHTML=`<div class="sf-name">Управление кросс-функциональной командой</div><div class="sf-ver">v${APP_VERSION} · ${APP_DATE}</div>`;}
+/* Вкладки хаба над разделом */
+function hubBar(id){const x=navEntryOf(id),v=document.getElementById('v_'+id);if(!v)return;const old=v.querySelector(':scope > .hub-tabs');if(old)old.remove();
+ if(!x||x[3].length<2||NAVS.mode==='all')return;const bar=document.createElement('div');bar.className='hub-tabs';bar.setAttribute('role','tablist');
+ bar.innerHTML=`<span class="hub-t">${x[2]} ${esc(x[1])}</span>`+x[3].map(m=>{const it=ID2ITEM[m];return `<button class="btn${m===id?' on':''}" role="tab" data-hubv="${esc(m)}">${it[2]} ${esc(it[1])}</button>`;}).join('');
+ v.insertBefore(bar,v.firstChild);}
+(function(){const _build=window.buildNav,_activate=window.activate,_views=window.views;
+ window.buildNav=function(){if(NAVS.mode==='all'){const r=_build.apply(this,arguments);const nav=document.getElementById('nav');nav.classList.remove('nav2');
+   const b=document.createElement('button');b.className='nav-mode';b.dataset.navmode='compact';b.textContent='▦ Компактное меню';nav.appendChild(b);return r;}
+  return buildNav2();};
+ window.activate=function(id){const x=navEntryOf(id);if(x){NAVS.hubLast[x[0]]=id;saveNavS();}
+  const r=_activate.apply(this,arguments);hubBar(id);return r;};
+ window.views=function(){const r=_views.apply(this,arguments);if(typeof CURV!=='undefined')hubBar(CURV);onbInject();return r;};})();
+document.getElementById('nav').addEventListener('click',e=>{const md=e.target.closest('[data-navmode]');if(md){NAVS.mode=md.dataset.navmode;saveNavS();buildNav();hubBar(CURV);}},true);
+document.addEventListener('click',e=>{const b=e.target.closest('.hub-tabs [data-hubv]');if(b)activate(b.dataset.hubv);});
+document.addEventListener('click',e=>{const l=e.target.closest('.view > .lede');if(l&&!e.target.closest('a,button'))l.classList.toggle('open');});
 views();activate('dash');
+{const sv=lsGetS('start_view','myday');if(sv!=='dash'&&document.getElementById('v_'+sv))activate(sv);}
 
 /* ---------- server authentication + multi-user sync ---------- */
 const API='api/state';const AUTHAPI='api/auth';const AUDITAPI='api/audit';
@@ -5877,7 +6154,7 @@ startAnalytics();setInterval(startAnalytics,30000);
     Пересобирается на каждой загрузке из NAV + DOM (h1/.lede каждого раздела) + TOUR + CHANGELOG,
     поэтому «обучение» помощника происходит само после каждого обновления приложения:
     новый или переименованный раздел, изменённое описание и новая версия подхватываются без правок. */
- const AKA={dash:'обзор kpi сводка панель главная',statusreport:'статус отчёт доклад сводка',portfolio:'портфель проектов программа',
+ const AKA={myday:'мой день мои задачи стартовая страница блокеры события сегодня',dash:'обзор kpi сводка панель главная',statusreport:'статус отчёт доклад сводка',portfolio:'портфель проектов программа',
   roadmap:'дорожная карта план спринтов график спринтов',quarters:'кварталы квартальный план',sprintGoals:'цель спринта обязательство ценность',
   kanban:'канбан доска статусы колонки карточки',board:'холст схемы стикеры мозговой штурм whiteboard рисование шаблоны ретро swot lean canvas карточки задач виджеты метрики отмена группировка мини-карта голосование презентация показ комментарии упоминания блок-схема майнд-карта mind map таблица дорожки swimlane',okr:'цели ключевые результаты objectives key results',
   backlog:'бэклог задачи список работ',wbs:'иерархия работ декомпозиция эпик фича история роллап',storymap:'карта историй активности',
@@ -6107,6 +6384,7 @@ startAnalytics();setInterval(startAnalytics,30000);
 /* ---------- guided tour (video-style walkthrough) ---------- */
 const TOUR=[
  {v:'dash',h:'Управление кросс-функциональной командой — обзор',p:'Веб-приложение для планирования работы кросс-функциональной команды по двухнедельным спринтам: данные, метрики и диаграммы в одном месте. Пройдёмся по всем разделам.',d:8000},
+ {v:'myday',h:'Мой день',p:'Стартовая страница: ваши задачи текущего спринта со сменой статуса в один клик, блокеры и события ближайших двух недель. Меню компактное — родственные разделы собраны во вкладки, «＋ Создать» в шапке добавляет задачу, баг, риск или импедимент из любого раздела.',d:10000},
  {v:'dash',h:'Дашборд',p:'Сводка проекта: KPI с RAG-подсветкой, блок «Что требует внимания», кликабельные карточки и sparkline-тренды. Ниже — графики ёмкости, velocity, багов и Time to Market.',d:10000},
  {v:'roadmap',h:'Дорожная карта',p:'Спринты рассчитываются автоматически из параметров и состава команды: даты, рабочие дни, ёмкость, план, velocity и процент выполнения.',d:9000},
  {v:'quarters',h:'Кварталы',p:'Агрегация спринтов по кварталам и квартальный roadmap на шкале дат.',d:7000},
