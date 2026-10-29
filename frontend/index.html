@@ -624,8 +624,8 @@ body.ro .depc button,body.ro .depm select{display:none}
 .hgs-deps{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 6px}
 .hg-mleg{margin-top:12px}.hg-mgrid{display:grid;grid-template-columns:minmax(120px,.6fr) 1fr 1fr;gap:6px 18px;margin:6px 0 8px;font-size:12.5px;align-items:center}.hg-mgrid b{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}.hg-ms{font-weight:600}
 .hg-mi{display:flex;align-items:center;gap:6px}
-.hgs-grid{display:grid;grid-template-columns:minmax(150px,1.1fr) 1fr 1fr;gap:6px 10px;align-items:center;margin:10px 0}
-.hgs-n{display:flex;align-items:center;gap:6px;font-size:13px}.hgs-n svg{flex:none}.hgs-c{display:flex;flex-direction:column;gap:2px}
+.hgs-grid{display:grid;grid-template-columns:minmax(120px,1fr) minmax(0,1fr) minmax(0,1fr);gap:6px 10px;align-items:start;margin:10px 0}
+.hgs-n{display:flex;align-items:center;gap:6px;font-size:13px;min-height:40px}.hgs-h{display:flex;justify-content:space-between;gap:6px;white-space:nowrap;font-size:11.5px;color:var(--muted)}.hgs-h>span{overflow:hidden;text-overflow:ellipsis}.hgs-n svg{flex:none}.hgs-c{display:flex;flex-direction:column;gap:2px}
 .hgs-td{border:none;background:none;color:var(--accent);font:inherit;font-size:11.5px;cursor:pointer;padding:0}
 .hgr-grid{display:flex;flex-direction:column;gap:8px}.hgr-row{display:grid;grid-template-columns:190px 1fr;gap:10px;align-items:start}
 .hgr-roles{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:13px}.hgr-roles label{display:inline-flex;align-items:center;gap:5px}.hgr-roles input{width:auto;min-width:0}
@@ -4645,7 +4645,7 @@ function hgStagesOpen(id){const node=hgFind(id),t=(ST.tasks||[]).find(x=>x.id===
  let m=document.getElementById('hgsmodal');if(!m){m=document.createElement('div');m.className='modal';m.id='hgsmodal';document.body.appendChild(m);m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open');});}
  const man=(t.stages&&typeof t.stages==='object')?t.stages:{},auto=node?node.auto:{},ro=!PERM.canEdit;
  const cell=k=>`<div class="hgs-c"><input type="date" data-hgk="${k}" value="${esc(man[k]||'')}"${ro?' disabled':''} aria-label="${esc(hgMarkName(k))}">`
-  +`<span class="md-note">авто: ${auto[k]?fmtd(pd(auto[k])):'—'}${ro?'':` · <button class="hgs-td" data-hgtd="${k}">сегодня</button>`}</span></div>`;
+  +`<span class="hgs-h"><span>авто: ${auto[k]?fmtd(pd(auto[k])).replace(/\.(\d{2})(\d{2})$/,'.$2'):'—'}</span>${ro?'':`<button class="hgs-td" data-hgtd="${k}">сегодня</button>`}</span></div>`;
  const dl=depList(t),cand=(ST.tasks||[]).filter(x=>x.id!==t.id&&!dl.includes(x.id));
  const depH=`<div class="md-st">Зависит от (окончание → начало)</div><div class="hgs-deps" data-hgdeps>${dl.map(id=>{const x=(ST.tasks||[]).find(y=>y.id===id)||{};return `<span class="depc" data-dv="${esc(id)}">${esc(id)} <small>${esc((x.title||'').slice(0,28))}</small>${ro?'':`<button data-hgsdel="${esc(id)}" title="Убрать">×</button>`}</span>`;}).join('')||'<span class="md-note">нет</span>'}</div>`
   +(ro?'':`<select data-hgsadd><option value="">＋ Добавить предшественника…</option>${cand.map(x=>`<option value="${esc(x.id)}">${esc(x.id+(x.title?' · '+x.title:''))}</option>`).join('')}</select>`);
@@ -5731,9 +5731,11 @@ const NAV=[
  {g:'Система',items:[['params','Параметры','⚙️'],['integrations','Интеграции','🔌'],['calendar','Календарь','📅'],['budget','Бюджет','💰'],['checks','Проверки данных','🧪'],['eda','EDA отчёт','🔬'],['audit','Журнал событий','🧾']]},
  {g:'Справка',items:[['faq','FAQ','❓'],['support','Support','🛟']]},
 ];
-const APP_VERSION='1.54.0';const APP_DATE='2026-10-30';
+const APP_VERSION='1.54.1';const APP_DATE='2026-10-30';
 const APP_ABOUT='Кросс-функциональная команда — это группа специалистов из разных областей (разработчиков, дизайнеров, маркетологов, аналитиков, менеджеров и других), которые объединяются для работы над одним конкретным проектом или задачей. Ключевая идея в том, чтобы собрать внутри команды всех необходимых экспертов, чтобы она могла самостоятельно пройти путь от идеи до результата, не передавая задачу последовательно из одного отдела в другой.';
 const CHANGELOG=[
+ {v:'1.54.1',date:'2026-10-30',items:[
+   'Исправлено: в панели «зависимости и этапы» на «Ганте по иерархии» подсказка «авто: дата · сегодня» переносилась на вторую строку и сдвигала поле «Завершение» вниз — подсказка теперь в одну строку, поля каждого этапа выровнены по верху.']},
  {v:'1.54.0',date:'2026-10-30',items:[
    'Гант по иерархии — стрелки зависимостей «окончание → начало» между задачами, историями, фичами и эпиками: серые — в порядке, красные — преемник заканчивается раньше предшественника, акцентные — критический путь; при наведении подсвечиваются обе строки.',
    'Свёрнутые уровни: связь переносится на ближайшего видимого предка — пунктирная стрелка между эпиками или фичами со значком ×N; связи внутри одной ветки иерархии не рисуются и показываются предупреждением.',

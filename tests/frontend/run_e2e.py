@@ -893,6 +893,18 @@ def main():
             assert r['ro'] and r['hidden'], 'viewer read-only panel; marks toggle'
         case('stages: hierarchy Gantt stage marks — auto (roles, demo, release), manual panel, legend, roles', t_stages)
 
+        # ---- Regression: stage panel rows stay aligned (hint «авто: дата · сегодня» never wraps) ----
+        def t_stpanel_layout():
+            r = page.evaluate("""async()=>{try{setPerm('editor');applyPerms();HG.level=9;views();activate('hgantt');hgStagesOpen('T-16');const box=document.querySelector('#hgsmodal .mbox'),out=[];
+              for(const w of [420,512,560]){box.style.width=w+'px';await new Promise(r=>setTimeout(r,30));
+               document.querySelectorAll('#hgsmodal .hgs-n').forEach(n=>{const s=n.nextElementSibling,e=s.nextElementSibling;
+                out.push([w,Math.round(e.querySelector('input').getBoundingClientRect().top-s.querySelector('input').getBoundingClientRect().top),
+                 Math.max(s.querySelector('.hgs-h').getBoundingClientRect().height,e.querySelector('.hgs-h').getBoundingClientRect().height)]);});}
+              return out;}finally{const m=document.getElementById('hgsmodal');if(m)m.classList.remove('open');activate('dash');}}""")
+            bad = [x for x in r if x[1] != 0 or x[2] > 20]
+            assert len(r) == 18 and not bad, 'stage panel rows misaligned / hint wrapped (width, offset, hint height): ' + str(bad)
+        case('stages panel: rows aligned, hint on one line at 420–560 px', t_stpanel_layout)
+
         # ---- Dependency arrows on the hierarchy Gantt: several predecessors, rollup to visible ancestors, conflicts, editing ----
         def t_hglinks():
             r = page.evaluate("""async()=>{const errs=[];const h=e=>errs.push(String(e.message||e.reason||e));window.addEventListener('error',h);
