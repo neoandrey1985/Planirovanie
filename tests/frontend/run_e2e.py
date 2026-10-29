@@ -826,7 +826,7 @@ def main():
               const facts=document.querySelectorAll('#hg_root .hg-f').length;
               document.querySelector('#hg_root [data-hgf]').click();const noFact=document.querySelectorAll('#hg_root .hg-f').length===0;HG.fact=true;
               const a=T.find(t=>t.id==='T-19'),b=T.find(t=>t.id==='T-20'),pa=a.parent,pb=b.parent;a.parent='T-20';b.parent='T-19';hgRefresh();
-              const cyc=(document.querySelector('#hg_root .wiz-warn')||{}).textContent||'';a.parent=pa;b.parent=pb;hgRefresh();
+              const cyc=(document.querySelector('#hg_root .wiz-warn:not(.hg-linkbad)')||{}).textContent||'';a.parent=pa;b.parent=pb;hgRefresh();
               document.querySelector('#hg_root [data-hgo="T-14"]').click();const opened=CURV==='backlog'&&UI.search.tasks==='T-14';UI.search.tasks='';
               const again=migrate(JSON.parse(JSON.stringify(ST))).tasks.filter(t=>t.type==='Фича').length;
               const blank=migrate(%(BLANK)s(ST)).tasks.length;
@@ -865,7 +865,7 @@ def main():
               document.querySelector('#hg_root [data-hgrow="T-12"] .hg-mk').click();document.querySelector('#hgsmodal [data-hgsx=auto]').click();
               const reset=JSON.stringify(ST.tasks.find(x=>x.id==='T-12').stages);
               // роли: убираем Backend из разработки — авто-метки разработки у T-01 пропадают
-              ST.params.stageRoles='ba=Product Owner;sa=Analyst;dev=Frontend;ift=QA';const noDev=!hgFind('T-09').st.dev_s&&hgFind('T-01').st.dev_s==='2026-08-04'&&!!hgFind('T-02').st.dev_s;ST.params.stageRoles=keepR;
+              ST.params.stageRoles='ba=Product Owner;sa=Analyst;dev=Frontend;ift=QA';const noDev=!hgFind('T-09').st.dev_s&&!hgFind('T-01').st.dev_s&&!!hgFind('T-02').st.dev_s;ST.params.stageRoles=keepR;
               activate('params');const roleBoxes=document.querySelectorAll('#hgrdiv [data-hgr]').length;
               const cb=document.querySelector('#hgrdiv [data-hgr="ift"][value="DevOps"]');cb.checked=true;cb.dispatchEvent(new Event('change',{bubbles:true}));
               const mapped=(hgRoleMap().ift||[]).includes('DevOps');ST.params.stageRoles=keepR;
@@ -880,7 +880,7 @@ def main():
             assert not r['errs'], 'page errors: ' + str(r['errs'][:3])
             assert r['leg'] == 12 and 'Контур — начало' in r['legTxt'], 'legend lists all 12 marks with description'
             a = r['auto']
-            assert a['dev'] == ['2026-08-03', '2026-08-12'], 'story T-01: own Backend dates + child T-02 (Frontend): ' + str(a)
+            assert a['dev'] == ['2026-08-03', '2026-08-06'], 'dev marks of T-01 from role Backend dates: ' + str(a)
             assert a['psi'] == ['2026-08-14', '2026-08-14'], 'PSI from accepted sprint demo: ' + str(a)
             assert a['prod'] == ['2026-08-17', '2026-08-28'], 'Prod from release R-1 (done): ' + str(a)
             assert a['feDevS'] == '2026-08-03' and a['feDevE'] is None, 'parent: earliest start, no end while a child is not done: ' + str(a)
@@ -892,6 +892,54 @@ def main():
             assert r['roleBoxes'] == 4 * 8 and r['mapped'], 'role mapping editable in Parameters: ' + str(r)
             assert r['ro'] and r['hidden'], 'viewer read-only panel; marks toggle'
         case('stages: hierarchy Gantt stage marks — auto (roles, demo, release), manual panel, legend, roles', t_stages)
+
+        # ---- Dependency arrows on the hierarchy Gantt: several predecessors, rollup to visible ancestors, conflicts, editing ----
+        def t_hglinks():
+            r = page.evaluate("""async()=>{const errs=[];const h=e=>errs.push(String(e.message||e.reason||e));window.addEventListener('error',h);
+             const keep=JSON.stringify(ST.tasks),T=()=>ST.tasks,g=id=>ST.tasks.find(x=>x.id===id),tick=()=>new Promise(r=>setTimeout(r,60));
+             const lns=()=>[...document.querySelectorAll('#hg_root .hg-ln')].map(x=>x.dataset.ln+(x.classList.contains('der')?':der':'')+(x.classList.contains('conf')?':conf':'')+(x.classList.contains('crit')?':crit':''));
+             try{setPerm('editor');applyPerms();HG.level=9;HG.open={};HG.links=true;views();activate('hgantt');await tick();
+              const demoBranch=['T-02','T-13'].map(id=>g(id).parent).join(',');
+              const all=lns(),bad=document.querySelector('#hg_root .hg-linkbad').textContent;
+              g('T-09').dep='T-12';hgRefresh();await tick();const conf=lns().includes('T-12>T-09:conf');
+              const confList=depConflictList().some(x=>x.startsWith('T-09'));
+              HG.level=2;HG.open={};hgRefresh();await tick();const l2=lns();
+              HG.level=9;hgRefresh();await tick();
+              // ветка иерархии: связь родитель/потомок не рисуется, показывается предупреждение
+              g('T-08').dep='T-11';hgRefresh();await tick();const branch=document.querySelector('#hg_root .hg-linkbad').textContent;g('T-08').dep='';
+              // панель: добавить предшественника, отказ на цикл и на ветку
+              hgRefresh();await tick();document.querySelector('#hg_root [data-hgrow="T-12"] .hg-tt').click();const m=document.getElementById('hgsmodal'),ad=m.querySelector('[data-hgsadd]');
+              ad.value='T-11';ad.dispatchEvent(new Event('change'));ad.value='T-11';ad.dispatchEvent(new Event('change'));
+              const chips=[...m.querySelectorAll('[data-hgdeps] .depc')].length;m.querySelector('[data-hgsx=ok]').click();const panelDep=g('T-12').dep;
+              const cyc=depCheck(g('T-01'),'T-13'),br=depCheck(g('T-03'),'FE-2'),self=depCheck(g('T-03'),'T-03');
+              // клик по стрелке → «Удалить связь»
+              hgRefresh();await tick();const gl=document.querySelector('#hg_root .hg-ln[data-ln="T-11>T-12"] .hit');
+              gl.dispatchEvent(new MouseEvent('click',{bubbles:true,clientX:300,clientY:300}));const tip=!!document.querySelector('#hg_root .hg-ltip [data-hgdel="T-12"]');
+              document.querySelector('#hg_root .hg-ltip [data-hgdel="T-12"]').click();const removed=g('T-12').dep;
+              // «Бэклог»: несколько предшественников
+              activate('backlog');const ri=ST.tasks.indexOf(g('T-20')),sel=document.querySelector('#v_backlog [data-depadd][data-di="'+ri+'"]');
+              sel.value='T-16';sel.dispatchEvent(new Event('change',{bubbles:true}));const s2=document.querySelector('#v_backlog [data-depadd][data-di="'+ri+'"]');s2.value='T-17';s2.dispatchEvent(new Event('change',{bubbles:true}));
+              const multi=g('T-20').dep;document.querySelector('#v_backlog [data-depdel="T-16"][data-di="'+ri+'"]').click();const afterDel=g('T-20').dep;
+              const crit=cpm(ST.tasks),norm=migrate({tasks:[{id:'A',dep:''},{id:'B',dep:'A; X-9, A,B'}]}).tasks[1].dep;
+              activate('hgantt');await tick();const xd=!!document.querySelector('#hg_root [data-hgrow="T-03"] .hg-xd');
+              document.querySelector('#hg_root [data-hgl]').click();await tick();const off=!document.querySelector('#hg_root svg.hg-links');HG.links=true;
+              const leg=document.querySelectorAll('#hg_root .hg-lleg > span').length;
+              return {demoBranch,all,bad,conf,confList,l2,branch,chips,panelDep,cyc,br,self,tip,removed,multi,afterDel,critN:crit.size,norm,xd,off,leg,errs};
+             }catch(e){return 'ERR:'+e.message+' '+e.stack;}finally{window.removeEventListener('error',h);ST.tasks=JSON.parse(keep);save();HG.level=2;HG.open={};HG.links=true;views();activate('dash');}}""")
+            assert isinstance(r, dict), 'hglinks failed: ' + str(r)
+            assert not r['errs'], 'page errors: ' + str(r['errs'][:3])
+            assert r['demoBranch'] == 'FE-1,FE-2' and r['bad'] == '', 'demo links are not inside one branch: ' + str(r)
+            assert 'T-01>T-03:crit' in r['all'] and 'T-13>T-14:crit' in r['all'] and len(r['all']) == 7, 'arrows for every demo link, critical path accented: ' + str(r['all'])
+            assert r['conf'] and r['confList'], 'conflicting link drawn red and listed'
+            assert 'FE-1>FE-2:der' in r['l2'] and 'FE-3>FE-4:der' in r['l2'], 'collapsed: links rolled up to visible features: ' + str(r['l2'])
+            assert 'одной ветки' in r['branch'], 'link inside one branch is reported'
+            assert r['chips'] == 1 and r['panelDep'] == 'T-11', 'panel adds a predecessor once: ' + str(r)
+            assert 'цикл' in r['cyc'] and 'ветке' in r['br'] and 'самого себя' in r['self'], 'checks: cycle, branch, self: ' + str(r)
+            assert r['tip'] and r['removed'] == '', 'arrow click → remove link'
+            assert r['multi'] == 'T-16, T-17' and r['afterDel'] == 'T-17', 'backlog: several predecessors: ' + str(r)
+            assert r['critN'] > 0 and r['norm'] == 'A', 'critical path with lists; migrate normalises the list: ' + str(r['norm'])
+            assert r['xd'] and r['off'] and r['leg'] >= 5, 'external dependency marker, links toggle, legend: ' + str(r)
+        case('hglinks: dependency arrows — several predecessors, rollup, conflicts, branch/cycle checks, editing', t_hglinks)
 
         # ---- 28. Status report generation ----
         def t_status():

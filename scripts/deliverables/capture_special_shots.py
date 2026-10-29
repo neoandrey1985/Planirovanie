@@ -53,6 +53,9 @@ SHOTS = {
  "s_stages": ["()=>{setPerm('editor');applyPerms();updateRoleBtn();HG.level=3;HG.open={};HG.fact=true;HG.marks=true;views();activate('hgantt');const g=document.querySelector('#hg_root .hg-grid');if(g){g.scrollIntoView({block:'start'});window.scrollBy(0,-60);}}"],
  "s_stlegend": ["()=>{setPerm('editor');applyPerms();updateRoleBtn();HG.level=2;HG.open={};HG.marks=true;views();activate('hgantt');const g=document.querySelector('#hg_root .hg-mleg');if(g){g.scrollIntoView({block:'end'});window.scrollBy(0,40);}}"],
  "s_stpanel": ["()=>{setPerm('editor');applyPerms();updateRoleBtn();HG.level=3;HG.open={};HG.marks=true;views();activate('hgantt');window.scrollTo(0,0);hgStagesOpen('FE-1');}"],
+ "s_links": ["()=>{setPerm('editor');applyPerms();updateRoleBtn();HG.level=9;HG.open={};HG.marks=false;HG.links=true;views();activate('hgantt');}", "async()=>{await new Promise(r=>setTimeout(r,500));hgRefresh();await new Promise(r=>setTimeout(r,100));const g=document.querySelector('#hg_root .hg-grid');if(g){g.scrollIntoView({block:'start'});window.scrollBy(0,-60);}hgDrawLinks();}"],
+ "s_links2": ["()=>{setPerm('editor');applyPerms();updateRoleBtn();HG.level=2;HG.open={};HG.marks=false;HG.links=true;views();activate('hgantt');}", "async()=>{await new Promise(r=>setTimeout(r,500));hgRefresh();await new Promise(r=>setTimeout(r,100));const g=document.querySelector('#hg_root .hg-grid');if(g){g.scrollIntoView({block:'start'});window.scrollBy(0,-60);}hgDrawLinks();}"],
+ "s_linkpanel": ["()=>{setPerm('editor');applyPerms();updateRoleBtn();HG.level=3;HG.open={};HG.marks=true;views();activate('hgantt');window.scrollTo(0,0);hgStagesOpen('T-14');}"],
  # серверные окна администратора — на подменённых ответах сервера (демо-учётки, без реальных данных)
  "admin_users": ["MOCK", "async()=>{activate('dash');window.scrollTo(0,0);await openUsers();}"],
  "admin_audit": ["MOCK", "async()=>{views();activate('audit');await new Promise(r=>setTimeout(r,600));"

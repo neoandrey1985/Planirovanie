@@ -605,6 +605,23 @@ body.dense .nav-item{padding:4px 10px;font-size:13px}body.dense .md-wrap{gap:10p
 @media (max-width:760px){.hg-row{grid-template-columns:150px 1fr}.hg-m{display:none}}
 .hg-mk{position:absolute;top:6px;width:16px;height:16px;z-index:2;cursor:pointer;filter:drop-shadow(0 0 1.2px var(--panel))}.hg-mk svg{display:block}
 .hg-mk:hover{transform:scale(1.25)}.hg-mk svg,.hg-mi svg,.hgs-n svg{width:16px!important;height:16px!important;max-width:none;flex:none}.hg-tt[data-hgs]{cursor:pointer}.hg-tt[data-hgs]:hover{color:var(--accent)}
+.hg-grid{position:relative}svg.hg-links{position:absolute;left:0;top:0;width:auto!important;height:auto!important;pointer-events:none;overflow:visible;z-index:3}
+.hg-ln .ln{fill:none;stroke:color-mix(in srgb,var(--ink) 45%,transparent);stroke-width:1.4}.hg-ln.crit .ln{stroke:var(--accent);stroke-width:2.2}.hg-ln.conf .ln{stroke:var(--crit);stroke-width:1.8}
+.hg-ln.der .ln{stroke-dasharray:4 3}.hg-ln .hit{fill:none;stroke:transparent;stroke-width:10;pointer-events:stroke;cursor:pointer}.hg-ln:hover .ln{stroke-width:3}
+.hg-ln text{font-size:10px;font-weight:700;fill:var(--muted);paint-order:stroke;stroke:var(--panel);stroke-width:3px}
+.hg-arr{fill:color-mix(in srgb,var(--ink) 45%,transparent)}.hg-arr-crit{fill:var(--accent)}.hg-arr-conf{fill:var(--crit)}
+.hg-lg-ln{fill:none;stroke:color-mix(in srgb,var(--ink) 45%,transparent);stroke-width:1.6}.hg-lg-ln.crit{stroke:var(--accent);stroke-width:2.4}.hg-lg-ln.conf{stroke:var(--crit)}.hg-lg-ln.der{stroke-dasharray:4 3}
+.hg-lleg svg{width:30px!important;height:10px!important;display:inline-block}
+.hg-row.hg-hl{background:color-mix(in srgb,var(--accent) 12%,transparent)}
+.hg-xd{position:absolute;top:6px;font-size:13px;line-height:16px;z-index:2;cursor:help}
+.hg-ltip{position:absolute;z-index:5;min-width:240px;max-width:340px;background:var(--panel);border:1px solid var(--line);border-radius:10px;box-shadow:var(--shadow);padding:10px 30px 10px 12px;font-size:13px;display:flex;flex-direction:column;gap:6px}
+.hg-lt-r{display:flex;align-items:center;justify-content:space-between;gap:8px}.hg-lt-r .btn{padding:2px 8px;font-size:12px}
+.hg-lt-x{position:absolute;right:6px;top:4px;border:none;background:none;cursor:pointer;color:var(--muted);font-size:15px}
+.depm{display:flex;flex-wrap:wrap;gap:4px;align-items:center}.depm select{width:auto;min-width:44px;max-width:120px}
+.depc{display:inline-flex;align-items:center;gap:4px;border:1px solid var(--line);background:var(--panel2);border-radius:999px;padding:1px 4px 1px 8px;font-size:12px;white-space:nowrap}
+.depc button{border:none;background:none;cursor:pointer;color:var(--muted);padding:0 3px;font-size:13px;line-height:1}.depc small{color:var(--muted)}
+body.ro .depc button,body.ro .depm select{display:none}
+.hgs-deps{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 6px}
 .hg-mleg{margin-top:12px}.hg-mgrid{display:grid;grid-template-columns:minmax(120px,.6fr) 1fr 1fr;gap:6px 18px;margin:6px 0 8px;font-size:12.5px;align-items:center}.hg-mgrid b{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}.hg-ms{font-weight:600}
 .hg-mi{display:flex;align-items:center;gap:6px}
 .hgs-grid{display:grid;grid-template-columns:minmax(150px,1.1fr) 1fr 1fr;gap:6px 10px;align-items:center;margin:10px 0}
@@ -1671,6 +1688,11 @@ function migrate(d){
    const P={'T-01':'FE-1','T-02':'T-01','T-10':'FE-1','T-15':'T-10','T-14':'FE-2','T-03':'T-14','T-13':'T-14','T-11':'FE-2','T-08':'T-11',
     'T-05':'FE-3','T-16':'FE-3','T-17':'FE-4','T-18':'T-17','T-19':'FE-4','T-20':'T-19','T-06':'FE-4'};
    T.forEach(t=>{if(P[t.id])t.parent=P[t.id];});})();
+  // v1.54: демо-связи «T-02 ждёт T-01» и «T-14 ждёт T-13» шли внутри одной ветки — T-02 и T-13 переносятся на уровень фичи
+  (function(){const T=d.tasks||[],g=id=>T.find(t=>t.id===id),f1=g('FE-1');if(!f1||f1.title!=='Фича: Корзина и заказ')return;
+   const dl=t=>String((t&&t.dep)||'').split(/[,;]+/).map(s=>s.trim());
+   const a=g('T-02');if(a&&a.parent==='T-01'&&dl(a).includes('T-01'))a.parent='FE-1';
+   const b=g('T-13'),c=g('T-14');if(b&&c&&b.parent==='T-14'&&dl(c).includes('T-13')&&g('FE-2'))b.parent='FE-2';})();
   // v1.53: ручные метки бизнес- и системного анализа у демо-фич (остальные этапы — автоматически)
   (function(){const T=d.tasks||[],f1=T.find(t=>t.id==='FE-1'),f2=T.find(t=>t.id==='FE-2');
    if(!f1||f1.title!=='Фича: Корзина и заказ'||(f1.stages&&Object.keys(f1.stages).length)||(f2&&f2.stages&&Object.keys(f2.stages).length))return;
@@ -1842,8 +1864,8 @@ function migrate(d){
   {sprint:2,well:'Слаженная работа QA',improve:'Блокеры по внешнему API',action:'Ранняя интеграция / моки',owner:'Иванов А.',due:'Спринт 3',status:'Открыт'}];
  // sanitize task dependencies: drop leftover formulas / unknown IDs / self-references
  if(Array.isArray(d.tasks)){const ids=new Set(d.tasks.map(t=>t.id));
-  d.tasks.forEach(t=>{let dp=t.dep==null?'':String(t.dep).trim();
-   if(dp.charAt(0)==='='||dp==='0'||dp===t.id||(dp&&!ids.has(dp)))dp='';t.dep=dp;});}
+  d.tasks.forEach(t=>{const l=[];String(t.dep==null?'':t.dep).split(/[,;]+/).forEach(s=>{s=s.trim();
+   if(s&&s.charAt(0)!=='='&&s!=='0'&&s!==t.id&&ids.has(s)&&!l.includes(s))l.push(s);});t.dep=l.join(', ');});}
  // гарантировать наличие всех коллекций-массивов из SEED и полей params (безопасный импорт частичных данных)
  try{if(SEED&&typeof SEED==='object'){
   Object.keys(SEED).forEach(k=>{if(Array.isArray(SEED[k])&&!Array.isArray(d[k]))d[k]=[];});
@@ -1851,7 +1873,7 @@ function migrate(d){
  }}catch(e){}
  return d;}
 function cpm(tasks){const dur={},pred={},ids=tasks.map(t=>t.id),idset=new Set(ids);
- tasks.forEach(t=>{dur[t.id]=num(t.est);const dp=(t.dep&&String(t.dep).trim());pred[t.id]=(dp&&dp!==t.id&&idset.has(dp))?[dp]:[];});
+ tasks.forEach(t=>{dur[t.id]=num(t.est);const dp=(t.dep&&String(t.dep).trim());pred[t.id]=depList(t).filter(p=>p!==t.id&&idset.has(p));});
  const EF={},ES={};ids.forEach(i=>{EF[i]=0;ES[i]=0;});
  for(let k=0;k<ids.length+2;k++)ids.forEach(i=>{const ps=pred[i];ES[i]=ps.length?Math.max.apply(null,ps.map(p=>EF[p])):0;EF[i]=ES[i]+dur[i];});
  const proj=ids.length?Math.max.apply(null,ids.map(i=>EF[i])):0;const succ={};ids.forEach(i=>succ[i]=[]);ids.forEach(i=>pred[i].forEach(p=>succ[p].push(i)));
@@ -1995,10 +2017,26 @@ function editable(coll,cols,opts){opts=opts||{};const rows=ST[coll]||(ST[coll]=[
  tb.addEventListener('change',e=>{if(!PERM.canEdit)return;if(e.target.tagName==='SELECT')commit();});
  return wrap;}
 function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));}
+/* «Зависит от»: список предшественников через запятую (связь «окончание → начало»). */
+function depList(t){return String((t&&t.dep)||'').split(/[,;]+/).map(s=>s.trim()).filter(Boolean);}
+function depAncestors(id){const byId={};(ST.tasks||[]).forEach(x=>{byId[x.id]=x;});const out=[],seen=new Set();let c=byId[id];
+ while(c&&c.parent&&!seen.has(c.parent)){seen.add(c.parent);out.push(c.parent);c=byId[c.parent];}return out;}
+function depCheck(t,pid){if(!pid||pid===t.id)return 'Элемент не может зависеть от самого себя';if(depList(t).includes(pid))return 'Эта зависимость уже есть';
+ if(depAncestors(t.id).includes(pid)||depAncestors(pid).includes(t.id))return 'Элементы в одной ветке иерархии: родитель и так включает потомка';
+ const byId={};(ST.tasks||[]).forEach(x=>{byId[x.id]=x;});const st=[pid],seen=new Set();
+ while(st.length){const c=st.pop();if(c===t.id)return 'Получится цикл зависимостей';if(seen.has(c)||!byId[c])continue;seen.add(c);depList(byId[c]).forEach(x=>st.push(x));}return '';}
+function depMulti(coll,ri,t){const l=depList(t);return `<div class="depm">${l.map(id=>`<span class="depc">${esc(id)}<button data-depdel="${esc(id)}" data-dc="${coll}" data-di="${ri}" title="Убрать зависимость">×</button></span>`).join('')}`
+ +`<select data-depadd data-dc="${coll}" data-di="${ri}" title="Добавить зависимость"><option value="">${l.length?'＋':'—'}</option>${(ST.tasks||[]).filter(x=>x.id&&x.id!==t.id&&!l.includes(x.id)).map(x=>`<option value="${esc(x.id)}">${esc(x.id+(x.title?' · '+x.title:''))}</option>`).join('')}</select></div>`;}
+document.addEventListener('change',e=>{const s=e.target.closest('[data-depadd]');if(!s)return;e.stopPropagation();if(!PERM.canEdit||!s.value)return;
+ const t=(ST[s.dataset.dc]||[])[+s.dataset.di];if(!t)return;const err=depCheck(t,s.value);if(err){toast(err);s.value='';return;}
+ t.dep=depList(t).concat([s.value]).join(', ');save();views();activate(CURV);toast(t.id+' зависит от: '+t.dep);},true);
+document.addEventListener('click',e=>{const b=e.target.closest('[data-depdel]');if(!b)return;e.stopPropagation();if(!PERM.canEdit)return;
+ const t=(ST[b.dataset.dc]||[])[+b.dataset.di];if(!t)return;t.dep=depList(t).filter(x=>x!==b.dataset.depdel).join(', ');save();views();activate(CURV);},true);
 function depOptions(selfId,v){let o='<option value="">—</option>';
  (ST.tasks||[]).forEach(t=>{if(!t.id||t.id===selfId)return;o+=`<option value="${esc(t.id)}"${t.id==v?' selected':''}>${esc(t.id+(t.title?' · '+t.title:''))}</option>`;});
  return o;}
 function cell(coll,ri,c,v){const cls=c.type==='num'?'num':(c.wide?'wide':'');const dl=` data-label="${esc(c.label)}"`;
+ if(c.type==='dep'&&c.k==='dep'){return `<td class="${cls}"${dl}>${depMulti(coll,ri,ST[coll][ri]||{})}</td>`;}
  if(c.type==='dep'){return `<td class="${cls}"${dl}><select data-c="${coll}" data-i="${ri}" data-k="${c.k}">${depOptions((ST[coll][ri]||{}).id,v)}</select></td>`;}
  if(c.type==='select'){let o='';(c.opts||[]).forEach(op=>o+=`<option ${op==v?'selected':''}>${op}</option>`);return `<td class="${cls}"${dl}><select data-c="${coll}" data-i="${ri}" data-k="${c.k}">${o}</select></td>`;}
  const tp=c.type==='num'?'number':c.type==='date'?'date':'text';
@@ -2028,8 +2066,8 @@ function autoFillSprint(N){if(!PERM.canEdit){toast('Только для реда
  cand.sort((a,b)=>{const ra=isTaskReady(a.id)?0:1,rb=isTaskReady(b.id)?0:1;return ra!==rb?ra-rb:cmpPriority(a,b);});
  let added=0,sp=0,held=0;
  cand.forEach(t=>{const e=num(t.est)||0;if(e>avail)return;
-   if(t.dep){const dt=(ST.tasks||[]).find(x=>x.id===t.dep);const ds=dt?(dt.sprint===''||dt.sprint==null?null:+dt.sprint):null;
-     if(!((dt&&dt.status==='Готово')||(ds!=null&&ds<=N))){held++;return;}}
+   if(!depList(t).every(id=>{const dt=(ST.tasks||[]).find(x=>x.id===id);const ds=dt?(dt.sprint===''||dt.sprint==null?null:+dt.sprint):null;
+     return (dt&&dt.status==='Готово')||(ds!=null&&ds<=N);})){held++;return;}
    t.sprint=N;avail-=e;added++;sp+=e;});
  if(!added){toast('Нет свободных готовых задач для набора'+(held?' ('+held+' отложено по зависимостям)':'')+'. Нужны задачи без спринта.');return;}
  save();views();activate('roadmap');if(typeof auditClient==='function')auditClient('sprint_autofill','Спринт '+N+': +'+added);
@@ -2060,7 +2098,7 @@ function dataChecks(){const issues=[],tasks=ST.tasks||[],ids={};
    if(t.status==='Готово'&&!t.done)issues.push({lvl:'warn',msg:t.id+': «Готово» без даты завершения',fix:()=>{t.done=todayISO();}});
    if(t.status==='В работе'&&!t.started)issues.push({lvl:'warn',msg:t.id+': «В работе» без даты старта',fix:()=>{t.started=todayISO();}});
    if((t.est===''||t.est==null||num(t.est)===0)&&t.status!=='Готово')issues.push({lvl:'info',msg:t.id+': задача без оценки',fix:null});
-   if(t.dep&&!tasks.some(x=>x.id===t.dep))issues.push({lvl:'warn',msg:t.id+': осиротевшая зависимость → '+t.dep,fix:()=>{t.dep='';}});
+   depList(t).filter(id=>!tasks.some(x=>x.id===id)).forEach(id=>issues.push({lvl:'warn',msg:t.id+': осиротевшая зависимость → '+id,fix:()=>{t.dep=depList(t).filter(x=>x!==id).join(', ');}}));
    const tr=teamRoleOf(t.assignee);if(tr&&kanClean(t.role)!==tr)issues.push({lvl:'info',msg:t.id+': роль задачи не совпадает с ролью исполнителя в «Команде» ('+tr+')',fix:()=>{t.role=tr;}});
  });
  [['grooming','Груминг'],['rice','RICE'],['moscow','MoSCoW']].forEach(function(p){(ST[p[0]]||[]).forEach(x=>{if(x.task&&!tasks.some(t=>t.id===x.task))issues.push({lvl:'warn',msg:p[1]+' '+x.id+': ссылка на несуществующую задачу '+x.task,fix:()=>{x.task='';}});});});
@@ -2101,11 +2139,12 @@ function syncReadiness(){let n=0;(ST.tasks||[]).forEach(t=>{const g=(ST.grooming
    if(ready){const est=g.map(x=>num(x.est)).filter(v=>v>0).pop();if(est&&num(t.est)!==est){t.est=est;n++;}}});return n;}
 function syncReadinessAction(){if(!PERM.canEdit){toast('Только для редактора/администратора');return;}const n=syncReadiness();save();views();activate('grooming');if(typeof auditClient==='function')auditClient('groom_sync_dor',n);toast(n?('Синхронизировано с задачами: '+n+' изм.'):'Задачи уже синхронизированы');}
 function depCycleIds(){const byId={};(ST.tasks||[]).forEach(t=>byId[t.id]=t);const res=[];
- (ST.tasks||[]).forEach(t=>{const seen=new Set();let c=t;while(c&&c.dep){if(seen.has(c.id))break;seen.add(c.id);c=byId[c.dep];if(c&&c.id===t.id){res.push(t.id);break;}}});
+ (ST.tasks||[]).forEach(t=>{const seen=new Set(),st=depList(t).slice();while(st.length){const c=st.pop();if(c===t.id){res.push(t.id);break;}
+   if(seen.has(c)||!byId[c])continue;seen.add(c);depList(byId[c]).forEach(x=>st.push(x));}});
  return res;}
 function depConflictList(){const tasks=ST.tasks||[],confs=[];
- tasks.forEach(t=>{if(!t.dep||t.sprint==null||t.sprint==='')return;const dt=tasks.find(x=>x.id===t.dep);
-   if(dt&&dt.sprint!=null&&dt.sprint!==''&&+dt.sprint>+t.sprint)confs.push(t.id+' (спринт '+t.sprint+') раньше '+dt.id+' (спринт '+dt.sprint+')');});
+ tasks.forEach(t=>{if(t.sprint==null||t.sprint==='')return;depList(t).forEach(id=>{const dt=tasks.find(x=>x.id===id);
+   if(dt&&dt.sprint!=null&&dt.sprint!==''&&+dt.sprint>+t.sprint)confs.push(t.id+' (спринт '+t.sprint+') раньше '+dt.id+' (спринт '+dt.sprint+')');});});
  return confs;}
 function depIssuesBannerHTML(){const cy=depCycleIds(),cf=depConflictList();if(!cy.length&&!cf.length)return '';
  let h='<div class="card" style="border-left:4px solid var(--crit);margin-bottom:14px"><p class="ctitle" style="color:var(--crit);margin:0 0 6px">⚠ Проблемы расписания зависимостей</p><ul style="margin:0 0 0 18px;font-size:13px;color:var(--muted);line-height:1.75">';
@@ -2409,7 +2448,7 @@ function edaAnomalies(C){const out=[],T=ST.tasks||[];const tids=new Set(T.map(t=
  const noEst=T.filter(t=>!(num(t.est)>0)).length;if(noEst)add('info',noEst+' задач(и) с нулевой оценкой');
  const seen={},dups=new Set();T.forEach(t=>{const id=String(t.id||'');if(!id)return;if(seen[id])dups.add(id);seen[id]=1;});
  if(dups.size)add('crit',dups.size+' дублирующихся ID задач: '+[...dups].slice(0,5).join(', '));
- const orphanDep=T.filter(t=>edaFilled(t.dep)&&!tids.has(String(t.dep))).length;if(orphanDep)add('crit',orphanDep+' ссылок task.dep на несуществующую задачу');
+ const orphanDep=T.reduce((s,t)=>s+depList(t).filter(id=>!tids.has(id)).length,0);if(orphanDep)add('crit',orphanDep+' ссылок task.dep на несуществующую задачу');
  const depsOrphan=(ST.deps||[]).filter(d=>edaFilled(d.task)&&!tids.has(String(d.task))).length;if(depsOrphan)add('warn',depsOrphan+' записей «Зависимости» ссылаются на несуществующую задачу');
  const bugsOrphan=(ST.bugs||[]).filter(b=>edaFilled(b.task)&&!tids.has(String(b.task))).length;if(bugsOrphan)add('warn',bugsOrphan+' багов ссылаются на несуществующую задачу');
  const badRange=(ST.releases||[]).filter(r=>edaFilled(r.sfrom)&&edaFilled(r.sto)&&+r.sfrom>+r.sto).length;if(badRange)add('crit',badRange+' релизов с некорректным диапазоном спринтов (от > до)');
@@ -3611,7 +3650,7 @@ function attnBand(C){const it=[],T=ST.ttmTarget||15;
  const reopened=(ST.bugs||[]).filter(b=>b.reopened&&b.status!=='Закрыт').length;
  if(reopened)it.push(['warn','bugs','🔁 Переоткрытые баги: '+reopened]);
  const spOf={};(C.sp||[]).forEach(x=>spOf[x.s]=x);
- const depConf=(ST.tasks||[]).filter(t=>{if(!t.dep||t.sprint==null||t.sprint==='')return false;const dt=(ST.tasks||[]).find(x=>x.id===t.dep);return dt&&dt.sprint!=null&&dt.sprint!==''&&+dt.sprint>+t.sprint;}).length;
+ const depConf=(ST.tasks||[]).filter(t=>{if(t.sprint==null||t.sprint==='')return false;return depList(t).some(id=>{const dt=(ST.tasks||[]).find(x=>x.id===id);return dt&&dt.sprint!=null&&dt.sprint!==''&&+dt.sprint>+t.sprint;});}).length;
  if(depConf)it.push(['crit','gantt','🔗 Конфликт зависимостей: '+depConf+' (задача раньше своей зависимости)']);
  const tdy=(ST.params&&ST.params.today)||new Date().toISOString().slice(0,10);
  const overAI=(ST.retro||[]).filter(r=>(r.action||'').trim()&&r.status!=='Сделано'&&r.due&&String(r.due)<tdy).length;
@@ -4453,7 +4492,7 @@ function wbsDepth(roots,tasks){let max=1;const go=(t,d,seen)=>{if(seen.has(t.id)
 /* ---- Гант по иерархии: Эпик → Фича → История → Задача по полю «Родитель» ----
    План — по спринтам; у родителя — от раннего начала до позднего окончания потомков (сводная полоса). Факт — по датам
    «начато / готово» (незавершённая — до «сегодня»). Объём и прогресс суммируются снизу вверх, как в «Иерархии работ». */
-var HG={level:2,fact:true,marks:true,open:{}};
+var HG={level:2,fact:true,marks:true,links:true,open:{}};
 /* Метки этапов: [ключ, этап, фигура, цвет, метка начала, метка завершения]; контур — начало, заливка — завершение.
    Ручные даты хранятся у задачи в t.stages ({ba_s:'2026-08-05', …}); пустая — дата считается автоматически:
    по ролям задач (ST.params.stageRoles), ПСИ — по демо спринта, Прод — по релизу задачи; у родителя — из потомков. */
@@ -4474,6 +4513,7 @@ function hgAutoLeaf(t){const o={},R=hgRoleMap();
   const rel=(ST.releases||[]).find(r=>r.id===relOfTask(t)),st0=pd(ST.params.start)||pd('2026-08-03');
   if(rel&&num(rel.sto)>0){o.prod_s=iso(addD(st0,(num(rel.sto)-1)*14));if(rel.status==='Готово'&&t.status==='Готово')o.prod_e=iso(addD(st0,(num(rel.sto)-1)*14+11));}}
  return o;}
+var HG_XLEG='';
 const HG_STAR=(()=>{let d='';for(let i=0;i<10;i++){const r=i%2?2.9:6.9,a=-Math.PI/2+i*Math.PI/5;d+=(i?'L':'M')+(8+r*Math.cos(a)).toFixed(2)+' '+(8.4+r*Math.sin(a)).toFixed(2);}return d+'Z';})();
 const HG_SHAPES={circle:'<circle cx="8" cy="8" r="5.6"/>',tri:'<path d="M8 2.2 14.2 13.6H1.8Z"/>',square:'<rect x="2.6" y="2.6" width="10.8" height="10.8" rx="1"/>',
  star:'<path d="'+HG_STAR+'"/>',diamond:'<path d="M8 1.4 14.6 8 8 14.6 1.4 8Z"/>',
@@ -4517,20 +4557,24 @@ function hganttView(){const w=document.createElement('div');w.id='hg_root';const
   +kpiCard('Без родителя',orphans,'задачи вне иерархии',orphans?'warn':'good',{goto:'backlog'})+`</div>`;
  h+=`<div class="hg-bar"><span class="md-note">Уровень:</span>${[[1,'Эпики'],[2,'До фич'],[3,'До историй'],[9,'Всё']].map(([k,l])=>`<button class="btn${HG.level===k&&!Object.keys(HG.open).length?' on':''}" data-hglv="${k}">${l}</button>`).join('')}`
   +`<label class="hg-chk"><input type="checkbox" data-free data-hgf${HG.fact?' checked':''}> факт (начато → готово)</label>`
-  +`<label class="hg-chk"><input type="checkbox" data-free data-hgm${HG.marks?' checked':''}> метки этапов</label></div>`;
+  +`<label class="hg-chk"><input type="checkbox" data-free data-hgm${HG.marks?' checked':''}> метки этапов</label>`
+  +`<label class="hg-chk"><input type="checkbox" data-free data-hgl${HG.links?' checked':''}> зависимости</label></div><p class="wiz-warn hg-linkbad"></p>`;
  if(G.lost)h+=`<p class="wiz-warn">Элементов в цикле по полю «Родитель»: ${G.lost} — они не показаны; исправьте поле «Родитель» в «Бэклоге».</p>`;
  let lo=null,hi=null;all.forEach(([x])=>{const md=HG.marks?Object.values(x.st).filter(Boolean).map(pd):[];[x.a,x.fA].concat(md).forEach(d=>{if(d&&(!lo||d<lo))lo=d;});[x.b,x.fB].concat(md).forEach(d=>{if(d&&(!hi||d>hi))hi=d;});});
  if(!all.length||!lo){h+=`<div class="card"><p class="md-empty">Нет задач со спринтами. Задайте спринт и поле «Родитель» в «Бэклоге» — Эпик → Фича → История → Задача.</p></div>`;w.innerHTML=h;return w;}
  lo=addD(lo,-2);const end=addD(hi,3),span=end-lo,pos=d=>Math.max(0,Math.min(100,(d-lo)/span*100)),wd=(a,b)=>Math.max(.6,pos(addD(b,1))-pos(a));
  const ticks=[];for(let s=1;G.spA(s)<=hi&&s<60;s++)if(G.spA(s)>=lo||G.spA(s+1)>lo)ticks.push([s,G.spA(s)]);
  const grid=ticks.map(([s,d])=>`<span class="hg-tick" style="left:${pos(d)}%"></span>`).join('')+(G.today>=lo&&G.today<=end?`<span class="hg-today" style="left:${pos(G.today)}%"></span>`:'');
- h+=`<div class="hg-grid"><div class="hg-row hg-head"><div class="hg-l">Элемент · объём · прогресс</div><div class="hg-tl">${ticks.map(([s,d])=>`<span class="hg-tick" style="left:${pos(d)}%"><b>С${s}</b> ${fmtd(d).slice(0,5)}</span>`).join('')}</div></div>`;
+ h+=`<div class="hg-grid" data-span="${+lo}:${+end}"><div class="hg-row hg-head"><div class="hg-l">Элемент · объём · прогресс</div><div class="hg-tl">${ticks.map(([s,d])=>`<span class="hg-tick" style="left:${pos(d)}%"><b>С${s}</b> ${fmtd(d).slice(0,5)}</span>`).join('')}</div></div>`;
  all.forEach(([x,d,vis])=>{if(!vis)return;const t=x.t,sum=x.ch.length>0,op=hgOpen(x,d),r=hgRank(t),pc=x.sp?x.done/x.sp:(t.status==='Готово'?1:0);
   const tip=`${t.id} ${t.title||''} · план ${x.a?fmtd(x.a)+'–'+fmtd(x.b):'—'} · факт ${x.fA?fmtd(x.fA)+'–'+(x.fB?fmtd(x.fB):'…'):'—'} · ${fmt(x.done,1)} из ${fmt(x.sp,1)} SP`+(sum?` · вложено ${x.n}`:'')+(x.over?` · просрочено ${x.over}`:'');
   let bars='';
   if(x.a)bars+=sum?`<span class="hg-s${x.late?' hg-late':''}" style="left:${pos(x.a)}%;width:${wd(x.a,x.b)}%" title="${esc(tip)}"><i style="width:${Math.round(pc*100)}%"></i></span><span class="hg-pc" style="left:calc(${pos(x.a)+wd(x.a,x.b)}% + 4px)">${pctf(pc)}${x.over?' · ⚠ '+x.over:''}</span>`
    :`<span class="hg-p ${t.status==='Готово'?'done':t.status==='В работе'?'wip':''}${x.late?' hg-late':''}" style="left:${pos(x.a)}%;width:${wd(x.a,x.b)}%" title="${esc(tip)}"></span>`;
   if(HG.fact&&x.fA&&x.fB)bars+=`<span class="hg-f${x.b&&x.fB>x.b?' late':''}" style="left:${pos(x.fA)}%;width:${wd(x.fA,x.fB)}%" title="${esc('Факт: '+fmtd(x.fA)+' – '+(t.done||sum?fmtd(x.fB):'сейчас'))}"></span>`;
+  const xd=(ST.deps||[]).filter(d=>d.task&&d.task===t.id);
+  if(HG.links&&xd.length&&x.b){const worst=xd.some(d=>d.status==='Заблокировано'||d.status==='Просрочено')?'Заблокировано':xd.some(d=>d.status==='Ожидается')?'Ожидается':'Получено';
+   bars+=`<span class="hg-xd" style="left:calc(${pos(addD(x.b,1))}% + 3px);color:${depColor(worst)}" title="${esc('Внешняя зависимость: '+xd.map(d=>(d.stream||'')+' — '+(d.desc||d.item||'')+' ['+d.status+']').join('; '))}">◆</span>`;}
   if(HG.marks){const grp={};HG_KEYS.filter(k=>x.st[k]).forEach(k=>{(grp[x.st[k]]=grp[x.st[k]]||[]).push(k);});
    Object.keys(grp).forEach(dt=>{const l=grp[dt],p=pos(new Date(+pd(dt)+MS/2));l.forEach((k,i)=>{const off=(i-(l.length-1)/2)*11-8;
     bars+=`<span class="hg-mk" data-hgs="${esc(t.id)}" style="left:calc(${p}% + ${off}px)" title="${esc(hgMarkName(k)+' — '+fmtd(pd(dt))+(x.mk[k]?' · вручную':' · авто'))}">${hgMarkSvg(k,x.mk[k])}</span>`;});});}
@@ -4540,13 +4584,61 @@ function hganttView(){const w=document.createElement('div');w.id='hg_root';const
    +`<span class="hg-tt" data-hgs="${esc(t.id)}" title="${esc((t.title||'')+' — этапы: клик')}">${esc(t.title||'')}</span><span class="hg-m">${fmt(x.sp,1)} SP · ${pctf(pc)}</span></div><div class="hg-tl">${grid}${bars}</div></div>`;});
  h+=`</div><div class="legend hg-leg"><span><i class="hg-lg-s"></i>Сводная полоса: заливка — прогресс по SP</span><span><i class="hg-lg-p"></i>План (спринт)</span>`
   +`<span><i class="hg-lg-f"></i>Факт: начато → готово</span><span><i class="hg-lg-l"></i>Просрочено / выходит за спринт родителя</span><span><i class="hg-lg-t"></i>Сегодня</span></div>`;
+ h+=`<div class="legend hg-leg hg-lleg"><span><svg viewBox="0 0 30 10" width="30" height="10"><path d="M1 5H24" class="hg-lg-ln"/><path d="M23 1.5 29 5 23 8.5Z" class="hg-arr"/></svg>Зависимость: окончание → начало</span>`
+  +`<span><svg viewBox="0 0 30 10" width="30" height="10"><path d="M1 5H24" class="hg-lg-ln crit"/><path d="M23 1.5 29 5 23 8.5Z" class="hg-arr-crit"/></svg>На критическом пути</span>`
+  +`<span><svg viewBox="0 0 30 10" width="30" height="10"><path d="M1 5H24" class="hg-lg-ln conf"/><path d="M23 1.5 29 5 23 8.5Z" class="hg-arr-conf"/></svg>Конфликт: преемник заканчивается раньше предшественника</span>`
+  +`<span><svg viewBox="0 0 30 10" width="30" height="10"><path d="M1 5H24" class="hg-lg-ln der"/><path d="M23 1.5 29 5 23 8.5Z" class="hg-arr"/></svg>Связи внутри свёрнутых строк (×N)</span>`
+  +`<span><b style="color:var(--warn)">◆</b> Внешняя зависимость (цвет — статус)</span>${HG_XLEG||''}</div>`;
  const R=hgRoleMap(),rl=k=>(R[k]||[]).join(', ')||'не заданы';
  h+=`<div class="card hg-mleg"><p class="ctitle">Метки этапов</p><div class="hg-mgrid"><b>Этап</b><b>Начало — контур</b><b>Завершение — заливка</b>${HG_ST.map(S=>`<span class="hg-ms">${esc(S[1])}</span><span class="hg-mi">${hgMarkSvg(S[0]+'_s')} ${esc(S[4])}</span><span class="hg-mi">${hgMarkSvg(S[0]+'_e')} ${esc(S[5])}</span>`).join('')}</div>`
   +`<p class="md-note">Контур — начало этапа, заливка — завершение; точка в углу — метка поставлена вручную. Клик по названию или метке — панель «Этапы».</p>`
   +`<p class="md-note">Автоматически: бизнес-анализ — задачи ролей ${esc(rl('ba'))}; системный анализ — ${esc(rl('sa'))}; разработка — ${esc(rl('dev'))}; ИФТ — ${esc(rl('ift'))} `
   +`(начало — «начато», завершение — «готово»; роли настраиваются в «Параметрах»). ПСИ — демо спринта готовой задачи (итог «Принято» — завершение). Прод — релиз задачи: начало последнего спринта релиза; релиз «Готово» — выход в Прод. `
   +`У родителя: начало — самое раннее у потомков, завершение — когда этап завершён у всех потомков, где он начат.</p></div>`;
- w.innerHTML=h;return w;}
+ w.innerHTML=h;setTimeout(hgDrawLinks,0);return w;}
+/* Стрелки зависимостей: от конца плановой полосы предшественника к началу преемника. Если элемент скрыт свёрнутым
+   уровнем, связь переносится на ближайшего видимого предка (пунктир, ×N); связи внутри одной ветки не рисуются. */
+function hgDrawLinks(){const root=document.getElementById('hg_root'),grid=root&&root.querySelector('.hg-grid');if(!grid)return;
+ grid.querySelectorAll('svg.hg-links,.hg-ltip').forEach(e=>e.remove());const bad=root.querySelector('.hg-linkbad');if(bad)bad.textContent='';
+ if(!HG.links||!grid.offsetParent)return;
+ const rows={};grid.querySelectorAll('.hg-row[data-hgrow]').forEach(r=>{rows[r.dataset.hgrow]=r;});
+ const G=hgTree(),par={},node={};const walk=(x,p)=>{node[x.t.id]=x;if(p)par[x.t.id]=p;x.ch.forEach(c=>walk(c,x.t.id));};G.nodes.forEach(x=>walk(x,null));
+ const anc=id=>{const o=[];let c=par[id];while(c){o.push(c);c=par[c];}return o;},vis=id=>{let c=id;while(c&&!rows[c])c=par[c];return c||null;};
+ const crit=cpm(ST.tasks||[]),pairs={};let n=0;
+ (ST.tasks||[]).forEach(t=>depList(t).forEach(p=>{if(!node[p]||!node[t.id])return;
+  if(anc(t.id).includes(p)||anc(p).includes(t.id)){n++;return;}
+  const a=vis(p),b=vis(t.id);if(!a||!b||a===b||anc(b).includes(a)||anc(a).includes(b))return;
+  const e=pairs[a+'>'+b]||(pairs[a+'>'+b]={a,b,list:[],crit:true});e.list.push([p,t.id]);if(!(crit.has(p)&&crit.has(t.id)))e.crit=false;}));
+ if(bad&&n)bad.textContent='Связей внутри одной ветки иерархии: '+n+' — не показаны (родитель и так включает потомка); уберите их в «Бэклоге» или панели элемента.';
+ const gr=grid.getBoundingClientRect(),tl=grid.querySelector('.hg-row[data-hgrow] .hg-tl');if(!tl)return;const tlx=tl.getBoundingClientRect().left-gr.left;
+ const box=r=>{const b=r.querySelector('.hg-s,.hg-p');if(!b)return null;const q=b.getBoundingClientRect(),rr=r.getBoundingClientRect();
+  return {l:q.left-gr.left,r:q.right-gr.left,y:q.top-gr.top+q.height/2,top:rr.top-gr.top,h:rr.height};};
+ let s=`<svg class="hg-links" width="${gr.width}" height="${gr.height}" viewBox="0 0 ${gr.width} ${gr.height}"><defs>`
+  +['','-crit','-conf'].map(k=>`<marker id="hgArr${k}" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L8 4L0 8Z" class="hg-arr${k}"/></marker>`).join('')+'</defs>';
+ Object.values(pairs).forEach(e=>{const A=box(rows[e.a]),B=box(rows[e.b]);if(!A||!B)return;
+  const der=e.list.some(([p,q])=>p!==e.a||q!==e.b),na=node[e.a],nb=node[e.b],conf=!!(na.b&&nb.b&&nb.b<na.b),cls=conf?'conf':(e.crit&&!der?'crit':'');
+  const x1=A.r,y1=A.y,x2=B.l,y2=B.y;let d;
+  if(x2-x1>=14)d=`M${x1} ${y1}H${x1+7}V${y2}H${x2-1}`;
+  else{const ym=y2>y1?B.top:B.top+B.h,xl=Math.max(tlx+3,x2-10);d=`M${x1} ${y1}H${x1+7}V${ym}H${xl}V${y2}H${x2-1}`;}
+  e.conf=conf;e.der=der;
+  s+=`<g class="hg-ln${cls?' '+cls:''}${der?' der':''}" data-ln="${esc(e.a)}>${esc(e.b)}"><path class="hit" d="${d}"/><path class="ln" d="${d}" marker-end="url(#hgArr${cls?'-'+cls:''})"/>`
+   +(e.list.length>1||der?`<text x="${x1+10}" y="${(y1+y2)/2+3}">×${e.list.length}</text>`:'')+`<title>${esc(e.list.map(([p,q])=>q+' ждёт '+p).join('; ')+(conf?' · конфликт сроков':''))}</title></g>`;});
+ grid.insertAdjacentHTML('beforeend',s+'</svg>');HG.pairs=pairs;}
+function hgLinkTip(g,ev){const grid=g.closest('.hg-grid'),e=HG.pairs&&HG.pairs[g.dataset.ln];if(!grid||!e)return;grid.querySelectorAll('.hg-ltip').forEach(x=>x.remove());
+ const gr=grid.getBoundingClientRect(),tip=document.createElement('div');tip.className='hg-ltip';
+ tip.innerHTML=`<b>${esc(e.b)} ждёт ${esc(e.a)}</b>${e.conf?' <span class="pill p-crit">конфликт сроков</span>':''}${e.der?'<div class="md-note">Связи внутри свёрнутых строк:</div>':''}`
+  +e.list.map(([p,q])=>`<div class="hg-lt-r"><span>${esc(q)} ← ${esc(p)}</span>${PERM.canEdit?`<button class="btn" data-hgdel="${esc(q)}" data-hgp="${esc(p)}">Удалить связь</button>`:''}</div>`).join('')
+  +'<button class="hg-lt-x" data-hgtipx title="Закрыть">×</button>';
+ tip.style.left=Math.min(gr.width-280,Math.max(0,ev.clientX-gr.left+8))+'px';tip.style.top=(ev.clientY-gr.top+8)+'px';grid.appendChild(tip);}
+document.addEventListener('click',e=>{const g=e.target.closest('#hg_root .hg-ln');if(g){hgLinkTip(g,e);return;}
+ const d=e.target.closest('#hg_root [data-hgdel]');if(d){if(!PERM.canEdit)return;const t=(ST.tasks||[]).find(x=>x.id===d.dataset.hgdel);if(!t)return;
+  t.dep=depList(t).filter(x=>x!==d.dataset.hgp).join(', ');save();hgRefresh();toast('Связь удалена: '+d.dataset.hgdel+' больше не ждёт '+d.dataset.hgp);return;}
+ if(e.target.closest('#hg_root [data-hgtipx]'))e.target.closest('.hg-ltip').remove();});
+document.addEventListener('mouseover',e=>{const g=e.target.closest('#hg_root .hg-ln');if(!g)return;const [a,b]=g.dataset.ln.split('>');
+ document.querySelectorAll('#hg_root .hg-row.hg-hl').forEach(r=>r.classList.remove('hg-hl'));
+ [a,b].forEach(id=>{const r=document.querySelector('#hg_root .hg-row[data-hgrow="'+CSS.escape(id)+'"]');if(r)r.classList.add('hg-hl');});});
+document.addEventListener('mouseout',e=>{if(e.target.closest('#hg_root .hg-ln'))document.querySelectorAll('#hg_root .hg-row.hg-hl').forEach(r=>r.classList.remove('hg-hl'));});
+window.addEventListener('resize',()=>{clearTimeout(HG.rt);HG.rt=setTimeout(hgDrawLinks,120);});
 function hgFind(id){let r=null;const go=l=>l.forEach(x=>{if(r)return;if(x.t.id===id)r=x;else go(x.ch);});go(hgTree().nodes);return r;}
 function hgStagesOpen(id){const node=hgFind(id),t=(ST.tasks||[]).find(x=>x.id===id);
  if(!t){toast(node?'Метки этого элемента собираются автоматически из вложенных историй':'Элемент не найден');return;}
@@ -4554,22 +4646,30 @@ function hgStagesOpen(id){const node=hgFind(id),t=(ST.tasks||[]).find(x=>x.id===
  const man=(t.stages&&typeof t.stages==='object')?t.stages:{},auto=node?node.auto:{},ro=!PERM.canEdit;
  const cell=k=>`<div class="hgs-c"><input type="date" data-hgk="${k}" value="${esc(man[k]||'')}"${ro?' disabled':''} aria-label="${esc(hgMarkName(k))}">`
   +`<span class="md-note">авто: ${auto[k]?fmtd(pd(auto[k])):'—'}${ro?'':` · <button class="hgs-td" data-hgtd="${k}">сегодня</button>`}</span></div>`;
- m.innerHTML=`<div class="mbox wiz-box"><h3>🏷 Этапы — ${esc(t.id)}</h3><p class="mnote">${esc(t.title||'')}. Пустое поле — дата ставится автоматически; заполненное — метка вручную (важнее автоматической).</p>`
+ const dl=depList(t),cand=(ST.tasks||[]).filter(x=>x.id!==t.id&&!dl.includes(x.id));
+ const depH=`<div class="md-st">Зависит от (окончание → начало)</div><div class="hgs-deps" data-hgdeps>${dl.map(id=>{const x=(ST.tasks||[]).find(y=>y.id===id)||{};return `<span class="depc" data-dv="${esc(id)}">${esc(id)} <small>${esc((x.title||'').slice(0,28))}</small>${ro?'':`<button data-hgsdel="${esc(id)}" title="Убрать">×</button>`}</span>`;}).join('')||'<span class="md-note">нет</span>'}</div>`
+  +(ro?'':`<select data-hgsadd><option value="">＋ Добавить предшественника…</option>${cand.map(x=>`<option value="${esc(x.id)}">${esc(x.id+(x.title?' · '+x.title:''))}</option>`).join('')}</select>`);
+ m.innerHTML=`<div class="mbox wiz-box"><h3>🏷 ${esc(t.id)} — зависимости и этапы</h3>${depH}<div class="md-st">Метки этапов</div><p class="mnote">${esc(t.title||'')}. Пустое поле — дата ставится автоматически; заполненное — метка вручную (важнее автоматической).</p>`
   +`<div class="hgs-grid"><span></span><b>Начало</b><b>Завершение</b>${HG_ST.map(S=>`<span class="hgs-n">${hgMarkSvg(S[0]+'_e')} ${esc(S[1])}</span>${cell(S[0]+'_s')}${cell(S[0]+'_e')}`).join('')}</div>`
   +`<div class="qc-act">${ro?'':'<button class="btn" data-hgsx="auto">Сбросить всё на авто</button>'}<button class="btn" data-hgsx="cancel">${ro?'Закрыть':'Отмена'}</button>${ro?'':'<button class="btn primary" data-hgsx="ok">Сохранить</button>'}</div></div>`;
  m.classList.add('open');m.querySelector('[data-hgsx=cancel]').onclick=()=>m.classList.remove('open');
  m.querySelectorAll('[data-hgtd]').forEach(b=>b.onclick=()=>{m.querySelector('[data-hgk="'+b.dataset.hgtd+'"]').value=todayISO();});
- const sv=clear=>{const o={};if(!clear)m.querySelectorAll('[data-hgk]').forEach(i=>{if(i.value)o[i.dataset.hgk]=i.value;});t.stages=o;save();m.classList.remove('open');hgRefresh();
-  toast(clear?'Этапы '+t.id+': всё автоматически':'Этапы '+t.id+' сохранены');if(typeof auditClient==='function')auditClient('stages',t.id+':'+Object.keys(o).join(','));};
+ const deps=dl.slice(),drawDeps=()=>{const box=m.querySelector('[data-hgdeps]');box.innerHTML=deps.map(id=>`<span class="depc">${esc(id)}<button data-hgsdel="${esc(id)}" title="Убрать">×</button></span>`).join('')||'<span class="md-note">нет</span>';};
+ if(!ro){const ad=m.querySelector('[data-hgsadd]');ad.onchange=()=>{const v=ad.value;ad.value='';if(!v)return;const tmp=Object.assign({},t,{dep:deps.join(', ')}),err=depCheck(tmp,v);
+   if(err){toast(err);return;}deps.push(v);drawDeps();};
+  m.querySelector('[data-hgdeps]').addEventListener('click',ev=>{const b=ev.target.closest('[data-hgsdel]');if(!b)return;deps.splice(deps.indexOf(b.dataset.hgsdel),1);drawDeps();});}
+ const sv=clear=>{const o={};if(!clear)m.querySelectorAll('[data-hgk]').forEach(i=>{if(i.value)o[i.dataset.hgk]=i.value;});t.stages=o;t.dep=deps.join(', ');save();m.classList.remove('open');hgRefresh();
+  toast(clear?'Этапы '+t.id+': всё автоматически':t.id+': зависимости и этапы сохранены');if(typeof auditClient==='function')auditClient('stages',t.id+':'+Object.keys(o).join(','));};
  if(!ro){m.querySelector('[data-hgsx=ok]').onclick=()=>sv(false);m.querySelector('[data-hgsx=auto]').onclick=()=>sv(true);}}
 document.addEventListener('click',e=>{const b=e.target.closest('#hg_root [data-hgs]');if(b)hgStagesOpen(b.dataset.hgs);});
-function hgRefresh(){const o=document.getElementById('hg_root');if(o)o.replaceWith(hganttView());}
+function hgRefresh(){const o=document.getElementById('hg_root');if(o){o.replaceWith(hganttView());hgDrawLinks();}}
 document.addEventListener('click',e=>{const b=e.target.closest('#hg_root [data-hgt],#hg_root [data-hglv],#hg_root [data-hgo]');if(!b)return;
  if(b.dataset.hgt){const id=b.dataset.hgt,x=b.getAttribute('aria-expanded')==='true';HG.open[id]=!x;hgRefresh();}
  else if(b.dataset.hglv){HG.level=+b.dataset.hglv;HG.open={};hgRefresh();}
  else if(b.dataset.hgo){UI.search=UI.search||{};UI.search.tasks=b.dataset.hgo;views();activate('backlog');toast('Бэклог отфильтрован: '+b.dataset.hgo);}});
 document.addEventListener('change',e=>{if(e.target.closest('#hg_root [data-hgf]')){HG.fact=e.target.checked;hgRefresh();}
- if(e.target.closest('#hg_root [data-hgm]')){HG.marks=e.target.checked;hgRefresh();}});
+ if(e.target.closest('#hg_root [data-hgm]')){HG.marks=e.target.checked;hgRefresh();}
+ if(e.target.closest('#hg_root [data-hgl]')){HG.links=e.target.checked;hgRefresh();}});
 /* ---- C2: story map ---- */
 function storyMapView(){const w=document.createElement('div');
  w.appendChild(editable('storyMap',[{k:'id',label:'ID'},{k:'activity',label:'Активность (шаг пути)'},{k:'release',label:'Релиз',type:'select',opts:[''].concat((ST.releases||[]).map(r=>r.id))},{k:'story',label:'История',wide:true},{k:'task',label:'Задача (Бэклог)',type:'dep'}],{newId:'id',prefix:'SM-'}));
@@ -5108,7 +5208,7 @@ function renderGantt(C){const v=document.getElementById('v_gantt');const tasks=(
   <div class="twrap" style="margin-top:14px"><table id="gt"></table></div>`;
  drawGantt(document.getElementById('gc'),tasks,C);
  let h='<tr><th>ID</th><th>Задача</th><th class="num">Спринт</th><th>Зависит от</th><th>Критич.</th></tr>';
- tasks.forEach((t,ri)=>{h+=`<tr><td>${t.id}</td><td>${(t.title||'')}</td><td class="num"><input type="number" data-i="${ri}" data-k="sprint" value="${num(t.sprint)}"></td><td><select data-i="${ri}" data-k="dep">${depOptions(t.id,t.dep)}</select></td><td>${C.crit.has(t.id)?'<span class="pill p-crit">Да</span>':''}</td></tr>`;});
+ tasks.forEach((t,ri)=>{h+=`<tr><td>${t.id}</td><td>${(t.title||'')}</td><td class="num"><input type="number" data-i="${ri}" data-k="sprint" value="${num(t.sprint)}"></td><td>${depMulti('tasks',ST.tasks.indexOf(t),t)}</td><td>${C.crit.has(t.id)?'<span class="pill p-crit">Да</span>':''}</td></tr>`;});
  const tb=document.getElementById('gt');tb.innerHTML=h;
  tb.addEventListener('input',e=>{if(!PERM.canEdit)return;const i=+e.target.dataset.i,k=e.target.dataset.k;if(k!=null){ST.tasks[i][k]=k==='sprint'?num(e.target.value):e.target.value;save();const CC=compute();drawGantt(document.getElementById('gc'),ST.tasks,CC);renderDash(CC);}});}
 function drawGantt(box,tasks,C){const P=ST.params,start=pd(P.start)||pd('2026-08-03');
@@ -5631,9 +5731,14 @@ const NAV=[
  {g:'Система',items:[['params','Параметры','⚙️'],['integrations','Интеграции','🔌'],['calendar','Календарь','📅'],['budget','Бюджет','💰'],['checks','Проверки данных','🧪'],['eda','EDA отчёт','🔬'],['audit','Журнал событий','🧾']]},
  {g:'Справка',items:[['faq','FAQ','❓'],['support','Support','🛟']]},
 ];
-const APP_VERSION='1.53.0';const APP_DATE='2026-10-30';
+const APP_VERSION='1.54.0';const APP_DATE='2026-10-30';
 const APP_ABOUT='Кросс-функциональная команда — это группа специалистов из разных областей (разработчиков, дизайнеров, маркетологов, аналитиков, менеджеров и других), которые объединяются для работы над одним конкретным проектом или задачей. Ключевая идея в том, чтобы собрать внутри команды всех необходимых экспертов, чтобы она могла самостоятельно пройти путь от идеи до результата, не передавая задачу последовательно из одного отдела в другой.';
 const CHANGELOG=[
+ {v:'1.54.0',date:'2026-10-30',items:[
+   'Гант по иерархии — стрелки зависимостей «окончание → начало» между задачами, историями, фичами и эпиками: серые — в порядке, красные — преемник заканчивается раньше предшественника, акцентные — критический путь; при наведении подсвечиваются обе строки.',
+   'Свёрнутые уровни: связь переносится на ближайшего видимого предка — пунктирная стрелка между эпиками или фичами со значком ×N; связи внутри одной ветки иерархии не рисуются и показываются предупреждением.',
+   'Несколько предшественников: поле «Зависит от» в «Бэклоге», на «Ганте» и в панели элемента принимает список; проверка циклов и ветки иерархии при добавлении; критический путь, автонабор спринта, проверки данных и конфликты учитывают все связи. Клик по стрелке — «Удалить связь».',
+   'Внешние зависимости от других стримов — ◆ на строке задачи (цвет — статус); все обозначения — в легенде.']},
  {v:'1.53.0',date:'2026-10-30',items:[
    'Гант по иерархии — метки этапов: бизнес-анализ (круг), системный анализ (треугольник), разработка (квадрат), ИФТ (звезда), ПСИ (ромб), выход в Прод (ракета); контур — начало, заливка — завершение; все 12 обозначений с описанием — в легенде.',
    'Автоматический режим: этапы анализа, разработки и ИФТ — по ролям задач (даты «начато / готово»; соответствие ролей настраивается в «Параметрах»), ПСИ — по демо спринта, Прод — по релизу задачи; у родителя метки собираются из потомков.',
@@ -6436,7 +6541,7 @@ startAnalytics();setInterval(startAnalytics,30000);
     Пересобирается на каждой загрузке из NAV + DOM (h1/.lede каждого раздела) + TOUR + CHANGELOG,
     поэтому «обучение» помощника происходит само после каждого обновления приложения:
     новый или переименованный раздел, изменённое описание и новая версия подхватываются без правок. */
- const AKA={hgantt:'метки этапов бизнес-анализ системный анализ разработка ифт пси выход в прод этапы гант по иерархии иерархический гант диаграмма ганта эпики фичи истории сводная полоса роллап прогресс эпика сроки фичи план факт просрочено',profile:'мой профиль профиль пользователя кто я учётная запись аккаунт пароль сменить пароль мои задачи мои компетенции упоминания настройки тема плотность выйти',myday:'мой день мои задачи стартовая страница блокеры события сегодня',dash:'обзор kpi сводка панель главная',statusreport:'статус отчёт доклад сводка',portfolio:'портфель проектов программа',
+ const AKA={hgantt:'стрелки зависимостей связи между задачами предшественник преемник зависит от критический путь конфликт сроков метки этапов бизнес-анализ системный анализ разработка ифт пси выход в прод этапы гант по иерархии иерархический гант диаграмма ганта эпики фичи истории сводная полоса роллап прогресс эпика сроки фичи план факт просрочено',profile:'мой профиль профиль пользователя кто я учётная запись аккаунт пароль сменить пароль мои задачи мои компетенции упоминания настройки тема плотность выйти',myday:'мой день мои задачи стартовая страница блокеры события сегодня',dash:'обзор kpi сводка панель главная',statusreport:'статус отчёт доклад сводка',portfolio:'портфель проектов программа',
   roadmap:'дорожная карта план спринтов график спринтов',quarters:'кварталы квартальный план',sprintGoals:'цель спринта обязательство ценность',
   kanban:'канбан доска статусы колонки карточки',board:'холст схемы стикеры мозговой штурм whiteboard рисование шаблоны ретро swot lean canvas карточки задач виджеты метрики отмена группировка мини-карта голосование презентация показ комментарии упоминания блок-схема майнд-карта mind map таблица дорожки swimlane',okr:'цели ключевые результаты objectives key results',
   backlog:'бэклог задачи список работ',wbs:'иерархия работ декомпозиция эпик фича история роллап',storymap:'карта историй активности',
@@ -6678,7 +6783,7 @@ const TOUR=[
  {v:'board',shot:'board2',h:'Доска — сессии и схемы',p:'Голосование точками со скрытым режимом и медалями лидеров, анонимный ввод, показ по фреймам с режимом «следовать за ведущим», комментарии с @упоминаниями. Блок-схемы с подписями стрелок, майнд-карты, таблицы и дорожки ответственности.',d:11000},
  {v:'backlog',h:'Бэклог',p:'Редактируемые задачи — источник данных для всех метрик. Есть поиск, сортировка по колонкам, строка итогов и отмена удаления.',d:9000},
  {v:'gantt',h:'Диаграмма Ганта',p:'Задачи на шкале дат по спринтам. Красная рамка — критический путь, ромб ◆ — внешняя зависимость от другого стрима.',d:9000},
- {v:'hgantt',h:'Гант по иерархии',p:'Эпик → Фича → История → Задача по полю «Родитель»: сводные полосы с прогрессом по объёму, план по спринтам и факт по датам «начато / готово»; уровни раскрываются, просрочка подсвечена красным. Метки этапов — от бизнес-анализа до выхода в Прод: контур — начало, заливка — завершение; ставятся автоматически по ролям задач или вручную.',d:10000},
+ {v:'hgantt',h:'Гант по иерархии',p:'Эпик → Фича → История → Задача по полю «Родитель»: сводные полосы с прогрессом по объёму, план по спринтам и факт по датам «начато / готово»; уровни раскрываются, просрочка подсвечена красным. Метки этапов — от бизнес-анализа до выхода в Прод: контур — начало, заливка — завершение; ставятся автоматически по ролям задач или вручную. Стрелки показывают зависимости: красные — конфликт сроков, при свёрнутых уровнях связи переходят на эпики и фичи.',d:10000},
  {v:'deps',h:'Зависимости',p:'Межстримовые зависимости задач, историй и фич: направление, статус с RAG-подсветкой, риск и отдельный список для эскалации.',d:9000},
  {v:'piboard',h:'Программная доска (PI Planning)',p:'Матрица «стрим × спринт» межкомандных зависимостей и вех на горизонте программного инкремента (SAFe).',d:8000},
  {v:'team',h:'Команда',p:'Состав команды и доступность — из этого считается ёмкость каждого спринта.',d:6500},
