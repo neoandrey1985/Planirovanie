@@ -4724,7 +4724,7 @@ function hgDrawLinks(){const root=document.getElementById('hg_root'),grid=root&&
   const der=e.list.some(([p,q])=>p!==e.a||q!==e.b),na=node[e.a],nb=node[e.b],conf=!!(na.b&&nb.b&&nb.b<na.b),cls=conf?'conf':(e.crit&&!der?'crit':'');
   const x1=A.r,y1=A.y,x2=B.l,y2=B.y;let d;
   if(x2-x1>=14)d=`M${x1} ${y1}H${x1+7}V${y2}H${x2-1}`;
-  else{const ym=y2>y1?B.top:B.top+B.h,xl=Math.max(tlx+3,x2-10);d=`M${x1} ${y1}H${x1+7}V${ym}H${xl}V${y2}H${x2-1}`;}
+  else{const ym=y2>y1?B.top-3:B.top+B.h+3,xl=Math.max(tlx+3,x2-10);d=`M${x1} ${y1}H${x1+7}V${ym}H${xl}V${y2}H${x2-1}`;}
   e.conf=conf;e.der=der;
   s+=`<g class="hg-ln${cls?' '+cls:''}${der?' der':''}" data-ln="${esc(e.a)}>${esc(e.b)}"><path class="hit" d="${d}"/><path class="ln" d="${d}" marker-end="url(#hgArr${cls?'-'+cls:''})"/>`
    +(e.list.length>1||der?`<text x="${x1+10}" y="${(y1+y2)/2+3}">×${e.list.length}</text>`:'')+`<title>${esc(e.list.map(([p,q])=>q+' ждёт '+p).join('; ')+(conf?' · конфликт сроков':''))}</title></g>`;});
