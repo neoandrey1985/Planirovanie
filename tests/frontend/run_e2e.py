@@ -934,8 +934,8 @@ def main():
               const multi=g('T-20').dep;document.querySelector('#v_backlog [data-depdel="T-16"][data-di="'+ri+'"]').click();const afterDel=g('T-20').dep;
               const crit=cpm(ST.tasks),norm=migrate({tasks:[{id:'A',dep:''},{id:'B',dep:'A; X-9, A,B'}]}).tasks[1].dep;
               activate('hgantt');await tick();const xd=!!document.querySelector('#hg_root [data-hgrow="T-03"] .hg-xd');
-              document.querySelector('#hg_root [data-hgl]').click();await tick();const off=!document.querySelector('#hg_root svg.hg-links');HG.links=true;
-              const leg=document.querySelectorAll('#hg_root .hg-lleg > span').length;
+              const leg0=document.querySelectorAll('#hg_root .hg-lleg > span').length;document.querySelector('#hg_root [data-hgl]').click();await tick();const off=!document.querySelector('#hg_root svg.hg-links');HG.links=true;
+              const leg=leg0;
               return {demoBranch,all,bad,conf,confList,l2,branch,chips,panelDep,cyc,br,self,tip,removed,multi,afterDel,critN:crit.size,norm,xd,off,leg,errs};
              }catch(e){return 'ERR:'+e.message+' '+e.stack;}finally{window.removeEventListener('error',h);ST.tasks=JSON.parse(keep);save();HG.level=2;HG.open={};HG.links=true;views();activate('dash');}}""")
             assert isinstance(r, dict), 'hglinks failed: ' + str(r)
@@ -984,7 +984,7 @@ def main():
               document.dispatchEvent(new PointerEvent('pointermove',{...o,clientX:rb.left+4+ppd*14}));const tip=(document.querySelector('#hg_root .hg-dtip')||{}).textContent||'';
               document.dispatchEvent(new PointerEvent('pointerup',{...o,clientX:rb.left+4+ppd*14}));await tick();const moved=g('T-12').sprint;
               const shift=(document.querySelector('#hg_root [data-hgrow="T-12"] .hg-shift')||{}).textContent,bl=!!document.querySelector('#hg_root [data-hgrow="T-12"] .hg-bl');
-              const kpiShift=[...document.querySelectorAll('#hg_root .kpi')].map(k=>k.textContent).find(s=>s.includes('Сдвиг сроков'))||'';
+              const kpiShift=[...document.querySelectorAll('#hg_root .hg-kpi')].map(k=>k.textContent).find(s=>s.includes('сдвиг сроков'))||'';
               const undo=document.getElementById('toastact');if(undo)undo.click();await tick();const undone=g('T-12').sprint;
               // прогноз и загрузка
               const fc=hgTree().nodes.find(x=>x.t.id==='E-1').fc,fcBar=!!document.querySelector('#hg_root [data-hgrow="E-1"] .hg-fc')||!!fc;
@@ -1011,6 +1011,49 @@ def main():
             assert r['xl'] > 0 and r['png'] == 'image/png' and r['pdf'] == 'application/pdf', 'exports: ' + str(r)
             assert r['sheetCols'] == 33, 'Excel sheet columns (21 + 12 stage marks): ' + str(r['sheetCols'])
         case('hgplus: scale/scroll, milestones, filters, columns, drag, baseline, forecast, load, export', t_hgplus)
+
+        # ---- Hierarchy Gantt, light UI: view modes, KPI chips as filters, focus, density, legend by layers, PPTX by epics ----
+        def t_hglight():
+            r = page.evaluate("""async()=>{const errs=[];const h=e=>errs.push(String(e.message||e.reason||e));window.addEventListener('error',h);const tick=n=>new Promise(r=>setTimeout(r,n||60));
+             const rows=()=>[...document.querySelectorAll('#hg_root .hg-row[data-hgrow]')].map(x=>x.dataset.hgrow);
+             try{setPerm('editor');applyPerms();Object.assign(HG,{level:9,open:{},scale:'fit',cols:[],f:{},critOnly:false,focus:null,only:null,dense:false});views();activate('hgantt');await tick();
+              const q=s=>document.querySelector('#hg_root '+s);
+              q('[data-hgmode="control"]').click();await tick();const ctl={fact:HG.fact,base:HG.base,fc:HG.fc,links:HG.links,marks:HG.marks,stored:lsGetS('hg_mode','')};
+              q('[data-hgmode="overview"]').click();await tick();const ov={level:HG.level,links:HG.links,marks:HG.marks,fact:HG.fact};
+              const cb=q('[data-hgl]');cb.checked=true;cb.dispatchEvent(new Event('change',{bubbles:true}));await tick();const custom=HG.mode==='custom'&&/Свой вид/.test(q('.hg-dd summary.on')?q('.hg-dd summary.on').textContent:'');
+              const lleg=!!q('.hg-legp .hg-lleg'),mleg=!!q('.hg-legp .hg-mleg');
+              HG.level=9;hgRefresh();await tick();q('[data-hgkf="over"]').click();await tick();const overRows=rows(),overOn=HG.f.over===true;
+              q('[data-hgkf="over"]').click();await tick();const overOff=!HG.f.over&&rows().length===ST.tasks.length;
+              q('.hg-row[data-hgrow="T-14"] .hg-tl').dispatchEvent(new MouseEvent('click',{bubbles:true}));await tick();
+              const dim=document.querySelectorAll('#hg_root .hg-row.hg-dim').length,chip=!!q('[data-hgfocusx]'),focusRow=!!q('.hg-row.hg-focus[data-hgrow="T-14"]'),focusLinks=[...document.querySelectorAll('#hg_root .hg-ln')].map(x=>x.dataset.ln);
+              document.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape'}));await tick();const esc=!HG.focus&&!document.querySelector('#hg_root .hg-dim');
+              const dn=q('[data-hgdense]');dn.checked=true;dn.dispatchEvent(new Event('change',{bubbles:true}));await tick();const dense=!!q('.hg-grid.hg-dense')&&lsGetS('hg_dense','')==='1';
+              const dn2=q('[data-hgdense]');dn2.checked=false;dn2.dispatchEvent(new Event('change',{bubbles:true}));await tick();
+              const mini=document.querySelectorAll('#hg_root .hg-mini i').length,kpis=document.querySelectorAll('#hg_root .hg-kpi').length,cards=document.querySelectorAll('#hg_root .kpi').length;
+              let pp=null;try{await loadPptxGen();const res=await hgExportPptx(true);pp={n:res.n,b64:await res.p.write('base64'),epics:hgTree().nodes.filter(x=>x.ch.length).length};}catch(e){pp={err:String(e.message||e)};}
+              const restored=HG.only===null&&HG.level===9;
+              return {ctl,ov,custom,lleg,mleg,overRows,overOn,overOff,dim,chip,focusRow,focusLinks,esc,dense,mini,kpis,cards,pp,restored,errs};}
+             catch(e){return 'ERR:'+e.message+' '+e.stack;}finally{window.removeEventListener('error',h);HG.mode='overview';lsSetS('hg_mode','overview');Object.assign(HG,HG_MODES.overview,{level:2,open:{},f:{},focus:null,only:null,dense:false});lsSetS('hg_dense','0');views();activate('dash');}}""")
+            assert isinstance(r, dict), 'hglight failed: ' + str(r)
+            assert not r['errs'], 'page errors: ' + str(r['errs'][:3])
+            assert r['ctl'] == {'fact': True, 'base': True, 'fc': True, 'links': False, 'marks': False, 'stored': 'control'}, 'mode «Контроль»: ' + str(r['ctl'])
+            assert r['ov'] == {'level': 2, 'links': False, 'marks': False, 'fact': False}, 'mode «Обзор»: ' + str(r['ov'])
+            assert r['custom'] and r['lleg'] and not r['mleg'], 'manual layer → «Свой вид», legend shows only active layers: ' + str(r)
+            assert r['overOn'] and 'T-12' in r['overRows'] and 'T-02' not in r['overRows'] and r['overOff'], 'KPI chip toggles the overdue filter: ' + str(r['overRows'])
+            assert r['dim'] > 0 and r['chip'] and r['focusRow'] and set(r['focusLinks']) == {'T-01>T-03', 'T-03>T-13', 'T-13>T-14'} and r['esc'], 'focus on the T-14 chain, Esc clears: ' + str(r)
+            assert r['dense'], 'compact rows'
+            assert r['mini'] >= 20 and r['kpis'] >= 4 and r['cards'] == 0, 'progress mini bars, KPI chips instead of cards: ' + str(r)
+            assert r['restored'], 'export restores the view state'
+            pp = r['pp']
+            if pp.get('err'):
+                print('    (PPTX skipped: ' + pp['err'] + ')')
+            else:
+                z = zipfile.ZipFile(io.BytesIO(base64.b64decode(pp['b64'])))
+                slides = [n for n in z.namelist() if re.match(r'ppt/slides/slide\d+\.xml$', n)]
+                assert pp['n'] == 3 + pp['epics'] and len(slides) == pp['n'], 'PPTX by epics: title + overview + epics + summary: ' + str((pp['n'], len(slides)))
+                txt = ''.join(z.read(n).decode('utf-8', 'ignore') for n in slides)
+                assert 'Что требует внимания' in txt and 'Обзор: эпики и фичи' in txt, 'PPTX slide titles'
+        case('hglight: view modes, KPI chips, focus, density, legend by layers, PPTX by epics', t_hglight)
 
         # ---- 28. Status report generation ----
         def t_status():
