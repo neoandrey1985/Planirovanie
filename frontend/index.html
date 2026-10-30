@@ -584,7 +584,7 @@ body.dense .nav-item{padding:4px 10px;font-size:13px}body.dense .md-wrap{gap:10p
 button.hg-kpi{cursor:pointer}button.hg-kpi:hover{border-color:var(--accent)}.hg-kpi.warn{color:var(--warn);border-color:color-mix(in srgb,var(--warn) 45%,var(--line))}.hg-kpi.on{background:var(--accent);color:#fff;border-color:var(--accent)}
 .hg-tbar{gap:8px}.hg-seg{display:inline-flex;border:1px solid var(--line);border-radius:9px;overflow:hidden;background:var(--panel)}.hg-seg .btn{border:none;border-radius:0;padding:5px 10px;box-shadow:none}
 .hg-seg .btn+.btn{border-left:1px solid var(--line)}.hg-seg .btn.on{background:var(--accent);color:#fff}.hg-tbar>select{width:auto}.hg-tbar input[type=search]{width:200px}
-.hg-dd summary.btn.on{background:var(--accent);color:#fff;border-color:var(--accent)}.hg-legdd{margin-left:auto}.hg-legp{left:auto;right:0;width:min(780px,92vw);max-height:72vh;overflow:auto}
+.hg-dd summary.btn.on{background:var(--accent);color:#fff;border-color:var(--accent)}.hg-legdd{margin-left:auto}.hg-ddr .hg-ddp{left:auto;right:0;max-height:72vh;overflow:auto}.hg-legp{left:auto;right:0;width:min(780px,92vw);max-height:72vh;overflow:auto}
 .hg-legp .legend{margin:0}.hg-fpop{min-width:250px}.hg-fpop select{width:100%}.hg-ddh{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-top:4px}
 .hg-dense .hg-row{min-height:24px}.hg-dense .hg-l{padding-top:1px;padding-bottom:1px;font-size:12.5px}.hg-dense .hg-p{top:7px;height:9px}.hg-dense .hg-s{top:8px;height:7px}
 .hg-dense .hg-f{top:18px}.hg-dense .hg-mk{top:4px}.hg-dense .hg-bl{top:3px;height:17px}.hg-dense .hg-pc,.hg-dense .hg-xd,.hg-dense .hg-shift{top:4px}
@@ -4650,7 +4650,7 @@ function hganttView(){hgPre();const w=document.createElement('div');w.id='hg_roo
    +`<select data-free data-hgfk="sprint">${opt('','Все спринты',f.sprint)}${Array.from({length:maxS},(_,i)=>opt(i+1,'Спринт '+(i+1),f.sprint)).join('')}</select>`
    +`<label><input type="checkbox" data-free data-hgflag="over"${f.over?' checked':''}> просроченные</label><label><input type="checkbox" data-free data-hgflag="conf"${f.conf?' checked':''}> конфликты</label>`
    +`<label><input type="checkbox" data-free data-hgcrit${HG.critOnly?' checked':''}> только критический путь</label></div></details>`
-  +`<details class="hg-dd"><summary class="btn" title="Колонки, плотность, базовый план, экспорт">⋯</summary><div class="hg-ddp">`
+  +`<details class="hg-dd hg-ddr"><summary class="btn" title="Колонки, плотность, базовый план, экспорт">⋯</summary><div class="hg-ddp">`
    +`<div class="hg-ddh">Колонки</div>${HG_COLS.map(c=>`<label><input type="checkbox" data-free data-hgcol="${c[0]}"${HG.cols.includes(c[0])?' checked':''}> ${c[1]}</label>`).join('')}`
    +`<div class="hg-ddh">Строки</div><label><input type="checkbox" data-free data-hgdense${HG.dense?' checked':''}> компактно</label>`
    +`<div class="hg-ddh">Базовый план</div><span class="md-note hg-basei">${hasBase?'от '+fmtd(pd(baseAt)):'не зафиксирован'}</span>`
