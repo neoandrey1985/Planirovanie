@@ -953,6 +953,65 @@ def main():
             assert r['xd'] and r['off'] and r['leg'] >= 5, 'external dependency marker, links toggle, legend: ' + str(r)
         case('hglinks: dependency arrows — several predecessors, rollup, conflicts, branch/cycle checks, editing', t_hglinks)
 
+        # ---- Hierarchy Gantt: scale/scroll, milestones, filters, columns, drag, baseline, forecast, load, export ----
+        def t_hgplus():
+            r = page.evaluate("""async()=>{const errs=[];const h=e=>errs.push(String(e.message||e.reason||e));window.addEventListener('error',h);
+             const keepT=JSON.stringify(ST.tasks),keepC=window.confirm,keepJ=window.jspdf,tick=(n)=>new Promise(r=>setTimeout(r,n||60)),g=id=>ST.tasks.find(x=>x.id===id);
+             const rows=()=>[...document.querySelectorAll('#hg_root .hg-row[data-hgrow]')].map(x=>x.dataset.hgrow);
+             try{setPerm('editor');applyPerms();window.confirm=()=>true;Object.assign(HG,{level:9,open:{},scale:'fit',cols:[],f:{},critOnly:false,ms:true,base:true,fc:true,load:true,marks:false,links:true});views();activate('hgantt');await tick();
+              // масштаб и прокрутка
+              const fitPx=document.querySelector('#hg_root .hg-grid').classList.contains('hg-px');
+              const sc=document.querySelector('#hg_root [data-hgsc]');sc.value='week';sc.dispatchEvent(new Event('change',{bubbles:true}));await tick();
+              const grid=document.querySelector('#hg_root .hg-grid'),scr=document.querySelector('#hg_root .hg-scroll'),wide=grid.classList.contains('hg-px')&&grid.scrollWidth>scr.clientWidth;
+              document.querySelector('#hg_root [data-hgtoday]').click();const scrolled=scr.scrollLeft>0,sticky=getComputedStyle(document.querySelector('#hg_root .hg-row[data-hgrow] .hg-l')).position;
+              const weekTicks=document.querySelectorAll('#hg_root .hg-head .hg-tick').length;
+              const sc2=document.querySelector('#hg_root [data-hgsc]');sc2.value='quarter';sc2.dispatchEvent(new Event('change',{bubbles:true}));await tick();const q=[...document.querySelectorAll('#hg_root .hg-head .hg-tick')].map(x=>x.textContent).join('|');
+              HG.scale='fit';lsSetS('hg_scale','fit');hgRefresh();await tick();
+              // вехи и релизы
+              const ms=[...document.querySelectorAll('#hg_root .hg-msf')].map(x=>x.textContent).join(' | '),msl=document.querySelectorAll('#hg_root .hg-row[data-hgrow] .hg-msl').length>0;
+              // фильтры и поиск
+              HG.f.q='оплат';hgRefresh();await tick();const qRows=rows(),found=(document.querySelector('#hg_root .hg-found')||{}).textContent||'';
+              HG.f={role:'QA'};hgRefresh();await tick();const qa=rows().filter(id=>g(id)&&g(id).role==='QA'),qaAll=ST.tasks.filter(x=>x.role==='QA').every(x=>rows().includes(x.id));
+              HG.f={};HG.critOnly=true;hgRefresh();await tick();const crit=cpm(ST.tasks),critOk=[...crit].every(id=>rows().includes(id));HG.critOnly=false;
+              document.querySelector('#hg_root [data-hgfx]').click();await tick();const reset=rows().length===ST.tasks.length;
+              // колонки
+              const cb=document.querySelector('#hg_root [data-hgcol="slack"]');cb.checked=true;cb.dispatchEvent(new Event('change',{bubbles:true}));await tick();
+              const slackCell=(document.querySelector('#hg_root [data-hgrow="T-01"] .hg-c')||{}).textContent,colStored=lsGetS('hg_cols','');HG.cols=[];lsSetS('hg_cols','');hgRefresh();await tick();
+              // базовый план и перетаскивание
+              hgBaseFix(false);const base=JSON.stringify(g('T-12').baseline);
+              const bar=document.querySelector('#hg_root .hg-p[data-hgdrag="T-12"]'),rb=bar.getBoundingClientRect(),tl=bar.closest('.hg-tl').getBoundingClientRect(),spn=bar.closest('.hg-grid').dataset.span.split(':').map(Number),ppd=tl.width/((spn[1]-spn[0])/864e5);
+              const o={bubbles:true,clientX:rb.left+4,clientY:rb.top+4,pointerId:1,button:0};bar.dispatchEvent(new PointerEvent('pointerdown',o));
+              document.dispatchEvent(new PointerEvent('pointermove',{...o,clientX:rb.left+4+ppd*14}));const tip=(document.querySelector('#hg_root .hg-dtip')||{}).textContent||'';
+              document.dispatchEvent(new PointerEvent('pointerup',{...o,clientX:rb.left+4+ppd*14}));await tick();const moved=g('T-12').sprint;
+              const shift=(document.querySelector('#hg_root [data-hgrow="T-12"] .hg-shift')||{}).textContent,bl=!!document.querySelector('#hg_root [data-hgrow="T-12"] .hg-bl');
+              const kpiShift=[...document.querySelectorAll('#hg_root .kpi')].map(k=>k.textContent).find(s=>s.includes('Сдвиг сроков'))||'';
+              const undo=document.getElementById('toastact');if(undo)undo.click();await tick();const undone=g('T-12').sprint;
+              // прогноз и загрузка
+              const fc=hgTree().nodes.find(x=>x.t.id==='E-1').fc,fcBar=!!document.querySelector('#hg_root [data-hgrow="E-1"] .hg-fc')||!!fc;
+              const lb=document.querySelectorAll('#hg_root .hg-loadrow .hg-lb').length;
+              // экспорт
+              const xl=await hgExport('xlsx',true),png=await hgExport('png',true),sheet=hgSheet();
+              window.jspdf={jsPDF:function(o){this.o=o;this.addImage=()=>{};this.output=()=>new Blob(['%PDF'],{type:'application/pdf'});}};const pdf=await hgExport('pdf',true);
+              return {fitPx,wide,scrolled,sticky,weekTicks,q,ms,msl,qRows,found,qa:qa.length,qaAll,critOk,critN:crit.size,reset,slackCell,colStored,base,tip,moved,shift,bl,kpiShift,undone,fc:!!fc,fcBar,lb,
+               xl:xl&&xl.size,png:png&&png.type,sheetRows:sheet.aoa.length,sheetCols:sheet.aoa[0].length,pdf:pdf&&pdf.type,errs};
+             }catch(e){return 'ERR:'+e.message+' '+e.stack;}finally{window.removeEventListener('error',h);window.confirm=keepC;window.jspdf=keepJ;ST.tasks=JSON.parse(keepT);save();
+              Object.assign(HG,{level:2,open:{},scale:'fit',cols:[],f:{},critOnly:false,load:false,marks:true});lsSetS('hg_scale','fit');views();activate('dash');}}""")
+            assert isinstance(r, dict), 'hgplus failed: ' + str(r)
+            assert not r['errs'], 'page errors: ' + str(r['errs'][:3])
+            assert not r['fitPx'] and r['wide'] and r['scrolled'] and r['sticky'] == 'sticky' and r['weekTicks'] > 8, 'scale: px timeline, scroll to today, sticky labels: ' + str(r)
+            assert 'Q4 2026' in r['q'], 'quarter ticks: ' + r['q']
+            assert 'R-1' in r['ms'] and 'Старт проекта' in r['ms'] and r['msl'], 'milestones and releases on the scale: ' + r['ms']
+            assert {'T-13', 'FE-2', 'E-1'} <= set(r['qRows']) and 'T-02' not in r['qRows'] and 'Найдено' in r['found'], 'search keeps ancestors: ' + str(r['qRows'])
+            assert r['qa'] >= 2 and r['qaAll'] and r['critOk'] and r['critN'] > 0 and r['reset'], 'filters by role / critical path / reset: ' + str(r)
+            assert 'спр.' in (r['slackCell'] or '') and r['colStored'] == 'slack', 'slack column: ' + str(r['slackCell'])
+            assert '"a":"2026-08-17"' in r['base'], 'baseline fixed: ' + r['base']
+            assert 'Спринт 3' in r['tip'] and r['moved'] == 3 and r['shift'] == '+1 спр.' and r['bl'] and '1' in r['kpiShift'], 'drag to next sprint, baseline shift: ' + str(r)
+            assert r['undone'] == 2, 'undo returns the sprint'
+            assert r['fc'] and r['fcBar'] and r['lb'] >= 5, 'forecast for epics, load row: ' + str(r)
+            assert r['xl'] > 0 and r['png'] == 'image/png' and r['pdf'] == 'application/pdf', 'exports: ' + str(r)
+            assert r['sheetCols'] == 33, 'Excel sheet columns (21 + 12 stage marks): ' + str(r['sheetCols'])
+        case('hgplus: scale/scroll, milestones, filters, columns, drag, baseline, forecast, load, export', t_hgplus)
+
         # ---- 28. Status report generation ----
         def t_status():
             r = page.evaluate("""()=>{const md=statusReportMd();

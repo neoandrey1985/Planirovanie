@@ -27,7 +27,7 @@ class StateRoundTripTest {
           "agile":[{"id":"AM-01","framework":"Scrum","dimension":"Definition of Done","level":3,"note":"n"}],
           "sprintGoals":[{"id":"SG-01","sprint":1,"goal":"Запустить MVP","status":"Достигнута"}],
           "wsjf":[{"id":"W-01","task":"T-01","name":"X","bv":8,"tc":5,"rr":3,"jobSize":4}],
-          "tasks":[{"id":"T-01","title":"X","role":"Backend","type":"Задача","est":5,"status":"Готово","sprint":1,"release":"R-1","priority":"Must","dor":"Готова","carried":2,"okr":"KR-1","parent":"E-1","stages":{"ba_s":"2026-07-20","dev_e":"2026-08-06"}}],
+          "tasks":[{"id":"T-01","title":"X","role":"Backend","type":"Задача","est":5,"status":"Готово","sprint":1,"release":"R-1","priority":"Must","dor":"Готова","carried":2,"okr":"KR-1","parent":"E-1","stages":{"ba_s":"2026-07-20","dev_e":"2026-08-06"},"baseline":{"a":"2026-08-03","b":"2026-08-14","at":"2026-09-10"}}],
           "changeRequests":[{"id":"CR-01","date":"2026-09-10","title":"Добавить SSO","type":"Scope","impact":"+8 SP","requester":"PO","status":"Предложен","note":"n"}],
           "issues":[{"id":"IS-01","date":"2026-09-10","title":"Падение оплаты","priority":"High","owner":"DevOps","status":"Открыта","due":"2026-09-20","resolution":""}],
           "stakeholders":[{"id":"SH-01","name":"Заказчик","role":"Спонсор","power":5,"interest":4,"engageCur":"Нейтральный","engageTarget":"Поддерживающий","strategy":"Регулярные демо"}],
@@ -99,6 +99,8 @@ class StateRoundTripTest {
            .andExpect(jsonPath("$.state.tasks[0].parent").value("E-1"))
            .andExpect(jsonPath("$.state.tasks[0].stages.ba_s").value("2026-07-20"))
            .andExpect(jsonPath("$.state.tasks[0].stages.dev_e").value("2026-08-06"))
+           .andExpect(jsonPath("$.state.tasks[0].baseline.b").value("2026-08-14"))
+           .andExpect(jsonPath("$.state.tasks[0].baseline.at").value("2026-09-10"))
            .andExpect(jsonPath("$.state.params.stageRoles").value("ba=Product Owner;dev=Backend"))
            .andExpect(jsonPath("$.state.changeRequests[0].type").value("Scope"))
            .andExpect(jsonPath("$.state.issues[0].priority").value("High"))

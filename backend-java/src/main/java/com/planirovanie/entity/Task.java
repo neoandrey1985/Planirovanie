@@ -30,5 +30,7 @@ public class Task {
     public String parent;     // WBS parent task id (Epic -> Feature -> Story -> Task)
     @Convert(converter = StagesConverter.class) @Column(columnDefinition = "text")
     public java.util.Map<String, String> stages;   // manual stage marks for the hierarchy Gantt
+    @Convert(converter = StagesConverter.class) @Column(columnDefinition = "text")
+    public java.util.Map<String, String> baseline; // baseline plan for the hierarchy Gantt: a, b, at
     @JsonIgnore public Integer ord;
 }

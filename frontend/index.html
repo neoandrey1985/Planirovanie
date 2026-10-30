@@ -576,8 +576,8 @@ body.dense .nav-item{padding:4px 10px;font-size:13px}body.dense .md-wrap{gap:10p
 .hg-bar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:14px 0 10px}
 .hg-bar .btn.on{background:var(--accent);color:#fff;border-color:var(--accent)}
 .hg-chk{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);margin-left:8px}.hg-chk input{width:auto}
-.hg-grid{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--panel)}
-.hg-row{display:grid;grid-template-columns:minmax(260px,38%) 1fr;border-top:1px solid var(--line);min-height:30px}
+.hg-grid{background:var(--panel)}.hg-scroll{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--panel)}.hg-grid.hg-px{width:max-content;min-width:100%}
+.hg-row{display:grid;grid-template-columns:var(--hgl,minmax(260px,38%)) var(--hgw,1fr);border-top:1px solid var(--line);min-height:30px}
 .hg-row:hover{background:color-mix(in srgb,var(--panel2) 60%,transparent)}
 .hg-head{border-top:none;background:var(--panel2);font-size:11px;color:var(--muted);min-height:26px}.hg-head:hover{background:var(--panel2)}
 .hg-l{display:flex;align-items:center;gap:6px;min-width:0;padding:4px 8px;font-size:13px;border-right:1px solid var(--line)}
@@ -602,7 +602,28 @@ body.dense .nav-item{padding:4px 10px;font-size:13px}body.dense .md-wrap{gap:10p
 .hg-leg i{display:inline-block}.hg-lg-s{width:22px!important;height:8px!important;background:linear-gradient(90deg,color-mix(in srgb,var(--ink) 70%,transparent) 55%,color-mix(in srgb,var(--ink) 18%,transparent) 55%)}
 .hg-lg-p{width:22px!important;background:color-mix(in srgb,var(--accent) 55%,transparent)}.hg-lg-f{width:22px!important;height:4px!important;background:color-mix(in srgb,var(--ink) 55%,transparent)}
 .hg-lg-l{box-shadow:inset 0 0 0 2px var(--crit)}.hg-lg-t{width:2px!important;height:14px!important;background:var(--crit);opacity:.6}
-@media (max-width:760px){.hg-row{grid-template-columns:150px 1fr}.hg-m{display:none}}
+@media (max-width:760px){.hg-grid{--hgl:150px!important}.hg-m,.hg-c{display:none}.hg-fbar input[type=search]{width:100%}}
+.hg-px .hg-l{position:sticky;left:0;z-index:4;background:var(--panel)}.hg-px .hg-head .hg-l{background:var(--panel2)}
+.hg-c{flex:none;font-size:11.5px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.hg-st{font-size:11px}.hg-st-d{color:var(--good)}.hg-st-w{color:var(--accent)}
+.hg-neg{color:var(--crit);font-weight:700}.hg-hit .hg-tt{color:var(--accent);font-weight:700}
+.hg-tick.mn{border-left-style:dotted;opacity:.6}
+.hg-msrow,.hg-msrow .hg-tl{min-height:40px}.hg-msf.lo{top:21px}.hg-msf{position:absolute;top:3px;font-size:11px;white-space:nowrap;padding-left:3px;border-left:2px solid currentColor;line-height:16px;font-weight:600}
+.hg-msf.rel{color:var(--crit)}.hg-msf.ms{color:var(--accent)}.hg-msl{position:absolute;top:0;bottom:0;border-left:1.5px dashed var(--accent);opacity:.45}.hg-msl.rel{border-left-color:var(--crit)}
+.hg-bl{position:absolute;top:4px;height:20px;border:1.5px dashed color-mix(in srgb,var(--ink) 50%,transparent);border-radius:5px;box-sizing:border-box}
+.hg-shift{position:absolute;top:7px;font-size:10.5px;font-weight:700;color:var(--good);white-space:nowrap}.hg-shift.late{color:var(--crit)}
+.hg-fc{position:absolute;top:13px;height:0;border-top:2px dotted var(--crit)}
+.hg-p[data-hgdrag]{cursor:grab;touch-action:none}.hg-p.drag{cursor:grabbing;opacity:.85;box-shadow:0 2px 8px rgba(0,0,0,.25);z-index:5}
+.hg-dtip{position:absolute;top:-1px;z-index:6;background:var(--ink);color:var(--panel);font-size:11px;border-radius:6px;padding:1px 6px;white-space:nowrap;pointer-events:none}.hg-dtip.warn{background:var(--crit);color:#fff}
+.hg-loadrow,.hg-loadrow .hg-tl{min-height:60px}.hg-lb{position:absolute;bottom:4px;background:color-mix(in srgb,var(--accent) 45%,transparent);border-radius:3px 3px 0 0}
+.hg-lb.over{background:color-mix(in srgb,var(--crit) 60%,transparent)}.hg-lc{position:absolute;height:0;border-top:2px solid color-mix(in srgb,var(--ink) 60%,transparent)}
+.hg-lt{position:absolute;top:2px;text-align:center;font-size:10.5px;font-weight:700;color:var(--muted)}.hg-lt.over{color:var(--crit)}
+.hg-sel{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--muted)}.hg-sel select{width:auto}
+.hg-fbar input[type=search]{width:220px}.hg-fbar select{width:auto;max-width:170px}.hg-basei{margin-left:auto}
+.hg-dd{position:relative}.hg-dd summary{list-style:none;cursor:pointer}.hg-dd summary::-webkit-details-marker{display:none}
+.hg-ddp{position:absolute;z-index:8;top:calc(100% + 4px);left:0;background:var(--panel);border:1px solid var(--line);border-radius:10px;box-shadow:var(--shadow);padding:8px;display:flex;flex-direction:column;gap:6px;min-width:190px}
+.hg-ddp label{display:flex;gap:6px;align-items:center;font-size:13px}.hg-ddp input{width:auto}.hg-ddp .btn{justify-content:flex-start}
+.hg-lg-b{width:22px!important;border:1.5px dashed color-mix(in srgb,var(--ink) 50%,transparent)}.hg-lg-fc{width:22px!important;height:0!important;border-top:2px dotted var(--crit)}
+.hg-lg-ms{width:0!important;height:12px!important;border-left:2px dashed var(--crit)}.hg-lg-ld{width:14px!important;background:color-mix(in srgb,var(--accent) 45%,transparent)}
 .hg-mk{position:absolute;top:6px;width:16px;height:16px;z-index:2;cursor:pointer;filter:drop-shadow(0 0 1.2px var(--panel))}.hg-mk svg{display:block}
 .hg-mk:hover{transform:scale(1.25)}.hg-mk svg,.hg-mi svg,.hgs-n svg{width:16px!important;height:16px!important;max-width:none;flex:none}.hg-tt[data-hgs]{cursor:pointer}.hg-tt[data-hgs]:hover{color:var(--accent)}
 .hg-grid{position:relative}svg.hg-links{position:absolute;left:0;top:0;width:auto!important;height:auto!important;pointer-events:none;overflow:visible;z-index:3}
@@ -4492,7 +4513,7 @@ function wbsDepth(roots,tasks){let max=1;const go=(t,d,seen)=>{if(seen.has(t.id)
 /* ---- Гант по иерархии: Эпик → Фича → История → Задача по полю «Родитель» ----
    План — по спринтам; у родителя — от раннего начала до позднего окончания потомков (сводная полоса). Факт — по датам
    «начато / готово» (незавершённая — до «сегодня»). Объём и прогресс суммируются снизу вверх, как в «Иерархии работ». */
-var HG={level:2,fact:true,marks:true,links:true,open:{}};
+var HG={level:2,fact:true,marks:true,links:true,open:{},scale:lsGetS('hg_scale','fit'),cols:lsGetS('hg_cols','').split(',').filter(Boolean),f:{},critOnly:false,ms:true,base:true,fc:true,load:false};
 /* Метки этапов: [ключ, этап, фигура, цвет, метка начала, метка завершения]; контур — начало, заливка — завершение.
    Ручные даты хранятся у задачи в t.stages ({ba_s:'2026-08-05', …}); пустая — дата считается автоматически:
    по ролям задач (ST.params.stageRoles), ПСИ — по демо спринта, Прод — по релизу задачи; у родителя — из потомков. */
@@ -4542,48 +4563,132 @@ function hgTree(){const T=ST.tasks||[],byId={},kids={};T.forEach(t=>{byId[t.id]=
   if(ch.length){const src=ch.map(c=>c.st).concat([selfA]);HG_ST.forEach(([k])=>{const wi=src.filter(s=>s[k+'_s']);if(!wi.length)return;auto[k+'_s']=wi.map(s=>s[k+'_s']).sort()[0];
    if(wi.every(s=>s[k+'_e']))auto[k+'_e']=wi.map(s=>s[k+'_e']).sort().pop();});}
   const st=Object.assign({},auto),mk={};Object.keys(man).forEach(k=>{if(man[k]&&HG_KEYS.includes(k)){st[k]=man[k];mk[k]=1;}});
-  return memo[t.id]={t,ch,a,b,fA,fB,sp,done,n,over,late,st,mk,auto};};
+  // прогноз завершения родителя — по фактическому темпу (готово SP за дни с начала факта); базовый план и сдвиг сроков
+  let fc=null;const rem=sp-done;if(ch.length&&rem>0&&done>0&&fA&&fA<today){const rate=done/Math.max(1,(today-fA)/MS);fc=addD(today,Math.ceil(rem/rate));}
+  const bl=t.baseline&&t.baseline.a?{a:pd(t.baseline.a),b:pd(t.baseline.b),at:t.baseline.at}:null,shift=bl&&b&&bl.b?Math.round((b-bl.b)/MS):0;
+  return memo[t.id]={t,ch,a,b,fA,fB,sp,done,n,over,late,st,mk,auto,fc,bl,shift};};
  const roots=T.filter(t=>!t.parent||t.parent===t.id||!byId[t.parent]).sort(ord),nodes=roots.map(r=>node(r,new Set()));
  return {nodes,today,spA,start,lost:T.length-Object.keys(memo).length};}
 function hgOpen(x,d){const o=HG.open[x.t.id];return o!=null?o:d+1<HG.level;}
-function hganttView(){const w=document.createElement('div');w.id='hg_root';const G=hgTree(),T=ST.tasks||[],all=[];
- const walk=(x,d,vis)=>{all.push([x,d,vis]);const op=hgOpen(x,d);x.ch.forEach(c=>walk(c,d+1,vis&&op));};G.nodes.forEach(x=>walk(x,0,true));
+/* Масштаб шкалы: [ключ, подпись, пикселей на день]; «Вписать» — проценты ширины, остальные — пиксели с прокруткой. */
+const HG_SCALES=[['fit','Вписать',0],['week','Недели',16],['sprint','Спринты',8],['month','Месяцы',3.4],['quarter','Кварталы',1.2]];
+const HG_COLS=[['who','Исполнитель',108],['status','Статус',84],['sprint','Спринт',58],['dates','План',100],['left','Остаток',60],['slack','Резерв',60]];
+function hgPre(){}                                   // хук: подготовка данных перед отрисовкой
+function hgExtraBars(x,t,pos,U){return '';}          // хук: дополнительные маркеры строки
+function hgTicks(lo,end,spA){const sc=HG.scale,out=[],ss={};for(let s=1;spA(s)<=end&&s<80;s++)ss[+spA(s)]=s;
+ if(sc==='week'){let d=new Date(lo);while(d.getUTCDay()!==1)d=addD(d,1);for(;d<=end;d=addD(d,7)){const s=ss[+d];out.push([d,(s?'С'+s+' ':'')+fmtd(d).slice(0,5),!!s]);}}
+ else if(sc==='month'||sc==='quarter'){const M=['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'];let y=lo.getUTCFullYear(),m=lo.getUTCMonth()-1;
+  for(let k=0;k<200;k++){m++;if(m>11){m=0;y++;}const d=new Date(Date.UTC(y,m,1));if(d>end)break;if(d<lo||(sc==='quarter'&&m%3))continue;out.push([d,sc==='quarter'?'Q'+(m/3+1)+' '+y:M[m]+' '+String(y).slice(2),true]);}}
+ else Object.keys(ss).forEach(k=>{const d=new Date(+k);if(d>=lo)out.push([d,'С'+ss[k]+' '+fmtd(d).slice(0,5),true]);});
+ return out;}
+function hgConflicts(G){const node={},s=new Set();const walk=x=>{node[x.t.id]=x;x.ch.forEach(walk);};G.nodes.forEach(walk);
+ (ST.tasks||[]).forEach(t=>depList(t).forEach(p=>{const a=node[p],b=node[t.id];if(a&&b&&a.b&&b.b&&b.b<a.b){s.add(p);s.add(t.id);}}));return s;}
+/* Резерв (в спринтах): сколько спринтов задачу можно сдвинуть, не задев ближайшего преемника; без преемников — до последнего спринта плана. */
+function hgSlack(){const T=ST.tasks||[],succ={},o={};T.forEach(t=>depList(t).forEach(p=>{(succ[p]=succ[p]||[]).push(t);}));
+ const maxS=Math.max(0,...T.map(t=>num(t.sprint)));T.forEach(t=>{const s=num(t.sprint);if(!s)return;const ss=(succ[t.id]||[]).map(x=>num(x.sprint)).filter(Boolean);o[t.id]=ss.length?Math.min(...ss)-s:maxS-s;});return o;}
+function hgFiltering(){return Object.values(HG.f).some(Boolean)||HG.critOnly;}
+function hgMatch(t,x,ctx){const f=HG.f;if(t.virt)return false;
+ if(f.q){const q=String(f.q).toLowerCase();if(!(String(t.id).toLowerCase().includes(q)||String(t.title||'').toLowerCase().includes(q)))return false;}
+ if(f.who&&(t.assignee||'')!==(f.who==='__me'?mdMe():f.who))return false;
+ if(f.role&&t.role!==f.role)return false;if(f.status&&t.status!==f.status)return false;
+ if(f.rel&&relOfTask(t)!==f.rel)return false;if(f.sprint&&+t.sprint!==+f.sprint)return false;
+ if(f.over&&!x.late)return false;if(f.conf&&!ctx.conf.has(t.id))return false;if(HG.critOnly&&!ctx.crit.has(t.id))return false;return true;}
+function hgDur(d){return (d>0?'+':'')+(d%14===0?d/14+' спр.':d+' дн.');}
+function hganttView(){hgPre();const w=document.createElement('div');w.id='hg_root';const G=hgTree(),T=ST.tasks||[],all=[],C=compute();
+ const crit=cpm(T),conf=hgConflicts(G),slack=hgSlack(),ctx={crit,conf},filt=hgFiltering(),show=new Set(),hit=new Set();
+ if(filt){const go=(x,anc)=>{if(hgMatch(x.t,x,ctx)){hit.add(x.t.id);show.add(x.t.id);anc.forEach(a=>show.add(a));}x.ch.forEach(c=>go(c,anc.concat([x.t.id])));};G.nodes.forEach(x=>go(x,[]));}
+ const walk=(x,d,vis)=>{all.push([x,d,vis&&(!filt||show.has(x.t.id))]);const op=filt||hgOpen(x,d);x.ch.forEach(c=>walk(c,d+1,vis&&op));};G.nodes.forEach(x=>walk(x,0,true));
  const sp=G.nodes.reduce((s,x)=>s+x.sp,0),dn=G.nodes.reduce((s,x)=>s+x.done,0),over=G.nodes.reduce((s,x)=>s+x.over,0),cnt=k=>T.filter(t=>t.type===k).length;
- const orphans=G.nodes.filter(x=>x.t.type!=='Эпик'&&!x.ch.length).length;
+ const orphans=G.nodes.filter(x=>x.t.type!=='Эпик'&&!x.ch.length&&!x.t.virt).length,hasBase=T.some(t=>t.baseline&&t.baseline.a);
+ const baseAt=hasBase?((T.find(t=>t.baseline&&t.baseline.at)||{}).baseline||{}).at:'',shifted=all.filter(([x])=>x.shift>0).length;
  let h=`<div class="grid kpis">${kpiCard('Эпики · фичи',cnt('Эпик')+' · '+cnt('Фича'),'историй '+cnt('История')+' · задач '+(cnt('Задача')+cnt('Тех.долг')),'neut',{goto:'wbs'})}`
   +kpiCard('Объём',fmt(sp,1)+' <small>SP</small>','готово '+fmt(dn,1)+' SP',sp&&dn>=sp?'good':'neut')
   +kpiCard('Прогресс',sp?pctf(dn/sp):'—','по объёму (SP)',sp&&dn/sp>=.8?'good':'neut')
   +kpiCard('Просрочено',over,'спринт прошёл, не готово',over?'warn':'good')
-  +kpiCard('Без родителя',orphans,'задачи вне иерархии',orphans?'warn':'good',{goto:'backlog'})+`</div>`;
+  +kpiCard('Без родителя',orphans,'задачи вне иерархии',orphans?'warn':'good',{goto:'backlog'})
+  +kpiCard('Сдвиг сроков',hasBase?shifted:'—',hasBase?'против базового плана от '+fmtd(pd(baseAt)):'базовый план не зафиксирован',hasBase?(shifted?'warn':'good'):'neut')+`</div>`;
+ const opt=(v,l,cur)=>`<option value="${esc(v)}"${String(cur==null?'':cur)===String(v)?' selected':''}>${esc(l)}</option>`,f=HG.f;
+ const members=[...new Set(T.map(t=>t.assignee).filter(Boolean))].sort(),maxS=Math.max(1,...T.map(t=>num(t.sprint)));
  h+=`<div class="hg-bar"><span class="md-note">Уровень:</span>${[[1,'Эпики'],[2,'До фич'],[3,'До историй'],[9,'Всё']].map(([k,l])=>`<button class="btn${HG.level===k&&!Object.keys(HG.open).length?' on':''}" data-hglv="${k}">${l}</button>`).join('')}`
+  +`<label class="hg-sel">Масштаб <select data-free data-hgsc>${HG_SCALES.map(s=>opt(s[0],s[1],HG.scale)).join('')}</select></label>`
+  +`<button class="btn" data-hgtoday${HG.scale==='fit'?' disabled title="В режиме «Вписать» вся шкала на экране"':''}>К сегодня</button>`
+  +`<details class="hg-dd"><summary class="btn">Колонки ▾</summary><div class="hg-ddp">${HG_COLS.map(c=>`<label><input type="checkbox" data-free data-hgcol="${c[0]}"${HG.cols.includes(c[0])?' checked':''}> ${c[1]}</label>`).join('')}</div></details>`
+  +`<details class="hg-dd"><summary class="btn">⬇ Экспорт ▾</summary><div class="hg-ddp"><button class="btn" data-hgexp="png">PNG — картинка</button><button class="btn" data-hgexp="pdf">PDF</button><button class="btn" data-hgexp="xlsx">Excel — таблица</button></div></details></div>`;
+ h+=`<div class="hg-bar hg-fbar"><input type="search" data-free data-hgq placeholder="Поиск: ID или название" value="${esc(f.q||'')}">`
+  +`<select data-free data-hgfk="who">${opt('','Все исполнители',f.who)}${opt('__me','Только мои',f.who)}${members.map(m=>opt(m,m,f.who)).join('')}</select>`
+  +`<select data-free data-hgfk="role">${opt('','Все роли',f.role)}${ROLES.map(r=>opt(r,r,f.role)).join('')}</select>`
+  +`<select data-free data-hgfk="status">${opt('','Все статусы',f.status)}${['To Do','В работе','Готово'].map(s=>opt(s,s,f.status)).join('')}</select>`
+  +`<select data-free data-hgfk="rel">${opt('','Все релизы',f.rel)}${(ST.releases||[]).map(r=>opt(r.id,r.id+' '+(r.name||''),f.rel)).join('')}</select>`
+  +`<select data-free data-hgfk="sprint">${opt('','Все спринты',f.sprint)}${Array.from({length:maxS},(_,i)=>opt(i+1,'Спринт '+(i+1),f.sprint)).join('')}</select>`
+  +`<label class="hg-chk"><input type="checkbox" data-free data-hgflag="over"${f.over?' checked':''}> просроченные</label>`
+  +`<label class="hg-chk"><input type="checkbox" data-free data-hgflag="conf"${f.conf?' checked':''}> конфликты</label>`
+  +`<label class="hg-chk"><input type="checkbox" data-free data-hgcrit${HG.critOnly?' checked':''}> только критический путь</label>`
+  +(filt?`<span class="md-note hg-found">Найдено: <b>${hit.size}</b></span><button class="btn" data-hgfx>Сбросить</button>`:'')+`</div>`;
+ h+=`<div class="hg-bar"><span class="md-note">Показать:</span>`
   +`<label class="hg-chk"><input type="checkbox" data-free data-hgf${HG.fact?' checked':''}> факт (начато → готово)</label>`
   +`<label class="hg-chk"><input type="checkbox" data-free data-hgm${HG.marks?' checked':''}> метки этапов</label>`
-  +`<label class="hg-chk"><input type="checkbox" data-free data-hgl${HG.links?' checked':''}> зависимости</label></div><p class="wiz-warn hg-linkbad"></p>`;
+  +`<label class="hg-chk"><input type="checkbox" data-free data-hgl${HG.links?' checked':''}> зависимости</label>`
+  +[['ms','вехи и релизы'],['base','базовый план'],['fc','прогноз'],['load','загрузка']].map(([k,l])=>`<label class="hg-chk"><input type="checkbox" data-free data-hgsh="${k}"${HG[k]?' checked':''}> ${l}</label>`).join('')
+  +`<span class="md-note hg-basei">${hasBase?'Базовый план от '+fmtd(pd(baseAt)):'Базовый план не зафиксирован'}</span>`
+  +(PERM.canEdit?`<button class="btn" data-hgbase="fix">📌 Зафиксировать план</button>${hasBase?'<button class="btn" data-hgbase="clear">Сбросить базовый план</button>':''}`:'')+`</div><p class="wiz-warn hg-linkbad"></p>`;
  if(G.lost)h+=`<p class="wiz-warn">Элементов в цикле по полю «Родитель»: ${G.lost} — они не показаны; исправьте поле «Родитель» в «Бэклоге».</p>`;
- let lo=null,hi=null;all.forEach(([x])=>{const md=HG.marks?Object.values(x.st).filter(Boolean).map(pd):[];[x.a,x.fA].concat(md).forEach(d=>{if(d&&(!lo||d<lo))lo=d;});[x.b,x.fB].concat(md).forEach(d=>{if(d&&(!hi||d>hi))hi=d;});});
+ let lo=null,hi=null;all.forEach(([x])=>{const md=HG.marks?Object.values(x.st).filter(Boolean).map(pd):[];
+  const extra=md.concat(HG.base&&x.bl?[x.bl.a,x.bl.b]:[],HG.fc&&x.fc?[x.fc]:[]);
+  [x.a,x.fA].concat(extra).forEach(d=>{if(d&&(!lo||d<lo))lo=d;});[x.b,x.fB].concat(extra).forEach(d=>{if(d&&(!hi||d>hi))hi=d;});});
  if(!all.length||!lo){h+=`<div class="card"><p class="md-empty">Нет задач со спринтами. Задайте спринт и поле «Родитель» в «Бэклоге» — Эпик → Фича → История → Задача.</p></div>`;w.innerHTML=h;return w;}
- lo=addD(lo,-2);const end=addD(hi,3),span=end-lo,pos=d=>Math.max(0,Math.min(100,(d-lo)/span*100)),wd=(a,b)=>Math.max(.6,pos(addD(b,1))-pos(a));
- const ticks=[];for(let s=1;G.spA(s)<=hi&&s<60;s++)if(G.spA(s)>=lo||G.spA(s+1)>lo)ticks.push([s,G.spA(s)]);
- const grid=ticks.map(([s,d])=>`<span class="hg-tick" style="left:${pos(d)}%"></span>`).join('')+(G.today>=lo&&G.today<=end?`<span class="hg-today" style="left:${pos(G.today)}%"></span>`:'');
- h+=`<div class="hg-grid" data-span="${+lo}:${+end}"><div class="hg-row hg-head"><div class="hg-l">Элемент · объём · прогресс</div><div class="hg-tl">${ticks.map(([s,d])=>`<span class="hg-tick" style="left:${pos(d)}%"><b>С${s}</b> ${fmtd(d).slice(0,5)}</span>`).join('')}</div></div>`;
- all.forEach(([x,d,vis])=>{if(!vis)return;const t=x.t,sum=x.ch.length>0,op=hgOpen(x,d),r=hgRank(t),pc=x.sp?x.done/x.sp:(t.status==='Готово'?1:0);
-  const tip=`${t.id} ${t.title||''} · план ${x.a?fmtd(x.a)+'–'+fmtd(x.b):'—'} · факт ${x.fA?fmtd(x.fA)+'–'+(x.fB?fmtd(x.fB):'…'):'—'} · ${fmt(x.done,1)} из ${fmt(x.sp,1)} SP`+(sum?` · вложено ${x.n}`:'')+(x.over?` · просрочено ${x.over}`:'');
+ lo=addD(lo,-2);const end=addD(hi,3),span=end-lo,days=span/MS,sc=HG_SCALES.find(s=>s[0]===HG.scale)||HG_SCALES[0],ppd=sc[2],U=ppd?'px':'%';
+ const pos=d=>ppd?Math.max(0,Math.min(days,(d-lo)/MS))*ppd:Math.max(0,Math.min(100,(d-lo)/span*100)),wd=(a,b)=>Math.max(ppd?3:.6,pos(addD(b,1))-pos(a));
+ const ticks=hgTicks(lo,end,G.spA),msl=[];
+ if(HG.ms){(ST.releases||[]).forEach(r=>{if(num(r.sto)>0){const d=addD(G.spA(num(r.sto)),11);if(d>=lo&&d<=end)msl.push([d,'rel','🚀 '+r.id+' '+(r.name||''),r.status||'']);}});
+  (ST.milestones||[]).forEach(m=>{if(num(m.sprint)>0){const d=addD(G.spA(num(m.sprint)),11);if(d>=lo&&d<=end)msl.push([d,'ms','⚑ '+(m.name||m.id),m.status||'']);}});}
+ const grid=ticks.map(([d,,mj])=>`<span class="hg-tick${mj?'':' mn'}" style="left:${pos(d)}${U}"></span>`).join('')+msl.map(([d,c])=>`<span class="hg-msl ${c}" style="left:${pos(d)}${U}"></span>`).join('')
+  +(G.today>=lo&&G.today<=end?`<span class="hg-today" style="left:${pos(G.today)}${U}"></span>`:'');
+ const cols=HG_COLS.filter(c=>HG.cols.includes(c[0])),cw=cols.reduce((s,c)=>s+c[2]+6,0),hgl=ppd?(320+cw)+'px':(cw?(280+cw)+'px':'minmax(260px,38%)');
+ const colv=(c,x,t)=>{const sum=x.ch.length>0;
+  if(c==='who')return esc(t.assignee||(sum?'':'—'));
+  if(c==='status')return t.status?`<span class="hg-st hg-st-${t.status==='Готово'?'d':t.status==='В работе'?'w':'t'}">${esc(t.status)}</span>`:'';
+  if(c==='sprint'){if(!x.a)return '—';const s1=Math.floor((x.a-G.start)/MS/14)+1,s2=Math.floor((x.b-G.start)/MS/14)+1;return 'С'+s1+(s2!==s1?'–'+s2:'');}
+  if(c==='dates')return x.a?fmtd(x.a).slice(0,5)+'–'+fmtd(x.b).slice(0,5):'—';
+  if(c==='left')return fmt(x.sp-x.done,1);
+  if(c==='slack'){const v=slack[t.id];return v==null?'—':`<span class="${v<0?'hg-neg':''}">${v} спр.</span>`;}return '';};
+ h+=`<div class="hg-scroll"><div class="hg-grid${ppd?' hg-px':''}" style="--hgl:${hgl};--hgw:${ppd?Math.ceil(days*ppd)+'px':'1fr'}" data-span="${+lo}:${+end}">`
+  +`<div class="hg-row hg-head"><div class="hg-l"><span class="hg-tt">Элемент · объём · прогресс</span>${cols.map(c=>`<span class="hg-c" style="width:${c[2]}px">${c[1]}</span>`).join('')}</div>`
+  +`<div class="hg-tl">${ticks.map(([d,l,mj])=>`<span class="hg-tick${mj?'':' mn'}" style="left:${pos(d)}${U}">${mj?'<b>'+esc(l.split(' ')[0])+'</b> '+esc(l.split(' ').slice(1).join(' ')):esc(l)}</span>`).join('')}</div></div>`;
+ if(msl.length){const by={};msl.forEach(m=>{const k=+m[0];(by[k]=by[k]||[]).push(m);});   // одна дата — одна подпись; соседние — в два ряда
+  h+=`<div class="hg-row hg-head hg-msrow"><div class="hg-l"><span class="hg-tt">Вехи и релизы</span></div><div class="hg-tl">${Object.keys(by).sort((x,y)=>x-y).map((k,i)=>{const l=by[k],d=new Date(+k),c=l.some(m=>m[1]==='rel')?'rel':'ms';
+   return `<span class="hg-msf ${c}${i%2?' lo':''}" style="left:${pos(d)}${U}" title="${esc(l.map(m=>m[2]+(m[3]?' · '+m[3]:'')).join('\n')+'\n'+fmtd(d))}">${esc(l.map(m=>m[2]).join(' · '))}</span>`;}).join('')}</div></div>`;}
+ all.forEach(([x,d,vis])=>{if(!vis)return;const t=x.t,sum=x.ch.length>0,op=filt||hgOpen(x,d),r=hgRank(t),pc=x.sp?x.done/x.sp:(t.status==='Готово'?1:0);
+  const tip=`${t.id} ${t.title||''} · план ${x.a?fmtd(x.a)+'–'+fmtd(x.b):'—'} · факт ${x.fA?fmtd(x.fA)+'–'+(x.fB?fmtd(x.fB):'…'):'—'} · ${fmt(x.done,1)} из ${fmt(x.sp,1)} SP`+(sum?` · вложено ${x.n}`:'')+(x.over?` · просрочено ${x.over}`:'')
+   +(x.bl?` · базовый план ${fmtd(x.bl.a)}–${fmtd(x.bl.b)}${x.shift?' (сдвиг '+hgDur(x.shift)+')':''}`:'')+(x.fc?` · прогноз ${fmtd(x.fc)}`:'');
   let bars='';
-  if(x.a)bars+=sum?`<span class="hg-s${x.late?' hg-late':''}" style="left:${pos(x.a)}%;width:${wd(x.a,x.b)}%" title="${esc(tip)}"><i style="width:${Math.round(pc*100)}%"></i></span><span class="hg-pc" style="left:calc(${pos(x.a)+wd(x.a,x.b)}% + 4px)">${pctf(pc)}${x.over?' · ⚠ '+x.over:''}</span>`
-   :`<span class="hg-p ${t.status==='Готово'?'done':t.status==='В работе'?'wip':''}${x.late?' hg-late':''}" style="left:${pos(x.a)}%;width:${wd(x.a,x.b)}%" title="${esc(tip)}"></span>`;
-  if(HG.fact&&x.fA&&x.fB)bars+=`<span class="hg-f${x.b&&x.fB>x.b?' late':''}" style="left:${pos(x.fA)}%;width:${wd(x.fA,x.fB)}%" title="${esc('Факт: '+fmtd(x.fA)+' – '+(t.done||sum?fmtd(x.fB):'сейчас'))}"></span>`;
-  const xd=(ST.deps||[]).filter(d=>d.task&&d.task===t.id);
+  if(HG.base&&x.bl&&x.bl.a)bars+=`<span class="hg-bl" style="left:${pos(x.bl.a)}${U};width:${wd(x.bl.a,x.bl.b)}${U}" title="${esc('Базовый план: '+fmtd(x.bl.a)+' – '+fmtd(x.bl.b))}"></span>`;
+  const fcLate=HG.fc&&x.fc&&x.b&&x.fc>x.b;
+  if(fcLate)bars+=`<span class="hg-fc" style="left:${pos(addD(x.b,1))}${U};width:${wd(addD(x.b,1),x.fc)}${U}" title="${esc('Прогноз завершения по фактическому темпу: '+fmtd(x.fc))}"></span>`;
+  const tailX=fcLate?pos(addD(x.fc,1)):x.b?pos(addD(x.b,1)):0,shiftTxt=HG.base&&x.shift?' · сдвиг '+hgDur(x.shift):'',fcTxt=HG.fc&&x.fc?' · прогноз '+fmtd(x.fc).slice(0,5):'';
+  if(x.a)bars+=sum?`<span class="hg-s${x.late?' hg-late':''}" style="left:${pos(x.a)}${U};width:${wd(x.a,x.b)}${U}" title="${esc(tip)}"><i style="width:${Math.round(pc*100)}%"></i></span><span class="hg-pc" style="left:calc(${tailX}${U} + 4px)">${pctf(pc)}${x.over?' · ⚠ '+x.over:''}${fcTxt}${shiftTxt}</span>`
+   :`<span class="hg-p ${t.status==='Готово'?'done':t.status==='В работе'?'wip':''}${x.late?' hg-late':''}" style="left:${pos(x.a)}${U};width:${wd(x.a,x.b)}${U}" title="${esc(tip)}"${PERM.canEdit&&!t.virt&&num(t.sprint)>0?` data-hgdrag="${esc(t.id)}"`:''}></span>`;
+  if(HG.fact&&x.fA&&x.fB)bars+=`<span class="hg-f${x.b&&x.fB>x.b?' late':''}" style="left:${pos(x.fA)}${U};width:${wd(x.fA,x.fB)}${U}" title="${esc('Факт: '+fmtd(x.fA)+' – '+(t.done||sum?fmtd(x.fB):'сейчас'))}"></span>`;
+  const xd=(ST.deps||[]).filter(d=>d.task&&d.task===t.id);let tailOff=4;
   if(HG.links&&xd.length&&x.b){const worst=xd.some(d=>d.status==='Заблокировано'||d.status==='Просрочено')?'Заблокировано':xd.some(d=>d.status==='Ожидается')?'Ожидается':'Получено';
-   bars+=`<span class="hg-xd" style="left:calc(${pos(addD(x.b,1))}% + 3px);color:${depColor(worst)}" title="${esc('Внешняя зависимость: '+xd.map(d=>(d.stream||'')+' — '+(d.desc||d.item||'')+' ['+d.status+']').join('; '))}">◆</span>`;}
+   bars+=`<span class="hg-xd" style="left:calc(${pos(addD(x.b,1))}${U} + 3px);color:${depColor(worst)}" title="${esc('Внешняя зависимость: '+xd.map(d=>(d.stream||'')+' — '+(d.desc||d.item||'')+' ['+d.status+']').join('; '))}">◆</span>`;tailOff=18;}
+  if(!sum&&HG.base&&x.shift&&x.b)bars+=`<span class="hg-shift${x.shift>0?' late':''}" style="left:calc(${pos(addD(x.b,1))}${U} + ${tailOff}px)" title="Сдвиг против базового плана">${hgDur(x.shift)}</span>`;
+  bars+=hgExtraBars(x,t,pos,U);
   if(HG.marks){const grp={};HG_KEYS.filter(k=>x.st[k]).forEach(k=>{(grp[x.st[k]]=grp[x.st[k]]||[]).push(k);});
    Object.keys(grp).forEach(dt=>{const l=grp[dt],p=pos(new Date(+pd(dt)+MS/2));l.forEach((k,i)=>{const off=(i-(l.length-1)/2)*11-8;
-    bars+=`<span class="hg-mk" data-hgs="${esc(t.id)}" style="left:calc(${p}% + ${off}px)" title="${esc(hgMarkName(k)+' — '+fmtd(pd(dt))+(x.mk[k]?' · вручную':' · авто'))}">${hgMarkSvg(k,x.mk[k])}</span>`;});});}
-  h+=`<div class="hg-row${sum?' hg-sum':''}" data-hgrow="${esc(t.id)}"><div class="hg-l" style="padding-left:${6+d*18}px">`
-   +(sum?`<button class="hg-tg" data-hgt="${esc(t.id)}" data-d="${d}" aria-expanded="${op}" title="${op?'Свернуть':'Развернуть'}">${op?'▾':'▸'}</button>`:'<span class="hg-tg0"></span>')
-   +`<span class="hg-ty hg-ty${r}" title="${esc(t.type||'')}">${(HG_TYPES.find(y=>y[0]===t.type)||['','','З'])[2]}</span><button class="hg-id" data-hgo="${esc(t.id)}" title="Открыть в «Бэклоге»">${esc(t.id)}</button>`
-   +`<span class="hg-tt" data-hgs="${esc(t.id)}" title="${esc((t.title||'')+' — этапы: клик')}">${esc(t.title||'')}</span><span class="hg-m">${fmt(x.sp,1)} SP · ${pctf(pc)}</span></div><div class="hg-tl">${grid}${bars}</div></div>`;});
- h+=`</div><div class="legend hg-leg"><span><i class="hg-lg-s"></i>Сводная полоса: заливка — прогресс по SP</span><span><i class="hg-lg-p"></i>План (спринт)</span>`
-  +`<span><i class="hg-lg-f"></i>Факт: начато → готово</span><span><i class="hg-lg-l"></i>Просрочено / выходит за спринт родителя</span><span><i class="hg-lg-t"></i>Сегодня</span></div>`;
+    bars+=`<span class="hg-mk" data-hgs="${esc(t.id)}" style="left:calc(${p}${U} + ${off}px)" title="${esc(hgMarkName(k)+' — '+fmtd(pd(dt))+(x.mk[k]?' · вручную':' · авто'))}">${hgMarkSvg(k,x.mk[k])}</span>`;});});}
+  h+=`<div class="hg-row${sum?' hg-sum':''}${filt&&hit.has(t.id)?' hg-hit':''}" data-hgrow="${esc(t.id)}"><div class="hg-l" style="padding-left:${6+d*18}px">`
+   +(sum&&!filt?`<button class="hg-tg" data-hgt="${esc(t.id)}" data-d="${d}" aria-expanded="${op}" title="${op?'Свернуть':'Развернуть'}">${op?'▾':'▸'}</button>`:'<span class="hg-tg0"></span>')
+   +`<span class="hg-ty hg-ty${r}" title="${esc(t.type||'')}">${(HG_TYPES.find(y=>y[0]===t.type)||['','','З'])[2]}</span><button class="hg-id" data-hgo="${esc(t.id)}" title="${t.virt?'Открыть «Фичи стрима»':'Открыть в «Бэклоге»'}">${esc(t.virt||t.id)}</button>`
+   +`<span class="hg-tt" data-hgs="${esc(t.id)}" title="${esc((t.title||'')+' — зависимости и этапы: клик')}">${esc(t.title||'')}</span>${cols.map(c=>`<span class="hg-c" style="width:${c[2]}px">${colv(c[0],x,t)}</span>`).join('')}`
+   +`<span class="hg-m">${fmt(x.sp,1)} SP · ${pctf(pc)}</span></div><div class="hg-tl">${grid}${bars}</div></div>`;});
+ if(HG.load){const sps=(C.sp||[]).filter(s=>s.a<=end&&s.b>=lo),mx=Math.max(1,...sps.map(s=>Math.max(s.plan,s.cap)));
+  h+=`<div class="hg-row hg-loadrow"><div class="hg-l"><span class="hg-tt"><b>Загрузка</b> · план / ёмкость, SP</span></div><div class="hg-tl">${grid}${sps.map(s=>{const by={};
+    T.filter(t=>+t.sprint===s.s&&t.type!=='Эпик'&&t.type!=='Фича').forEach(t=>{const k=t.role||'—';by[k]=(by[k]||0)+num(t.est);});const ov=s.plan>s.cap;
+    return `<span class="hg-lb${ov?' over':''}" style="left:${pos(s.a)}${U};width:${wd(s.a,s.b)}${U};height:${Math.max(2,Math.round(s.plan/mx*40))}px" title="${esc('Спринт '+s.s+': план '+fmt(s.plan,1)+' SP / ёмкость '+fmt(s.cap,1)+(ov?' — перегруз':'')+'\n'+Object.entries(by).map(([k,v])=>k+': '+fmt(v,1)+' SP').join('\n'))}"></span>`
+     +`<span class="hg-lc" style="left:${pos(s.a)}${U};width:${wd(s.a,s.b)}${U};bottom:${4+Math.round(s.cap/mx*40)}px"></span><span class="hg-lt${ov?' over':''}" style="left:${pos(s.a)}${U};width:${wd(s.a,s.b)}${U}">${fmt(s.plan,0)} / ${fmt(s.cap,0)}</span>`;}).join('')}</div></div>`;}
+ h+=`</div></div><div class="legend hg-leg"><span><i class="hg-lg-s"></i>Сводная полоса: заливка — прогресс по SP</span><span><i class="hg-lg-p"></i>План (спринт), тянется мышью</span>`
+  +`<span><i class="hg-lg-f"></i>Факт: начато → готово</span><span><i class="hg-lg-l"></i>Просрочено / выходит за спринт родителя</span><span><i class="hg-lg-t"></i>Сегодня</span>`
+  +`<span><i class="hg-lg-b"></i>Базовый план (пунктир) и сдвиг</span><span><i class="hg-lg-fc"></i>Прогноз позже плана</span><span><i class="hg-lg-ms"></i>Вехи ⚑ и релизы 🚀</span><span><i class="hg-lg-ld"></i>Загрузка: план / ёмкость (красный — перегруз)</span></div>`;
  h+=`<div class="legend hg-leg hg-lleg"><span><svg viewBox="0 0 30 10" width="30" height="10"><path d="M1 5H24" class="hg-lg-ln"/><path d="M23 1.5 29 5 23 8.5Z" class="hg-arr"/></svg>Зависимость: окончание → начало</span>`
   +`<span><svg viewBox="0 0 30 10" width="30" height="10"><path d="M1 5H24" class="hg-lg-ln crit"/><path d="M23 1.5 29 5 23 8.5Z" class="hg-arr-crit"/></svg>На критическом пути</span>`
   +`<span><svg viewBox="0 0 30 10" width="30" height="10"><path d="M1 5H24" class="hg-lg-ln conf"/><path d="M23 1.5 29 5 23 8.5Z" class="hg-arr-conf"/></svg>Конфликт: преемник заканчивается раньше предшественника</span>`
@@ -4662,7 +4767,86 @@ function hgStagesOpen(id){const node=hgFind(id),t=(ST.tasks||[]).find(x=>x.id===
   toast(clear?'Этапы '+t.id+': всё автоматически':t.id+': зависимости и этапы сохранены');if(typeof auditClient==='function')auditClient('stages',t.id+':'+Object.keys(o).join(','));};
  if(!ro){m.querySelector('[data-hgsx=ok]').onclick=()=>sv(false);m.querySelector('[data-hgsx=auto]').onclick=()=>sv(true);}}
 document.addEventListener('click',e=>{const b=e.target.closest('#hg_root [data-hgs]');if(b)hgStagesOpen(b.dataset.hgs);});
-function hgRefresh(){const o=document.getElementById('hg_root');if(o){o.replaceWith(hganttView());hgDrawLinks();}}
+function hgRefresh(){const o=document.getElementById('hg_root');if(!o)return;const a=document.activeElement,q=!!(a&&a.matches&&a.matches('[data-hgq]')),os=o.querySelector('.hg-scroll'),sl=os?os.scrollLeft:0;
+ o.replaceWith(hganttView());const n=document.getElementById('hg_root'),ns=n&&n.querySelector('.hg-scroll');if(ns)ns.scrollLeft=sl;
+ if(q){const i=n.querySelector('[data-hgq]');if(i){i.focus();i.setSelectionRange(i.value.length,i.value.length);}}hgDrawLinks();}
+/* ---- Гант по иерархии: обработчики масштаба, колонок, фильтров, показа, базового плана, перетаскивания и экспорта ---- */
+document.addEventListener('change',e=>{const el=e.target;if(!el.closest||!el.closest('#hg_root'))return;
+ if(el.matches('[data-hgsc]')){HG.scale=el.value;lsSetS('hg_scale',HG.scale);hgRefresh();}
+ else if(el.matches('[data-hgcol]')){const k=el.dataset.hgcol;HG.cols=HG.cols.filter(x=>x!==k).concat(el.checked?[k]:[]);lsSetS('hg_cols',HG.cols.join(','));hgRefresh();}
+ else if(el.matches('[data-hgfk]')){HG.f[el.dataset.hgfk]=el.value;hgRefresh();}
+ else if(el.matches('[data-hgflag]')){HG.f[el.dataset.hgflag]=el.checked;hgRefresh();}
+ else if(el.matches('[data-hgcrit]')){HG.critOnly=el.checked;hgRefresh();}
+ else if(el.matches('[data-hgsh]')){HG[el.dataset.hgsh]=el.checked;hgRefresh();}});
+document.addEventListener('input',e=>{const el=e.target;if(!el.matches||!el.matches('#hg_root [data-hgq]'))return;clearTimeout(HG.qt);HG.qt=setTimeout(()=>{HG.f.q=el.value.trim();hgRefresh();},250);});
+document.addEventListener('click',e=>{const b=e.target.closest('#hg_root [data-hgtoday],#hg_root [data-hgfx],#hg_root [data-hgbase],#hg_root [data-hgexp]');if(!b)return;
+ if(b.hasAttribute('data-hgtoday'))hgScrollToday();
+ else if(b.hasAttribute('data-hgfx')){HG.f={};HG.critOnly=false;hgRefresh();}
+ else if(b.dataset.hgbase)hgBaseFix(b.dataset.hgbase==='clear');
+ else if(b.dataset.hgexp){const dd=b.closest('details');if(dd)dd.open=false;hgExport(b.dataset.hgexp);}});
+function hgScrollToday(){const root=document.getElementById('hg_root'),sc=root&&root.querySelector('.hg-scroll'),td=root&&root.querySelector('.hg-row[data-hgrow] .hg-today');if(!sc||!td)return;
+ const x=td.getBoundingClientRect().left-sc.getBoundingClientRect().left+sc.scrollLeft;sc.scrollLeft=Math.max(0,x-sc.clientWidth/2);}
+/* Базовый план: снимок плановых сроков всех элементов (у задачи — t.baseline {a,b,at}); полоса-тень и сдвиг сроков. */
+function hgBaseFix(clear){if(!PERM.canEdit){toast('Только для редактора/администратора');return;}const T=ST.tasks||[];
+ if(clear){if(!confirm('Сбросить базовый план?'))return;T.forEach(t=>{t.baseline={};});}
+ else{const ex=T.find(t=>t.baseline&&t.baseline.at);if(ex&&!confirm('Перезаписать базовый план от '+fmtd(pd(ex.baseline.at))+'?'))return;
+  const G=hgTree(),at=todayISO();const go=x=>{if(!x.t.virt){const t=T.find(y=>y.id===x.t.id);if(t)t.baseline=x.a?{a:iso(x.a),b:iso(x.b),at}:{};}x.ch.forEach(go);};G.nodes.forEach(go);}
+ save();hgRefresh();toast(clear?'Базовый план сброшен':'Базовый план зафиксирован');if(typeof auditClient==='function')auditClient('hg_baseline',clear?'clear':'fix');}
+/* Перетаскивание плановой полосы задачи между спринтами (редактор): подсказка с новым спринтом и конфликтами, отмена. */
+function hgMoveWarn(t,ns){const T=ST.tasks||[],w=[];depList(t).forEach(p=>{const x=T.find(y=>y.id===p);if(x&&num(x.sprint)>ns)w.push('раньше '+p);});
+ T.filter(x=>depList(x).includes(t.id)&&num(x.sprint)&&num(x.sprint)<ns).forEach(x=>w.push(x.id+' ждёт её раньше'));
+ const pr=T.find(x=>x.id===t.parent);if(pr&&num(pr.sprint)&&num(pr.sprint)<ns)w.push('позже спринта '+pr.id);return w.join(', ');}
+document.addEventListener('pointerdown',e=>{const b=e.target.closest('#hg_root .hg-p[data-hgdrag]');if(!b||!PERM.canEdit||e.button)return;
+ const t=(ST.tasks||[]).find(x=>x.id===b.dataset.hgdrag);if(!t)return;const tl=b.closest('.hg-tl'),sp=(b.closest('.hg-grid').dataset.span||'').split(':').map(Number);
+ const ppd=tl.getBoundingClientRect().width/Math.max(1,(sp[1]-sp[0])/MS);HG.drag={t,b,x0:e.clientX,s0:num(t.sprint),ppd,ds:0,left:parseFloat(b.style.left)};
+ try{b.setPointerCapture(e.pointerId);}catch(err){}b.classList.add('drag');e.preventDefault();});
+document.addEventListener('pointermove',e=>{const D=HG.drag;if(!D)return;const dx=e.clientX-D.x0;D.ds=Math.round(dx/D.ppd/14);D.b.style.transform=`translateX(${dx}px)`;
+ if(!D.tip){D.tip=document.createElement('span');D.tip.className='hg-dtip';D.b.parentNode.appendChild(D.tip);}
+ const ns=Math.max(1,D.s0+D.ds),w=hgMoveWarn(D.t,ns);D.tip.style.left=(D.b.offsetLeft+dx)+'px';D.tip.textContent='Спринт '+ns+(w?' · ⚠ '+w:'');D.tip.classList.toggle('warn',!!w);});
+document.addEventListener('pointerup',e=>{const D=HG.drag;if(!D)return;HG.drag=null;D.b.classList.remove('drag');D.b.style.transform='';if(D.tip)D.tip.remove();
+ const ns=Math.max(1,Math.min(Math.max(num(ST.params.sprints)||99,D.s0),D.s0+D.ds));if(ns===D.s0)return;const t=D.t,old=t.sprint,warn=hgMoveWarn(t,ns);t.sprint=ns;save();hgRefresh();
+ toastAction(t.id+' → спринт '+ns+(warn?' · ⚠ '+warn:''),'Отменить',()=>{t.sprint=old;save();hgRefresh();});if(typeof auditClient==='function')auditClient('hg_move',t.id+':'+D.s0+'→'+ns);});
+/* Экспорт: лист Excel с иерархией, датами, метками и прогнозом; PNG и PDF — снимок диаграммы (стрелки и метки включительно). */
+function hgSheet(){const G=hgTree(),d=x=>x?fmtd(x):'';
+ const aoa=[['Уровень','ID','Тип','Название','Родитель','Зависит от','Исполнитель','Статус','Спринт','План: начало','План: конец','Факт: начало','Факт: конец','Объём, SP','Готово, SP','Прогресс','Просрочено','Базовый план: начало','Базовый план: конец','Сдвиг, дн.','Прогноз завершения'].concat(HG_KEYS.map(hgMarkName))];
+ const go=(x,l)=>{const t=x.t;aoa.push([l,t.virt||t.id,t.type||'',t.title||'',t.parent||'',t.dep||'',t.assignee||'',t.status||'',t.sprint||'',d(x.a),d(x.b),d(x.fA),d(x.fB),x.sp,x.done,x.sp?Math.round(x.done/x.sp*100)/100:'',x.over||'',
+   x.bl?d(x.bl.a):'',x.bl?d(x.bl.b):'',x.bl?x.shift:'',x.fc?d(x.fc):''].concat(HG_KEYS.map(k=>x.st[k]?fmtd(pd(x.st[k])):'')));x.ch.forEach(c=>go(c,l+1));};
+ G.nodes.forEach(x=>go(x,1));return {name:'Гант по иерархии',aoa};}
+function hgDownload(blob,name){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},800);}
+function hgSnapshotSvg(){const root=document.getElementById('hg_root'),grid=root&&root.querySelector('.hg-grid');if(!grid||!grid.offsetParent)return null;
+ const scr=root.querySelector('.hg-scroll'),sl=scr?scr.scrollLeft:0;if(scr)scr.scrollLeft=0;
+ const gr=grid.getBoundingClientRect(),TOP=34,W=Math.ceil(Math.max(gr.width,grid.scrollWidth)),H=Math.ceil(gr.height)+TOP;
+ const cs=e=>getComputedStyle(e),R=e=>{const q=e.getBoundingClientRect();return {x:q.left-gr.left,y:q.top-gr.top+TOP,w:q.width,h:q.height};};
+ const rs=cs(document.documentElement),V=n=>rs.getPropertyValue(n).trim()||'#888',PANEL=V('--panel'),LINE=V('--line'),INK=V('--ink'),CRIT=V('--crit');
+ const X=s=>String(s).replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m])),fill=c=>c&&c!=='rgba(0, 0, 0, 0)'&&c!=='transparent'?c:'none';
+ let s=`<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" font-family="Segoe UI, Arial, sans-serif"><rect width="${W}" height="${H}" fill="${PANEL}"/>`
+  +`<text x="8" y="22" font-size="15" font-weight="700" fill="${INK}">${X('Гант по иерархии — '+((ST.params&&ST.params.name)||'')+' · '+fmtd(pd(todayISO())))}</text>`;
+ grid.querySelectorAll('.hg-row').forEach(r=>{const b=R(r);if(r.classList.contains('hg-head'))s+=`<rect x="0" y="${b.y}" width="${W}" height="${b.h}" fill="${fill(cs(r).backgroundColor)}"/>`;s+=`<line x1="0" y1="${b.y}" x2="${W}" y2="${b.y}" stroke="${LINE}"/>`;});
+ grid.querySelectorAll('.hg-tick,.hg-today,.hg-msl').forEach(e=>{const b=R(e),c=cs(e);s+=`<line x1="${b.x}" y1="${b.y}" x2="${b.x}" y2="${b.y+b.h}" stroke="${c.borderLeftColor}" stroke-width="${parseFloat(c.borderLeftWidth)||1}"${c.borderLeftStyle==='dashed'?' stroke-dasharray="3 3"':''} opacity="${c.opacity}"/>`;});
+ grid.querySelectorAll('.hg-bl,.hg-s,.hg-s i,.hg-p,.hg-f,.hg-fc,.hg-lb,.hg-lc').forEach(e=>{const b=R(e),c=cs(e),bw=parseFloat(c.borderTopWidth)||0,late=e.classList.contains('hg-late');
+  s+=`<rect x="${b.x}" y="${b.y}" width="${Math.max(0,b.w)}" height="${Math.max(bw,b.h)}" rx="${parseFloat(c.borderTopLeftRadius)||0}" fill="${fill(c.backgroundColor)}"`
+   +(late?` stroke="${CRIT}" stroke-width="2"`:bw?` stroke="${c.borderTopColor}" stroke-width="${bw}"${c.borderTopStyle!=='solid'?' stroke-dasharray="4 3"':''}`:'')+'/>';});
+ grid.querySelectorAll('.hg-head .hg-tick').forEach(e=>{const b=R(e),c=cs(e);s+=`<text x="${b.x+4}" y="${b.y+16}" font-size="${parseFloat(c.fontSize)}" fill="${c.color}">${X(e.textContent.trim())}</text>`;});
+ grid.querySelectorAll('.hg-l .hg-ty,.hg-l .hg-id,.hg-l .hg-tt,.hg-l .hg-m,.hg-l .hg-c,.hg-pc,.hg-xd,.hg-xs,.hg-shift,.hg-msf,.hg-lt').forEach(e=>{const txt=e.textContent.trim();if(!txt)return;
+  const b=R(e),c=cs(e),fs=parseFloat(c.fontSize)||12,clip=e.matches('.hg-tt,.hg-c'),max=Math.max(1,Math.floor(b.w/(fs*0.56))),t=clip&&txt.length>max?txt.slice(0,max-1)+'…':txt;
+  s+=`<text x="${b.x+(e.matches('.hg-lt')?b.w/2:0)}" y="${b.y+b.h/2+fs*0.35}" font-size="${fs}" font-weight="${c.fontWeight}" fill="${c.color}"${e.matches('.hg-lt')?' text-anchor="middle"':''}>${X(t)}</text>`;});
+ grid.querySelectorAll('.hg-mk').forEach(e=>{const b=R(e),sv=e.querySelector('svg');if(sv)s+=`<svg x="${b.x}" y="${b.y}" width="16" height="16" viewBox="0 0 16 16">${sv.innerHTML.replace(/var\(--panel\)/g,PANEL).replace(/var\(--ink\)/g,INK)}</svg>`;});
+ const lk=grid.querySelector('svg.hg-links');if(lk){const mk={};let defs='',body='';
+  lk.querySelectorAll('.hg-ln').forEach(g=>{const p=g.querySelector('.ln'),c=cs(p),st=c.stroke;if(!mk[st]){mk[st]='m'+Object.keys(mk).length;defs+=`<marker id="${mk[st]}" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L8 4L0 8Z" fill="${st}"/></marker>`;}
+   body+=`<path d="${p.getAttribute('d')}" fill="none" stroke="${st}" stroke-width="${c.strokeWidth}"${c.strokeDasharray&&c.strokeDasharray!=='none'?` stroke-dasharray="${c.strokeDasharray}"`:''} marker-end="url(#${mk[st]})"/>`;
+   const tx=g.querySelector('text');if(tx)body+=`<text x="${tx.getAttribute('x')}" y="${tx.getAttribute('y')}" font-size="10" font-weight="700" fill="${cs(tx).fill}">${X(tx.textContent)}</text>`;});
+  s+=`<defs>${defs}</defs><g transform="translate(0,${TOP})">${body}</g>`;}
+ if(scr)scr.scrollLeft=sl;return {s:s+'</svg>',w:W,h:H};}
+function hgSvgToPng(s,w,h){return new Promise((res,rej)=>{const img=new Image();img.onload=()=>{const k=2,c=document.createElement('canvas');c.width=w*k;c.height=h*k;const x=c.getContext('2d');x.scale(k,k);x.drawImage(img,0,0);
+  const url=c.toDataURL('image/png');c.toBlob(b=>res({blob:b,url}),'image/png');};img.onerror=()=>rej(new Error('Не удалось нарисовать диаграмму'));img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(s);});}
+async function hgExport(kind,noDl){
+ if(kind==='xlsx'){const blob=new Blob([buildXlsx([hgSheet()])],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});if(!noDl)hgDownload(blob,'Гант_по_иерархии.xlsx');return blob;}
+ const sv=hgSnapshotSvg();if(!sv){toast('Откройте «Гант по иерархии»');return null;}
+ let png;try{png=await hgSvgToPng(sv.s,sv.w,sv.h);}catch(err){toast(err.message);return null;}
+ if(kind==='png'){if(!noDl)hgDownload(png.blob,'Гант_по_иерархии.png');if(typeof auditClient==='function')auditClient('hg_export','png');return png.blob;}
+ let J;try{J=await loadJsPDF();}catch(err){toast('PDF недоступен без доступа к CDN — сохраните PNG');return null;}
+ const doc=new J({orientation:sv.w>=sv.h?'landscape':'portrait',unit:'px',format:[sv.w,sv.h],compress:true});doc.addImage(png.url,'PNG',0,0,sv.w,sv.h);
+ const blob=doc.output('blob');if(!noDl)hgDownload(blob,'Гант_по_иерархии.pdf');if(typeof auditClient==='function')auditClient('hg_export','pdf');return blob;}
 document.addEventListener('click',e=>{const b=e.target.closest('#hg_root [data-hgt],#hg_root [data-hglv],#hg_root [data-hgo]');if(!b)return;
  if(b.dataset.hgt){const id=b.dataset.hgt,x=b.getAttribute('aria-expanded')==='true';HG.open[id]=!x;hgRefresh();}
  else if(b.dataset.hglv){HG.level=+b.dataset.hglv;HG.open={};hgRefresh();}
@@ -5506,6 +5690,7 @@ function exportXlsx(){const C=compute();const s=[];
  s.push({name:'Team Health Check',aoa:[['ID','Дата','Спринт','Измерение','Оценка','Тренд','Комментарий']].concat((ST.teamHealth||[]).map(x=>[x.id,x.date,num(x.sprint),x.dimension,x.rating,x.trend,x.note]))});
  s.push({name:'Деплои',aoa:[['ID','Дата','Релиз','Среда','Статус','Lead time (дн)','Комментарий']].concat((ST.deployments||[]).map(x=>[x.id,x.date,x.release,x.env,x.status,num(x.leadDays),x.note]))});
  s.push({name:'Инциденты',aoa:[['ID','Дата','Инцидент','Серьёзность','Восстановление (ч)','Причина','Статус','Постмортем']].concat((ST.incidents||[]).map(x=>[x.id,x.date,x.title,x.severity,num(x.downHours),x.cause,x.status,x.postmortem]))});
+ s.push(hgSheet());
  const bin=buildXlsx(s);const blob=new Blob([bin],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='Планирование_спринта.xlsx';document.body.appendChild(a);a.click();a.remove();toast('Excel экспортирован');}
 
@@ -5731,9 +5916,14 @@ const NAV=[
  {g:'Система',items:[['params','Параметры','⚙️'],['integrations','Интеграции','🔌'],['calendar','Календарь','📅'],['budget','Бюджет','💰'],['checks','Проверки данных','🧪'],['eda','EDA отчёт','🔬'],['audit','Журнал событий','🧾']]},
  {g:'Справка',items:[['faq','FAQ','❓'],['support','Support','🛟']]},
 ];
-const APP_VERSION='1.54.1';const APP_DATE='2026-10-30';
+const APP_VERSION='1.55.0';const APP_DATE='2026-10-30';
 const APP_ABOUT='Кросс-функциональная команда — это группа специалистов из разных областей (разработчиков, дизайнеров, маркетологов, аналитиков, менеджеров и других), которые объединяются для работы над одним конкретным проектом или задачей. Ключевая идея в том, чтобы собрать внутри команды всех необходимых экспертов, чтобы она могла самостоятельно пройти путь от идеи до результата, не передавая задачу последовательно из одного отдела в другой.';
 const CHANGELOG=[
+ {v:'1.55.0',date:'2026-10-30',items:[
+   'Гант по иерархии — масштаб «Вписать / Недели / Спринты / Месяцы / Кварталы» с горизонтальной прокруткой, закреплённой левой колонкой и кнопкой «К сегодня»; вехи ⚑ и релизы 🚀 линиями на шкале.',
+   'Фильтры и поиск: исполнитель («Только мои»), роль, статус, релиз, спринт, просроченные, конфликты, «только критический путь»; найденные элементы показываются вместе с предками. Колонки слева на выбор: исполнитель, статус, спринт, даты, остаток, резерв.',
+   'Планирование: плановую полосу задачи можно перетащить в другой спринт (подсказка с конфликтами, «Отменить»); «Зафиксировать план» — базовый план пунктиром и сдвиг сроков; прогноз завершения эпиков и фич по фактическому темпу; строка «Загрузка» — план против ёмкости по спринтам.',
+   'Экспорт: PNG и PDF диаграммы со стрелками и метками, Excel-лист «Гант по иерархии» (иерархия, даты, этапы, базовый план, прогноз) — и в общей выгрузке. С сервером базовый план хранится у задачи.']},
  {v:'1.54.1',date:'2026-10-30',items:[
    'Исправлено: в панели «зависимости и этапы» на «Ганте по иерархии» подсказка «авто: дата · сегодня» переносилась на вторую строку и сдвигала поле «Завершение» вниз — подсказка теперь в одну строку, поля каждого этапа выровнены по верху.']},
  {v:'1.54.0',date:'2026-10-30',items:[
@@ -6543,7 +6733,7 @@ startAnalytics();setInterval(startAnalytics,30000);
     Пересобирается на каждой загрузке из NAV + DOM (h1/.lede каждого раздела) + TOUR + CHANGELOG,
     поэтому «обучение» помощника происходит само после каждого обновления приложения:
     новый или переименованный раздел, изменённое описание и новая версия подхватываются без правок. */
- const AKA={hgantt:'стрелки зависимостей связи между задачами предшественник преемник зависит от критический путь конфликт сроков метки этапов бизнес-анализ системный анализ разработка ифт пси выход в прод этапы гант по иерархии иерархический гант диаграмма ганта эпики фичи истории сводная полоса роллап прогресс эпика сроки фичи план факт просрочено',profile:'мой профиль профиль пользователя кто я учётная запись аккаунт пароль сменить пароль мои задачи мои компетенции упоминания настройки тема плотность выйти',myday:'мой день мои задачи стартовая страница блокеры события сегодня',dash:'обзор kpi сводка панель главная',statusreport:'статус отчёт доклад сводка',portfolio:'портфель проектов программа',
+ const AKA={hgantt:'масштаб недели месяцы кварталы к сегодня вехи релизы на шкале фильтр гант поиск только мои колонки перетащить полосу перенести в спринт базовый план сдвиг сроков прогноз завершения загрузка спринтов экспорт png pdf excel резерв стрелки зависимостей связи между задачами предшественник преемник зависит от критический путь конфликт сроков метки этапов бизнес-анализ системный анализ разработка ифт пси выход в прод этапы гант по иерархии иерархический гант диаграмма ганта эпики фичи истории сводная полоса роллап прогресс эпика сроки фичи план факт просрочено',profile:'мой профиль профиль пользователя кто я учётная запись аккаунт пароль сменить пароль мои задачи мои компетенции упоминания настройки тема плотность выйти',myday:'мой день мои задачи стартовая страница блокеры события сегодня',dash:'обзор kpi сводка панель главная',statusreport:'статус отчёт доклад сводка',portfolio:'портфель проектов программа',
   roadmap:'дорожная карта план спринтов график спринтов',quarters:'кварталы квартальный план',sprintGoals:'цель спринта обязательство ценность',
   kanban:'канбан доска статусы колонки карточки',board:'холст схемы стикеры мозговой штурм whiteboard рисование шаблоны ретро swot lean canvas карточки задач виджеты метрики отмена группировка мини-карта голосование презентация показ комментарии упоминания блок-схема майнд-карта mind map таблица дорожки swimlane',okr:'цели ключевые результаты objectives key results',
   backlog:'бэклог задачи список работ',wbs:'иерархия работ декомпозиция эпик фича история роллап',storymap:'карта историй активности',
@@ -6785,7 +6975,7 @@ const TOUR=[
  {v:'board',shot:'board2',h:'Доска — сессии и схемы',p:'Голосование точками со скрытым режимом и медалями лидеров, анонимный ввод, показ по фреймам с режимом «следовать за ведущим», комментарии с @упоминаниями. Блок-схемы с подписями стрелок, майнд-карты, таблицы и дорожки ответственности.',d:11000},
  {v:'backlog',h:'Бэклог',p:'Редактируемые задачи — источник данных для всех метрик. Есть поиск, сортировка по колонкам, строка итогов и отмена удаления.',d:9000},
  {v:'gantt',h:'Диаграмма Ганта',p:'Задачи на шкале дат по спринтам. Красная рамка — критический путь, ромб ◆ — внешняя зависимость от другого стрима.',d:9000},
- {v:'hgantt',h:'Гант по иерархии',p:'Эпик → Фича → История → Задача по полю «Родитель»: сводные полосы с прогрессом по объёму, план по спринтам и факт по датам «начато / готово»; уровни раскрываются, просрочка подсвечена красным. Метки этапов — от бизнес-анализа до выхода в Прод: контур — начало, заливка — завершение; ставятся автоматически по ролям задач или вручную. Стрелки показывают зависимости: красные — конфликт сроков, при свёрнутых уровнях связи переходят на эпики и фичи.',d:10000},
+ {v:'hgantt',h:'Гант по иерархии',p:'Эпик → Фича → История → Задача по полю «Родитель»: сводные полосы с прогрессом по объёму, план по спринтам и факт по датам «начато / готово»; уровни раскрываются, просрочка подсвечена красным. Метки этапов — от бизнес-анализа до выхода в Прод: контур — начало, заливка — завершение; ставятся автоматически по ролям задач или вручную. Стрелки показывают зависимости: красные — конфликт сроков, при свёрнутых уровнях связи переходят на эпики и фичи. Масштаб, фильтры, вехи и релизы на шкале, перетаскивание полос, базовый план, прогноз, загрузка и экспорт в PNG, PDF и Excel.',d:10000},
  {v:'deps',h:'Зависимости',p:'Межстримовые зависимости задач, историй и фич: направление, статус с RAG-подсветкой, риск и отдельный список для эскалации.',d:9000},
  {v:'piboard',h:'Программная доска (PI Planning)',p:'Матрица «стрим × спринт» межкомандных зависимостей и вех на горизонте программного инкремента (SAFe).',d:8000},
  {v:'team',h:'Команда',p:'Состав команды и доступность — из этого считается ёмкость каждого спринта.',d:6500},
