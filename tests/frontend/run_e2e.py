@@ -1055,6 +1055,29 @@ def main():
                 assert 'Что требует внимания' in txt and 'Обзор: эпики и фичи' in txt, 'PPTX slide titles'
         case('hglight: view modes, KPI chips, focus, density, legend by layers, PPTX by epics', t_hglight)
 
+        # ---- Hierarchy Gantt toolbar layout: one control height, the search group wraps as a whole ----
+        def t_hgtbar():
+            out = {}
+            try:
+                for w in (1536, 1280, 1100, 700):
+                    page.set_viewport_size({'width': w, 'height': 900})
+                    out[w] = page.evaluate("""async()=>{HG.scale='sprint';views();activate('hgantt');await new Promise(r=>setTimeout(r,150));
+                     const bar=document.querySelector('#hg_root .hg-tbar'),g=[...bar.querySelectorAll(':scope>.hg-grp')];
+                     const box=e=>(e.tagName==='DETAILS'?e.querySelector('summary'):e).getBoundingClientRect();
+                     const ctl=g.flatMap(x=>[...x.children]),hs=[...new Set(ctl.map(e=>Math.round(box(e).height)))];
+                     const g2=[...g[1].children].map(box),leg=box(g[1].querySelector('.hg-legdd')),q=box(g[1].querySelector('[data-hgq]'));
+                     return {groups:g.length,hs,row2:new Set(g2.map(r=>Math.round(r.top))).size,legRight:Math.round(g[1].getBoundingClientRect().right-leg.right),
+                      inBar:Math.round(bar.getBoundingClientRect().right-Math.max(...ctl.map(e=>box(e).right)))>=-1,searchW:Math.round(q.width)};}""")
+            finally:
+                page.set_viewport_size({'width': 1440, 'height': 900})
+                page.evaluate("()=>{HG.scale='fit';activate('dash');}")
+            for w, r in out.items():
+                assert r['groups'] == 2, 'two toolbar groups: ' + str(r)
+                assert all(30 <= h <= 34 for h in r['hs']), 'one control height (%s): %s' % (w, r['hs'])
+                assert r['row2'] == 1 and r['legRight'] <= 1 and r['inBar'], 'search group stays on one line, «Легенда» at its right edge (%s): %s' % (w, r)
+                assert r['searchW'] >= 100, 'search keeps a usable width (%s): %s' % (w, r)
+        case('hgtbar: toolbar — one control height, search group wraps as a whole, legend stays in place', t_hgtbar)
+
         # ---- 28. Status report generation ----
         def t_status():
             r = page.evaluate("""()=>{const md=statusReportMd();

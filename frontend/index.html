@@ -583,7 +583,8 @@ body.dense .nav-item{padding:4px 10px;font-size:13px}body.dense .md-wrap{gap:10p
 .hg-kpis{display:flex;flex-wrap:wrap;gap:6px;margin:2px 0 10px}.hg-kpi{display:inline-flex;align-items:center;gap:4px;border:1px solid var(--line);background:var(--panel);border-radius:999px;padding:3px 11px;font:inherit;font-size:13px;color:var(--ink)}
 button.hg-kpi{cursor:pointer}button.hg-kpi:hover{border-color:var(--accent)}.hg-kpi.warn{color:var(--warn);border-color:color-mix(in srgb,var(--warn) 45%,var(--line))}.hg-kpi.on{background:var(--accent);color:#fff;border-color:var(--accent)}
 .hg-tbar{gap:8px}.hg-seg{display:inline-flex;border:1px solid var(--line);border-radius:9px;overflow:hidden;background:var(--panel)}.hg-seg .btn{border:none;border-radius:0;padding:5px 10px;box-shadow:none}
-.hg-seg .btn+.btn{border-left:1px solid var(--line)}.hg-seg .btn.on{background:var(--accent);color:#fff}.hg-tbar>select{width:auto}.hg-tbar input[type=search]{width:200px}
+.hg-seg .btn+.btn{border-left:1px solid var(--line)}.hg-seg .btn.on{background:var(--accent);color:#fff}.hg-grp>select{width:auto}.hg-tbar input[type=search]{width:200px}
+.hg-grp>.btn,.hg-tbar summary.btn,.hg-grp>select,.hg-tbar input[type=search]{height:32px;box-sizing:border-box;font-size:13px;font-family:inherit}.hg-tbar summary.btn{display:inline-flex;align-items:center;padding:0 11px;list-style:none;white-space:nowrap}.hg-tbar summary.btn::-webkit-details-marker{display:none}.hg-grp>.btn{padding:0 11px;white-space:nowrap}.hg-seg .btn{height:30px;padding:0 10px}.hg-grp>select,.hg-tbar input[type=search]{border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--ink);padding:0 10px;min-width:0}.hg-grp>select{flex:0 0 auto;padding-right:6px}.hg-tbar input[type=search]{flex:1 1 140px;width:auto;min-width:100px;max-width:280px}.hg-grp{display:flex;flex-wrap:wrap;align-items:center;gap:8px}.hg-grp2{flex:1 1 360px;min-width:0;flex-wrap:nowrap}.hg-grp>select:focus,.hg-tbar input[type=search]:focus{outline:2px solid color-mix(in srgb,var(--accent) 35%,transparent);outline-offset:0;border-color:var(--accent)}
 .hg-dd summary.btn.on{background:var(--accent);color:#fff;border-color:var(--accent)}.hg-legdd{margin-left:auto}.hg-ddr .hg-ddp{left:auto;right:0;max-height:72vh;overflow:auto}.hg-legp{left:auto;right:0;width:min(780px,92vw);max-height:72vh;overflow:auto}
 .hg-legp .legend{margin:0}.hg-fpop{min-width:250px}.hg-fpop select{width:100%}.hg-ddh{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-top:4px}
 .hg-dense .hg-row{min-height:24px}.hg-dense .hg-l{padding-top:1px;padding-bottom:1px;font-size:12.5px}.hg-dense .hg-p{top:7px;height:9px}.hg-dense .hg-s{top:8px;height:7px}
@@ -612,7 +613,7 @@ button.hg-kpi{cursor:pointer}button.hg-kpi:hover{border-color:var(--accent)}.hg-
 .hg-leg i{display:inline-block}.hg-lg-s{width:22px!important;height:8px!important;background:linear-gradient(90deg,color-mix(in srgb,var(--ink) 70%,transparent) 55%,color-mix(in srgb,var(--ink) 18%,transparent) 55%)}
 .hg-lg-p{width:22px!important;background:color-mix(in srgb,var(--accent) 55%,transparent)}.hg-lg-f{width:22px!important;height:4px!important;background:color-mix(in srgb,var(--ink) 55%,transparent)}
 .hg-lg-l{box-shadow:inset 0 0 0 2px var(--crit)}.hg-lg-t{width:2px!important;height:14px!important;background:var(--crit);opacity:.6}
-@media (max-width:760px){.hg-grid{--hgl:150px!important}.hg-m,.hg-c{display:none}.hg-tbar input[type=search]{width:100%}.hg-legdd{margin-left:0}}
+@media (max-width:760px){.hg-grid{--hgl:150px!important}.hg-m,.hg-c{display:none}.hg-tbar input[type=search]{width:100%;max-width:none;flex-basis:100%}.hg-grp2{flex-basis:100%}.hg-legdd{margin-left:0}}
 .hg-px .hg-l{position:sticky;left:0;z-index:4;background:var(--panel)}.hg-px .hg-head .hg-l{background:var(--panel2)}
 .hg-c{flex:none;font-size:11.5px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.hg-st{font-size:11px}.hg-st-d{color:var(--good)}.hg-st-w{color:var(--accent)}
 .hg-neg{color:var(--crit);font-weight:700}.hg-hit .hg-tt{color:var(--accent);font-weight:700}
@@ -4634,14 +4635,14 @@ function hganttView(){hgPre();const w=document.createElement('div');w.id='hg_roo
  const opt=(v,l,cur)=>`<option value="${esc(v)}"${String(cur==null?'':cur)===String(v)?' selected':''}>${esc(l)}</option>`,f=HG.f;
  const members=[...new Set(T.map(t=>t.assignee).filter(Boolean))].sort(),maxS=Math.max(1,...T.map(t=>num(t.sprint)));
  const layer=(a,k,l,cur)=>`<label><input type="checkbox" data-free ${a}${cur?' checked':''}> ${l}</label>`;
- h+=`<div class="hg-bar hg-tbar"><div class="hg-seg" title="Уровень раскрытия">${[[1,'Эпики'],[2,'До фич'],[3,'До историй'],[9,'Всё']].map(([k,l])=>`<button class="btn${HG.level===k&&!Object.keys(HG.open).length?' on':''}" data-hglv="${k}">${l}</button>`).join('')}</div>`
+ h+=`<div class="hg-bar hg-tbar"><div class="hg-grp"><div class="hg-seg" title="Уровень раскрытия">${[[1,'Эпики'],[2,'До фич'],[3,'До историй'],[9,'Всё']].map(([k,l])=>`<button class="btn${HG.level===k&&!Object.keys(HG.open).length?' on':''}" data-hglv="${k}">${l}</button>`).join('')}</div>`
   +`<div class="hg-seg" title="Режим вида: какие слои показывать">${[['overview','Обзор'],['plan','План'],['control','Контроль'],['stages','Этапы']].map(([k,l])=>`<button class="btn${HG.mode===k?' on':''}" data-hgmode="${k}">${l}</button>`).join('')}</div>`
   +`<details class="hg-dd"><summary class="btn${HG.mode==='custom'?' on':''}" title="Слои диаграммы">${HG.mode==='custom'?'Свой вид':'Настроить'} ▾</summary><div class="hg-ddp">`
    +layer('data-hgf','fact','факт (начато → готово)',HG.fact)+layer('data-hgm','marks','метки этапов',HG.marks)+layer('data-hgl','links','зависимости',HG.links)
    +[['ms','вехи и релизы'],['base','базовый план'],['fc','прогноз'],['load','загрузка']].map(([k,l])=>layer(`data-hgsh="${k}"`,k,l,HG[k])).join('')+`</div></details>`
   +`<select data-free data-hgsc title="Масштаб шкалы">${HG_SCALES.map(s=>opt(s[0],s[1],HG.scale)).join('')}</select>`
   +(HG.scale!=='fit'?`<button class="btn" data-hgtoday>К сегодня</button>`:'')
-  +`<input type="search" data-free data-hgq placeholder="Поиск: ID или название" value="${esc(f.q||'')}">`
+  +`</div><div class="hg-grp hg-grp2"><input type="search" data-free data-hgq placeholder="🔍 Поиск" title="Поиск по ID или названию — показывает найденные элементы вместе с предками" value="${esc(f.q||'')}">`
   +`<details class="hg-dd"><summary class="btn${nF?' on':''}">Фильтры${nF?' · '+nF:''} ▾</summary><div class="hg-ddp hg-fpop">`
    +`<select data-free data-hgfk="who">${opt('','Все исполнители',f.who)}${opt('__me','Только мои',f.who)}${members.map(m=>opt(m,m,f.who)).join('')}</select>`
    +`<select data-free data-hgfk="role">${opt('','Все роли',f.role)}${ROLES.map(r=>opt(r,r,f.role)).join('')}</select>`
@@ -4656,7 +4657,7 @@ function hganttView(){hgPre();const w=document.createElement('div');w.id='hg_roo
    +`<div class="hg-ddh">Базовый план</div><span class="md-note hg-basei">${hasBase?'от '+fmtd(pd(baseAt)):'не зафиксирован'}</span>`
    +(PERM.canEdit?`<button class="btn" data-hgbase="fix">📌 Зафиксировать план</button>${hasBase?'<button class="btn" data-hgbase="clear">Сбросить базовый план</button>':''}`:'')
    +`<div class="hg-ddh">Экспорт</div><button class="btn" data-hgexp="pptx">PPTX — презентация по эпикам</button><button class="btn" data-hgexp="png">PNG — картинка</button><button class="btn" data-hgexp="pdf">PDF</button><button class="btn" data-hgexp="xlsx">Excel — таблица</button></div></details>`
-  +`<details class="hg-dd hg-legdd"><summary class="btn">Легенда ▾</summary><div class="hg-ddp hg-legp">%%HGLEG%%</div></details></div><p class="wiz-warn hg-linkbad"></p>`;
+  +`<details class="hg-dd hg-legdd"><summary class="btn">Легенда ▾</summary><div class="hg-ddp hg-legp">%%HGLEG%%</div></details></div></div><p class="wiz-warn hg-linkbad"></p>`;
  if(G.lost)h+=`<p class="wiz-warn">Элементов в цикле по полю «Родитель»: ${G.lost} — они не показаны; исправьте поле «Родитель» в «Бэклоге».</p>`;
  let lo=null,hi=null;all.forEach(([x])=>{const md=HG.marks?Object.values(x.st).filter(Boolean).map(pd):[];
   const extra=md.concat(HG.base&&x.bl?[x.bl.a,x.bl.b]:[],HG.fc&&x.fc?[x.fc]:[]);
@@ -5987,9 +5988,11 @@ const NAV=[
  {g:'Система',items:[['params','Параметры','⚙️'],['integrations','Интеграции','🔌'],['calendar','Календарь','📅'],['budget','Бюджет','💰'],['checks','Проверки данных','🧪'],['eda','EDA отчёт','🔬'],['audit','Журнал событий','🧾']]},
  {g:'Справка',items:[['faq','FAQ','❓'],['support','Support','🛟']]},
 ];
-const APP_VERSION='1.56.0';const APP_DATE='2026-10-30';
+const APP_VERSION='1.56.1';const APP_DATE='2026-10-30';
 const APP_ABOUT='Кросс-функциональная команда — это группа специалистов из разных областей (разработчиков, дизайнеров, маркетологов, аналитиков, менеджеров и других), которые объединяются для работы над одним конкретным проектом или задачей. Ключевая идея в том, чтобы собрать внутри команды всех необходимых экспертов, чтобы она могла самостоятельно пройти путь от идеи до результата, не передавая задачу последовательно из одного отдела в другой.';
 const CHANGELOG=[
+ {v:'1.56.1',date:'2026-10-30',items:[
+   'Гант по иерархии: исправлена строка инструментов — все кнопки, выбор масштаба и поиск одной высоты и в одном стиле; инструменты разделены на две группы (вид и поиск), и при нехватке ширины группа «поиск, фильтры, ⋯, легенда» целиком переходит на новую строку, а не отрывается «Легенда»; поле поиска сжимается по ширине.']},
  {v:'1.56.0',date:'2026-10-30',items:[
    'Гант по иерархии стал легче: режимы вида «Обзор / План / Контроль / Этапы» (по умолчанию «Обзор» — только сводные полосы и прогресс; слои — в «Настроить»), одна строка инструментов (фильтры, колонки, плотность, базовый план и экспорт — в меню), показатели одной строкой — клик по «просрочено», «без родителя», «сдвиг» включает фильтр, легенда по кнопке — только для включённых слоёв.',
    'Спокойная графика: тоньше полосы и светлее сетка, готовые задачи нейтральные — цветом выделяются только отклонения, процент — мини-полоской рядом с объёмом, подписи у полос — только о просрочке, прогнозе и сдвиге.',
