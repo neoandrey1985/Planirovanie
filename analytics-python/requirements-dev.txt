@@ -1,2 +1,2 @@
 -r requirements.txt
-testcontainers[postgres]==4.5.1
+testcontainers[postgres]==4.15.0
