@@ -20,7 +20,7 @@ RUN set -eux; \
     done
 
 # --- run stage ---
-FROM eclipse-temurin:21-jre
+FROM eclipse-temurin:24-jre
 WORKDIR /app
 COPY --from=build /app/target/planirovanie-api-1.0.0.jar app.jar
 EXPOSE 8080
