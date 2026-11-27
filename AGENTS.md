@@ -66,4 +66,19 @@ make test-frontend   # frontend:  python tests/frontend/run_e2e.py     (Playwrig
   проверяет e2e-тест `assistant: knows every NAV section` (через хук `window.assistantAsk`/`assistantKB`).
 - После изменения приложения обновляй сопутствующие документы (руководства, презентация, инструкция по
   развёртыванию) и перезаписывай скриншоты, затем пушь в GitHub.
+- **Обязательно синхронизируй Dropbox** `C:\Users\Андрей\Dropbox\Planirovanie` (облачный путь `/Planirovanie`)
+  после каждого релиза/обновления — в том же цикле, что и документы. Релиз не завершён, пока Dropbox
+  не совпадает с выпущенной версией. Текстовые исходники (`frontend/index.html`, тесты, скрипты, `AGENTS.md`)
+  обновляй через Dropbox MCP; бинарные deliverables (`.docx`/`.pptx`/`.mp4`/`.xlsx`) и полный снимок —
+  через `git pull` в этом клоне (после merge в `main` или checkout ветки релиза). Папка уже git-репозиторий.
+- **Обязательно обновляй локально развёрнутое приложение** до только что выпущенной версии в том же цикле:
+  пересобери и перезапусти стек (`docker compose up -d --build` / при host-network override —
+  `docker compose -f docker-compose.yml -f docker-compose.host.yml up -d --build`), убедись что UI на
+  http://localhost:8080 отдаёт новый `APP_VERSION`. Релиз не завершён, пока локальный инстанс не обновлён.
 - Ветка по умолчанию — `main`; CI обязателен к прохождению до merge.
+- **После зелёного CI по релизному PR** — сразу мержить в `main` (предпочтительно squash merge), затем
+  `git pull` в Dropbox-клоне и обновление локального стека. Если у агента есть право/инструмент merge
+  (токен с merge или API) — выполнить merge самостоятельно. Если merge недоступен (gh/MCP read-only,
+  нет прав GitHub App) — **сразу сообщить владельцу** со ссылкой на PR и явной просьбой нажать
+  «Merge pull request», подписаться на merge/CI и после merge в `main` добить Dropbox + локальный стек.
+  Не считать релиз завершённым, пока изменения не в `main`.
