@@ -343,6 +343,28 @@ def main():
             page.evaluate("()=>{setPerm('viewer');applyPerms();views();activate('dash');}")
         case('kanban: multi-board renders task cards', t_kanban)
 
+        def t_kanban_col_reorder():
+            res = page.evaluate("""()=>{
+              setPerm('ADMIN');applyPerms();
+              UI.kanBoard='b-all';
+              const b=(typeof kanBoards==='function'?kanBoards():ST.boards).find(x=>x.id==='b-all');
+              if(!b)return {ok:false,why:'no board'};
+              b.cols=['To Do','В работе','Готово','Ревью'];
+              if(typeof kanReorderCols!=='function')return {ok:false,why:'no kanReorderCols'};
+              const moved=kanReorderCols(b,'Ревью','To Do','before');
+              const cols=(b.cols||[]).slice();
+              const grip=!!document.querySelector('#v_kanban .kc-grip[data-col-drag]');
+              const orderOk=cols[0]==='Ревью'&&cols[1]==='To Do'&&cols.indexOf('Готово')>1;
+              // viewer cannot reorder
+              setPerm('viewer');applyPerms();
+              const blocked=kanCanReorderCols(b)===false;
+              const noMove=kanReorderCols(b,'To Do','Ревью','before')===false;
+              setPerm('ADMIN');applyPerms();views();activate('kanban');
+              return {ok:!!(moved&&orderOk&&grip&&blocked&&noMove),cols,grip,blocked,noMove,moved,orderOk};
+            }""")
+            assert res.get('ok'), 'kanban column reorder failed: ' + str(res)
+        case('kanban: admin can reorder columns', t_kanban_col_reorder)
+
         # ---- 7. release composition ----
         def t_rel():
             ok = page.evaluate("""()=>{const rs=ST.releases||[];if(!rs.length)return true;
@@ -1207,7 +1229,9 @@ def main():
               const allSp=ST.tasks.filter(t=>+t.sprint===cur&&t.type!=='Эпик').length;
               const cards=document.querySelectorAll('#myday_root .md-grid > .card').length,onbDemo=!!document.querySelector('#myday_root .onb');
               projOpen();const m=document.getElementById('projmodal');const set=(k,v)=>{m.querySelector('[data-w='+k+']').value=v;};
-              set('name','Мобильное приложение');set('goal','Выпустить MVP');set('start','2026-11-02');set('days','10');set('sprints','8');
+              // Старт = «сегодня», иначе «План текущего спринта» в onbSteps зависит от календарной даты прогона.
+              const startDay=new Date().toISOString().slice(0,10);
+              set('name','Мобильное приложение');set('goal','Выпустить MVP');set('start',startDay);set('days','10');set('sprints','8');
               set('team',['Орлова Е. — Frontend','Белов И. — qa','Новиков П.'].join(String.fromCharCode(10)));
               set('tasks',['Прототип главного экрана','Авторизация'].join(String.fromCharCode(10)));
               m.querySelector('[data-w=backup]').checked=false;projRun();
@@ -1215,7 +1239,7 @@ def main():
               const KEEP=['dod','dorItems','calendar','faq','ishikawaCats','boards','team','tasks'];
               const leftovers=Object.keys(re).filter(k=>Array.isArray(re[k])&&re[k].length&&!KEEP.includes(k));
               const wiz={name:P.name,goal:P.goal,start:P.start,sprints:P.sprints,team:ST.team.map(x=>x.name+'/'+x.role),tasks:ST.tasks.map(x=>x.id+':'+x.title+':'+x.sprint),
-                epics:re.tasks.filter(t=>t.type==='Эпик').length,leftovers,board:(re.board.items||[]).length,view:CURV};
+                epics:re.tasks.filter(t=>t.type==='Эпик').length,leftovers,board:(re.board.items||[]).length,view:CURV,startDay};
               const onb=!!document.querySelector('#myday_root .onb');activate('dash');const onbDash=!!document.querySelector('#v_dash > .onb-wrap .onb');
               const steps=onbSteps().filter(s=>s[2]).map(s=>s[0]);
               document.querySelector('#v_dash > .onb-wrap [data-onb=hide]').click();const hidden=!document.querySelector('#v_dash > .onb-wrap');lsSetS('onb_off','');
@@ -1227,7 +1251,7 @@ def main():
             assert r['started'], 'start button must change the task status'
             assert r['cards'] == 3 and not r['onbDemo'], 'my day: tasks, attention, events; no first steps for demo data: ' + str(r)
             w = r['wiz']
-            assert (w['name'], w['goal'], w['start'], w['sprints']) == ('Мобильное приложение', 'Выпустить MVP', '2026-11-02', 8), str(w)
+            assert (w['name'], w['goal'], w['start'], w['sprints']) == ('Мобильное приложение', 'Выпустить MVP', w['startDay'], 8), str(w)
             assert w['team'] == ['Орлова Е./Frontend', 'Белов И./QA', 'Новиков П./'], 'team lines «Имя — роль»: ' + str(w['team'])
             assert w['tasks'] == ['T-01:Прототип главного экрана:1', 'T-02:Авторизация:1'], str(w['tasks'])
             assert w['epics'] == 0 and w['leftovers'] == [] and w['board'] == 0, 'no demo data after reload: ' + str(w)
