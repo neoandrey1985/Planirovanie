@@ -66,4 +66,9 @@ make test-frontend   # frontend:  python tests/frontend/run_e2e.py     (Playwrig
   проверяет e2e-тест `assistant: knows every NAV section` (через хук `window.assistantAsk`/`assistantKB`).
 - После изменения приложения обновляй сопутствующие документы (руководства, презентация, инструкция по
   развёртыванию) и перезаписывай скриншоты, затем пушь в GitHub.
+- **Обязательно синхронизируй Dropbox** `C:\Users\Андрей\Dropbox\Planirovanie` (облачный путь `/Planirovanie`)
+  после каждого релиза/обновления — в том же цикле, что и документы. Релиз не завершён, пока Dropbox
+  не совпадает с выпущенной версией. Текстовые исходники (`frontend/index.html`, тесты, скрипты, `AGENTS.md`)
+  обновляй через Dropbox MCP; бинарные deliverables (`.docx`/`.pptx`/`.mp4`/`.xlsx`) и полный снимок —
+  через `git pull` в этом клоне (после merge в `main` или checkout ветки релиза). Папка уже git-репозиторий.
 - Ветка по умолчанию — `main`; CI обязателен к прохождению до merge.
