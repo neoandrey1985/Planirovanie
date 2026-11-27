@@ -75,8 +75,10 @@ python scripts/deliverables/build_test_docs.py          # Тестовая_до�
 #    (приложение отдаёт их из frontend/docs/, а генераторы пишут в корень)
 python scripts/deliverables/sync_served_docs.py
 
-# 6. прогнать регрессию и запушить
+# 6. прогнать регрессию и запушить; после зелёного CI — merge в main
 make test
+git push
+# merge: сам (если есть права) ИЛИ сразу попросить владельца смержить PR, затем продолжить
 
 # 7. ОБЯЗАТЕЛЬНО: синхронизировать Dropbox C:\Users\Андрей\Dropbox\Planirovanie (/Planirovanie)
 #    текст — Dropbox MCP; бинарные .docx/.pptx/.mp4/.xlsx и полный снимок — git pull в клоне
@@ -86,6 +88,9 @@ docker compose up -d --build
 # в этой VM при сломанном bridge: docker compose -f docker-compose.yml -f docker-compose.host.yml up -d --build
 # проверить http://localhost:8080 — APP_VERSION совпадает с релизом
 ```
+
+> **Merge:** после зелёного CI релизный PR мержится в `main` (агент сам при наличии прав;
+> иначе — явная просьба владельцу). Без `main` цикл не завершён (см. `AGENTS.md`).
 
 > **Dropbox:** после каждого релиза обновляй `/Planirovanie` до той же версии, что в GitHub.
 > Без этого цикл не завершён (правило владельца, см. `AGENTS.md`).
